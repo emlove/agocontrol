@@ -1,0 +1,42 @@
+<%inherit file="base.html"/>
+<%block name="title">ago control start page</%block>
+
+<div id="accordion">
+<h3>Dashboard</h3>
+<div id="dashboard">
+% for device in inventory:
+    % if device["devicetype"] == "switch":
+	<div class="switch ${devicestate(device["state"])}" rel="${device["id"]}"><p class="devicename">${device["name"]}</p></div>
+    % endif
+    % if device["devicetype"] == "dimmer":
+	<div class="dimmer ${devicestate(device["state"])}" rel="${device["id"]}"><p class="devicename">${device["name"]}</p></div>
+    % endif
+% endfor
+<br clear="left">
+</div>
+
+% for room in rooms:
+	<h3>${room["name"]}</h3>
+	<div>
+		<table>
+		% for device in inventory:
+                        % if room["id"] == device["room"]:
+				${makerow(device)}
+			% endif
+		% endfor
+		</table>
+	</div>
+% endfor
+</div>
+<%def name="makerow(device)">
+	<tr>
+		<td>${device["id"]}</td><td>${device["name"]}</td><td>${device["devicetype"]}</td><td>${device["state"]}</td><td><button class="switch_on" rel="${device["id"]}">On</button><button class="switch_off" rel="${device["id"]}">Off</button></td>
+	</tr>
+</%def>
+<%def name="devicestate(state)">
+% if state == 0:
+off\
+% else:
+on\
+% endif
+</%def>

@@ -1,0 +1,85 @@
+<%inherit file="base.html"/>
+<%block name="title">ago control device setup</%block>
+
+<div id="devices">
+<h2>Device Setup</h2>
+<table id="DeviceSetup" class="tablesorter">
+<thead> 
+    <tr> 
+        <th>UUID</th> 
+        <th>Device Name</th> 
+        <th>Room Name</th> 
+        <th>Device Type</th> 
+        <th>Value &nbsp;&nbsp;</th> 
+        <th>Action</th> 
+    </tr> 
+<tbody> 
+% for device in inventory:
+    <tr>
+        <td class="uuid">${device["id"]}</td>
+        <td class="edit_device" rel="${device["id"]}">${device["name"]}</td>
+        <td class="select_device_room" rel="${device["id"]}">${device["roomname"]}</td>
+        <td>${device["devicetype"]}</td>
+        <td>${device["state"]}</td>
+        <td>${devicetype_commands(device["devicetype"],device["id"],device["state"])}</td>
+    </tr>
+% endfor
+</tbody> 
+</table>
+</div>
+
+<div id="rooms">
+    <h2>Room Setup</h2>
+    <table id="RoomSetup" class="tablesorter">
+        <thead>
+            <tr>
+                <th>uuid</th>
+                <th>Name</th>
+                <th>action</th>
+            </tr>
+        </thead>
+        <tbody>
+        % for room in rooms:
+            <tr rel="${room["id"]}">
+                <td class="uuid">${room["id"]}</td>
+                <td class="edit_room" rel="${room["id"]}">${room["name"]}</td>
+                <td><button class="delete_room" rel="${room["id"]}">Delete</button></td>
+            </tr>
+        % endfor
+        </tbody>
+    </table>
+</div>
+
+<h3>Create Room</h3>
+<div class="row">
+  <div class="tree columns">
+    <dl class="field row">
+     <dt class="text">
+	<input type="text" name="new_room_name" id="new_room_name" placeholder="Room name" /> 
+     </dt>
+    </dl>
+  </div>
+  <div class="one columns">
+    <input class="new_room btn" type="button" value="Create Room">
+  </div>
+</div>
+
+<%def name="devicetype_commands(devicetype,uuid,state)">
+% if devicetype in schema["devicetypes"]:
+  % for command in schema["devicetypes"][devicetype]["commands"]:
+      % if command == "setlevel":
+        <div class="slider level" rel="${uuid}" def_value="${state}"></div>
+      % else:
+	<button class="switch_${command}" rel="${uuid}">${schema["commands"][command]["name"]}</button>
+      % endif
+  % endfor
+% endif
+</%def>
+
+<%def name="devicetype_commands_values(devicetype)">
+% if devicetype in schema["devicetypes"]:
+  % for command in schema["devicetypes"][devicetype]["commands"]:
+	${command},
+  % endfor
+% endif
+</%def>

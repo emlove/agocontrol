@@ -1,0 +1,30 @@
+#!/bin/bash
+# agocontrol postinst script
+PASSWD=letmein
+
+if ! getent passwd agocontrol > /dev/null ; then
+    echo 'Adding system-user for agocontrol' 1>&2
+    adduser --system --home /var/run/agocontrol --group --disabled-password agocontrol
+    adduser agocontrol dialout
+fi
+
+# replace config.ini if there is an old version without username setting
+# grep -q username /etc/opt/agocontrol/config.ini || rm /etc/opt/agocontrol/config.ini
+
+test -e /etc/opt/agocontrol/config.ini || (
+	UUID=$(uuidgen)
+	cat /etc/opt/agocontrol/config.ini.tpl | sed "s/<uuid>/${UUID}/" > /etc/opt/agocontrol/config.ini
+)
+
+test -e /etc/opt/agocontrol/inventory.db || (
+	sqlite3 -init /etc/opt/agocontrol/inventory.sql /etc/opt/agocontrol/inventory.db .quit | tee
+)
+
+sasldblistusers2 -f /etc/qpid/qpidd.sasldb  | grep -q agocontrol || (
+	echo $PASSWD | saslpasswd2 -c -p -f /etc/qpid/qpidd.sasldb -u QPID agocontrol
+)
+
+grep -q agocontrol /etc/qpid/qpidd.acl || sed -i 's/admin@QPID/admin@QPID agocontrol@QPID/g' /etc/qpid/qpidd.acl
+chown .qpidd /etc/qpid/qpidd.acl
+
+chown -R agocontrol:agocontrol /etc/opt/agocontrol

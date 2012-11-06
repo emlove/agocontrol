@@ -1,0 +1,15 @@
+Index: open-zwave-read-only/cpp/build/linux/Makefile
+===================================================================
+--- open-zwave-read-only.orig/cpp/build/linux/Makefile	2012-07-03 17:30:58.748697610 +0200
++++ open-zwave-read-only/cpp/build/linux/Makefile	2012-07-03 17:46:37.414275458 +0200
+@@ -10,8 +10,8 @@
+ .PHONY:	default clean verscheck
+ 
+ CC     := $(CROSS_COMPILE)gcc
+-CXX    := $(CROSS_COMPILE)g++
+-LD     := $(CROSS_COMPILE)g++
++CXX    := $(CROSS_COMPILE)g++-4.6
++LD     := $(CROSS_COMPILE)g++-4.6
+ AR     := $(CROSS_COMPILE)ar rc
+ RANLIB := $(CROSS_COMPILE)ranlib
+ 

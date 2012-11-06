@@ -1,0 +1,17 @@
+lib/systemd/system/agoresolver.service
+lib/systemd/system/agoevent.service
+lib/systemd/system/agoscenario.service
+lib/systemd/system/agotimer.service
+etc/opt/agocontrol/config.ini.tpl
+etc/opt/agocontrol/schema.yaml
+etc/opt/agocontrol/inventory.sql
+opt/agocontrol/bin/agologger.py
+opt/agocontrol/bin/agoresolver.py
+opt/agocontrol/bin/agoscenario.py
+opt/agocontrol/bin/agoevent.py
+opt/agocontrol/bin/inventory.py
+opt/agocontrol/bin/boolParser.py
+opt/agocontrol/bin/agodrain.py
+opt/agocontrol/bin/messagesend.py
+opt/agocontrol/bin/agochromoflex
+opt/agocontrol/bin/agotimer

@@ -1,0 +1,14 @@
+[Unit]
+Description=aGoControl Meloware Lightswitchserver Gateway
+
+[Service]
+ExecStart=/opt/agocontrol/bin/agomeloware.py
+WorkingDirectory=/opt/agocontrol/bin
+StandardOutput=syslog
+StandardError=syslog
+Restart=restart-always
+RestartSec=2
+User=agocontrol
+
+[Install]
+WantedBy=multi-user.target

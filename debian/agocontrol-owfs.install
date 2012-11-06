@@ -1,0 +1,3 @@
+etc/opt/agocontrol/owfs
+lib/systemd/system/agoowfs.service
+opt/agocontrol/bin/agoowfs.py

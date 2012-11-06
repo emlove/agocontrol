@@ -1,0 +1,14 @@
+[Unit]
+Description=aGoControl Resolver
+
+[Service]
+ExecStart=/opt/agocontrol/bin/agoresolver.py
+WorkingDirectory=/opt/agocontrol/bin
+StandardOutput=syslog
+StandardError=syslog
+Restart=restart-always
+RestartSec=2
+User=agocontrol
+
+[Install]
+WantedBy=multi-user.target

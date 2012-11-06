@@ -1,0 +1,79 @@
+<%inherit file="base.html"/>
+<%block name="title">ago control Event Editor</%block>
+<div id="events">
+<h2>Events Setup</h2>
+<table id="ScenarioTable" class="tablesorter">
+<thead>
+    <tr>
+        <th>UUID</th>
+        <th>Event name</th>
+        <th>Room name</th>
+        <th>Action</th>
+    </tr>
+<tbody>
+% for device in inventory:
+  % if "event" in device["devicetype"]:
+    <tr>
+        <td class="uuid">${device["id"]}</td>
+        <td>${device["name"]}</td>
+        <td class="select_device_room" rel="${device["id"]}">${device["roomname"]}</td>
+        <td>${devicetype_commands(device["devicetype"],device["id"],device["state"])} &nbsp; <button class="event_edit" rel="${device["id"]}">Edit</button> &nbsp; <button class="event_delete" rel="${device["id"]}">Delete</button></td>
+    </tr>
+  % endif
+% endfor
+</tbody>
+</table>
+</div>
+
+<h3>Create Event</h3>
+<h4>Criteria</h4>
+<div id="eventBuilder"></div><br />
+<h4>Action</h4>
+<div id="actionBuilder"></div> <br />
+<form action="" method="post">
+<h4>Name</h4>
+<div class="row">
+  <div class="four columns">
+    <dl class="field row">
+     <dt class="text">
+	<input type="text" id="event_name" name="event_name" placeholder="Event name" />
+     </dt>
+    </dl>
+  </div>
+  <div class="one columns">
+    <input class="btn" type="button" value="Create Event" onclick="create_json();" />
+  </div>
+</div>
+
+
+<!--<textarea name="json_input" id="json_input"></textarea>
+<input type="button" value="json_to_list" onclick="json_to_list(document.getElementById('json_input').value, document.getElementById('eventBuilder'))" />-->
+<script type="text/javascript">
+var current_id = 0;
+var eventMap = ${eventMap};
+var deviceTypes = ${deviceTypes};
+var devices = ${devices};
+var commands = ${commands};
+</script>
+<script src="static/js/agoevent.js"></script>
+<script type="text/javascript">
+var eventSelector = get_event_selector(eventMap, document.getElementById("eventBuilder"));
+eventSelector.id = "eventSelector";
+document.getElementById("eventBuilder").appendChild(eventSelector);
+render_main_connector("and", document.getElementById("eventBuilder"));
+add_nesting(document.getElementById("eventBuilder"), "and");
+create_action_builder(document.getElementById("actionBuilder"));
+</script>
+
+<%def name="devicetype_commands(devicetype,uuid,state)">
+% if devicetype in schema["devicetypes"]:
+  % for command in schema["devicetypes"][devicetype]["commands"]:
+      % if command == "setlevel":
+        <div class="slider level" rel="${uuid}" def_value="${state}"></div>
+      % else:
+        <button class="switch_${command}" rel="${uuid}">${schema["commands"][command]["name"]}</button>
+      % endif
+  % endfor
+% endif
+</%def>
+

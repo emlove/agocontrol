@@ -1,0 +1,10 @@
+<%inherit file="base.html"/>
+<%block name="title">ago control - template error</%block>
+<h1>An error occured in a template</h1>
+<div id="error">
+<table>
+% for (filename, lineno, function, line) in traceback:
+<tr><td>${filename}:${lineno}</td><td>${function}</td><td>${line}</td></tr>
+% endfor
+</table>
+</div>

@@ -1,0 +1,166 @@
+version: 0.1
+commands:
+  "on":
+    name: turn on
+  "off":
+    name: turn off
+  "run":
+    name: run
+  setlevel:
+    name: set level
+    parameters:
+      level:
+        name: level to set
+        type: integer
+        range: [0, 100]
+  setcolor:
+    name: set color
+    parameters:
+      red:
+        name: level for red color
+        type: integer
+        range: [0, 100]
+      green:
+        name: level for red color
+        type: integer
+        range: [0, 100]
+      blue:
+        name: level for red color
+        type: integer
+        range: [0, 100]
+  sethousemode:
+    name: set the house mode
+    parameters:
+      mode:
+        name: house mode
+        type: option
+        options: ["unarmed", "armed_athome", "armed_away", "entertaining", "sleeping", "armed_extendedaway"]
+      pin:
+        name: security pin
+        type: integer
+        range: [0, 999999]
+devicetypes:
+  securitysystem:
+    name: security system
+    description: aGoControl security system module
+    commands: [sethousemode]
+  scenario:
+    name: scene
+    description: execute scenarios
+    commands: ["on"]
+  event:
+    name: event handler
+    description: respond to events
+    commands: []
+  binarysensor:
+    name: binary sensor
+    description: sensor for on off values
+    commands: []
+  multilevelsensor:
+    name: multilevel sensor
+    description: sensor for multilevel values
+    commands: []
+  smokedetector:
+    name: smoke detector
+    description: smoke detector
+    commands: []
+  avreceiver:
+    name: AV receiver
+    description: AV receiver
+    commands: ["on", "off"]
+  dimmerrgb:
+    name: RGB dimmer
+    description: allows to set different colors
+    commands: ["on", "off", setlevel, setcolor]
+  controller:
+    name: controller
+    description: generic controller
+    commands: []
+  thermostat:
+    name: thermostat
+    description: controls temperature
+    commands: []
+  drapes:
+    name: drapes
+    description: window drapes or blinds
+    commands: ["on", "off", setlevel]
+  dimmer:
+    name: dimmer
+    description: light dimmmer
+    commands: ["on", "off", setlevel]
+  switch:
+    name: switch
+    description: simple on off switch
+    commands: ["on", "off"]
+values:
+  level:
+    name: level
+    description: level value
+  devicetype:
+    name: device type
+    description: device type
+  uuid:
+    name: uuid
+    description: unique id
+  product:
+    name: product
+    description: product
+  manufacturer:
+    name: manufacturer
+    description: manufacturer
+  unit:
+    name: unit
+    description: unit of a value
+  internal-id:
+    name: internal id for a device
+    description: internal id used by interface device
+  minute:
+    name: minute
+    description: minute
+  hour:
+    name: hour
+    description: hour
+  second:
+    name: second
+    description: second
+  month:
+    name: month
+    description: month
+  day:
+    name: day
+    description: day
+  year:
+    name: year
+    description: year
+  weekday:
+    name: weekday
+    description: day of week
+  yday:
+    name: yday
+    description: nth day of year
+events:
+  event.device.announce:
+    description: announces a device to the resolver
+    parameters: [devicetype, uuid, product, internal-id]
+  event.device.statechanged:
+    description: announces a status change of a device
+    parameters: [level, uuid]
+  event.environment.temperaturechanged:
+    description: temperature has changed
+    parameters: [level, unit, uuid]
+  event.environment.brightnesschanged:
+    description: brightness has changed
+    parameters: [level, unit, uuid]
+  event.environment.humiditychanged:
+    description: humidity has changed
+    parameters: [level, unit, uuid]
+  event.security.sensortriggered:
+    description: sensor was triggererd
+    parameters: [level, uuid]
+  event.environment.sunset:
+    description: sun has set
+  event.environment.sunrise:
+    description: sun did rise
+  event.environment.timechanged:
+    description: time did advance
+    parameters: [second, minute, hour, month, day, year, weekday, yday]

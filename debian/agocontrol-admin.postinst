@@ -1,0 +1,3 @@
+#!/bin/bash
+# agocontrol-admin postinst script
+chown -R agocontrol:agocontrol /opt/agocontrol/admin/mod

@@ -1,0 +1,14 @@
+[Unit]
+Description=aGoControl Web GUI NG
+
+[Service]
+ExecStart=/opt/agocontrol/admin/agoadmin.py
+WorkingDirectory=/opt/agocontrol/admin
+StandardOutput=syslog
+StandardError=syslog
+Restart=restart-always
+RestartSec=2
+User=agocontrol
+
+[Install]
+WantedBy=multi-user.target

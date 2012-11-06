@@ -1,0 +1,77 @@
+agocontrol (1.0-65) UNRELEASED; urgency=low
+
+  * Non-maintainer upload.
+  * add error pages for django and upstart script
+  * trigger new build
+  * add messagesend binary
+  * use username and password for qpid connections
+  * fix csrf in web admin, add meloware gateway to package
+  * add authentication to agoowfs
+  * add upstart conf for agoowfs
+  * fix import issue for agoowfs
+  * add auth to logger
+  * include agozwave in the main package build
+  * adjust agozwave for libopenzwave changes
+  * add scenario module
+  * add chromoflex device to package
+  * add meloware gateway and schema.yaml to package
+  * add systemd service descriptions
+  * remove meloware from core package, it is handled separately
+  * dependencies
+  * test if uuid exists in inventory before trying to set its level
+  * add systemd-sysv and pyhton-yaml dependency
+  * add timer device
+  * fix typo in agoadmin.service
+  * new package
+  * change qpid.acl permissions
+  * add admin2 package
+  * admin uses cherrypy3
+  * add image to admin2
+  * resolver shall send result to reply-to
+  * new web admin setup page
+  * add python-simplejson dependency to webadmin
+  * add service scripts, add css to admin2
+  * add agoevent to package
+  * make pretty
+  * add agodrain to package
+  * changes
+  * support scenario/device removal
+  * support scenario/device removal
+  * fix scenario removal bug
+  * new package version
+  * dont print no message output
+  * add service script for agoscenario to package
+  * agoadmin.service must not be in agocontrol package
+  * agoadmin.service must not be in agocontrol package
+  * use agocontrol user
+  * fix event criteria compare result index
+  * add postinst for agocontrol-admin to chown cherrypy mod dir
+  * new packags for jaga
+  * new package against new openzwave headers
+  * new version
+  * web admin changes
+  * new package version
+  * add boolParse.py to package
+  * new package
+  * send brightness changed from agozwave
+  * cleanups
+  * new package
+  * cloud activation in web admin
+
+ -- root <root@pluto.vt100.at>  Sun, 04 Nov 2012 22:56:48 +0100
+
+agocontrol (1.0-14) UNRELEASED; urgency=low
+
+  [ hari ]
+  * add package for web interface
+
+  [ root ]
+  * nil
+  * package changes
+  * dch test
+  * add admin package
+  * add templates to web admin
+  * fix template path
+  * add 1wire package
+
+ -- root <root@pluto.vt100.at>  Sun, 01 Jul 2012 19:47:07 +0200

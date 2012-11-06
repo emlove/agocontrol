@@ -1,0 +1,20 @@
+#
+# Makefile for OpenzWave Mac OS X applications
+
+all: amqpOZW
+
+amqpOZW:
+	$(MAKE) -j4 -C cpp/build/linux
+	$(MAKE) -C cpp/examples/linux/amqpOZW
+
+clean:
+	rm -f cpp/examples/linux/amqpOZW/agozwave cpp/examples/amqpOZW/Main.o
+
+install:
+	@echo Installing
+	install -d $(DESTDIR)/etc/opt/agocontrol/ozw
+	install -d $(DESTDIR)/opt/agocontrol/bin
+	install -d $(DESTDIR)/etc/init
+	install cpp/examples/linux/amqpOZW/agozwave $(DESTDIR)/opt/agocontrol/bin
+	install cpp/examples/linux/amqpOZW/agozwave.init $(DESTDIR)/etc/init/agozwave.conf
+	cp -r config $(DESTDIR)/etc/opt/agocontrol/ozw/

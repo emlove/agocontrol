@@ -1,0 +1,2 @@
+lib/systemd/system/agozwave.service
+opt/agocontrol/bin/agozwave
