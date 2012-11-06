@@ -1,4 +1,4 @@
-agocontrol (1.0-65) UNRELEASED; urgency=low
+agocontrol (1.0-66) UNRELEASED; urgency=low
 
   * Non-maintainer upload.
   * add error pages for django and upstart script
@@ -57,8 +57,9 @@ agocontrol (1.0-65) UNRELEASED; urgency=low
   * cleanups
   * new package
   * cloud activation in web admin
+  * new packages
 
- -- root <root@pluto.vt100.at>  Sun, 04 Nov 2012 22:56:48 +0100
+ -- root <root@pluto.vt100.at>  Tue, 06 Nov 2012 21:50:08 +0100
 
 agocontrol (1.0-14) UNRELEASED; urgency=low
 
