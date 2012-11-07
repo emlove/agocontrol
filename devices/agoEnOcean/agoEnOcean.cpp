@@ -39,8 +39,6 @@ extern "C" {
 
 void serialCallBack(enocean_data_structure in);
 
-void *myself;
-
 Sender sender;
 Receiver receiver;
 Session session;
@@ -84,8 +82,6 @@ int main(int argc, char **argv) {
 
 	connectionOptions["reconnect"] = "true";
 
-	Receiver receiver;
-	Session session;
 	Connection connection(broker, connectionOptions);
 	try {
 		connection.open(); 
@@ -99,6 +95,7 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 
+	printf("initalizing EnOcean\n");
 	enocean_error_structure error = enocean_init((const char *)devicefile.c_str());
 	if (error.code != E_OK) {
 		printf("%s\n",error.message);
@@ -119,13 +116,46 @@ int main(int argc, char **argv) {
 
 	// give the TCM120 time to handle the command
 	sleep (1);
-
+	
+	printf("get ID Base\n");
 	frame = enocean_clean_data_structure();
 	frame = tcm120_rd_idbase();
 
 	enocean_send(&frame);
 
+	while( true )
+	{
 
+		// Do stuff
+		try{
+			Variant::Map content;
+			int node = 0;
+			Message message = receiver.fetch(Duration::SECOND * 3);
+
+			// workaround for bug qpid-3445
+			if (message.getContent().size() < 4) {
+				throw qpid::messaging::EncodingException("message too small");
+			}
+
+			decode(message, content);
+			// std::cout << content << std::endl;
+				session.acknowledge();
+		} catch(const NoMessageAvailable& error) {
+			
+		} catch(const std::exception& error) {
+			std::cerr << error.what() << std::endl;
+		}
+
+	}
+
+	try {
+		connection.close();
+	} catch(const std::exception& error) {
+		std::cerr << error.what() << std::endl;
+		connection.close();
+		return 1;
+	}
+	
 }
 
 void serialCallBack(enocean_data_structure in) {
@@ -145,7 +175,7 @@ void serialCallBack(enocean_data_structure in) {
 		case C_ORG_RPS:
 			if (in.STATUS & S_RPS_NU) {
 				// NU == 1, N-Message
-				printf("Received RPS N-Message Node 0x%08x Rocker ID: %i UD: %i Pressed: %i Second Rocker ID: %i SUD: %i Second Action: %i", id,
+				printf("Received RPS N-Message Node 0x%08x Rocker ID: %i UD: %i Pressed: %i Second Rocker ID: %i SUD: %i Second Action: %i\n", id,
 					(in.DATA_BYTE3 & DB3_RPS_NU_RID) >> DB3_RPS_NU_RID_SHIFT, 
 					(in.DATA_BYTE3 & DB3_RPS_NU_UD) >> DB3_RPS_NU_UD_SHIFT, 
 					(in.DATA_BYTE3 & DB3_RPS_NU_PR)>>DB3_RPS_NU_PR_SHIFT,
@@ -158,7 +188,7 @@ void serialCallBack(enocean_data_structure in) {
 				
 			} else {
 				// NU == 0, U-Message
-				printf("Received RPS U-Message Node 0x%08x Buttons: %i Pressed: %i",id,(in.DATA_BYTE3 & DB3_RPS_BUTTONS) >> DB3_RPS_BUTTONS_SHIFT, (in.DATA_BYTE3 & DB3_RPS_PR)>>DB3_RPS_PR_SHIFT);
+				printf("Received RPS U-Message Node 0x%08x Buttons: %i Pressed: %i\n",id,(in.DATA_BYTE3 & DB3_RPS_BUTTONS) >> DB3_RPS_BUTTONS_SHIFT, (in.DATA_BYTE3 & DB3_RPS_PR)>>DB3_RPS_PR_SHIFT);
 			}
 			break;
 			;;
