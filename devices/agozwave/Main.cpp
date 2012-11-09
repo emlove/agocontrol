@@ -201,6 +201,8 @@ void OnNotification
 					string label = Manager::Get()->GetValueLabel(id);
 					string units = Manager::Get()->GetValueUnits(id);
 					string level = str;
+					if (str == "True") level="255";
+					if (str == "False") level="0";
 					printf("Value: %s Label: %s Unit: %s\n",str.c_str(),label.c_str(),units.c_str());
 					string uuidstr = Manager::Get()->GetNodeName(nodeInfo->m_homeId,nodeInfo->m_nodeId);
 					if (label == "Basic") {
