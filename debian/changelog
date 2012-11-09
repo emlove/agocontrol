@@ -1,4 +1,4 @@
-agocontrol (1.0-68) UNRELEASED; urgency=low
+agocontrol (1.0-69) UNRELEASED; urgency=low
 
   * Non-maintainer upload.
   * add error pages for django and upstart script
@@ -60,8 +60,9 @@ agocontrol (1.0-68) UNRELEASED; urgency=low
   * new packages
   * send environment events for zwave
   * send environment events for zwave, send group for agoeib
+  * new package
 
- -- root <root@pluto.vt100.at>  Fri, 09 Nov 2012 14:58:05 +0100
+ -- root <root@pluto.vt100.at>  Fri, 09 Nov 2012 15:14:55 +0100
 
 agocontrol (1.0-14) UNRELEASED; urgency=low
 
