@@ -73,16 +73,16 @@ static pthread_mutex_t g_criticalSection;
 static pthread_cond_t  initCond  = PTHREAD_COND_INITIALIZER;
 static pthread_mutex_t initMutex = PTHREAD_MUTEX_INITIALIZER;
 
-void sendStatusUpdate(string uuid, int level);
-void sendBrightnessChangedEvent(string uuid, int level, string unit);
-void sendTemperatureChangedEvent(string uuid, int level, string unit);
-void sendHumidityChangedEvent(string uuid, int level, string unit);
-void sendBatteryLevelChangedEvent(string uuid, int level, string unit);
-void sendAlarmLevelChangedEvent(string uuid, int level, string unit);
-void sendAlarmTypeChangedEvent(string uuid, int level, string unit);
-void sendSensorChangedEvent(string uuid, int level, string unit);
-void sendPowerChangedEvent(string uuid, int level, string unit);
-void sendEnergyChangedEvent(string uuid, int level, string unit);
+void sendStatusUpdate(string uuid, string level);
+void sendBrightnessChangedEvent(string uuid, string level, string unit);
+void sendTemperatureChangedEvent(string uuid, string level, string unit);
+void sendHumidityChangedEvent(string uuid, string level, string unit);
+void sendBatteryLevelChangedEvent(string uuid, string level, string unit);
+void sendAlarmLevelChangedEvent(string uuid, string level, string unit);
+void sendAlarmTypeChangedEvent(string uuid, string level, string unit);
+void sendSensorChangedEvent(string uuid, string level, string unit);
+void sendPowerChangedEvent(string uuid, string level, string unit);
+void sendEnergyChangedEvent(string uuid, string level, string unit);
 
 
 void controller_update(Driver::ControllerState state, void *context) {
@@ -200,9 +200,8 @@ void OnNotification
 			      if (Manager::Get()->GetValueAsString(id, &str)) {
 					string label = Manager::Get()->GetValueLabel(id);
 					string units = Manager::Get()->GetValueUnits(id);
-					int level = 0;
+					string level = str;
 					printf("Value: %s Label: %s Unit: %s\n",str.c_str(),label.c_str(),units.c_str());
-					level = atoi(str.c_str());
 					string uuidstr = Manager::Get()->GetNodeName(nodeInfo->m_homeId,nodeInfo->m_nodeId);
 					if (label == "Basic") {
 						sendStatusUpdate( uuidstr , level);
@@ -368,7 +367,7 @@ void OnNotification
 	pthread_mutex_unlock( &g_criticalSection );
 }
 
-void sendStatusUpdate(string uuid, int level) {
+void sendStatusUpdate(string uuid, string level) {
 	Variant::Map content;
 	Message event;
 	try {
@@ -382,7 +381,7 @@ void sendStatusUpdate(string uuid, int level) {
 	}
 
 }
-void sendEvent(string uuid, int level, string unit, string event) {
+void sendEvent(string uuid, string level, string unit, string event) {
 	Variant::Map content;
 	Message myevent;
 	try {
@@ -397,31 +396,31 @@ void sendEvent(string uuid, int level, string unit, string event) {
 	}
 }
 
-void sendBrightnessChangedEvent(string uuid, int level, string unit) {
+void sendBrightnessChangedEvent(string uuid, string level, string unit) {
 	sendEvent(uuid, level, unit, "event.environment.brightnesschanged");
 }
-void sendTemperatureChangedEvent(string uuid, int level, string unit) {
+void sendTemperatureChangedEvent(string uuid, string level, string unit) {
 	sendEvent(uuid, level, unit, "event.environment.temperaturechanged");
 }
-void sendHumidityChangedEvent(string uuid, int level, string unit) {
+void sendHumidityChangedEvent(string uuid, string level, string unit) {
 	sendEvent(uuid, level, unit, "event.environment.humiditychanged");
 }
-void sendBatteryLevelChangedEvent(string uuid, int level, string unit) {
+void sendBatteryLevelChangedEvent(string uuid, string level, string unit) {
 	sendEvent(uuid, level, unit, "event.device.batterylevelchanged");
 }
-void sendAlarmLevelChangedEvent(string uuid, int level, string unit) {
+void sendAlarmLevelChangedEvent(string uuid, string level, string unit) {
 	sendEvent(uuid, level, unit, "event.security.alarmlevelchanged");
 }
-void sendAlarmTypeChangedEvent(string uuid, int level, string unit) {
+void sendAlarmTypeChangedEvent(string uuid, string level, string unit) {
 	sendEvent(uuid, level, unit, "event.security.alarmtypechanged");
 }
-void sendSensorChangedEvent(string uuid, int level, string unit) {
+void sendSensorChangedEvent(string uuid, string level, string unit) {
 	sendEvent(uuid, level, unit, "event.environment.sensorchanged");
 }
-void sendPowerChangedEvent(string uuid, int level, string unit) {
+void sendPowerChangedEvent(string uuid, string level, string unit) {
 	sendEvent(uuid, level, unit, "event.environment.power");
 }
-void sendEnergyChangedEvent(string uuid, int level, string unit) {
+void sendEnergyChangedEvent(string uuid, string level, string unit) {
 	sendEvent(uuid, level, unit, "event.environment.energy");
 }
 
