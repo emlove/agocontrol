@@ -81,6 +81,8 @@ void sendBatteryLevelChangedEvent(string uuid, int level, string unit);
 void sendAlarmLevelChangedEvent(string uuid, int level, string unit);
 void sendAlarmTypeChangedEvent(string uuid, int level, string unit);
 void sendSensorChangedEvent(string uuid, int level, string unit);
+void sendPowerChangedEvent(string uuid, int level, string unit);
+void sendEnergyChangedEvent(string uuid, int level, string unit);
 
 
 void controller_update(Driver::ControllerState state, void *context) {
@@ -225,6 +227,12 @@ void OnNotification
 					}
 					if (label == "Sensor") {
 						sendSensorChangedEvent(uuidstr, level, units);
+					}
+					if (label == "Energy") {
+						sendEnergyChangedEvent(uuidstr, level, units);
+					}
+					if (label == "Power") {
+						sendPowerChangedEvent(uuidstr, level, units);
 					}
 						
 				}
@@ -409,6 +417,12 @@ void sendAlarmTypeChangedEvent(string uuid, int level, string unit) {
 }
 void sendSensorChangedEvent(string uuid, int level, string unit) {
 	sendEvent(uuid, level, unit, "event.environment.sensorchanged");
+}
+void sendPowerChangedEvent(string uuid, int level, string unit) {
+	sendEvent(uuid, level, unit, "event.environment.power");
+}
+void sendEnergyChangedEvent(string uuid, int level, string unit) {
+	sendEvent(uuid, level, unit, "event.environment.energy");
 }
 
 void reportDevices() {
