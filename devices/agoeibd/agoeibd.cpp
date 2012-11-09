@@ -92,15 +92,27 @@ int main(int argc, char **argv) {
 
 	printf("connecting to eibd\n");
 	eibcon = EIBSocketURL(eibdurl.c_str());
+	if (!eibcon) {
+		printf("can't connect to url %s\n",eibdurl.c_str());
+		exit(-1);
+	}
 
-	eibaddr_t dest = Telegram::stringtogaddr("0/0/101");
+	if (EIBOpen_GroupSocket (eibcon, 0) == -1)
+	{
+		EIBClose(eibcon);
+		printf("can't open EIB Group Socket\n");
+		exit(-1);
+	}
+
+	eibaddr_t dest = Telegram::stringtogaddr("0/0/32");
 	
 	Telegram *tg = new Telegram();
 	tg->setGroupAddress(dest);
-	tg->setShortUserData(0);
+	tg->setDataFromChar((char)0xff);
 
 	printf("sending telegram\n");
-	tg->sendTo(eibcon);
+	bool result = tg->sendTo(eibcon);
+	printf("Result: %i\n",result);
 
 
 	while( true )

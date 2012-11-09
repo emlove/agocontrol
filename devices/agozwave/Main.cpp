@@ -75,6 +75,12 @@ static pthread_mutex_t initMutex = PTHREAD_MUTEX_INITIALIZER;
 
 void sendStatusUpdate(string uuid, int level);
 void sendBrightnessChangedEvent(string uuid, int level, string unit);
+void sendTemperatureChangedEvent(string uuid, int level, string unit);
+void sendHumidityChangedEvent(string uuid, int level, string unit);
+void sendBatteryLevelChangedEvent(string uuid, int level, string unit);
+void sendAlarmLevelChangedEvent(string uuid, int level, string unit);
+void sendAlarmTypeChangedEvent(string uuid, int level, string unit);
+void sendSensorChangedEvent(string uuid, int level, string unit);
 
 
 void controller_update(Driver::ControllerState state, void *context) {
@@ -196,10 +202,31 @@ void OnNotification
 					printf("Value: %s Label: %s Unit: %s\n",str.c_str(),label.c_str(),units.c_str());
 					level = atoi(str.c_str());
 					string uuidstr = Manager::Get()->GetNodeName(nodeInfo->m_homeId,nodeInfo->m_nodeId);
-					sendStatusUpdate( uuidstr , level);
-					if (label == "Lumincance") {
+					if (label == "Basic") {
+						sendStatusUpdate( uuidstr , level);
+					}
+					if (label == "Luminance") {
 						sendBrightnessChangedEvent(uuidstr, level, units);
 					}
+					if (label == "Temperature") {
+						sendTemperatureChangedEvent(uuidstr, level, units);
+					}
+					if (label == "Relative Humidity") {
+						sendHumidityChangedEvent(uuidstr, level, units);
+					}
+					if (label == "Battery Level") {
+						sendBatteryLevelChangedEvent(uuidstr, level, units);
+					}
+					if (label == "Alarm Level") {
+						sendAlarmLevelChangedEvent(uuidstr, level, units);
+					}
+					if (label == "Alarm Type") {
+						sendAlarmTypeChangedEvent(uuidstr, level, units);
+					}
+					if (label == "Sensor") {
+						sendSensorChangedEvent(uuidstr, level, units);
+					}
+						
 				}
 			}
 			break;
@@ -347,19 +374,41 @@ void sendStatusUpdate(string uuid, int level) {
 	}
 
 }
-void sendBrightnessChangedEvent(string uuid, int level, string unit) {
+void sendEvent(string uuid, int level, string unit, string event) {
 	Variant::Map content;
-	Message event;
+	Message myevent;
 	try {
 		content["uuid"] = uuid;
 		content["level"] = level;
 		content["unit"] = unit;
-		encode(content, event);
-		event.setSubject("event.environment.brightnesschanged");
-		sender.send(event);
+		encode(content, myevent);
+		myevent.setSubject(event);
+		sender.send(myevent);
 	} catch(const std::exception& error) {
 		std::cout << error.what() << std::endl;
 	}
+}
+
+void sendBrightnessChangedEvent(string uuid, int level, string unit) {
+	sendEvent(uuid, level, unit, "event.environment.brightnesschanged");
+}
+void sendTemperatureChangedEvent(string uuid, int level, string unit) {
+	sendEvent(uuid, level, unit, "event.environment.temperaturechanged");
+}
+void sendHumidityChangedEvent(string uuid, int level, string unit) {
+	sendEvent(uuid, level, unit, "event.environment.humiditychanged");
+}
+void sendBatteryLevelChangedEvent(string uuid, int level, string unit) {
+	sendEvent(uuid, level, unit, "event.device.batterylevelchanged");
+}
+void sendAlarmLevelChangedEvent(string uuid, int level, string unit) {
+	sendEvent(uuid, level, unit, "event.security.alarmlevelchanged");
+}
+void sendAlarmTypeChangedEvent(string uuid, int level, string unit) {
+	sendEvent(uuid, level, unit, "event.security.alarmtypechanged");
+}
+void sendSensorChangedEvent(string uuid, int level, string unit) {
+	sendEvent(uuid, level, unit, "event.environment.sensorchanged");
 }
 
 void reportDevices() {
