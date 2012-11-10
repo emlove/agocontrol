@@ -24,23 +24,128 @@
 #include <qpid/messaging/Session.h>
 #include <qpid/messaging/Address.h>
 
-using namespace qpid::messaging;
-using namespace qpid::types;
-using namespace std;
+#include <tinyxml2.h>
 
 #include <eibclient.h>
 #include "Telegram.h"
+
 #include "../agozwave/CDataFile.h"
+
+using namespace qpid::messaging;
+using namespace qpid::types;
+using namespace tinyxml2;
+using namespace std;
+
 
 Sender sender;
 Receiver receiver;
 Session session;
 
-EIBConnection *eibcon;
+Variant::Map deviceMap;
 
+EIBConnection *eibcon;
+pthread_mutex_t mutexCon;
+pthread_t listenerThread;
+
+/**
+ * parses the device XML file and creates a qpid::types::Variant::Map with the data
+ */
+bool loadDevices(string filename, Variant::Map& _deviceMap) {
+	XMLDocument devicesFile;
+	int returncode;
+
+	printf("trying to open device file: %s\n", filename.c_str());
+	returncode = devicesFile.LoadFile(filename.c_str());
+	if (returncode != XML_NO_ERROR) {
+		printf("error loading XML file, code: %i\n", returncode);
+		return false;
+	}
+
+	printf("parsing file\n");
+	XMLHandle docHandle(&devicesFile);
+	XMLElement* device = docHandle.FirstChildElement( "devices" ).FirstChild().ToElement();
+	if (device) {
+		XMLElement *nextdevice = device;
+		while (nextdevice != NULL) {
+			Variant::Map content;
+
+			printf("node: %s - ",nextdevice->Attribute("uuid"));
+			printf("type: %s\n",nextdevice->Attribute("type"));
+
+			content["devicetype"] = nextdevice->Attribute("type");
+			XMLElement *ga = nextdevice->FirstChildElement( "ga" );
+			if (ga) {
+				XMLElement *nextga = ga;
+				while (nextga != NULL) {
+					printf("GA: %s - ",nextga->GetText());
+					printf("type: %s\n",nextga->Attribute("type"));
+
+					content[nextga->Attribute("type")]=nextga->GetText();
+					nextga = nextga->NextSiblingElement();
+				}
+			}
+			_deviceMap[nextdevice->Attribute("uuid")] = content;
+			nextdevice = nextdevice->NextSiblingElement();
+		}
+	}
+	return true;
+}
+
+void reportDevices(Variant::Map devicemap) {
+	for (Variant::Map::const_iterator it = devicemap.begin(); it != devicemap.end(); ++it) {
+		Variant::Map device;
+		Variant::Map content;
+		Message event;
+
+		printf("uuid: %s\n", it->first.c_str());
+		device = it->second.asMap();
+		printf("devicetype: %s\n", device["devicetype"].asString().c_str());
+		content["devicetype"] = device["devicetype"].asString();
+		content["uuid"] = it->first;
+		encode(content, event);
+		event.setSubject("event.device.announce");
+		sender.send(event);
+	}
+}
+
+void *listener(void *param) {
+	int received = 0;
+
+	printf("starting listener thread\n");
+	while(true) {
+		pthread_mutex_lock (&mutexCon);
+		received=EIB_Poll_Complete(eibcon);
+		pthread_mutex_unlock (&mutexCon);
+		switch(received) {
+			case(-1): 
+				printf("ERROR polling bus\n");
+				break;
+				;;
+			case(0)	:
+				usleep(50);
+				break;
+				;;
+			default:
+				Telegram tl;
+				pthread_mutex_lock (&mutexCon);
+				tl.receivefrom(eibcon);
+				pthread_mutex_unlock (&mutexCon);
+				printf("Processing received Telegram from: %s; to: %s; type: %s shortdata %d\n",
+									Telegram::paddrtostring(tl.getSrcAddress()).c_str(),
+									Telegram::gaddrtostring(tl.getGroupAddress()).c_str(),
+									tl.decodeType().c_str(),
+									tl.getShortUserData());
+				break;
+				;;
+		}
+	}
+
+	return NULL;
+}
 int main(int argc, char **argv) {
 	std::string broker;
 	std::string eibdurl;
+	std::string devicesFile;
 
 	Variant::Map connectionOptions;
 
@@ -75,6 +180,19 @@ int main(int argc, char **argv) {
 	else		
 		connectionOptions["password"]=szPassword;
 
+	t_Str szDevicesFile  = t_Str("");
+	szDevicesFile = ExistingDF.GetString("devicesfile", "knx");
+	if ( szDevicesFile.size() == 0 )
+		devicesFile="/etc/opt/agocontrol/knx/devices.xml";
+	else		
+		devicesFile=szDevicesFile;
+
+	// load xml file into map
+	if (!loadDevices(devicesFile, deviceMap)) {
+		printf("ERROR, can't load device xml\n");
+		exit(-1);
+	}
+
 	connectionOptions["reconnect"] = "true";
 
 	Connection connection(broker, connectionOptions);
@@ -104,15 +222,12 @@ int main(int argc, char **argv) {
 		exit(-1);
 	}
 
-	eibaddr_t dest = Telegram::stringtogaddr("0/0/32");
-	
-	Telegram *tg = new Telegram();
-	tg->setGroupAddress(dest);
-	tg->setDataFromChar((char)0xff);
+	pthread_mutex_init(&mutexCon,NULL);
+	pthread_create(&listenerThread, NULL, listener, NULL);
 
-	printf("sending telegram\n");
-	bool result = tg->sendTo(eibcon);
-	printf("Result: %i\n",result);
+	// announce devices to resolver
+	reportDevices(deviceMap);
+
 
 
 	while( true )
@@ -121,7 +236,6 @@ int main(int argc, char **argv) {
 		// Do stuff
 		try{
 			Variant::Map content;
-			printf("fetching message\n");
 			Message message = receiver.fetch(Duration::SECOND * 3);
 
 			// workaround for bug qpid-3445
@@ -132,6 +246,46 @@ int main(int argc, char **argv) {
 			decode(message, content);
 			// std::cout << content << std::endl;
 				session.acknowledge();
+			if (content["command"] == "discover") {
+				reportDevices(deviceMap);
+			} else if (message.getSubject()=="") { // no subject, this should be a command
+				// let's see if the command is for one of our devices
+				for (Variant::Map::const_iterator it = deviceMap.begin(); it != deviceMap.end(); ++it) {
+					if (content["uuid"] == it->first) {
+						Variant::Map device = it->second.asMap();
+						printf("received command  %s for device %s\n", content["command"].asString().c_str(), it->first.c_str());
+						Telegram *tg = new Telegram();
+						eibaddr_t dest;
+						bool handled=true;
+						if (content["command"] == "on") {
+							string destGA = device["onoff"];
+							dest = Telegram::stringtogaddr(destGA);
+							tg->setShortUserData(1);
+						} else if (content["command"] == "off") {
+							string destGA = device["onoff"];
+							dest = Telegram::stringtogaddr(destGA);
+							tg->setShortUserData(0);
+						} else if (content["command"] == "setlevel") {
+							string destGA = device["setlevel"];
+							dest = Telegram::stringtogaddr(destGA);
+							tg->setDataFromChar((char)atoi(content["level"].asString().c_str()));
+						} else {
+							handled=false;
+						}
+						if (handled) {	
+							tg->setGroupAddress(dest);
+							printf("sending telegram\n");
+							pthread_mutex_lock (&mutexCon);
+							bool result = tg->sendTo(eibcon);
+							pthread_mutex_unlock (&mutexCon);
+							printf("Result: %i\n",result);
+						} else {
+							printf("ERROR, received undhandled command\n");
+						}
+					}
+				}
+			}
+
 		} catch(const NoMessageAvailable& error) {
 			
 		} catch(const std::exception& error) {
