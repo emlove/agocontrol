@@ -24,6 +24,8 @@ import webbrowser
 import re
 
 import urllib2
+import subprocess
+import datetime
 
 lookup = TemplateLookup(directories=['tpl'], module_directory='mod')
 
@@ -252,6 +254,24 @@ class Root:
 	
 			cherrypy.response.headers['Content-Type'] = "image/jpg"
 			return file_generator(buffer)
+		except:
+			traceback = RichTraceback()
+			error_tmpl = lookup.get_template("error-tpl.html")
+			return error_tmpl.render(traceback = traceback.traceback)
+
+	@cherrypy.expose
+	def savevideoframe(self, uuid):
+		try:		
+			message = conn.get_videoframe(uuid)
+			now = datetime.datetime.now()
+	
+			basedir = "archive/" + SYSTEM_UUID + "/" + str(now.year) + "/" + str(now.month) + "/" + str(now.day) + "/" 
+			subprocess.call(['mkdir', '-p', basedir])
+			filename = basedir + str(now.hour) + "-" + str(now.minute) + "-" + str(now.second) + ".jpg"
+			myFile = file(filename, 'wb')
+			myFile.write(message.content)
+			myFile.close()
+			return (filename)
 		except:
 			traceback = RichTraceback()
 			error_tmpl = lookup.get_template("error-tpl.html")
