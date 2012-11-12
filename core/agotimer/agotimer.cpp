@@ -97,8 +97,20 @@ int main(int argc, char** argv) {
         else
                 connectionOptions["password"]=szPassword;
 
-	latlon.lat=47.07;
-	latlon.lon=15.42;
+        t_Str szLatitude  = t_Str("");
+        szLatitude = ExistingDF.GetString("lat", "system");
+        if ( szLatitude.size() == 0 )
+		latlon.lat=47.07;
+        else
+                latlon.lat = atof(szLatitude.c_str());
+
+        t_Str szLongitude  = t_Str("");
+        szLongitude = ExistingDF.GetString("lon", "system");
+        if ( szLongitude.size() == 0 )
+		latlon.lon=15.42;
+        else
+                latlon.lon=atof(szLongitude.c_str());
+
 
         connectionOptions["reconnect"] = "true";
 
