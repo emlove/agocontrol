@@ -108,6 +108,21 @@ void reportDevices(Variant::Map devicemap) {
 	}
 }
 
+string uuidFromGA(Variant::Map devicemap, string ga) {
+	for (Variant::Map::const_iterator it = devicemap.begin(); it != devicemap.end(); ++it) {
+		Variant::Map device;
+
+		device = it->second.asMap();
+		for (Variant::Map::const_iterator itd = device.begin(); itd != device.end(); itd++) {
+			if (itd->second.asString() == ga) {
+				printf("GA %s belongs to %s\n", itd->second.asString().c_str(), it->first.c_str());
+				return(it->first);
+			}
+		}
+	}	
+	return("");
+}
+
 void *listener(void *param) {
 	int received = 0;
 
@@ -266,9 +281,12 @@ int main(int argc, char **argv) {
 							dest = Telegram::stringtogaddr(destGA);
 							tg->setShortUserData(0);
 						} else if (content["command"] == "setlevel") {
+							int level=0;
 							string destGA = device["setlevel"];
 							dest = Telegram::stringtogaddr(destGA);
-							tg->setDataFromChar((char)atoi(content["level"].asString().c_str()));
+							level = atoi(content["level"].asString().c_str());
+							printf("GOT LEVEL: %d\n", level);
+							tg->setDataFromChar(level);
 						} else {
 							handled=false;
 						}
