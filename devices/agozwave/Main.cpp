@@ -490,6 +490,10 @@ void reportDevices() {
 				default:
 					break;
 			}
+	 		if (nodeInfo->m_nodeId==Manager::Get()->GetControllerNodeId(nodeInfo->m_homeId)) {
+				// this is the controller we're talking to with ozw, announce it as special device for z-wave management
+				content["devicetype"]="zwavecontroller";
+			}
 			encode(content, event);
 			event.setSubject("event.device.announce");
 			sender.send(event);
@@ -596,6 +600,7 @@ int main( int argc, char* argv[] )
 		printf("Dropped: %d Retries: %d\n", data.s_dropped, data.s_retries);
 
 		reportDevices();
+	 	int ourNodeId = Manager::Get()->GetControllerNodeId(g_homeId);
 
 		while( true )
 		{
@@ -627,7 +632,8 @@ int main( int argc, char* argv[] )
 					}
 				}
 				// check if this is for a zwave node (otherwise we would not be able to resolve the uuid so node would equal to 0)
-				if (node != 0) {
+				// it should also not be our node id because then we want to branch into the controller commands
+				if (node != 0 && node != ourNodeId) {
 
 					if (content["command"] == "on") {
 						printf("sending on to node %d\n", node);
@@ -659,7 +665,7 @@ int main( int argc, char* argv[] )
 						reportDevices();
 					}
 					// this command has a uuid but was not for one of the childs, check if it is for the amqpOZW device itself (well known uuid)
-					if (content["uuid"] == "11e4958d-3f68-432b-a599-5039ae0f7430") {
+					if (node == ourNodeId) {
 						if (content["command"] == "addnode") {
 							Manager::Get()->BeginControllerCommand(g_homeId, Driver::ControllerCommand_AddDevice, controller_update, NULL, true);
 						} else if (content["command"] == "removenode") {
@@ -676,6 +682,13 @@ int main( int argc, char* argv[] )
 							Manager::Get()->AddAssociation(g_homeId, mynode, mygroup, mytarget);
 						} else if (content["command"] == "removeassociation") {
 							Manager::Get()->RemoveAssociation(g_homeId, content["node"], content["group"], content["target"]);
+						} else if (content["command"] == "setconfigparam") {
+							int mynode = content["node"];
+							int myparam = content["param"];
+							int myvalue = content["value"];
+							int mysize = content["size"];
+							printf("setting config param: node: %i param: %i size: %i value: %i\n",mynode,myparam,mysize,myvalue);
+							Manager::Get()->SetConfigParam(g_homeId,mynode,myparam,myvalue,mysize); 
 						} else if (content["command"] == "downloadconfig") {
 							Manager::Get()->BeginControllerCommand(g_homeId, Driver::ControllerCommand_ReceiveConfiguration, controller_update, NULL, true);
 						} else if (content["command"] == "cancel") {
