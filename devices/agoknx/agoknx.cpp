@@ -91,6 +91,9 @@ bool loadDevices(string filename, Variant::Map& _deviceMap) {
 	return true;
 }
 
+/**
+ * announces our devices in the devicemap to the resolver
+ */
 void reportDevices(Variant::Map devicemap) {
 	for (Variant::Map::const_iterator it = devicemap.begin(); it != devicemap.end(); ++it) {
 		Variant::Map device;
@@ -108,6 +111,9 @@ void reportDevices(Variant::Map devicemap) {
 	}
 }
 
+/**
+ * looks up the uuid for a specific GA - this is needed to match incoming telegrams to the right device
+ */
 string uuidFromGA(Variant::Map devicemap, string ga) {
 	for (Variant::Map::const_iterator it = devicemap.begin(); it != devicemap.end(); ++it) {
 		Variant::Map device;
@@ -123,11 +129,27 @@ string uuidFromGA(Variant::Map devicemap, string ga) {
 	return("");
 }
 
+/**
+ * looks up the type for a specific GA - this is needed to match incoming telegrams to the right event type
+ */
+string typeFromGA(Variant::Map device, string ga) {
+	for (Variant::Map::const_iterator itd = device.begin(); itd != device.end(); itd++) {
+		if (itd->second.asString() == ga) {
+			printf("GA %s belongs to %s\n", itd->second.asString().c_str(), itd->first.c_str());
+			return(itd->first);
+		}
+	}
+	return("");
+}
+/**
+ * thread to poll the knx bus for incoming telegrams
+ */
 void *listener(void *param) {
 	int received = 0;
 
 	printf("starting listener thread\n");
 	while(true) {
+		string uuid;
 		pthread_mutex_lock (&mutexCon);
 		received=EIB_Poll_Complete(eibcon);
 		pthread_mutex_unlock (&mutexCon);
@@ -150,6 +172,27 @@ void *listener(void *param) {
 									Telegram::gaddrtostring(tl.getGroupAddress()).c_str(),
 									tl.decodeType().c_str(),
 									tl.getShortUserData());
+				uuid = uuidFromGA(deviceMap, Telegram::gaddrtostring(tl.getGroupAddress()));
+				if (uuid != "") {
+					string type = typeFromGA(deviceMap[uuid].asMap(),Telegram::gaddrtostring(tl.getGroupAddress()));
+					printf("GA from telegram belongs to: %s - type: %s\n",uuid.c_str(),type.c_str());
+					if (type != "") {
+						Message event;
+						Variant::Map content;
+
+						content["uuid"] = uuid;
+						if(type == "onoff" || type == "onoffstatus") { 
+							content["level"] = tl.getShortUserData()==1 ? 255 : 0;
+							encode(content, event);
+							event.setSubject("event.device.statechanged");
+						} else if (type == "setlevel" || type == "levelstatus") {
+							content["level"] = tl.getIntData(); 
+							encode(content, event);
+							event.setSubject("event.device.statechanged");
+						}
+						sender.send(event);	
+					}
+				}
 				break;
 				;;
 		}
