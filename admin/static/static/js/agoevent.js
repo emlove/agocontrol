@@ -380,7 +380,7 @@ function create_action_builder(container, defaults) {
     var j = 0;
     for (var i = 0; i < devices.length; i++) {
         var dev = devices[i];
-        if (deviceTypes[dev.devicetype].commands.length == 0) {
+        if (deviceTypes[dev.devicetype] === undefined || deviceTypes[dev.devicetype].commands.length == 0) {
             continue;
         }
         deviceSelect.options[j] = new Option(dev["name"] == "" ? dev["id"] : dev["name"], i);
