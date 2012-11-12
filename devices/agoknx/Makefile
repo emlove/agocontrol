@@ -22,10 +22,10 @@ INCLUDES	:=
 %.o : %.cpp
 	$(CXX) $(CFLAGS) $(INCLUDES) -o $@ $<
 
-all: agoeibd
+all: agoknx
 
-agoeibd: agoeibd.o ../agozwave/CDataFile.o Telegram.o
+agoknx: agoknx.o ../agozwave/CDataFile.o Telegram.o
 	$(LD) -o $@ $(LDFLAGS) $^ -lqpidmessaging -lqpidtypes -luuid -leibclient -ltinyxml2
 
 clean:
-	rm -f agoeibd agoeibd.o Telegram.o ../agozwave/CDataFile.o
+	rm -f knx knx.o Telegram.o ../agozwave/CDataFile.o
