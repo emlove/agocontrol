@@ -121,7 +121,7 @@ string uuidFromGA(Variant::Map devicemap, string ga) {
 		device = it->second.asMap();
 		for (Variant::Map::const_iterator itd = device.begin(); itd != device.end(); itd++) {
 			if (itd->second.asString() == ga) {
-				printf("GA %s belongs to %s\n", itd->second.asString().c_str(), it->first.c_str());
+				// printf("GA %s belongs to %s\n", itd->second.asString().c_str(), it->first.c_str());
 				return(it->first);
 			}
 		}
@@ -135,7 +135,7 @@ string uuidFromGA(Variant::Map devicemap, string ga) {
 string typeFromGA(Variant::Map device, string ga) {
 	for (Variant::Map::const_iterator itd = device.begin(); itd != device.end(); itd++) {
 		if (itd->second.asString() == ga) {
-			printf("GA %s belongs to %s\n", itd->second.asString().c_str(), itd->first.c_str());
+			// printf("GA %s belongs to %s\n", itd->second.asString().c_str(), itd->first.c_str());
 			return(itd->first);
 		}
 	}
@@ -167,7 +167,7 @@ void *listener(void *param) {
 				pthread_mutex_lock (&mutexCon);
 				tl.receivefrom(eibcon);
 				pthread_mutex_unlock (&mutexCon);
-				printf("Processing received Telegram from: %s; to: %s; type: %s shortdata %d\n",
+				printf("received Telegram from: %s; to: %s; type: %s shortdata %d\n",
 									Telegram::paddrtostring(tl.getSrcAddress()).c_str(),
 									Telegram::gaddrtostring(tl.getGroupAddress()).c_str(),
 									tl.decodeType().c_str(),
@@ -175,8 +175,8 @@ void *listener(void *param) {
 				uuid = uuidFromGA(deviceMap, Telegram::gaddrtostring(tl.getGroupAddress()));
 				if (uuid != "") {
 					string type = typeFromGA(deviceMap[uuid].asMap(),Telegram::gaddrtostring(tl.getGroupAddress()));
-					printf("GA from telegram belongs to: %s - type: %s\n",uuid.c_str(),type.c_str());
 					if (type != "") {
+						printf("handling telegram, GA from telegram belongs to: %s - type: %s\n",uuid.c_str(),type.c_str());
 						Message event;
 						Variant::Map content;
 
