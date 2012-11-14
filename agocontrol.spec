@@ -62,7 +62,6 @@ cp -r admin/* ${RPM_BUILD_ROOT}/opt/agocontrol/admin
 /etc/opt/agocontrol/schema.yaml
 /etc/opt/agocontrol/inventory.sql
 /etc/opt/agocontrol/config.ini.tpl
-/opt/agocontrol/bin/agocloud.py
 /opt/agocontrol/bin/agodrain.py
 /opt/agocontrol/bin/agologger.py
 /opt/agocontrol/bin/agotimer
