@@ -67,6 +67,7 @@ cp -r admin/* ${RPM_BUILD_ROOT}/opt/agocontrol/admin
 /opt/agocontrol/bin/agotimer
 /opt/agocontrol/bin/messagesend
 /opt/agocontrol/bin/messagesend.py
+/opt/agocontrol/bin/boolParser.py
 
 %files -n agocontrol-zwave
 /opt/agocontrol/bin/agozwave
