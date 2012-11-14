@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+								iyslog.syslog(syslog.LOG_NOTICE, "firing event %s" % uuid)
 #
 # resolver - service and name resolver for the AMQP based automation control
 #
@@ -61,7 +62,8 @@ class LogErr:
 		syslog.syslog(syslog.LOG_ERR, data)
 
 syslog.openlog(sys.argv[0], syslog.LOG_PID, syslog.LOG_DAEMON)
-# sys.stderr = LogErr()
+sys.stderr = LogErr()
+sys.stdout = LogErr()
 
 # load schema
 schemastream = file(schemafile, 'r')

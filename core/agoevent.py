@@ -57,7 +57,8 @@ class LogErr:
                 syslog.syslog(syslog.LOG_ERR, data)
 
 syslog.openlog(sys.argv[0], syslog.LOG_PID, syslog.LOG_DAEMON)
-# sys.stderr = LogErr()
+sys.stderr = LogErr()
+sys.stdout = LogErr()
 
 # read persistent uuid mapping from file
 try:
@@ -142,16 +143,13 @@ while True:
 							myuuid = message.content['uuid']
 						else:
 							myuuid = str(uuid4())
-						print "setevent, eventmap: ", message
 						syslog.syslog(syslog.LOG_NOTICE, "setevent %s - %s" % (myuuid, str(message.content['eventmap'])))
 						eventmap[myuuid] = message.content['eventmap']
 						savemap()
 						reportdevice(myuuid)
 						if message.reply_to:
-							print "sending reply"
 							replysender = session.sender(message.reply_to)
 							response = Message(myuuid)
-							print "response: ", response
 							try:
 								replysender.send(response)
 							except SendError, e:
@@ -191,8 +189,7 @@ while True:
 			if 'event.' in message.subject:
 				for uuid in eventmap.iterkeys():
 					if eventmap[uuid]["event"] == message.subject:
-						print "found scenario", uuid, message.subject
-						# print message
+						# print "found scenario", uuid, message.subject
 						criteria = {}
 						for idx in eventmap[uuid]["criteria"]:
 							criteria[str(idx)] = 0
@@ -200,28 +197,28 @@ while True:
 								lval = message.content[eventmap[uuid]["criteria"][idx]["lval"]]
 								rval = eventmap[uuid]["criteria"][idx]["rval"]
 								comp = eventmap[uuid]["criteria"][idx]["comp"]
-								print "comparing", lval, comp, rval
+								# print "comparing", lval, comp, rval
 								if 'lt' in comp:
 									if float(lval) < float(rval):
-										print float(lval), " < ", float(rval)
+										# print float(lval), " < ", float(rval)
 										criteria[str(idx)] = 1
 								if 'gt' in comp:
 									if float(lval) > float(rval):
-										print float(lval), " > ",  float(rval)
+										# print float(lval), " > ",  float(rval)
 										criteria[str(idx)] = 1
 								if 'eq' in comp:
 									try:
 										if float(lval) == float(rval):
-											print rval, " = ", lval
+											# print rval, " = ", lval
 											criteria[str(idx)] = 1
 									except ValueError, e:
 										if lval == rval:
-											print rval, " = ", lval
+											# print rval, " = ", lval
 											criteria[str(idx)] = 1
 						try:
-							print "criteria results: ", criteria, bp.parse(eventmap[uuid]["nesting"], criteria)
+							# print "criteria results: ", criteria, bp.parse(eventmap[uuid]["nesting"], criteria)
 							if bp.parse(eventmap[uuid]["nesting"], criteria):
-								print "criteria is true. firing command"
+								syslog.syslog(syslog.LOG_NOTICE, "firing event %s" % uuid)
 								content = eventmap[uuid]["action"]
 								action = Message(content=content)
 								try:

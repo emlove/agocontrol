@@ -3,6 +3,8 @@
 #include <time.h>
 #include <pthread.h>
 
+#include <syslog.h>
+
 #include <qpid/messaging/Connection.h>
 #include <qpid/messaging/Message.h>
 #include <qpid/messaging/Sender.h>
@@ -48,19 +50,21 @@ void *suntimer(void *param) {
 				// printf("minutes to wait for sunrise: %ld\n",(sunrise-seconds)/60);
 				// printf("sunrise: %s\n",asctime(localtime(&sunrise)));
 				sleep(sunrise-seconds);
+				syslog(LOG_NOTICE, "sending sunrise event");
 			} else if (seconds > sunset) {
 				// printf("it is dark\n");
 				message.setSubject("event.environment.sunrise");
 				sleep(sunrise_tomorrow-seconds);
+				syslog(LOG_NOTICE, "sending sunrise event");
 			} else {
 				message.setSubject("event.environment.sunset");
 				sleep(sunset-seconds);
-				printf("sun did set\n");
+				syslog(LOG_NOTICE, "sending sunset event");
 			}
 			sender.send(message, true);	
 			sleep(2);
 		} else {
-			printf("could not determine sunrise/sunset\n");
+			syslog(LOG_CRIT, "ERROR determining sunrise/sunset time");
 			sleep(60);
 		}
 	}
@@ -132,12 +136,12 @@ int main(int argc, char** argv) {
 			waitsec = 60-tms->tm_sec;
 			if (waitsec == 60) {
 				// just hit the full minute
-				printf("MINUTE %i:%i\n",tms->tm_min,tms->tm_sec);
+				//printf("MINUTE %i:%i\n",tms->tm_min,tms->tm_sec);
 			} else {
 				sleep(waitsec);
 				now = time(NULL);
 				tms = localtime(&now);
-				printf("MINUTE %i:%i\n",tms->tm_min,tms->tm_sec);
+				// printf("MINUTE %i:%i\n",tms->tm_min,tms->tm_sec);
 			}
 			content["minute"]=tms->tm_min;
 			content["second"]=tms->tm_sec;
@@ -153,6 +157,7 @@ int main(int argc, char** argv) {
 			sleep(2);
 		}
 	} catch(const std::exception& error) {
+		syslog(LOG_CRIT, "ERROR, raising exception: %s",error.what());
 		std::cout << error.what() << std::endl;
 		connection.close();
 	}

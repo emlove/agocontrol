@@ -57,7 +57,8 @@ class LogErr:
                 syslog.syslog(syslog.LOG_ERR, data)
 
 syslog.openlog(sys.argv[0], syslog.LOG_PID, syslog.LOG_DAEMON)
-# sys.stderr = LogErr()
+sys.stderr = LogErr()
+sys.stdout = LogErr()
 
 # read persistent uuid mapping from file
 try:
@@ -153,7 +154,7 @@ while True:
 				if 'uuid' in message.content and message.content['command'] == 'on':
 					uuid = message.content['uuid']
 					if uuid in scenariomap.iterkeys():
-						print "found scenario"
+						# print "found scenario"
 						syslog.syslog(syslog.LOG_NOTICE, "firing scenario %s" % uuid)
 						t = RunScenario(scenariomap[uuid])
 						t.setDaemon(True)
@@ -186,7 +187,6 @@ while True:
 
 				if message.content['command'] == 'setscenario':
 					if 'scenariomap' in message.content:
-						print "receiving scenario map"
 						myuuid = ""
 						if 'uuid' in message.content:
 							myuuid = message.content["uuid"]
