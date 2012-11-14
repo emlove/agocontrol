@@ -627,7 +627,7 @@ int main( int argc, char* argv[] )
 						string uuid = content["uuid"];
 						node = nodeInfo->m_nodeId;
 							
-						printf("found z-wave node id %d for uuid %s\n",node, uuid.c_str());
+						// printf("found z-wave node id %d for uuid %s\n",node, uuid.c_str());
 						break;
 					}
 				}
@@ -666,6 +666,7 @@ int main( int argc, char* argv[] )
 					}
 					// this command has a uuid but was not for one of the childs, check if it is for the amqpOZW device itself (well known uuid)
 					if (node == ourNodeId) {
+						printf("z-wave specific controller command received\n");
 						if (content["command"] == "addnode") {
 							Manager::Get()->BeginControllerCommand(g_homeId, Driver::ControllerCommand_AddDevice, controller_update, NULL, true);
 						} else if (content["command"] == "removenode") {
