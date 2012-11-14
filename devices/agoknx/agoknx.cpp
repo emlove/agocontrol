@@ -218,7 +218,7 @@ int main(int argc, char **argv) {
 		broker= szBroker;
 
 	t_Str szDevice = t_Str("");
-	szDevice = ExistingDF.GetString("url", "eibd");
+	szDevice = ExistingDF.GetString("url", "knx");
 	if ( szDevice.size() == 0 )
 		eibdurl="ip:127.0.0.1";
 	else		
