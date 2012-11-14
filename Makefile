@@ -15,7 +15,10 @@ agochromoflex:
 	$(MAKE) -C devices/chromoflex
 
 clean:
-	rm core/messagesend | tee
+	$(MAKE) -C devices/chromoflex clean
+	$(MAKE) -C devices/agozwave clean
+	$(MAKE) -C core/agotimer clean
+	$(MAKE) -C core/messagesend clean
 
 install:
 	@echo Installing
