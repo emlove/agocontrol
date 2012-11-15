@@ -61,9 +61,12 @@ static void command (struct mg_connection *conn, const struct mg_request_info *r
 	uuid = mg_get_var(conn, "uuid");
 	command = mg_get_var(conn, "command");
 	level = mg_get_var(conn, "level");
-
-	agocommand["command"] = command;
-	agocommand["uuid"] = uuid;
+	if (command) {
+		agocommand["command"] = command;
+	}
+	if (uuid) {
+		agocommand["uuid"] = uuid;
+	}
 	if (level) {
 		agocommand["level"] = level;
 	}
