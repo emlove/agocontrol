@@ -57,7 +57,7 @@ class LogErr:
                 syslog.syslog(syslog.LOG_ERR, data)
 
 syslog.openlog(sys.argv[0], syslog.LOG_PID, syslog.LOG_DAEMON)
-# sys.stderr = LogErr()
+sys.stderr = LogErr()
 
 connection = Connection(opts.broker, username=opts.username, password=opts.password,  reconnect=True)
 connection.open()
