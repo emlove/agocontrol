@@ -100,9 +100,9 @@ void reportDevices(Variant::Map devicemap) {
 		Variant::Map content;
 		Message event;
 
-		printf("uuid: %s\n", it->first.c_str());
+		// printf("uuid: %s\n", it->first.c_str());
 		device = it->second.asMap();
-		printf("devicetype: %s\n", device["devicetype"].asString().c_str());
+		// printf("devicetype: %s\n", device["devicetype"].asString().c_str());
 		content["devicetype"] = device["devicetype"].asString();
 		content["uuid"] = it->first;
 		encode(content, event);
@@ -156,6 +156,7 @@ void *listener(void *param) {
 		switch(received) {
 			case(-1): 
 				printf("ERROR polling bus\n");
+				exit(-1);
 				break;
 				;;
 			case(0)	:
