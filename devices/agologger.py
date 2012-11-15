@@ -72,8 +72,7 @@ while True:
 		message = receiver.fetch(timeout=1)
 		if message.subject:
 			if 'event' in message.subject:
-				syslog.syslog(syslog.LOG_NOTICE, str(message.subject))
-				syslog.syslog(syslog.LOG_NOTICE, str(message))
+				syslog.syslog(syslog.LOG_NOTICE, "%s - %s" % (str(message.subject),str(message)))
 				# print message.subject
 	except Empty, e:
 		pass
