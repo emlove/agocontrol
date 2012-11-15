@@ -108,15 +108,16 @@ class ClientThread ( threading.Thread ):
 			state = 0
 			state=device['state']
 			try:
-				if device['devicetype'] == "switch":
-					# print device['description']
-					self.conn.send("DEVICE~%s~%s~%d~BinarySwitch\n" % (device['name'],id,state ))  # echo
-				if device['devicetype'] == "dimmer":
-					# print device['description']
-					self.conn.send("DEVICE~%s~%s~%d~MultilevelSwitch\n" % (device['name'],id,state ))  # echo
-				if device['devicetype'] == "drapes":
-					# print device['description']
-					self.conn.send("DEVICE~%s~%s~%d~WindowCovering\n" % (device['name'],id,state ))  # echo
+				if devie['name'] != "":
+					if device['devicetype'] == "switch":
+						# print device['description']
+						self.conn.send("DEVICE~%s~%s~%d~BinarySwitch\n" % (device['name'],id,state ))  # echo
+					if device['devicetype'] == "dimmer":
+						# print device['description']
+						self.conn.send("DEVICE~%s~%s~%d~MultilevelSwitch\n" % (device['name'],id,state ))  # echo
+					if device['devicetype'] == "drapes":
+						# print device['description']
+						self.conn.send("DEVICE~%s~%s~%d~WindowCovering\n" % (device['name'],id,state ))  # echo
 			except KeyError, e:
 				print e
 		# self.conn.send('DEVICE~RPCState~0~0~STATUS\n')  # echo
