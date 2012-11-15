@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-								iyslog.syslog(syslog.LOG_NOTICE, "firing event %s" % uuid)
 #
 # resolver - service and name resolver for the AMQP based automation control
 #
