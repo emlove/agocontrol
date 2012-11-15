@@ -6,7 +6,7 @@ ExecStart=/opt/agocontrol/admin/agoadmin.py
 WorkingDirectory=/opt/agocontrol/admin
 StandardOutput=syslog
 StandardError=syslog
-Restart=restart-always
+Restart=always
 RestartSec=2
 User=agocontrol
 

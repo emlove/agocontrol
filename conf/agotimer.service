@@ -6,7 +6,7 @@ ExecStart=/opt/agocontrol/bin/agotimer
 WorkingDirectory=/opt/agocontrol/bin
 StandardOutput=syslog
 StandardError=syslog
-Restart=restart-always
+Restart=always
 RestartSec=2
 User=agocontrol
 
