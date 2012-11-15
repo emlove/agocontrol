@@ -129,7 +129,6 @@ int main(int argc, char **argv) {
 		// Do stuff
 		try{
 			Variant::Map content;
-			int node = 0;
 			Message message = receiver.fetch(Duration::SECOND * 3);
 
 			// workaround for bug qpid-3445
@@ -207,8 +206,8 @@ void serialCallBack(enocean_data_structure in) {
 				if ((in.DATA_BYTE0 & 128) == 128) {
 					// new type
 					int profile = in.DATA_BYTE3 >> 2;
-					int type = ((in.DATA_BYTE3 & 3) << 5) + (in.DATA_BYTE2 >> 3);
-					int manufacturer = ((in.DATA_BYTE2 & 7) << 8) + in.DATA_BYTE1;
+					// int type = ((in.DATA_BYTE3 & 3) << 5) + (in.DATA_BYTE2 >> 3);
+					// int manufacturer = ((in.DATA_BYTE2 & 7) << 8) + in.DATA_BYTE1;
 					switch (profile) {
 						case 2:	// Temp sensor
 							break;
