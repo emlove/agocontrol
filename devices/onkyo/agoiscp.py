@@ -134,6 +134,20 @@ while True:
 								command = 'system-power:on'
 							if message.content['command'] == 'off':
 								command = 'system-power:standby'
+							if message.content['command'] == 'mute':
+								command = 'audio-muting:on'
+							if message.content['command'] == 'unmute':
+								command = 'audio-muting:off'
+							if message.content['command'] == 'mutetoggle':
+								command = 'audio-muting:toggle'
+							if message.content['command'] == 'vol+':
+								command = 'master-volume:level-up'
+							if message.content['command'] == 'vol-':
+								command = 'master-volume:level-down'
+							if message.content['command'] == 'setlevel':
+								command = 'master-volume:%s' % content['level']
+							if message.content['command'] == 'setinput':
+								command = 'input-selector:%s' % content['input']
 							receiver = eISCP(str.split(path,':',2)[0], int(str.split(path,':',2)[1]))
 							try:
 								receiver.command(command)

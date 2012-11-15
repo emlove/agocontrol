@@ -39,6 +39,22 @@ commands:
         name: security pin
         type: integer
         range: [0, 999999]
+  getvideoframe:
+    name: get video frame
+  mute:
+    name: mute audio
+  unmute:
+    name: unmute audio
+  mutetoggle:
+    name: toggle mute
+  vol+:
+    name: volume up
+  vol-:
+    name: volume down
+  setinput:
+    name: input selector
+    type: option
+    options: ["video1", "video1", "video3", "video4", "video5", "video6", "dvd", "fm", "am", "usb", "net", "up", "down"]
 devicetypes:
   securitysystem:
     name: security system
@@ -64,10 +80,14 @@ devicetypes:
     name: smoke detector
     description: smoke detector
     commands: []
+  camera:
+    name: Camera
+    description: Surveillance camera
+    commands: [getvideoframe]
   avreceiver:
     name: AV receiver
     description: AV receiver
-    commands: ["on", "off"]
+    commands: ["on", "off", mute, unmute, mmutetoggle, vol+, vol-, setinput]
   dimmerrgb:
     name: RGB dimmer
     description: allows to set different colors
