@@ -55,7 +55,66 @@ commands:
     name: input selector
     type: option
     options: ["video1", "video1", "video3", "video4", "video5", "video6", "dvd", "fm", "am", "usb", "net", "up", "down"]
+  addnode:
+    name: add a node
+  removenode:
+    name: remove a node
+  addcontroller:
+    name: add a controller
+  removecontroller:
+    name: remove a controller
+  addassociation:
+    name: add association
+    parameters:
+      node:
+        name: node 
+        type: integer
+      group:
+        name: group
+        type: integer
+      target:
+        name: target
+        type: integer
+  removeassociation:
+    name: remove association
+    parameters:
+      node:
+        name: node 
+        type: integer
+      group:
+        name: group
+        type: integer
+      target:
+        name: target
+        type: integer
+  setconfigparam:
+    name: configure parameter
+    parameters:
+      node:
+        name: node 
+        type: integer
+      param:
+        name: parameter number
+        type: integer
+      value:
+        name: value to set
+        type: integer
+      size:
+        name: size of value
+        type: integer
+  downloadconfig:
+    name: receive network
+  cancel:
+    name: cancel operation
+  saveconfig:
+    name: save network config
+  reset:
+    name: reset network info
 devicetypes:
+  zwavecontroller:
+    name: z-wave interface
+    description: z-wave interface from agozwave
+    commands: [addnode, removenode, addcontroller, removecontroller, addassociation, removeassociation, setconfigparam, downloadconfig, cancel, saveconfig, reset]
   securitysystem:
     name: security system
     description: aGoControl security system module
