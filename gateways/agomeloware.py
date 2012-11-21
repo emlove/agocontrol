@@ -77,11 +77,11 @@ class ClientThread ( threading.Thread ):
 			print "ERROR: invalid client, closing connection\n"
 			self.conn.close()
 			return
-		# print "received data:", data
+		print "received data:", data
 		self.conn.send('COOKIE~40821\n')  # echo
 		data = self.conn.recv(BUFFER_SIZE)
 		if not data: return
-		# print "received data:", data
+		print "received data:", data
 		self.conn.send('VER~1.1.3290.16502\n')  # echo
 		data = self.conn.recv(BUFFER_SIZE)
 		if not data: return
@@ -106,18 +106,17 @@ class ClientThread ( threading.Thread ):
 		print "received data:", message
 		for id, device in message.content["inventory"].iteritems():
 			state = 0
-			state=device['state']
+			state=float(device['state'])
 			try:
-				if devie['name'] != "":
-					if device['devicetype'] == "switch":
-						# print device['description']
-						self.conn.send("DEVICE~%s~%s~%d~BinarySwitch\n" % (device['name'],id,state ))  # echo
-					if device['devicetype'] == "dimmer":
-						# print device['description']
-						self.conn.send("DEVICE~%s~%s~%d~MultilevelSwitch\n" % (device['name'],id,state ))  # echo
-					if device['devicetype'] == "drapes":
-						# print device['description']
-						self.conn.send("DEVICE~%s~%s~%d~WindowCovering\n" % (device['name'],id,state ))  # echo
+				if device['devicetype'] == "switch":
+					# print device['description']
+					self.conn.send("DEVICE~%s~%s~%d~BinarySwitch\n" % (device['name'],id,state ))  # echo
+				if device['devicetype'] == "dimmer":
+					# print device['description']
+					self.conn.send("DEVICE~%s~%s~%d~MultilevelSwitch\n" % (device['name'],id,state ))  # echo
+				if device['devicetype'] == "drapes":
+					# print device['description']
+					self.conn.send("DEVICE~%s~%s~%d~WindowCovering\n" % (device['name'],id,state ))  # echo
 			except KeyError, e:
 				print e
 		# self.conn.send('DEVICE~RPCState~0~0~STATUS\n')  # echo
@@ -127,7 +126,7 @@ class ClientThread ( threading.Thread ):
 		while True:
 			data = self.conn.recv(BUFFER_SIZE)
 			if not data: break
-			# print "received data:", data
+			print "received data:", data
 			# DEVICE~251~100~MultilevelSwitch
 			m = re.match("DEVICE~(.*?)~(\d+)~",data)
 			device=""

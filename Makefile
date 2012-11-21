@@ -14,9 +14,13 @@ agozwave:
 agochromoflex:
 	$(MAKE) -C devices/chromoflex
 
+agoknx:
+	$(MAKE) -C devices/agoknx
+
 clean:
 	$(MAKE) -C devices/chromoflex clean
 	$(MAKE) -C devices/agozwave clean
+	$(MAKE) -C devices/agoknx clean
 	$(MAKE) -C core/agotimer clean
 	$(MAKE) -C core/messagesend clean
 
@@ -40,6 +44,7 @@ install:
 	install devices/agologger.py $(DESTDIR)/opt/agocontrol/bin
 	install devices/agoowfs.py $(DESTDIR)/opt/agocontrol/bin
 	install devices/agozwave/agozwave $(DESTDIR)/opt/agocontrol/bin
+	install devices/agoknx/agoknx $(DESTDIR)/opt/agocontrol/bin
 	install devices/chromoflex/agochromoflex $(DESTDIR)/opt/agocontrol/bin
 	install gateways/agomeloware.py $(DESTDIR)/opt/agocontrol/bin
 	install core/messagesend.py $(DESTDIR)/opt/agocontrol/bin

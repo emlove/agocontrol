@@ -1,0 +1,2 @@
+lib/systemd/system/agoknx.service
+opt/agocontrol/bin/agoknx

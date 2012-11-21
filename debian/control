@@ -30,3 +30,7 @@ Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, libqpidmessaging2, libqpidclient2, libqpidcommon2, libqpidtypes1, libudev0, libuuid1, agocontrol, libopenzwave1.0
 Description: ZWave interface driver
 
+Package: agocontrol-knx
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, libqpidmessaging2, libqpidclient2, libqpidcommon2, libqpidtypes1, libuuid1, agocontrol, libeibclient0
+Description: KNX interface driver
