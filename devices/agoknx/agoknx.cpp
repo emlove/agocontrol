@@ -192,12 +192,28 @@ void *listener(void *param) {
 							event.setSubject("event.device.statechanged");
 						} else if (type == "temperature") {
 							content["level"] = tl.getFloatData(); 
+							content["unit"] = "degC";
 							encode(content, event);
 							event.setSubject("event.environment.temperaturechanged");
 						} else if (type == "brightness") {
 							content["level"] = tl.getFloatData(); 
+							content["unit"] = "lux";
 							encode(content, event);
 							event.setSubject("event.environment.brightnesschanged");
+						} else if (type == "energy") {
+							content["level"] = tl.getFloatData(); 
+							content["unit"] = "mA";
+							encode(content, event);
+							event.setSubject("event.environment.energy");
+						} else if (type == "energyusage") {
+							unsigned char buffer[4];
+							if (tl.getUserData(buffer,4) == 4) {
+								printf("USER DATA: %x %x %x %x \n", buffer[0],buffer[1],buffer[2],buffer[3]);
+							}
+							content["level"] = "";
+							content["unit"] = "Wh";
+							encode(content, event);
+							event.setSubject("event.environment.energyusage");
 						} else if (type == "binary") {
 							content["level"] = tl.getShortUserData()==1 ? 255 : 0; 
 							encode(content, event);
