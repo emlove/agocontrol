@@ -194,6 +194,14 @@ void *listener(void *param) {
 							content["level"] = tl.getFloatData(); 
 							encode(content, event);
 							event.setSubject("event.environment.temperaturechanged");
+						} else if (type == "brightness") {
+							content["level"] = tl.getFloatData(); 
+							encode(content, event);
+							event.setSubject("event.environment.brightnesschanged");
+						} else if (type == "binary") {
+							content["level"] = tl.getShortUserData()==1 ? 255 : 0; 
+							encode(content, event);
+							event.setSubject("event.environment.sensorchanged");
 						}
 						sender.send(event);	
 					}
