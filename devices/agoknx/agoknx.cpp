@@ -190,6 +190,10 @@ void *listener(void *param) {
 							content["level"] = tl.getIntData(); 
 							encode(content, event);
 							event.setSubject("event.device.statechanged");
+						} else if (type == "temperature") {
+							content["level"] = tl.getFloatData(); 
+							encode(content, event);
+							event.setSubject("event.environment.temperaturechanged");
 						}
 						sender.send(event);	
 					}
