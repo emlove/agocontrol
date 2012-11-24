@@ -146,7 +146,7 @@ devicetypes:
   avreceiver:
     name: AV receiver
     description: AV receiver
-    commands: ["on", "off", mute, unmute, mmutetoggle, vol+, vol-, setinput]
+    commands: ["on", "off", mute, unmute, mutetoggle, vol+, vol-, setinput]
   dimmerrgb:
     name: RGB dimmer
     description: allows to set different colors
