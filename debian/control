@@ -34,3 +34,8 @@ Package: agocontrol-knx
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, libqpidmessaging2, libqpidclient2, libqpidcommon2, libqpidtypes1, libuuid1, agocontrol, libeibclient0
 Description: KNX interface driver
+
+Package: agocontrol-iscp
+Architecture: all
+Depends: ${shlibs:Depends}, ${misc:Depends}, python-qpid
+Description: meloware lightswitch app gateway

@@ -1,0 +1,4 @@
+lib/systemd/system/agoiscp.service
+opt/agocontrol/bin/agoiscp.py
+opt/agocontrol/bin/core.py
+opt/agocontrol/bin/commands.py

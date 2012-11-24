@@ -1,4 +1,4 @@
-agocontrol (1.0-78) UNRELEASED; urgency=low
+agocontrol (1.0-79) UNRELEASED; urgency=low
 
   * Non-maintainer upload.
   * add error pages for django and upstart script
@@ -70,8 +70,9 @@ agocontrol (1.0-78) UNRELEASED; urgency=low
   * fix restart option in service files
   * build knx package
   * new version
+  * package iscp device
 
- -- root <root@pluto.vt100.at>  Wed, 21 Nov 2012 19:54:41 +0100
+ -- root <root@pluto.vt100.at>  Sat, 24 Nov 2012 09:38:49 +0100
 
 agocontrol (1.0-14) UNRELEASED; urgency=low
 
