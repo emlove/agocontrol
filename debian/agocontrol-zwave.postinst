@@ -1,0 +1,4 @@
+#!/bin/bash
+# agocontrol-zwave postinst script
+mkdir -p /etc/opt/agocontrol/ozw
+chown -R agocontrol:agocontrol /etc/opt/agocontrol/ozw

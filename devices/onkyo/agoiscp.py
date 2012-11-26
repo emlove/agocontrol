@@ -84,7 +84,7 @@ def lookupuuid(path):
 		uuidmap[path] = newuuid
 		try:
 			# uuid is new, try to store it
-			uuidmapfile = open("/etc/agocontrol/iscp-uuidmap.pck","w")
+			uuidmapfile = open("/etc/opt/agocontrol/iscp-uuidmap.pck","w")
 			pickle.dump(uuidmap, uuidmapfile)
 			uuidmapfile.close()
 		except IOError, e:
