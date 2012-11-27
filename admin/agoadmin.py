@@ -27,6 +27,8 @@ import urllib2
 import subprocess
 import datetime
 
+import myavahi
+
 lookup = TemplateLookup(directories=['tpl'], module_directory='mod')
 
 PATH = os.path.abspath(os.path.dirname(__file__))
@@ -556,6 +558,10 @@ root.getinventory = GetInventory()
 root.schema = GetSchema()
 root.event = Event()
 root.createscenario = CreateScenario()
+
+
+s = myavahi.zmqconf()
+s.add_service("ago control admin", "_http._tcp", 8000, "this is the ago control web administration interface")
 
 cherrypy.quickstart(root, '/', config)
 
