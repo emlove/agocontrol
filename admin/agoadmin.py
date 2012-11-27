@@ -262,6 +262,18 @@ class Root:
 			return error_tmpl.render(traceback = traceback.traceback)
 
 	@cherrypy.expose
+	def getepg(self, uuid):
+		try:		
+			epg = conn.get_epg(uuid)
+			print epg.content
+			cherrypy.response.headers['Content-Type'] = 'application/json'
+			return simplejson.dumps(epg.content)
+		except:
+			traceback = RichTraceback()
+			error_tmpl = lookup.get_template("error-tpl.html")
+			return error_tmpl.render(traceback = traceback.traceback)
+
+	@cherrypy.expose
 	def savevideoframe(self, uuid):
 		try:		
 			message = conn.get_videoframe(uuid)
@@ -560,7 +572,9 @@ root.event = Event()
 root.createscenario = CreateScenario()
 
 
-s = myavahi.zmqconf()
+def avahicallback(x, y, z):
+	return False
+s = myavahi.zmqconf(avahicallback)
 s.add_service("ago control admin", "_http._tcp", 8000, "this is the ago control web administration interface")
 
 cherrypy.quickstart(root, '/', config)

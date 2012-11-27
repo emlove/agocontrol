@@ -47,6 +47,13 @@ class Connector:
 
         return self.send_raw_message(content)
 
+    def get_epg(self, uuid):
+        content = {}
+        content["command"] = "getepg"
+        content["uuid"] = uuid
+
+        return self.send_raw_message(content)
+
     def get_inventory(self):
         content = {}
         content["command"] = "inventory"

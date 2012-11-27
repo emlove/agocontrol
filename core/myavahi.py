@@ -34,12 +34,13 @@ MAX_RENAMES = 12
 
 class zmqconf:
 
-    def __init__(self, domain='', host=''):
+    def __init__(self, callback, domain='', host=''):
         self.domain = domain
         self.host = host
         self.rename_count = MAX_RENAMES
         self._services = []
         self.group = None
+	self.callback = callback
 
         DBusGMainLoop(set_as_default=True)
         gobject.threads_init()
@@ -109,10 +110,11 @@ class zmqconf:
 
 
     def _service_resolved(self, *args):
-        print 'service resolved'
-        print 'name:', args[2]
-        print 'address:', args[7]
-        print 'port:', args[8]
+        # print 'service resolved'
+        # print 'name:', args[2]
+        # print 'address:', args[7]
+        # print 'port:', args[8]
+	self.callback(args[2],args[7],args[8])
 
     def _print_error(self, *args):
         print args[0]
@@ -187,13 +189,14 @@ class zmqconf:
             return
 
 if __name__ == "__main__":
+    print "main"
     # Publish a service
     #context = zmq.Context(1, 1)
-    s = zmqconf()
-    address = "tcp://lo:5555"
+    #s = zmqconf(mycallback)
+    #address = "tcp://lo:5555"
     #s.bind(address)
-    s.add_service("ago control admin", "_http._tcp", 8000, "this is the ago control web administration interface")
-    raw_input("Press any key to exit")
+    #s.add_service("ago control admin", "_http._tcp", 8000, "this is the ago control web administration interface")
+    #raw_input("Press any key to exit")
 
     # Discover services
     #context = zmq.Context(1, 1)
