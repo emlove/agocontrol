@@ -41,6 +41,7 @@ install:
 	install core/agoevent.py $(DESTDIR)/opt/agocontrol/bin
 	install core/inventory.py $(DESTDIR)/opt/agocontrol/bin
 	install core/boolParser.py $(DESTDIR)/opt/agocontrol/bin
+	install core/myavahi.py $(DESTDIR)/opt/agocontrol/bin
 	install devices/agologger.py $(DESTDIR)/opt/agocontrol/bin
 	install devices/agoowfs.py $(DESTDIR)/opt/agocontrol/bin
 	install devices/onkyo/core.py $(DESTDIR)/opt/agocontrol/bin
