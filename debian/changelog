@@ -1,4 +1,4 @@
-agocontrol (1.0-81) UNRELEASED; urgency=low
+agocontrol (1.0-82) UNRELEASED; urgency=low
 
   * Non-maintainer upload.
   * add error pages for django and upstart script
@@ -73,8 +73,9 @@ agocontrol (1.0-81) UNRELEASED; urgency=low
   * package iscp device
   * fix schema error and handling in setup template
   * create ozw config dir in postinst
+  * build engima2 package
 
- -- root <root@pluto.vt100.at>  Mon, 26 Nov 2012 20:00:42 +0100
+ -- root <root@pluto.vt100.at>  Wed, 28 Nov 2012 10:24:56 +0100
 
 agocontrol (1.0-14) UNRELEASED; urgency=low
 
