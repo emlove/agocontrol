@@ -1,5 +1,5 @@
 [Unit]
-Description=aGoControl Z-Wave Device
+Description=ago control Z-Wave Device
 
 [Service]
 ExecStart=/opt/agocontrol/bin/agozwave

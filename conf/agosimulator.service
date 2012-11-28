@@ -1,5 +1,5 @@
 [Unit]
-Description=aGoControl Device simulator
+Description=ago control Device simulator
 
 [Service]
 ExecStart=/opt/agocontrol/bin/agosimulator.py

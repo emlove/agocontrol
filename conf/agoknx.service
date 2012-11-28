@@ -1,5 +1,5 @@
 [Unit]
-Description=aGoControl KNX Device
+Description=ago control KNX Device
 
 [Service]
 ExecStart=/opt/agocontrol/bin/agoknx

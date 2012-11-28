@@ -1,5 +1,5 @@
 [Unit]
-Description=aGoControl Resolver
+Description=ago control Resolver
 
 [Service]
 ExecStart=/opt/agocontrol/bin/agoresolver.py

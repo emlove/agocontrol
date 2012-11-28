@@ -1,5 +1,5 @@
 [Unit]
-Description=aGoControl Onkyo ISCP device
+Description=ago control Onkyo ISCP device
 
 [Service]
 ExecStart=/opt/agocontrol/bin/agoiscp.py

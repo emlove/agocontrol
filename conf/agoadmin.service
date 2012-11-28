@@ -1,5 +1,5 @@
 [Unit]
-Description=aGoControl Web GUI NG
+Description=ago control Web GUI NG
 
 [Service]
 ExecStart=/opt/agocontrol/admin/agoadmin.py

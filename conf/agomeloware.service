@@ -1,5 +1,5 @@
 [Unit]
-Description=aGoControl Meloware Lightswitchserver Gateway
+Description=ago control Meloware Lightswitchserver Gateway
 
 [Service]
 ExecStart=/opt/agocontrol/bin/agomeloware.py

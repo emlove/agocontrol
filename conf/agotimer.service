@@ -1,5 +1,5 @@
 [Unit]
-Description=aGoControl Timer
+Description=ago control Timer
 
 [Service]
 ExecStart=/opt/agocontrol/bin/agotimer

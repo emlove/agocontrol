@@ -117,7 +117,7 @@ devicetypes:
     commands: [addnode, removenode, addcontroller, removecontroller, addassociation, removeassociation, setconfigparam, downloadconfig, cancel, saveconfig, reset]
   securitysystem:
     name: security system
-    description: aGoControl security system module
+    description: ago control security system module
     commands: [sethousemode]
   scenario:
     name: scene

@@ -38,4 +38,9 @@ Description: KNX interface driver
 Package: agocontrol-iscp
 Architecture: all
 Depends: ${shlibs:Depends}, ${misc:Depends}, python-qpid
-Description: meloware lightswitch app gateway
+Description: Onkyo EISCP protocol support
+
+Package: agocontrol-engima2
+Architecture: all
+Depends: ${shlibs:Depends}, ${misc:Depends}, python-qpid, python-avahi, python-gobject, python-dbus
+Description: Enigma2/Dreambox interface

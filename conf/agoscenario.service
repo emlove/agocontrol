@@ -1,5 +1,5 @@
 [Unit]
-Description=aGoControl Scenario Device
+Description=ago control Scenario Device
 
 [Service]
 ExecStart=/opt/agocontrol/bin/agoscenario.py
