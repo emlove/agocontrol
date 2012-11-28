@@ -40,7 +40,7 @@ Architecture: all
 Depends: ${shlibs:Depends}, ${misc:Depends}, python-qpid
 Description: Onkyo EISCP protocol support
 
-Package: agocontrol-engima2
+Package: agocontrol-enigma2
 Architecture: all
 Depends: ${shlibs:Depends}, ${misc:Depends}, python-qpid, python-avahi, python-gobject, python-dbus
 Description: Enigma2/Dreambox interface
