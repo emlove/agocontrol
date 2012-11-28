@@ -120,7 +120,7 @@ syslog.syslog(syslog.LOG_NOTICE, "discovering devices")
 
 
 def mycallback(name, host, port):
-	if "dm500hd" in name:
+	if "dm500hd" in name or "dm600pvr" in name:
 		# print "callback %s %s %s\n" % (name, host, port)
 		devices[name] = host
 		try:
