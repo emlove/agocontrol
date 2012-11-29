@@ -1,0 +1,11 @@
+<resources>
+
+    <string name="app_name">aGoControl</string>
+    <string name="menu_settings">Settings</string>
+    <string name="title_activity_main">aGoControl</string>
+    <string name="text_button_on">On</string>
+	<string name="text_button_off">Off</string>
+	<string name="server_hostname">Hostname</string>
+	<string name="server_port">Port</string>
+	
+</resources>
