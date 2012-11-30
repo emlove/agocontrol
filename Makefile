@@ -11,6 +11,9 @@ agotimer:
 agozwave:
 	$(MAKE) -C devices/agozwave
 
+agorpc:
+	$(MAKE) -C devices/rpc
+
 agochromoflex:
 	$(MAKE) -C devices/chromoflex
 
@@ -54,4 +57,5 @@ install:
 	install gateways/agomeloware.py $(DESTDIR)/opt/agocontrol/bin
 	install core/messagesend.py $(DESTDIR)/opt/agocontrol/bin
 	install core/messagesend/messagesend $(DESTDIR)/opt/agocontrol/bin
+	install core/rpc/agorpc $(DESTDIR)/opt/agocontrol/bin
 	install core/agotimer/agotimer $(DESTDIR)/opt/agocontrol/bin
