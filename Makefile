@@ -1,6 +1,6 @@
 LD     := g++
 
-all: messagesend  agotimer agozwave agochromoflex agoknx
+all: messagesend  agotimer agozwave agochromoflex agoknx agorpc
 
 messagesend: 
 	$(MAKE) -C core/messagesend
