@@ -44,12 +44,41 @@ Session session;
 
 struct mg_context       *ctx;
 
+template <typename Iter>
+Iter next(Iter iter)
+{
+    return ++iter;
+}
+
+void mg_printmap(struct mg_connection *conn, Variant::Map map) {
+	mg_printf(conn, "{");
+	for (Variant::Map::const_iterator it = map.begin(); it != map.end(); ++it) {
+		mg_printf(conn, "\"%s\":", it->first.c_str());
+		switch (it->second.getType()) {
+			case VAR_MAP:
+				mg_printmap(conn, it->second.asMap());
+				break;
+			case VAR_STRING:
+				mg_printf(conn, "\"%s\"", it->second.asString().c_str());	
+				break;
+			default:
+				if (it->second.asString().size() != 0) {
+					mg_printf(conn, "%s", it->second.asString().c_str());	
+				} else {
+					mg_printf(conn, "null");
+				}
+		}
+		if ((it != map.end()) && (next(it) != map.end())) mg_printf(conn, ",");
+	}
+	mg_printf(conn, "}");
+}
+
 static void show_index(struct mg_connection *conn, const struct mg_request_info *request_info, void *user_data)
 {
 	mg_printf(conn, "%s",
 		"HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n"
 		"<html><body><h1>Welcome to ago control</h1>");
-	mg_printf(conn, "%s", "<a href=\"/inventory\">/inventory</a> - device inventory<br>");
+	mg_printf(conn, "%s", "<a href=\"/command?command=inventory\">/inventory</a> - device inventory<br>");
 	mg_printf(conn, "%s", "</body></html>");
 }
 
@@ -71,40 +100,24 @@ static void command (struct mg_connection *conn, const struct mg_request_info *r
 		agocommand["level"] = level;
 	}
 	encode(agocommand, message);
-	sender.send(message);
-	
-	mg_printf(conn, "%s", "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n\r\n");
-	mg_printf(conn, "%s - %s", uuid, command);
-
-}
-
-static void inventory (struct mg_connection *conn, const struct mg_request_info *request_info, void *user_data) {
-	Variant::Map agocommand;
-	Variant::Map inventoryMap;	
-
-	Message message;
-	string inventory;
-	
-	agocommand["command"] = "inventory";
-	encode(agocommand, message);
 
 	Address responseQueue("#response-queue; {create:always, delete:always}");
 	Receiver responseReceiver = session.createReceiver(responseQueue);
 	message.setReplyTo(responseQueue);
 
 	sender.send(message);
-	Message response = responseReceiver.fetch();
-	decode(response,inventoryMap);
-/*	Variant::Map::iterator i = inventoryMap.find("schema");
-	if (i == inventoryMap.end()) {
-		inventory = i->second.asString();
-	} */
-	stringstream tmp;
-	tmp << inventoryMap;
-	inventory = tmp.str();
-
+	
 	mg_printf(conn, "%s", "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n\r\n");
-	mg_printf(conn, "%s", inventory.c_str());
+
+	Message response = responseReceiver.fetch(Duration::SECOND * 3);
+
+	if (response.getContentSize() > 3) {	
+		Variant::Map responseMap;
+		decode(response,responseMap);
+		mg_printmap(conn, responseMap);
+	} else  {
+		mg_printf(conn, "%s", response.getContent().c_str());
+	}
 
 }
 
@@ -155,7 +168,6 @@ int main(int argc, char **argv) {
 	mg_set_option(ctx, "ports", "8008");
 	mg_set_uri_callback(ctx, "/", &show_index, NULL);
 	mg_set_uri_callback(ctx, "/command", &command, NULL);
-	mg_set_uri_callback(ctx, "/inventory", &inventory, NULL);
 
 	while (true) {
 		sleep(10);
