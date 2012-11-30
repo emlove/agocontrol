@@ -12,7 +12,7 @@ agozwave:
 	$(MAKE) -C devices/agozwave
 
 agorpc:
-	$(MAKE) -C devices/rpc
+	$(MAKE) -C core/rpc
 
 agochromoflex:
 	$(MAKE) -C devices/chromoflex
