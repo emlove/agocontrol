@@ -47,14 +47,17 @@ class zmqconf:
         dbus.mainloop.glib.threads_init()
         self.main_loop = gobject.MainLoop()
         self.bus = dbus.SystemBus()
+	
+	try:
+		self.server = dbus.Interface(self.bus.get_object(avahi.DBUS_NAME, avahi.DBUS_PATH_SERVER), avahi.DBUS_INTERFACE_SERVER)
+		self.server.connect_to_signal("StateChanged", self._server_state_changed)
+		self._server_state_changed(self.server.GetState())
 
-        self.server = dbus.Interface(self.bus.get_object(avahi.DBUS_NAME, avahi.DBUS_PATH_SERVER), avahi.DBUS_INTERFACE_SERVER)
-        self.server.connect_to_signal("StateChanged", self._server_state_changed)
-        self._server_state_changed(self.server.GetState())
-
-        t = Thread(target=self.main_loop.run)
-        t.setDaemon(True)
-        t.start()
+		t = Thread(target=self.main_loop.run)
+		t.setDaemon(True)
+		t.start()
+	except dbus.exceptions.DBusException, e:
+		print "can't connect to avahi"
 
     def browse_services(self, type, domain=''):
         sbrowser = dbus.Interface(
@@ -136,25 +139,22 @@ class zmqconf:
 
     def add_service(self, name, proto, port, txt):
         print "Adding service '%s' of type '%s' ..." % (name, proto)
-        if self.group is None:
-            #self.bus = dbus.SystemBus()
-            #ob = self.bus.get_object(avahi.DBUS_NAME, avahi.DBUS_PATH_SERVER)
-            #self.server = dbus.Interface(ob, avahi.DBUS_INTERFACE_SERVER)
-            #eg = self.server.EntryGroupNew()
-            #ob = self.bus.get_object(avahi.DBUS_NAME, eg)
-            #self.group = dbus.Interface(ob, avahi.DBUS_INTERFACE_ENTRY_GROUP)
-            self.group = dbus.Interface(self.bus.get_object(avahi.DBUS_NAME, self.server.EntryGroupNew()), avahi.DBUS_INTERFACE_ENTRY_GROUP)
-            self.group.connect_to_signal('StateChanged', self._entry_group_state_changed)
-        self.group.AddService(
-                avahi.IF_UNSPEC,                # interface
-                avahi.PROTO_UNSPEC,             # protocol
-                dbus.UInt32(0),                 # flags
-                name, proto,
-                self.domain, self.host,
-                dbus.UInt16(port),
-                avahi.string_array_to_txt_array(txt))
-        self.group.Commit()
-        self._services.append((name, proto, port, txt))
+	try:
+		if self.group is None:
+			self.group = dbus.Interface(self.bus.get_object(avahi.DBUS_NAME, self.server.EntryGroupNew()), avahi.DBUS_INTERFACE_ENTRY_GROUP)
+			self.group.connect_to_signal('StateChanged', self._entry_group_state_changed)
+		self.group.AddService(
+			avahi.IF_UNSPEC,                # interface
+			avahi.PROTO_UNSPEC,             # protocol
+			dbus.UInt32(0),                 # flags
+			name, proto,
+			self.domain, self.host,
+			dbus.UInt16(port),
+			avahi.string_array_to_txt_array(txt))
+		self.group.Commit()
+		self._services.append((name, proto, port, txt))
+	except AttributeError, e:
+		print "can't connect to avahi"
 
     def remove_services(self):
         #global group
