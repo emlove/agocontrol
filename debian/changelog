@@ -1,4 +1,4 @@
-agocontrol (1.0-84) UNRELEASED; urgency=low
+agocontrol (1.0-85) UNRELEASED; urgency=low
 
   * Non-maintainer upload.
   * add error pages for django and upstart script
@@ -76,8 +76,9 @@ agocontrol (1.0-84) UNRELEASED; urgency=low
   * build engima2 package
   * new package
   * include agorpc in package
+  * new package version
 
- -- root <root@pluto.vt100.at>  Fri, 30 Nov 2012 22:52:24 +0100
+ -- root <root@pluto.vt100.at>  Mon, 03 Dec 2012 14:55:12 +0100
 
 agocontrol (1.0-14) UNRELEASED; urgency=low
 
