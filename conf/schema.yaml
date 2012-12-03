@@ -4,6 +4,10 @@ commands:
     name: turn on
   "off":
     name: turn off
+  "allon":
+    name: turn all on
+  "alloff":
+    name: turn all off
   "run":
     name: run
   setlevel:
@@ -114,7 +118,7 @@ devicetypes:
   zwavecontroller:
     name: z-wave interface
     description: z-wave interface from agozwave
-    commands: [addnode, removenode, addcontroller, removecontroller, addassociation, removeassociation, setconfigparam, downloadconfig, cancel, saveconfig, reset]
+    commands: [allon, alloff, addnode, removenode, addcontroller, removecontroller, addassociation, removeassociation, setconfigparam, downloadconfig, cancel, saveconfig, reset]
   securitysystem:
     name: security system
     description: ago control security system module

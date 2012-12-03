@@ -696,6 +696,10 @@ int main( int argc, char* argv[] )
 							Manager::Get()->CancelControllerCommand(g_homeId);
 						} else if (content["command"] == "saveconfig") {
 							Manager::Get()->WriteConfig( g_homeId );
+						} else if (content["command"] == "allon") {
+							Manager::Get()->SwitchAllOn(g_homeId );
+						} else if (content["command"] == "alloff") {
+							Manager::Get()->SwitchAllOff(g_homeId );
 						} else if (content["command"] == "reset") {
 							Manager::Get()->ResetController(g_homeId);
 						}
