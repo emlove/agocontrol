@@ -50,6 +50,29 @@ Iter next(Iter iter)
     return ++iter;
 }
 
+void mg_printmap(struct mg_connection *conn, Variant::Map map);
+
+void mg_printlist(struct mg_connection *conn, Variant::List list) {
+	mg_printf(conn, "[");
+	for (Variant::List::const_iterator it = list.begin(); it != list.end(); ++it) {
+		switch(it->getType()) {
+			case VAR_MAP:
+				mg_printmap(conn, it->asMap());
+				break;
+			case VAR_STRING:
+				mg_printf(conn, "\"%s\"", it->asString().c_str());	
+				break;
+			default:
+				if (it->asString().size() != 0) {
+					mg_printf(conn, "%s", it->asString().c_str());	
+				} else {
+					mg_printf(conn, "null");
+				}
+		}
+		if ((it != list.end()) && (next(it) != list.end())) mg_printf(conn, ",");
+	}
+	mg_printf(conn, "]");
+}
 void mg_printmap(struct mg_connection *conn, Variant::Map map) {
 	mg_printf(conn, "{");
 	for (Variant::Map::const_iterator it = map.begin(); it != map.end(); ++it) {
@@ -57,6 +80,9 @@ void mg_printmap(struct mg_connection *conn, Variant::Map map) {
 		switch (it->second.getType()) {
 			case VAR_MAP:
 				mg_printmap(conn, it->second.asMap());
+				break;
+			case VAR_LIST:
+				mg_printlist(conn, it->second.asList());
 				break;
 			case VAR_STRING:
 				mg_printf(conn, "\"%s\"", it->second.asString().c_str());	
