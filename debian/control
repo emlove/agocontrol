@@ -12,7 +12,7 @@ Description: automation system
 
 Package: agocontrol-admin
 Architecture: all
-Depends: ${shlibs:Depends}, ${misc:Depends}, python-cherrypy3, python-mako, python-qpid, python-simplejson, agocontrol
+Depends: ${shlibs:Depends}, ${misc:Depends}, python-cherrypy3, python-mako, python-qpid, python-simplejson, agocontrol, python-avahi, python-dbus, python-gobject
 Description: administration interface NG
 
 Package: agocontrol-owfs
