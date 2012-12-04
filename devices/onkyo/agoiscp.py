@@ -58,7 +58,7 @@ class LogErr:
                 syslog.syslog(syslog.LOG_ERR, data)
 
 syslog.openlog(sys.argv[0], syslog.LOG_PID, syslog.LOG_DAEMON)
-sys.stderr = LogErr()
+# sys.stderr = LogErr()
 
 # read persistent uuid mapping from file
 try:
@@ -105,9 +105,9 @@ def reportdevice(path, type='avreceiver', product='Onkyo AVR'):
 		print e
 
 def discovery(timeout=1):
-	receivers = eISCP.discover(timeout)
-	for receiver in receivers:
-		reportdevice("%s:%s" % (receiver.host, receiver.port), product=receiver.info['model_name']);
+	avrs = eISCP.discover(timeout)
+	for avr in avrs:
+		reportdevice("%s:%s" % (avr.host, avr.port), product=avr.info['model_name']);
 
 syslog.syslog(syslog.LOG_NOTICE, "agoiscp.py startup")
 
@@ -128,29 +128,41 @@ while True:
 				else:
 					for (path, uuid) in uuidmap.iteritems():
 						if message.content['uuid'] == uuid:
-							# print path, uuid
+							avr = eISCP(str.split(path,':',2)[0], int(str.split(path,':',2)[1]))
 							command = ''
-							if message.content['command'] == 'on':
-								command = 'system-power:on'
-							if message.content['command'] == 'off':
-								command = 'system-power:standby'
-							if message.content['command'] == 'mute':
-								command = 'audio-muting:on'
-							if message.content['command'] == 'unmute':
-								command = 'audio-muting:off'
-							if message.content['command'] == 'mutetoggle':
-								command = 'audio-muting:toggle'
-							if message.content['command'] == 'vol+':
-								command = 'master-volume:level-up'
-							if message.content['command'] == 'vol-':
-								command = 'master-volume:level-down'
-							if message.content['command'] == 'setlevel':
-								command = 'master-volume:%s' % content['level']
-							if message.content['command'] == 'setinput':
-								command = 'input-selector:%s' % content['input']
-							receiver = eISCP(str.split(path,':',2)[0], int(str.split(path,':',2)[1]))
 							try:
-								receiver.command(command)
+								if message.content['command'] == 'on':
+									command = 'system-power:on'
+									avr.command(command)
+								if message.content['command'] == 'off':
+									command = 'system-power:standby'
+									avr.command(command)
+								if message.content['command'] == 'mute':
+									command = 'audio-muting:on'
+									avr.command(command)
+								if message.content['command'] == 'unmute':
+									command = 'audio-muting:off'
+									avr.command(command)
+								if message.content['command'] == 'mutetoggle':
+									command = 'audio-muting:toggle'
+									avr.command(command)
+								if message.content['command'] == 'vol+':
+									command = 'master-volume:level-up'
+									avr.command(command)
+								if message.content['command'] == 'vol-':
+									command = 'master-volume:level-down'
+									avr.command(command)
+								if message.content['command'] == 'setlevel':
+									if 'level' in message.content:
+										# this should be 60 and not 48 to get the full range, but to protect gear and ears we don't need full volume
+										level = int(message.content['level'])  * 48 / 100
+										command = 'MVL%s' % level
+										# print "sending raw", command
+										avr.send_raw(command)
+								if message.content['command'] == 'setinput':
+									if 'input' in message.content:
+										command = 'input-selector:%s' % message.content['input']
+										avr.command(command)
 							except ValueError, e:
 								print e
 							# send reply

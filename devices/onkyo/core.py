@@ -231,6 +231,10 @@ class eISCP(object):
         self._ensure_socket_connected()
         self.command_socket.send(command_to_packet(eiscp_command))
 
+    def send_raw(self, eiscp_command):
+        self._ensure_socket_connected()
+        self.command_socket.send(command_to_packet(eiscp_command))
+        
     def power_on(self):
         """Turn the receiver power on."""
         self.command('power', 'on')
