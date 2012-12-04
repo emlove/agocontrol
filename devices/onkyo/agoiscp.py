@@ -154,9 +154,8 @@ while True:
 									avr.command(command)
 								if message.content['command'] == 'setlevel':
 									if 'level' in message.content:
-										# this should be 60 and not 48 to get the full range, but to protect gear and ears we don't need full volume
-										level = int(message.content['level'])  * 48 / 100
-										command = 'MVL%s' % level
+										level = int(message.content['level'])
+										command = 'MVL%x' % level
 										# print "sending raw", command
 										avr.send_raw(command)
 								if message.content['command'] == 'setinput':
