@@ -45,6 +45,7 @@ install:
 	install core/inventory.py $(DESTDIR)/opt/agocontrol/bin
 	install core/boolParser.py $(DESTDIR)/opt/agocontrol/bin
 	install core/myavahi.py $(DESTDIR)/opt/agocontrol/bin
+	install core/agoctrl.sh $(DESTDIR)/opt/agocontrol/bin
 	install devices/agologger.py $(DESTDIR)/opt/agocontrol/bin
 	install devices/agoowfs.py $(DESTDIR)/opt/agocontrol/bin
 	install devices/enigma2/agoenigma2.py $(DESTDIR)/opt/agocontrol/bin

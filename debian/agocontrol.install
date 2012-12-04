@@ -18,3 +18,4 @@ opt/agocontrol/bin/messagesend.py
 opt/agocontrol/bin/agochromoflex
 opt/agocontrol/bin/agotimer
 opt/agocontrol/bin/agorpc
+opt/agocontrol/bin/agoctrl.sh
