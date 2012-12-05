@@ -45,7 +45,7 @@ Architecture: all
 Depends: ${shlibs:Depends}, ${misc:Depends}, python-qpid, python-avahi, python-gobject, python-dbus
 Description: Enigma2/Dreambox interface
 
-Package: agocontrol-enigma2
+Package: agocontrol-asterisk
 Architecture: all
 Depends: ${shlibs:Depends}, ${misc:Depends}, python-qpid, python-twisted, python-starpy
 Description: Asterisk PBX interface
