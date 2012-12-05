@@ -87,7 +87,7 @@ def lookupuuid(path):
 		newuuid = str(uuid4())
 		uuidmap[path] = newuuid
 		try:
-			print "new uuid %s %s", newuuid, path
+			print "new uuid %s %s" % (newuuid, path)
 			# uuid is new, try to store it
 			print uuidmap
 			uuidmapfile = open("/etc/opt/agocontrol/enigma2-uuidmap.pck","w")

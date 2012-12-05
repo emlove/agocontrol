@@ -10,6 +10,12 @@ commands:
     name: turn all off
   "run":
     name: run
+  dial:
+    name: dial number
+    parameters:
+      number:
+        name: number to dial
+        type: string 
   setlevel:
     name: set level
     parameters:
@@ -115,6 +121,10 @@ commands:
   reset:
     name: reset network info
 devicetypes:
+  phone:
+    name: telephone
+    description: a phone
+    commands: [dial] 
   zwavecontroller:
     name: z-wave interface
     description: z-wave interface from agozwave
@@ -221,7 +231,19 @@ values:
   yday:
     name: yday
     description: nth day of year
+  callerid:
+    name: caller identity
+    description: the identity of a caller
+  extension:
+    name: phone extension
+    description: extension being called
 events:
+  event.telecom.call:
+    description: a call is originating
+    parameters: [uuid, callerid, extension]
+  event.telecom.hangup:
+    description: call hung up
+    parameters: [uuid]
   event.device.announce:
     description: announces a device to the resolver
     parameters: [devicetype, uuid, product, internal-id]

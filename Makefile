@@ -49,6 +49,7 @@ install:
 	install devices/agologger.py $(DESTDIR)/opt/agocontrol/bin
 	install devices/agoowfs.py $(DESTDIR)/opt/agocontrol/bin
 	install devices/enigma2/agoenigma2.py $(DESTDIR)/opt/agocontrol/bin
+	install devices/asterisk/agoasterisk.py $(DESTDIR)/opt/agocontrol/bin
 	install devices/onkyo/core.py $(DESTDIR)/opt/agocontrol/bin
 	install devices/onkyo/commands.py $(DESTDIR)/opt/agocontrol/bin
 	install devices/onkyo/agoiscp.py $(DESTDIR)/opt/agocontrol/bin

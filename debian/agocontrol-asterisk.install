@@ -1,0 +1,2 @@
+lib/systemd/system/agoasterisk.service
+opt/agocontrol/bin/agoasterisk.py
