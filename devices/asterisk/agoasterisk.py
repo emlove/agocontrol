@@ -35,7 +35,7 @@ try:
 except:
 	amihost = "localhost"
 try:
-	amiport = config.get("asterisk","port")
+	amiport = int(config.get("asterisk","port"))
 except:
 	amiport = 5038
 try:
