@@ -50,6 +50,13 @@ Iter next(Iter iter)
     return ++iter;
 }
 
+static const char *ajax_reply_start =
+  "HTTP/1.1 200 OK\r\n"
+  "Cache: no-cache\r\n"
+  "Content-Type: application/x-javascript\r\n"
+  "\r\n";
+
+
 void mg_printmap(struct mg_connection *conn, Variant::Map map);
 
 void mg_printlist(struct mg_connection *conn, Variant::List list) {
@@ -99,32 +106,24 @@ void mg_printmap(struct mg_connection *conn, Variant::Map map) {
 	mg_printf(conn, "}");
 }
 
-static void show_index(struct mg_connection *conn, const struct mg_request_info *request_info, void *user_data)
-{
-	mg_printf(conn, "%s",
-		"HTTP/1.1 200 OK\r\nContent-Type: text/html\r\n\r\n"
-		"<html><body><h1>Welcome to ago control</h1>");
-	mg_printf(conn, "%s", "<a href=\"/command?command=inventory\">/inventory</a> - device inventory<br>");
-	mg_printf(conn, "%s", "</body></html>");
-}
+static void command (struct mg_connection *conn, const struct mg_request_info *request_info) {
+	int data_len  = 0;
 
-static void command (struct mg_connection *conn, const struct mg_request_info *request_info, void *user_data) {
-	char *uuid, *command, *level;
+	char uuid[1024], command[1024], level[1024];
 	Variant::Map agocommand;
 	Message message;
-	
-	uuid = mg_get_var(conn, "uuid");
-	command = mg_get_var(conn, "command");
-	level = mg_get_var(conn, "level");
-	if (command) {
-		agocommand["command"] = command;
-	}
-	if (uuid) {
-		agocommand["uuid"] = uuid;
-	}
-	if (level) {
-		agocommand["level"] = level;
-	}
+
+	const char *qs = request_info->query_string;
+	printf("querystring: %s",qs);
+	printf("length: %d", strlen(qs == NULL ? "" : qs));
+	printf("length: %d",sizeof(uuid));
+	int cmdlen =  mg_get_var(qs, strlen(qs == NULL ? "" : qs), "command", command, sizeof(uuid)) ;
+	printf("cmdlength: %d\n", cmdlen);
+	if (mg_get_var(qs, strlen(qs == NULL ? "" : qs), "uuid", uuid, sizeof(uuid)) > 0) agocommand["uuid"] = uuid;
+	if (mg_get_var(qs, strlen(qs == NULL ? "" : qs), "command", command, sizeof(command)) > 0) agocommand["command"] = command;
+	printf("command: %s\n", command);
+	if (mg_get_var(qs, strlen(qs == NULL ? "" : qs), "level", level, sizeof(level)) > 0) agocommand["level"] = level;
+
 	encode(agocommand, message);
 
 	Address responseQueue("#response-queue; {create:always, delete:always}");
@@ -134,21 +133,50 @@ static void command (struct mg_connection *conn, const struct mg_request_info *r
 	sender.send(message);
 	
 	mg_printf(conn, "%s", "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n\r\n");
+	try {
+		Message response = responseReceiver.fetch(Duration::SECOND * 3);
+		if (response.getContentSize() > 3) {	
+			Variant::Map responseMap;
+			decode(response,responseMap);
+			mg_printmap(conn, responseMap);
+		} else  {
+			mg_printf(conn, "%s", response.getContent().c_str());
+		}
 
-	Message response = responseReceiver.fetch(Duration::SECOND * 3);
-
-	if (response.getContentSize() > 3) {	
-		Variant::Map responseMap;
-		decode(response,responseMap);
-		mg_printmap(conn, responseMap);
-	} else  {
-		mg_printf(conn, "%s", response.getContent().c_str());
+	} catch (qpid::messaging::NoMessageAvailable) {
+		printf("WARNING, no reply message to fetch\n");
 	}
 
 }
 
+static void *event_handler(enum mg_event event,
+                           struct mg_connection *conn) {
+  const struct mg_request_info *request_info = mg_get_request_info(conn);
+  void *processed =  (void *) "yes";
+
+  if (event == MG_NEW_REQUEST) {
+    if (strcmp(request_info->uri, "/command") == 0) {
+      command(conn, request_info);
+    } else {
+      // No suitable handler found, mark as not processed. Mongoose will
+      // try to serve the request.
+      processed = NULL;
+    }
+  } else if (event == MG_EVENT_LOG) {
+    printf("%s\n", (const char *) mg_get_request_info(conn)->ev_data);
+    processed = NULL;
+  } else {
+    processed = NULL;
+  }
+
+  return processed;
+}
+
+
+
 int main(int argc, char **argv) {
 	string broker;
+	string port; 
 
 	Variant::Map connectionOptions;
 	CDataFile ExistingDF("/etc/opt/agocontrol/config.ini");
@@ -173,6 +201,19 @@ int main(int argc, char **argv) {
 	else		
 		connectionOptions["password"]=szPassword;
 
+	t_Str szRPCPort  = t_Str("");
+	szRPCPort = ExistingDF.GetString("rpcport", "system");
+	if ( szRPCPort.size() == 0 )
+		port = "8008";
+	else		
+		port = szRPCPort;
+
+	static const char *options[] = {
+	  "document_root", "html",
+	  "listening_ports", port.c_str(),
+	  "num_threads", "5",
+	  NULL
+	};
 	connectionOptions["reconnect"] = "true";
 
 
@@ -190,10 +231,9 @@ int main(int argc, char **argv) {
 	}
 
 	// start web server
-	ctx = mg_start();
-	mg_set_option(ctx, "ports", "8008");
-	mg_set_uri_callback(ctx, "/", &show_index, NULL);
-	mg_set_uri_callback(ctx, "/command", &command, NULL);
+	if((ctx = mg_start(&event_handler, NULL, options)) == NULL) {
+		printf("Cannot start http server\n");
+	}
 
 	while (true) {
 		sleep(10);
