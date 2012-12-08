@@ -2,7 +2,6 @@ package com.agocontrol.agocontrol;
 
 import java.util.List;
 
-import android.R;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -18,7 +17,7 @@ public class PreferencesActivity extends PreferenceActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 	    
-	
+		addPreferencesFromResource(R.xml.userpreferences);
 	}
 
 	private void updateFromPreferences() {

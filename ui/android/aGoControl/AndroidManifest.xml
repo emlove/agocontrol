@@ -3,7 +3,7 @@
     android:versionCode="1"
     android:versionName="1.0" >
 <uses-permission android:name="android.permission.INTERNET"/>
-<uses-sdk android:minSdkVersion="4"/>
+<uses-sdk android:minSdkVersion="4" android:targetSdkVersion="16"/>
 <used-sdk android:targetSdkVersion="11" />
 
     <application
@@ -24,7 +24,7 @@
             android:label="My Preferences">
         </activity>
         <activity
-            android:name=".MyPreferenceActivity"
+            android:name=".PreferencesActivity"
             android:label="My Preferences">
         </activity>
     </application>
