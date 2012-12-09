@@ -7,5 +7,7 @@
 	<string name="text_button_off">Off</string>
 	<string name="server_hostname">Hostname</string>
 	<string name="server_port">Port</string>
+	<string name="opening_connection">Opening Connection...</string>
+	<string name="no_devices">No Devices</string>
 	
 </resources>
