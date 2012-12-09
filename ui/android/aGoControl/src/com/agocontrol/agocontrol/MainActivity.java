@@ -18,8 +18,12 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.util.Log;
 
 public class MainActivity extends Activity {
+	
+	private static final String TAG = MainActivity.class.getSimpleName();
+	
 	AgoConnection connection;
 	ArrayList<AgoDevice> deviceList; 
 	private ListView lv;
@@ -34,7 +38,7 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         updateFromPreferences();
         
-        System.out.println("Trying connection to " + agoHostname);
+        Log.i(TAG, "Trying connection to " + agoHostname);
         
         connection = new AgoConnection(agoHostname);
         

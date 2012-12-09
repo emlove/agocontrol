@@ -4,7 +4,6 @@
     android:versionName="1.0" >
 <uses-permission android:name="android.permission.INTERNET"/>
 <uses-sdk android:minSdkVersion="4" android:targetSdkVersion="16"/>
-<used-sdk android:targetSdkVersion="11" />
 
     <application
         android:icon="@drawable/ic_launcher"
