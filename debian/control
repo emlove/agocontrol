@@ -49,3 +49,8 @@ Package: agocontrol-asterisk
 Architecture: all
 Depends: ${shlibs:Depends}, ${misc:Depends}, python-qpid, python-twisted, python-starpy
 Description: Asterisk PBX interface
+
+Package: agocontrol-apc
+Architecture: all
+Depends: ${shlibs:Depends}, ${misc:Depends}, python-qpid, fence-agents
+Description: APC Switched Rack PDU interface
