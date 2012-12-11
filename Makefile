@@ -58,6 +58,7 @@ install:
 	install devices/agoknx/agoknx $(DESTDIR)/opt/agocontrol/bin
 	install devices/chromoflex/agochromoflex $(DESTDIR)/opt/agocontrol/bin
 	install devices/agoapc/agoapc.py $(DESTDIR)/opt/agocontrol/bin
+	install devices/agoapc/fence_apc.py $(DESTDIR)/opt/agocontrol/bin
 	install gateways/agomeloware.py $(DESTDIR)/opt/agocontrol/bin
 	install core/messagesend.py $(DESTDIR)/opt/agocontrol/bin
 	install core/messagesend/messagesend $(DESTDIR)/opt/agocontrol/bin
