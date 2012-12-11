@@ -198,6 +198,17 @@ def discovery():
 	for (uuid, devicetype) in devices.iteritems():
 		reportdevice(uuid=uuid, type=devicetype)
 
+	for (path, uuid) in uuidmap.iteritems():
+		result = sendcommand(path, 'status')
+		if "Status: ON" in result:
+                	sendStateChangedEvent(uuid, 255)
+		if "Status: OFF" in result:
+                	sendStateChangedEvent(uuid, 0)
+
+		# need to sleep - else too many connections for pdu...
+		time.sleep(1)
+
+
 discovery()
 
 
