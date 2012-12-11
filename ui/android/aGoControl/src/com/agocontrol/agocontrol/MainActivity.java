@@ -11,6 +11,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -18,10 +19,17 @@ import android.preference.PreferenceManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
+import android.view.WindowManager.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.SeekBar;
+import android.widget.TextView;
 import android.util.Log;
 
 public class MainActivity extends ListActivity {
@@ -34,6 +42,8 @@ public class MainActivity extends ListActivity {
 	private ListView lv;
 	String agoHostname = "";
 	String agoPort = "";
+	
+	private ImageView mVideoFrame;
 	
 	ProgressDialog progDlg;
 	
@@ -108,6 +118,7 @@ public class MainActivity extends ListActivity {
 			if (progDlg != null) {
 				progDlg.dismiss();
 			}
+			progDlg = null;
 			
 			Log.i(TAG, deviceList.size() + " devices returned");
 		}
@@ -138,15 +149,90 @@ public class MainActivity extends ListActivity {
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		
-		 AgoDevice myDevice = deviceList.get(position);
+		 final AgoDevice myDevice = deviceList.get(position);
 		 Log.i(TAG, "clicked uuid " + myDevice.uuid.toString());
-         Dialog dialog = new Dialog(MainActivity.this);
+         final Dialog dialog = new Dialog(MainActivity.this);
          dialog.setTitle(myDevice.getName());
-         dialog.setContentView(R.layout.dialog);
-         Button button_on = (Button)dialog.findViewById(R.id.button_on);
-         button_on.setOnClickListener(new AgoDeviceOnClickListener(myDevice, "on"));
-         Button button_off = (Button)dialog.findViewById(R.id.button_off);
-         button_off.setOnClickListener(new AgoDeviceOnClickListener(myDevice, "off"));
+         dialog.setContentView(R.layout.device_control_dlg);
+         dialog.getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+         
+         //show/hide views based on device type
+         final LinearLayout llOnOff = (LinearLayout)dialog.findViewById(R.id.llOnOff);
+         final LinearLayout llCamera = (LinearLayout)dialog.findViewById(R.id.llCamera);
+         final FrameLayout flDimmer = (FrameLayout)dialog.findViewById(R.id.flDimmer);
+         final SeekBar sbSetLevel = (SeekBar)dialog.findViewById(R.id.sbSetLevel);
+         final Button btnGetVideoFrame = (Button)dialog.findViewById(R.id.btnGetVideoFrame);
+         final Button btnRunScenario = (Button)dialog.findViewById(R.id.btnRunScenario);
+         final Button btnOn = (Button)dialog.findViewById(R.id.btnOn);
+         final Button btnOff = (Button)dialog.findViewById(R.id.btnOff);
+         final TextView tvLevel = (TextView)dialog.findViewById(R.id.tvLevel);
+         mVideoFrame = (ImageView)dialog.findViewById(R.id.ivVideoFrame);
+         
+         if (myDevice.deviceType.equalsIgnoreCase("switch") || myDevice.deviceType.equalsIgnoreCase("dimmer") ) {
+        	 llOnOff.setVisibility(View.VISIBLE);
+        	 btnOn.setOnClickListener(new AgoDeviceOnClickListener(myDevice, "on"));
+        	 btnOff.setOnClickListener(new AgoDeviceOnClickListener(myDevice, "off"));
+         }
+         
+         if (myDevice.deviceType.equalsIgnoreCase("dimmer")) {
+        	 llOnOff.setVisibility(View.VISIBLE);
+        	 flDimmer.setVisibility(View.VISIBLE);
+        	 btnOn.setOnClickListener(new AgoDeviceOnClickListener(myDevice, "on"));
+        	 btnOff.setOnClickListener(new AgoDeviceOnClickListener(myDevice, "off"));
+        	 
+        	 sbSetLevel.setOnSeekBarChangeListener(new AgoDeviceSetLevelListener(myDevice));
+        	 
+         } else if (myDevice.deviceType.equalsIgnoreCase("camera")) {
+        	 llCamera.setVisibility(View.VISIBLE);
+        	 btnGetVideoFrame.setOnClickListener(new View.OnClickListener() {
+			
+				@Override
+				public void onClick(View v) {
+					new getVideoFrame().execute(new Object[] {(Context)MainActivity.this, myDevice});
+				}
+			});
+         } else if (myDevice.deviceType.equalsIgnoreCase("scenario")) {
+        	 btnRunScenario.setVisibility(View.VISIBLE);
+        	 btnRunScenario.setOnClickListener(new AgoDeviceOnClickListener(myDevice, "on"));
+         }
+         
+         
+         
+//         Button button_on = (Button)dialog.findViewById(R.id.button_on);
+//         button_on.setOnClickListener(new AgoDeviceOnClickListener(myDevice, "on"));
+//         Button button_off = (Button)dialog.findViewById(R.id.button_off);
+//         button_off.setOnClickListener(new AgoDeviceOnClickListener(myDevice, "off"));
          dialog.show();
 	}
+	
+	private class getVideoFrame extends AsyncTask <Object, Void, Bitmap> {
+
+		@Override
+		protected Bitmap doInBackground(Object... params) {
+			final AgoWebcamFrameRetriever awfr = new AgoWebcamFrameRetriever((Context)params[0], (AgoDevice)params[1]);
+			return awfr.getBitmap();
+		}
+
+		@Override
+		protected void onPostExecute(Bitmap result) {
+			super.onPostExecute(result);
+			if (progDlg != null) {
+				progDlg.dismiss();
+			}
+			progDlg = null;
+			mVideoFrame.setImageBitmap(result);
+		}
+
+		@Override
+		protected void onPreExecute() {
+			if (progDlg == null) {
+				progDlg = ProgressDialog.show(MainActivity.this, null, getString(R.string.retrieving_video_frame), true, true);
+			} else {
+				progDlg.show();
+			}
+		}
+
+		
+	}
+	
 }

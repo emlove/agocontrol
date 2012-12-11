@@ -9,5 +9,10 @@
 	<string name="server_port">Port</string>
 	<string name="opening_connection">Opening Connection...</string>
 	<string name="no_devices">No Devices</string>
+	<string name="on">On</string>
+	<string name="off">Off</string>
+	<string name="get_frame">Get Video Frame</string>
+	<string name="run_scenario">Run Scenario</string>
+	<string name="retrieving_video_frame">Retrieving Video Frame...</string>
 	
 </resources>

@@ -94,6 +94,25 @@ public class AgoConnection {
 		}
 		return false;
 	}
+	
+	public boolean setDeviceLevel(UUID uuid, String level) {
+	    HttpClient client = new DefaultHttpClient();
+	    HttpGet httpGet = new HttpGet("http://" + host + ":8000/setdevicelevel/" + uuid.toString() + "/setlevel/" + level);
+	    try {
+	        HttpResponse response = client.execute(httpGet);
+	        StatusLine statusLine = response.getStatusLine();
+	        int statusCode = statusLine.getStatusCode();
+	        if (statusCode == 200) {
+	        	return true;
+	        }
+	    } catch (ClientProtocolException e) {
+		        e.printStackTrace();
+		} catch (IOException e) {
+		        e.printStackTrace();
+		}
+		return false;
+	}
+	
 	private String getInventory() {
 	    StringBuilder builder = new StringBuilder();
 	    HttpClient client = new DefaultHttpClient();

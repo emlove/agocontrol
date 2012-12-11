@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 public class DeviceAdapter extends BaseAdapter {
@@ -47,19 +48,39 @@ public class DeviceAdapter extends BaseAdapter {
 	public View getView(int position, View convertView, ViewGroup parent) {
 		View v = convertView;
 		if (convertView == null) {
-			v = mInflater.inflate(android.R.layout.simple_list_item_1, null, false);
+			v = mInflater.inflate(R.layout.device_item, null, false);
 			ViewHolder holder = new ViewHolder();
-			holder.deviceName = (TextView)v.findViewById(android.R.id.text1);
+			holder.deviceName = (TextView)v.findViewById(R.id.tvDeviceName);
+			holder.deviceType = (ImageView)v.findViewById(R.id.ivDeviceType);
 			v.setTag(holder);
 		}
 		AgoDevice device = (AgoDevice)getItem(position);
 		ViewHolder holder = (ViewHolder)v.getTag();
 		holder.deviceName.setText(device.name);
+		
+		if (device.deviceType.equalsIgnoreCase("switch")) {
+			holder.deviceType.setImageResource(R.drawable.ic_on_off);
+		} else if (device.deviceType.equalsIgnoreCase("dimmer")) {
+			holder.deviceType.setImageResource(R.drawable.ic_dimmer);
+		} else if (device.deviceType.equalsIgnoreCase("camera")) {
+			holder.deviceType.setImageResource(R.drawable.ic_camera);
+		} else if (device.deviceType.equalsIgnoreCase("zwavecontroller")) {
+			holder.deviceType.setImageResource(R.drawable.ic_zwave_controller);
+		} else if (device.deviceType.equalsIgnoreCase("controller")) {
+			holder.deviceType.setImageResource(R.drawable.ic_zwave_controller);
+		} else if (device.deviceType.equalsIgnoreCase("scenario")) {
+			holder.deviceType.setImageResource(R.drawable.ic_launcher);
+		} else {
+			holder.deviceType.setImageResource(R.drawable.ic_unknown);
+		}
+		
+				
 		return v;
 	}
 	
 	protected class ViewHolder {
 		public TextView deviceName;
+		public ImageView deviceType;
 	}
 
 }
