@@ -1,5 +1,5 @@
 #! /usr/bin/env python
-# newbie apc device implementation - thanks hari. by jaeger - a farmer. 
+# APC Switched Rack PDU Device
 
 import sys
 import syslog
@@ -101,14 +101,8 @@ def inventory():
 	options = {'-g': '20', '-F': '1', '-a': apchost, 'log': 0, '-C': ',', '-l': apcusername, '-o': 'list', '-G': '0', 'device_opt': ['help', 'version', 'agent', 'quiet', 'verbose', 'debug', 'action', 'ipaddr', 'login', 'passwd', 'passwd_script', 'secure', 'port', 'identity_file', 'switch', 'test', 'separator', 'inet4_only', 'inet6_only', 'ipport', 'power_timeout', 'shell_timeout', 'login_timeout', 'power_wait', 'retry_on', 'delay'], '-y': '5', '-u': 23, '-f': '0', '-p': apcpassword, '-c': '\n>', '-Y': '3', 'ssh_options': '-1 -c blowfish'}
 	conn = fence_login(options)
 	myresult = fence_action(conn, options, set_power_status, get_power_status, get_power_status)
-
-	# Redirect again the std output to screen
 	sys.stdout = old_stdout
-
-	# Then, get the stdout like a string and process it!
 	result_string = result.getvalue()
-
-	# Fetch inventory from APC device
 	apc_inventory = list(
     		line.strip().split(",") for line in result_string.split("\n") if line.strip()
 	)
@@ -197,11 +191,6 @@ def sendStateChangedEvent(uuid, level):
                 print e
 
 syslog.syslog(syslog.LOG_NOTICE, "agoapc.py startup")
-
-#for index, item in apc_inventory:
-#        uuid = lookupuuid(index)
-#        print index, uuid, item
-
 
 devices=inventory()
 
