@@ -1,0 +1,1 @@
+/usr/sbin/fence_apc /opt/agocontrol/bin/fence_apc.py
