@@ -106,6 +106,28 @@ void mg_printmap(struct mg_connection *conn, Variant::Map map) {
 	mg_printf(conn, "}");
 }
 
+static void update (struct mg_connection *conn, const struct mg_request_info *request_info) {
+	mg_printf(conn, "%s", "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n\r\n");
+	Receiver myReceiver = session.createReceiver("agocontrol; {create: always, node: {type: topic}}");
+
+	while(true) {
+		try {
+			Message receiveMessage = myReceiver.fetch(Duration::SECOND * 3);
+			if (receiveMessage.getContentSize() > 3) {	
+				Variant::Map receiveMap;
+				decode(receiveMessage,receiveMap);
+				mg_printmap(conn, receiveMap);
+				mg_printf(conn, "\r\n");
+			} else  {
+				mg_printf(conn, "%s", receiveMessage.getContent().c_str());
+			}
+
+		} catch (qpid::messaging::NoMessageAvailable) {
+			printf("WARNING, no reply message to fetch\n");
+		}
+	}
+
+}
 static void command (struct mg_connection *conn, const struct mg_request_info *request_info) {
 	int data_len  = 0;
 
@@ -157,6 +179,8 @@ static void *event_handler(enum mg_event event,
   if (event == MG_NEW_REQUEST) {
     if (strcmp(request_info->uri, "/command") == 0) {
       command(conn, request_info);
+    } else if (strcmp(request_info->uri, "/update") == 0) {
+      update(conn, request_info);
     } else {
       // No suitable handler found, mark as not processed. Mongoose will
       // try to serve the request.
