@@ -206,7 +206,7 @@ def discovery():
                 	sendStateChangedEvent(uuid, 0)
 
 		# need to sleep - else too many connections for pdu...
-		time.sleep(1)
+		time.sleep(2)
 
 
 discovery()
