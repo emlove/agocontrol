@@ -12,11 +12,18 @@ from qpid.messaging import *
 from qpid.util import URL
 from qpid.log import enable, DEBUG, WARN
 
-from fence_apc import *
-from StringIO import StringIO
+from pysnmp.entity.rfc3413.oneliner import cmdgen
+from pysnmp.proto import rfc1902
 
 config = ConfigParser.ConfigParser()
 config.read('/etc/opt/agocontrol/config.ini')
+
+
+OIDOutletCount = "1,3,6,1,4,1,318,1,1,4,5,1,0"	# sPDUOutletConfigTableSize
+OIDStatus = "1,3,6,1,4,1,318,1,1,4,4,2,1,3"	# sPDUOutletCtl
+OIDName = "1,3,6,1,4,1,318,1,1,4,5,2,1,3"	# sPDUOutletName
+OIDLoad = "1,3,6,1,4,1,3181,1,12,2,3,1,1,2,1"	# rPDULoadStatusLoad
+
 
 try:
 	username = config.get("system","username")
@@ -44,14 +51,19 @@ except:
 	apchost = "localhost"
 
 try:
-	apcusername = config.get("apc","username")
+	apcport = int(config.get("apc","port"))
 except:
-	apcusername = "agocontrol"
+	apcport = 161
 
 try:
-	apcpassword = config.get("apc","password")
+	apccommunityro = config.get("apc","community_readonly")
 except:
-	apcpassword = "letmein"
+	apccommunityro= "public"
+
+try:
+	apccommunityrw = config.get("apc","community_readwrite")
+except:
+	apccommunityrw = "private"
 
 if debug=="DEBUG":
 	enable("qpid", DEBUG)
@@ -94,43 +106,67 @@ sender = session.sender("agocontrol; {create: always, node: {type: topic}}")
 
 
 def inventory():
-	old_stdout = sys.stdout
-	result = StringIO()
-	sys.stdout = result
+	# get outlets from apc 
+	myoid = eval(str(OIDOutletCount))
+	__errorIndication, __errorStatus, __errorIndex, varBinds = cmdgen.CommandGenerator().getCmd(
+		cmdgen.CommunityData('my-agent', 'public', 0),
+		cmdgen.UdpTransportTarget((apchost, apcport)),
+		myoid )
 
-	options = {'-g': '20', '-F': '1', '-a': apchost, 'log': 0, '-C': ',', '-l': apcusername, '-o': 'list', '-G': '0', 'device_opt': ['help', 'version', 'agent', 'quiet', 'verbose', 'debug', 'action', 'ipaddr', 'login', 'passwd', 'passwd_script', 'secure', 'port', 'identity_file', 'switch', 'test', 'separator', 'inet4_only', 'inet6_only', 'ipport', 'power_timeout', 'shell_timeout', 'login_timeout', 'power_wait', 'retry_on', 'delay'], '-y': '5', '-u': 23, '-f': '0', '-p': apcpassword, '-c': '\n>', '-Y': '3', 'ssh_options': '-1 -c blowfish'}
-	conn = fence_login(options)
-	myresult = fence_action(conn, options, set_power_status, get_power_status, get_power_status)
-	sys.stdout = old_stdout
-	result_string = result.getvalue()
-	apc_inventory = list(
-    		line.strip().split(",") for line in result_string.split("\n") if line.strip()
-	)
-	apc_inventory.sort()
-
+	outletCount = varBinds[0][1]
+	
 	devices = {}
-	for index, item in apc_inventory:
-		devices[lookupuuid(index)] = "switch"
+
+	for outlet in range(1,outletCount+1):
+		devices[lookupuuid(outlet)] = "switch"
 
 	return(devices)
 
-def sendcommand(path, command):
-	old_stdout = sys.stdout
-	result = StringIO()
-	sys.stdout = result
 
-	options = {'-g': '20', '-F': '1', '-a': apchost, 'log': 0, '-C': ',', '-l': apcusername, '-o': command, '-n': path, '-G': '0', 'device_opt': ['help', 'version', 'agent', 'quiet', 'verbose', 'debug', 'action', 'ipaddr', 'login', 'passwd', 'passwd_script', 'secure', 'port', 'identity_file', 'switch', 'test', 'separator', 'inet4_only', 'inet6_only', 'ipport', 'power_timeout', 'shell_timeout', 'login_timeout', 'power_wait', 'retry_on', 'delay'], '-y': '5', '-u': 23, '-f': '0', '-p': apcpassword, '-c': '\n>', '-Y': '3', 'ssh_options': '-1 -c blowfish'}
+def set_outlet_state(path, command):
+	#new_state = 1 # 1=enable; 2=disable
+	if "on" in command:
+		new_state = 1
+	else:
+		new_state = 2
 
-	conn = fence_login(options)
-	myresult = fence_action(conn, options, set_power_status, get_power_status, get_power_status)
+	myoid = eval(str(OIDStatus) + "," + str(path))
+	__errorIndication, __errorStatus, __errorIndex, __varBinds = cmdgen.CommandGenerator().setCmd(
+		cmdgen.CommunityData('my-agent', 'private', 1),
+		cmdgen.UdpTransportTarget((apchost, apcport)),
+		(myoid, rfc1902.Integer(new_state)))
+	
+	status = get_outlet_status(path)
+	return(status)
 
-	# Redirect again the std output to screen
-	sys.stdout = old_stdout
 
-	# Then, get the stdout like a string and process it!
-	result_string = result.getvalue()
+def get_outlet_status(path):
 
-	return(result_string)
+	myoid = eval(str(OIDStatus) + "," + str(path))
+	__errorIndication, __errorStatus, __errorIndex, varBinds = cmdgen.CommandGenerator().getCmd(
+		cmdgen.CommunityData('my-agent', 'public', 0),
+		cmdgen.UdpTransportTarget((apchost, apcport)), myoid)
+	output = varBinds[0][1]
+
+	if output == 1:
+		status = "on"
+	if output == 2:
+		status = "off"
+	if output == 4:
+		status = "unknown"
+
+        return(status)
+
+def get_outlet_name(path):
+
+	myoid = eval(str(OIDName) + "," + str(path))
+	__errorIndication, __errorStatus, __errorIndex, varBinds = cmdgen.CommandGenerator().getCmd(
+		cmdgen.CommunityData('my-agent', 'public', 0),
+		cmdgen.UdpTransportTarget((apchost, apcport)), myoid)
+	output = varBinds[0][1]
+
+        return(output)
+
 
 # read persistent uuid mapping from file
 try:
@@ -158,7 +194,12 @@ def lookupuuid(path):
         else:
                 newuuid = str(uuid4())
                 uuidmap[path] = newuuid
-		setDeviceName(newuuid, "apc: %s" % path)	
+		outlet_name = get_outlet_name(path)
+		if outlet_name == "":
+			setDeviceName(newuuid, "APC: %s" % path)
+		else:
+			setDeviceName(newuuid, "APC: %s" % outlet_name)	
+
                 try:
                         # uuid is new, try to store it
                         uuidmapfile = open("/etc/opt/agocontrol/apc/uuidmap.pck","w")
@@ -199,14 +240,12 @@ def discovery():
 		reportdevice(uuid=uuid, type=devicetype)
 
 	for (path, uuid) in uuidmap.iteritems():
-		result = sendcommand(path, 'status')
-		if "Status: ON" in result:
-                	sendStateChangedEvent(uuid, 255)
-		if "Status: OFF" in result:
+		result = get_outlet_status(path)
+		if "on" in result:
+        	       	sendStateChangedEvent(uuid, 255)
+		if "off" in result:
                 	sendStateChangedEvent(uuid, 0)
 
-		# need to sleep - else too many connections for pdu...
-		time.sleep(2)
 
 
 discovery()
@@ -227,8 +266,8 @@ while True:
                                         syslog.syslog(syslog.LOG_NOTICE, "ignoring inventory command")
                                 else:
                                         if 'uuid' in message.content:
-						for (path, uuid) in uuidmap.iteritems():
-							if message.content['uuid'] == uuid:
+                                                for (path, uuid) in uuidmap.iteritems():
+                                                        if message.content['uuid'] == uuid:
                                                                 # send reply
                                                                 if message.reply_to:
                                                                         replysender = session.sender(message.reply_to)
@@ -243,14 +282,14 @@ while True:
                                                                 command = ''
                                                                 if message.content['command'] == 'on':
                                                                         print "device switched on"
-									result = sendcommand(path, 'on')
-									if "Success: Powered ON" in result:
-                                                                        	sendStateChangedEvent(uuid, 255)
+                                                                        result = set_outlet_state(path, 'on')
+                                                                        if "on" in result:
+                                                                                sendStateChangedEvent(uuid, 255)
                                                                 if message.content['command'] == 'off':
                                                                         print "device switched off"
-									result = sendcommand(path, 'off')
-									if "Success: Powered OFF" in result:
-                                                                        	sendStateChangedEvent(uuid, 0)
+                                                                        result = set_outlet_state(path, 'off')
+                                                                        if "off" in result:
+                                                                                sendStateChangedEvent(uuid, 0)
         except Empty, e:
                 pass
         except KeyError, e:
