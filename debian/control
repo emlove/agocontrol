@@ -52,5 +52,5 @@ Description: Asterisk PBX interface
 
 Package: agocontrol-apc
 Architecture: all
-Depends: ${shlibs:Depends}, ${misc:Depends}, python-qpid, fence-agents
+Depends: ${shlibs:Depends}, ${misc:Depends}, python-qpid, python-pysnmp4
 Description: APC Switched Rack PDU interface
