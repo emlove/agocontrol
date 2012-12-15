@@ -277,7 +277,7 @@ def print_time( threadName, delay):
 		try:
 			time.sleep(delay)
 			currentPowerA = get_current_power()
-			currentPower = currentPowerA * apcvoltage
+			currentPower = int(float(currentPowerA * apcvoltage))
 			if currentPower != old_currentPower:
 				sendEvent(uuid, currentPower, unit)
 				print "%s: %s" % ( threadName, currentPower ) 
