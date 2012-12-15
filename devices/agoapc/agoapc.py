@@ -14,6 +14,8 @@ from qpid.log import enable, DEBUG, WARN
 
 from pysnmp.entity.rfc3413.oneliner import cmdgen
 from pysnmp.proto import rfc1902
+import thread
+import time
 
 config = ConfigParser.ConfigParser()
 config.read('/etc/opt/agocontrol/config.ini')
@@ -56,6 +58,11 @@ try:
 	apcport = int(config.get("apc","port"))
 except:
 	apcport = 161
+
+try:
+	apcvoltage = int(config.get("apc","voltage"))
+except:
+	apcvoltage = 220
 
 try:
 	apccommunityro = config.get("apc","community_readonly")
@@ -250,6 +257,43 @@ def sendStateChangedEvent(uuid, level):
         except SendError, e:
                 print e
 
+def sendEvent(uuid, level, unit):
+        try:
+                content = {}
+                content["uuid"] = uuid
+                content["level"] = level
+		content["unit"] = unit
+                message = Message(content=content,subject="event.environment.energy")
+                sender.send(message)
+        except SendError, e:
+                print e
+
+# thread to poll energy level
+def print_time( threadName, delay):
+	old_currentPower = 0
+	uuid = "a8ee399e-16f3-4ea4-9cc5-16aa9cd7aed2"
+	unit = "Wh"
+	while True:
+		try:
+			time.sleep(delay)
+			currentPowerA = get_current_power()
+			currentPower = currentPowerA * apcvoltage
+			if currentPower != old_currentPower:
+				sendEvent(uuid, currentPower, unit)
+				print "%s: %s" % ( threadName, currentPower ) 
+				old_currentPower = currentPower
+
+		except ReceiverError, e:
+			print e
+			time.sleep(1)
+
+# Create Energy-Level thread
+try:
+	thread.start_new_thread( print_time, ("Energy-Level:", 10, ) )
+except:
+	print "Error: unable to start thread"
+
+
 syslog.syslog(syslog.LOG_NOTICE, "agoapc.py startup")
 
 devices=inventory()
@@ -268,10 +312,6 @@ def discovery():
 
 
 discovery()
-
-currentPower = get_current_power()
-print "Current power uage: %s" % currentPower
-
 
 
 startup = True
