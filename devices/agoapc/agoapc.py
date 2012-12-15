@@ -22,7 +22,9 @@ config.read('/etc/opt/agocontrol/config.ini')
 OIDOutletCount = "1,3,6,1,4,1,318,1,1,4,5,1,0"	# sPDUOutletConfigTableSize
 OIDStatus = "1,3,6,1,4,1,318,1,1,4,4,2,1,3"	# sPDUOutletCtl
 OIDName = "1,3,6,1,4,1,318,1,1,4,5,2,1,3"	# sPDUOutletName
-OIDLoad = "1,3,6,1,4,1,3181,1,12,2,3,1,1,2,1"	# rPDULoadStatusLoad
+OIDLoad = "1,3,6,1,4,1,318,1,1,12,2,3,1,1,2,1"	# rPDULoadStatusLoad
+loadOID = (1,3,6,1,4,1,318,1,1,12,2,3,1,1,2,1)
+
 
 
 try:
@@ -167,6 +169,23 @@ def get_outlet_name(path):
 
         return(output)
 
+def get_current_power():
+
+	myoid = eval(str(OIDLoad))
+	errorIndication, errorStatus, errorIndex, varBinds = cmdgen.CommandGenerator().getCmd(
+    		cmdgen.CommunityData('my-agent', 'public', 0),
+    		cmdgen.UdpTransportTarget((apchost, apcport)),
+    		myoid
+		)
+	myload = varBinds[0][1]
+
+	if myload == "-1":
+        	return int(-1)
+	result = float(float(int(myload)) / 10)
+
+	return(result)
+
+
 
 # read persistent uuid mapping from file
 try:
@@ -249,6 +268,10 @@ def discovery():
 
 
 discovery()
+
+currentPower = get_current_power()
+print "Current power uage: %s" % currentPower
+
 
 
 startup = True
