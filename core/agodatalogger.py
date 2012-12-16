@@ -72,7 +72,10 @@ try:
 			if 'level' in message.content:
                 		uuid = message.content["uuid"]
 				environment =  message.subject.replace('environment.','').replace('changed','').replace('event.','')
-                		unit =  message.content["unit"]
+				if 'unit' in message.content:
+                			unit =  message.content["unit"]
+				else:
+					unit = ""
                 		level =  message.content["level"]
 				try:
                 			with con:
