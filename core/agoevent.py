@@ -1,4 +1,9 @@
 #! /usr/bin/env python
+# 
+# ago control event handler
+#
+# Copyright (c) 2012 Harald Klein <hari@vt100.at>
+
 
 import sys
 import syslog
