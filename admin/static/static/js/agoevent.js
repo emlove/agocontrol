@@ -396,6 +396,9 @@ function create_action_builder(container, defaults) {
     
 
     deviceSelect.onchange = function() {
+        if (deviceSelect.options[deviceSelect.selectedIndex] == undefined) {
+            return;
+        }
         var idx = deviceSelect.options[deviceSelect.selectedIndex].value;
         create_command_selector(commandSelect, commandParams, devices[idx].devicetype);
     };
