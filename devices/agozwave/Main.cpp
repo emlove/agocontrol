@@ -312,7 +312,7 @@ void OnNotification
 					content["uuid"] = Manager::Get()->GetNodeName(_notification->GetHomeId(), _notification->GetNodeId());
 					content["level"] = _notification->GetByte();
 					encode(content, event);
-					event.setSubject("event.device.statuschanged");
+					event.setSubject("event.device.statechanged");
 					sender.send(event);
 				} catch(const std::exception& error) {
 					std::cout << error.what() << std::endl;
