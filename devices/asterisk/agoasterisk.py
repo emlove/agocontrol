@@ -1,4 +1,9 @@
 #!/usr/bin/python
+#
+#   ago control Asterisk PBX interface
+#
+#   Copyright (c) 2012 Harald Klein <hari@vt100.at>
+#
 from starpy import manager
 from twisted.internet import defer, reactor
 import logging,os
