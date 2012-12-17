@@ -1,5 +1,5 @@
 /*
-     Copyright (C) 2009 Harald Klein <hari@vt100.at>
+     Copyright (C) 2012 Harald Klein <hari@vt100.at>
 
      This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License.
      This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
