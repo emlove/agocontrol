@@ -89,7 +89,10 @@ def GetGraphData():
 		if not df.empty:
 			df.index = [pandas.datetools.to_datetime(datetime.datetime.fromtimestamp(int(di)).strftime('%Y-%m-%d %H:%M:%S')) for di in df.index]
 
-			ticks = df.ix[:, ['Level']]
+			ticks = df.ix[:, ['Level', 'Unit']]
+			result = ticks
+
+			unit = map(lambda x: x.strip(), str(result["Unit"]).splitlines(True))[0].split()[-1]
 
 			ticks = ticks.asfreq('1Min', method='pad').prod(axis=1).resample('5min', how='mean')
 
@@ -98,10 +101,14 @@ def GetGraphData():
 			date_range = pandas.DatetimeIndex(start=start_date, end=end_date, freq='5Min')
 
       			df2 = ticks.reindex(date_range).fillna(method='backfill').fillna(method='pad')
+
 			data = map(lambda x: x.strip(), str(df2).splitlines(True))
 			json_map = {}
+			json_map["unit"] = unit
+			json_map["values"] = {}
 			for i in range(len(data) - 1):
-				json_map[data[i][:19]] = data[i][23:]
+				json_map["values"][data[i][:19]] = data[i][23:].split()
+
 			return simplejson.dumps(json_map)
 		else:
 			return "No data"
