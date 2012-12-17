@@ -64,15 +64,11 @@ sys.stderr = LogErr()
 con = lite.connect('agodatalogger.db')
 
 
-#def GetGraphData(uuid, start, end):
-def GetGraphData():
-	#uuid = uuid
-	#start_date = start
-	#end_date = end
+def GetGraphData(uuid, start, end):
+	uuid = uuid
+	start_date = start
+	end_date = end
 
-	uuid="5ee20e88-8dd7-451f-a2c7-00ead37f2216"
-	start_date="2012-11-13 11:00:00"
-	end_date="2012-11-13 11:15:00"
 	environment="temperature"
 
 	try:
@@ -96,8 +92,6 @@ def GetGraphData():
 
 			ticks = ticks.asfreq('1Min', method='pad').prod(axis=1).resample('5min', how='mean')
 
-			start_date = datetime.datetime(2012, 11, 13, 11, 00, 0, 0)
-			end_date = datetime.datetime(2012, 11, 13, 14, 30, 00, 0)
 			date_range = pandas.DatetimeIndex(start=start_date, end=end_date, freq='5Min')
 
       			df2 = ticks.reindex(date_range).fillna(method='backfill').fillna(method='pad')
@@ -116,17 +110,13 @@ def GetGraphData():
 	except sqlite3.Error as e:
 		print  "Error " + e.args[0]
 
-###
-
-
-
 connection = Connection(broker, username=username, password=password, reconnect=True)
 try:
 	connection.open()
 	session = connection.session()
 	receiver = session.receiver("agocontrol; {create: always, node: {type: topic}}")
 	receiver.capacity=100
-	#sender = session.sender("agocontrol; {create: always, node: {type: topic}}")
+	sender = session.sender("agocontrol; {create: always, node: {type: topic}}")
 	while True:
 		try:
 			message = receiver.fetch(timeout=1)
@@ -149,7 +139,10 @@ try:
 
 			if 'command' in message.content:
 				if message.content['command'] == 'getloggergraph':
-					result = GetGraphData()
+					uuid = message.content['uuid']
+					start = message.content['start']
+					end = message.content['end']
+					result = GetGraphData(uuid, start, end)
 					print result
 
 			session.acknowledge()
