@@ -212,15 +212,16 @@ static void jsonrpc (struct mg_connection *conn, const struct mg_request_info *r
 			if (!(params.isNull())) {
 				if (method == "message" ) {
 					Json::Value content = params["content"];
+					Json::Value subject = params["subject"];
 					Variant::Map command = jsonToVariantMap(content);
 					Variant::Map responseMap;
 					Message message;
-
 					encode(command, message);
 
 					Address responseQueue("#response-queue; {create:always, delete:always}");
 					Receiver responseReceiver = session.createReceiver(responseQueue);
 					message.setReplyTo(responseQueue);
+					if (subject.isString()) message.setSubject(subject.asString());
 
 					sender.send(message);
 					try {
