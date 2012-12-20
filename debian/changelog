@@ -1,4 +1,4 @@
-agocontrol (1.0-89) UNRELEASED; urgency=low
+agocontrol (1.0-90) UNRELEASED; urgency=low
 
   * Non-maintainer upload.
   * add error pages for django and upstart script
@@ -81,8 +81,9 @@ agocontrol (1.0-89) UNRELEASED; urgency=low
   * new openzwave library
   * fix event name for state changes in agozwave
   * use new zwave package
+  * add JSON-RPC to agorpc
 
- -- root <root@pluto.vt100.at>  Wed, 19 Dec 2012 18:01:14 +0100
+ -- root <root@pluto.vt100.at>  Thu, 20 Dec 2012 20:59:08 +0100
 
 agocontrol (1.0-14) UNRELEASED; urgency=low
 
