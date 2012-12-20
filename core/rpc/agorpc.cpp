@@ -32,7 +32,12 @@
 #include <qpid/messaging/Session.h>
 #include <qpid/messaging/Address.h>
 
+#include <json/value.h>
+#include <json/reader.h>
+#include <json/writer.h>
+
 #include "../../devices/agozwave/CDataFile.h"
+
 
 using namespace std;
 using namespace qpid::messaging;
@@ -50,12 +55,12 @@ Iter next(Iter iter)
     return ++iter;
 }
 
-static const char *ajax_reply_start =
+/* static const char *ajax_reply_start =
   "HTTP/1.1 200 OK\r\n"
   "Cache: no-cache\r\n"
   "Content-Type: application/x-javascript\r\n"
   "\r\n";
-
+*/
 
 void mg_printmap(struct mg_connection *conn, Variant::Map map);
 
@@ -119,7 +124,7 @@ static void update (struct mg_connection *conn, const struct mg_request_info *re
 				mg_printmap(conn, receiveMap);
 				mg_printf(conn, "\r\n");
 			} else  {
-				mg_printf(conn, "%s", receiveMessage.getContent().c_str());
+				mg_printf(conn, "%s:%s", receiveMessage.getSubject().c_str(),receiveMessage.getContent().c_str());
 			}
 
 		} catch (qpid::messaging::NoMessageAvailable) {
@@ -129,8 +134,6 @@ static void update (struct mg_connection *conn, const struct mg_request_info *re
 
 }
 static void command (struct mg_connection *conn, const struct mg_request_info *request_info) {
-	int data_len  = 0;
-
 	char uuid[1024], command[1024], level[1024];
 	Variant::Map agocommand;
 	Message message;
@@ -170,6 +173,96 @@ static void command (struct mg_connection *conn, const struct mg_request_info *r
 	}
 
 }
+Variant::Map jsonToVariantMap(Json::Value value) {
+	Variant::Map map;
+	for (Json::ValueIterator it = value.begin(); it != value.end(); it++) {
+		printf("%s\n",it.key().asString().c_str());
+		printf("%s\n", (*it).asString().c_str());
+		if ((*it).size() > 0) {
+			map[it.key().asString()] = jsonToVariantMap((*it));
+		} else {
+			if ((*it).isString()) map[it.key().asString()] = (*it).asString();
+			if ((*it).isBool()) map[it.key().asString()] = (*it).asBool();
+			if ((*it).isInt()) map[it.key().asString()] = (*it).asInt();
+			if ((*it).isUInt()) map[it.key().asString()] = (*it).asUInt();
+			if ((*it).isDouble()) map[it.key().asString()] = (*it).asDouble();
+		}
+	}	
+	return map;
+}
+
+static void jsonrpc (struct mg_connection *conn, const struct mg_request_info *request_info) {
+	Json::Value root;
+	Json::Reader reader;
+	Json::StyledWriter writer;
+	char post_data[65535];
+	int post_data_len;
+
+	post_data_len = mg_read(conn, post_data, sizeof(post_data));
+	if ( reader.parse(post_data, post_data + post_data_len, root, false) ) {
+		string myId;
+		Json::Value request = root;
+		const Json::Value id = request.get("id", Json::Value());
+		const string method = request.get("method", "message").asString();
+		const string version = request.get("jsonrpc", "unspec").asString();
+	
+		myId = writer.write(id);
+		if (version == "2.0") {
+			const Json::Value params = request.get("params", Json::Value());
+			if (!(params.isNull())) {
+				if (method == "message" ) {
+					Json::Value content = params["content"];
+					Variant::Map command = jsonToVariantMap(content);
+					Variant::Map responseMap;
+					Message message;
+
+					encode(command, message);
+
+					Address responseQueue("#response-queue; {create:always, delete:always}");
+					Receiver responseReceiver = session.createReceiver(responseQueue);
+					message.setReplyTo(responseQueue);
+
+					sender.send(message);
+					try {
+						Message response = responseReceiver.fetch(Duration::SECOND * 3);
+						if (response.getContentSize() > 3) {	
+							decode(response,responseMap);
+							mg_printf(conn, "%s", "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n\r\n");		
+							mg_printf(conn, "{\"jsonrpc\": \"2.0\", \"result\": ");
+							mg_printmap(conn, responseMap);
+							mg_printf(conn, ", \"id\": %s}",myId.c_str());
+						} else  {
+							mg_printf(conn, "%s", "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n\r\n");		
+							mg_printf(conn, "{\"jsonrpc\": \"2.0\", \"result\": \"");
+							mg_printf(conn, "%s", response.getContent().c_str());
+							mg_printf(conn, "\", \"id\": %s}",myId.c_str());
+						}
+
+					} catch (qpid::messaging::NoMessageAvailable) {
+						mg_printf(conn, "%s", "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n\r\n");		
+						mg_printf(conn, "{\"jsonrpc\": \"2.0\", \"result\": \"no-reply\", \"id\": %s}",myId.c_str());
+					}
+					
+			
+
+				} else {
+					mg_printf(conn, "%s", "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n\r\n");
+					mg_printf(conn, "{\"jsonrpc\": \"2.0\", \"error\": {\"code\":-32601,\"message\":\"Method not found\"}, \"id\": %s}",myId.c_str());
+				}
+			} else {
+				mg_printf(conn, "%s", "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n\r\n");
+				mg_printf(conn, "{\"jsonrpc\": \"2.0\", \"error\": {\"code\":-32602,\"message\":\"Invalid params\"}, \"id\": %s}",myId.c_str());
+			}
+		} else {
+			mg_printf(conn, "%s", "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n\r\n");
+			mg_printf(conn, "{\"jsonrpc\": \"2.0\", \"error\": {\"code\":-32600,\"message\":\"Invalid Request\"}, \"id\": %s}",myId.c_str());
+		}
+	} else {
+		mg_printf(conn, "%s", "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n\r\n");
+		mg_printf(conn, "%s", "{\"jsonrpc\": \"2.0\", \"error\": {\"code\":-32700,\"message\":\"Parse error\"}, \"id\": null}");
+	}
+}
+
 
 static void *event_handler(enum mg_event event,
                            struct mg_connection *conn) {
@@ -179,6 +272,8 @@ static void *event_handler(enum mg_event event,
   if (event == MG_NEW_REQUEST) {
     if (strcmp(request_info->uri, "/command") == 0) {
       command(conn, request_info);
+    } else if (strcmp(request_info->uri, "/jsonrpc") == 0) {
+      jsonrpc(conn, request_info);
     } else if (strcmp(request_info->uri, "/update") == 0) {
       update(conn, request_info);
     } else {
