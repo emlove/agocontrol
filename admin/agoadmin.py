@@ -176,6 +176,46 @@ class Rooms:
 			return error_tmpl.render(traceback = traceback.traceback)
 	default.exposed = True
 
+class Sources:
+	def default(self):
+		try:
+			tmpl = lookup.get_template("sources.html")
+			inventory = discover()		
+			devices = getDevices(inventory)
+			sources = simplejson.loads(conn.get_device_environments().content)
+			for source in sources:
+				for dev in devices:
+					if dev["id"] == source["deviceid"]:
+						source["roomname"] = dev["roomname"]
+						source["devicename"] = dev["name"]
+						break
+			begin = (datetime.date.today() - datetime.timedelta(days=7)).isoformat()
+			end = (datetime.date.today() + datetime.timedelta(days=1)).isoformat()
+			return tmpl.render(sources=sources, begin = begin, end = end)
+		except:
+			traceback = RichTraceback()
+			error_tmpl = lookup.get_template("error-tpl.html")
+			return error_tmpl.render(traceback = traceback.traceback)
+	default.exposed = True
+
+class Graph:
+	def default(self, uuid, environment, begin, end):
+		try:
+			tmpl = lookup.get_template("graph.html")
+			inventory = discover()		
+			devices = getDevices(inventory)
+			for dev in devices:
+				if dev["id"] == uuid:
+					device = dev
+					break
+			data = simplejson.loads(conn.get_graph_data(dev["id"], environment, begin, end, "1h").content)
+			return tmpl.render(device=device,data=data,environment=environment,begin=begin,end=end)
+		except:
+			traceback = RichTraceback()
+			error_tmpl = lookup.get_template("error-tpl.html")
+			return error_tmpl.render(traceback = traceback.traceback)
+	default.exposed = True
+
 class Setup:
 	def default(self):
 		try:
@@ -570,7 +610,8 @@ root.getinventory = GetInventory()
 root.schema = GetSchema()
 root.event = Event()
 root.createscenario = CreateScenario()
-
+root.sources = Sources()
+root.graph = Graph()
 
 def avahicallback(x, y, z):
 	return False

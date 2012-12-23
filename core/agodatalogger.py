@@ -6,7 +6,7 @@
 #
 # create sqlite table:
 # CREATE TABLE data(id INTEGER PRIMARY KEY AUTOINCREMENT, uuid TEXT, environment TEXT, unit TEXT, level REAL, timestamp TIMESTAMP);
-
+ 
 
 import sys
 import syslog
@@ -16,7 +16,6 @@ from qpid.messaging import *
 from qpid.util import URL
 from qpid.log import enable, DEBUG, WARN
 
-from pysqlite2 import dbapi2 as sqlite3
 import sqlite3 as lite
 import datetime
 
@@ -140,12 +139,12 @@ try:
 
 				if 'command' in message.content:
 					if message.content['command'] == 'getloggergraph':
-						device = message.content['device']
+						deviceid = message.content['deviceid']
 						start = message.content['start']
 						end = message.content['end']
 						env = message.content['env']
 						freq = message.content['freq']
-						result = GetGraphData(device, start, end, env, freq)
+						result = GetGraphData(deviceid, start, end, env, freq)
 						print result
 						try:
                                                 	replysender = session.sender(message.reply_to)
@@ -157,8 +156,30 @@ try:
                                                 	print e
                                                 except NotFound, e:
                                                         print e
-
-
+					if message.content['command'] == 'getdeviceenvironments':
+						try:
+							with con:
+								cur = con.cursor()
+								result = cur.execute('select distinct uuid, environment from data').fetchall()
+								sources = []
+								for row in result:
+									source = {}
+									source["deviceid"] = row[0]
+									source["environment"] = row[1]
+									sources.append(source)
+							jsonResult = simplejson.dumps(sources)
+							print jsonResult
+                                                	replysender = session.sender(message.reply_to)
+                                                        reply = Message(content=jsonResult)
+                                                        replysender.send(reply)
+						except lite.Error as e:
+							print  "Error " + e.args[0]
+                                                except SendError, e:
+							print e
+                                                except MalformedAddress, e:
+                                                	print e
+                                                except NotFound, e:
+                                                        print e
 			session.acknowledge()
 		except Empty:
 			pass

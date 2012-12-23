@@ -157,10 +157,25 @@ class Connector:
         content["uuid"] = uuid
 
         return self.send_raw_message(content)
-	
+
     def delete_event(self, uuid):
         content = {}
         content["command"] = "delevent"
         content["uuid"] = uuid
 
+        return self.send_raw_message(content)
+    
+    def get_device_environments(self):
+        content = {}
+        content["command"] = "getdeviceenvironments"
+        return self.send_raw_message(content)
+    
+    def get_graph_data(self, deviceid, env, start, end, freq):
+        content = {}
+        content["command"] = "getloggergraph"
+        content["deviceid"] = deviceid
+        content["env"] = env
+        content["start"] = start
+        content["end"] = end
+        content["freq"] = freq
         return self.send_raw_message(content)
