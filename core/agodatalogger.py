@@ -64,12 +64,12 @@ syslog.openlog(sys.argv[0], syslog.LOG_PID, syslog.LOG_DAEMON)
 con = lite.connect('agodatalogger.db')
 
 
-def GetGraphData(uuid, start, end):
+def GetGraphData(uuid, start, end, env, freq):
 	uuid = uuid
 	start_date = start
 	end_date = end
-
-	environment="temperature"
+	environment = env
+	frequency = freq
 
 	try:
 		df = psql.read_frame("""SELECT timestamp AS Date,
@@ -90,9 +90,9 @@ def GetGraphData(uuid, start, end):
 
 			unit = map(lambda x: x.strip(), str(result["Unit"]).splitlines(True))[0].split()[-1]
 
-			ticks = ticks.asfreq('1Min', method='pad').prod(axis=1).resample('5min', how='mean')
+			ticks = ticks.asfreq('1Min', method='pad').prod(axis=1).resample(frequency, how='mean')
 
-			date_range = pandas.DatetimeIndex(start=start_date, end=end_date, freq='5Min')
+			date_range = pandas.DatetimeIndex(start=start_date, end=end_date, freq=frequency)
 
       			df2 = ticks.reindex(date_range).fillna(method='backfill').fillna(method='pad')
 
@@ -143,7 +143,9 @@ try:
 						uuid = message.content['uuid']
 						start = message.content['start']
 						end = message.content['end']
-						result = GetGraphData(uuid, start, end)
+						env = message.content['env']
+						freq = message.content['freq']
+						result = GetGraphData(uuid, start, end, env, freq)
 						print result
 
 			session.acknowledge()
