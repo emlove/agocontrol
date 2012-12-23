@@ -656,6 +656,7 @@ int main( int argc, char* argv[] )
 				Variant::Map content;
 				int node = 0;
 				Message message = receiver.fetch(Duration::SECOND * 3);
+				session.acknowledge();
 
 				// workaround for bug qpid-3445
 				if (message.getContent().size() < 4) {
@@ -749,7 +750,6 @@ int main( int argc, char* argv[] )
 				}
 						
 
-				session.acknowledge();
 			} catch(const NoMessageAvailable& error) {
 				
 			} catch(const std::exception& error) {
