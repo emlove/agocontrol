@@ -63,8 +63,8 @@ syslog.openlog(sys.argv[0], syslog.LOG_PID, syslog.LOG_DAEMON)
 con = lite.connect('agodatalogger.db')
 
 
-def GetGraphData(device, start, end, env, freq):
-	uuid = device
+def GetGraphData(deviceid, start, end, env, freq):
+	uuid = deviceid
 	start_date = start
 	end_date = end
 	environment = env
