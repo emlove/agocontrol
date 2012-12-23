@@ -64,8 +64,8 @@ syslog.openlog(sys.argv[0], syslog.LOG_PID, syslog.LOG_DAEMON)
 con = lite.connect('agodatalogger.db')
 
 
-def GetGraphData(uuid, start, end, env, freq):
-	uuid = uuid
+def GetGraphData(device, start, end, env, freq):
+	uuid = device
 	start_date = start
 	end_date = end
 	environment = env
@@ -140,12 +140,12 @@ try:
 
 				if 'command' in message.content:
 					if message.content['command'] == 'getloggergraph':
-						uuid = message.content['uuid']
+						device = message.content['device']
 						start = message.content['start']
 						end = message.content['end']
 						env = message.content['env']
 						freq = message.content['freq']
-						result = GetGraphData(uuid, start, end, env, freq)
+						result = GetGraphData(device, start, end, env, freq)
 						print result
 						try:
                                                 	replysender = session.sender(message.reply_to)
