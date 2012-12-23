@@ -120,33 +120,33 @@ try:
 	while True:
 		try:
 			message = receiver.fetch(timeout=1)
-			if 'level' in message.content:
-                		uuid = message.content["uuid"]
-				environment =  message.subject.replace('environment.','').replace('changed','').replace('event.','')
-				if 'unit' in message.content:
-                			unit =  message.content["unit"]
-				else:
-					unit = ""
-                		level =  message.content["level"]
-				try:
-                			with con:
-                    				cur = con.cursor()
-                    				cur.execute("INSERT INTO data VALUES(null,?,?,?,?,?)", (uuid,environment,unit,level,datetime.datetime.now()))
-                    				newId = cur.lastrowid
-                    				print "Info: New record ID %s with values uuid: %s, environment: %s, unit: %s, level: %s" % (newId,uuid,environment,unit,level)
-				except sqlite3.Error as e:
-					print  "Error " + e.args[0]
+			if message.content: 
+				if 'level' in message.content:
+					uuid = message.content["uuid"]
+					environment =  message.subject.replace('environment.','').replace('changed','').replace('event.','')
+					if 'unit' in message.content:
+						unit =  message.content["unit"]
+					else:
+						unit = ""
+					level =  message.content["level"]
+					try:
+						with con:
+							cur = con.cursor()
+							cur.execute("INSERT INTO data VALUES(null,?,?,?,?,?)", (uuid,environment,unit,level,datetime.datetime.now()))
+							newId = cur.lastrowid
+							print "Info: New record ID %s with values uuid: %s, environment: %s, unit: %s, level: %s" % (newId,uuid,environment,unit,level)
+					except sqlite3.Error as e:
+						print  "Error " + e.args[0]
 
-			if 'command' in message.content:
-				if message.content['command'] == 'getloggergraph':
-					uuid = message.content['uuid']
-					start = message.content['start']
-					end = message.content['end']
-					result = GetGraphData(uuid, start, end)
-					print result
+				if 'command' in message.content:
+					if message.content['command'] == 'getloggergraph':
+						uuid = message.content['uuid']
+						start = message.content['start']
+						end = message.content['end']
+						result = GetGraphData(uuid, start, end)
+						print result
 
 			session.acknowledge()
-
 		except Empty:
 			pass
 
