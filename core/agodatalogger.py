@@ -147,6 +147,17 @@ try:
 						freq = message.content['freq']
 						result = GetGraphData(uuid, start, end, env, freq)
 						print result
+						try:
+                                                	replysender = session.sender(message.reply_to)
+                                                        reply = Message(content=result)
+                                                        replysender.send(reply)
+                                                except SendError, e:
+							print e
+                                                except MalformedAddress, e:
+                                                	print e
+                                                except NotFound, e:
+                                                        print e
+
 
 			session.acknowledge()
 		except Empty:
