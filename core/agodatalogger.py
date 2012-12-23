@@ -58,7 +58,7 @@ class LogErr:
 		syslog.syslog(syslog.LOG_ERR, data)
 
 syslog.openlog(sys.argv[0], syslog.LOG_PID, syslog.LOG_DAEMON)
-sys.stderr = LogErr()
+# sys.stderr = LogErr()
 
 # get sqlite connection
 con = lite.connect('agodatalogger.db')
@@ -72,20 +72,18 @@ def GetGraphData(uuid, start, end):
 	environment="temperature"
 
 	try:
-		df = psql.read_frame("""SELECT strftime('%s', timestamp) AS Date,
+		df = psql.read_frame("""SELECT timestamp AS Date,
 		environment AS Env,
 		unit AS Unit,
-		AVG(level) AS Level
+		level AS Level
 		FROM data
 		WHERE timestamp BETWEEN '""" + start_date + """' AND '""" + end_date + """' 
 		AND environment='""" + environment + """'
-		AND uuid='""" + uuid + """' GROUP BY strftime('%s', timestamp), Unit
+		AND uuid='""" + uuid + """'
 		ORDER BY timestamp""", con, index_col = 'Date')
 
 		if not df.empty:
-			df.tz_localize('CET')
-
-			df.index = [pandas.datetools.to_datetime(datetime.datetime.fromtimestamp(int(di)).strftime('%Y-%m-%d %H:%M:%S')) for di in df.index]
+			df.index = [pandas.datetools.to_datetime(di) for di in df.index]
 
 			ticks = df.ix[:, ['Level', 'Unit']]
 			result = ticks
