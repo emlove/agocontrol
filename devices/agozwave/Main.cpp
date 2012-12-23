@@ -84,8 +84,41 @@ void sendSensorChangedEvent(string uuid, string level, string unit);
 void sendPowerChangedEvent(string uuid, string level, string unit);
 void sendEnergyChangedEvent(string uuid, string level, string unit);
 
+const char *controllerErrorStr (Driver::ControllerError err)
+{
+  switch (err) {
+  case Driver::ControllerError_None:
+    return "None";
+  case Driver::ControllerError_ButtonNotFound:
+    return "Button Not Found";
+  case Driver::ControllerError_NodeNotFound:
+    return "Node Not Found";
+  case Driver::ControllerError_NotBridge:
+    return "Not a Bridge";
+  case Driver::ControllerError_NotPrimary:
+    return "Not Primary Controller";
+  case Driver::ControllerError_IsPrimary:
+    return "Is Primary Controller";
+  case Driver::ControllerError_NotSUC:
+    return "Not Static Update Controller";
+  case Driver::ControllerError_NotSecondary:
+    return "Not Secondary Controller";
+  case Driver::ControllerError_NotFound:
+    return "Not Found";
+  case Driver::ControllerError_Busy:
+    return "Controller Busy";
+  case Driver::ControllerError_Failed:
+    return "Failed";
+  case Driver::ControllerError_Disabled:
+    return "Disabled";
+  case Driver::ControllerError_Overflow:
+    return "Overflow";
+  default:
+    return "Unknown error";
+  }
+}
 
-void controller_update(Driver::ControllerState state, void *context) {
+void controller_update(Driver::ControllerState state,  Driver::ControllerError err, void *context) {
 	printf("controller state update:");
 	switch(state) {
 		case Driver::ControllerState_Normal:
@@ -96,6 +129,16 @@ void controller_update(Driver::ControllerState state, void *context) {
 			printf("waiting for user action");
 			// waiting for user action
 			break;
+		case Driver::ControllerState_Cancel:
+			printf("command was cancelled");
+			break;
+		case Driver::ControllerState_Error:
+			printf("command returned error");
+			break;
+		case Driver::ControllerState_Sleeping:
+			printf("device went to sleep");
+			break;
+
 		case Driver::ControllerState_InProgress:
 			printf("communicating with other device");
 			// communicating with device
@@ -118,6 +161,9 @@ void controller_update(Driver::ControllerState state, void *context) {
 			break;
 	}
 	printf("\n");
+	if (err != Driver::ControllerError_None)  {
+		printf("%s\n", controllerErrorStr(err));
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -671,10 +717,6 @@ int main( int argc, char* argv[] )
 							Manager::Get()->BeginControllerCommand(g_homeId, Driver::ControllerCommand_AddDevice, controller_update, NULL, true);
 						} else if (content["command"] == "removenode") {
 							Manager::Get()->BeginControllerCommand(g_homeId, Driver::ControllerCommand_RemoveDevice, controller_update, NULL, true);
-						} else if (content["command"] == "addcontroller") {
-							Manager::Get()->BeginControllerCommand(g_homeId, Driver::ControllerCommand_AddController, controller_update, NULL, true);
-						} else if (content["command"] == "removecontroller") {
-							Manager::Get()->BeginControllerCommand(g_homeId, Driver::ControllerCommand_RemoveController, controller_update, NULL, true);
 						} else if (content["command"] == "addassociation") {
 							int mynode = content["node"];
 							int mygroup = content["group"];
