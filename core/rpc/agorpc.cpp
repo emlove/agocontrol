@@ -55,12 +55,11 @@ Iter next(Iter iter)
     return ++iter;
 }
 
-/* static const char *ajax_reply_start =
+static const char *ajax_reply_start =
   "HTTP/1.1 200 OK\r\n"
   "Cache: no-cache\r\n"
   "Content-Type: application/x-javascript\r\n"
   "\r\n";
-*/
 
 void mg_printmap(struct mg_connection *conn, Variant::Map map);
 
@@ -199,6 +198,7 @@ static void jsonrpc (struct mg_connection *conn, const struct mg_request_info *r
 	int post_data_len;
 
 	post_data_len = mg_read(conn, post_data, sizeof(post_data));
+	mg_printf(conn, "%s", ajax_reply_start);		
 	if ( reader.parse(post_data, post_data + post_data_len, root, false) ) {
 		string myId;
 		Json::Value request = root;
@@ -228,38 +228,31 @@ static void jsonrpc (struct mg_connection *conn, const struct mg_request_info *r
 						Message response = responseReceiver.fetch(Duration::SECOND * 3);
 						if (response.getContentSize() > 3) {	
 							decode(response,responseMap);
-							mg_printf(conn, "%s", "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n\r\n");		
 							mg_printf(conn, "{\"jsonrpc\": \"2.0\", \"result\": ");
 							mg_printmap(conn, responseMap);
 							mg_printf(conn, ", \"id\": %s}",myId.c_str());
 						} else  {
-							mg_printf(conn, "%s", "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n\r\n");		
 							mg_printf(conn, "{\"jsonrpc\": \"2.0\", \"result\": \"");
 							mg_printf(conn, "%s", response.getContent().c_str());
 							mg_printf(conn, "\", \"id\": %s}",myId.c_str());
 						}
 
 					} catch (qpid::messaging::NoMessageAvailable) {
-						mg_printf(conn, "%s", "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n\r\n");		
 						mg_printf(conn, "{\"jsonrpc\": \"2.0\", \"result\": \"no-reply\", \"id\": %s}",myId.c_str());
 					}
 					
 			
 
 				} else {
-					mg_printf(conn, "%s", "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n\r\n");
 					mg_printf(conn, "{\"jsonrpc\": \"2.0\", \"error\": {\"code\":-32601,\"message\":\"Method not found\"}, \"id\": %s}",myId.c_str());
 				}
 			} else {
-				mg_printf(conn, "%s", "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n\r\n");
 				mg_printf(conn, "{\"jsonrpc\": \"2.0\", \"error\": {\"code\":-32602,\"message\":\"Invalid params\"}, \"id\": %s}",myId.c_str());
 			}
 		} else {
-			mg_printf(conn, "%s", "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n\r\n");
 			mg_printf(conn, "{\"jsonrpc\": \"2.0\", \"error\": {\"code\":-32600,\"message\":\"Invalid Request\"}, \"id\": %s}",myId.c_str());
 		}
 	} else {
-		mg_printf(conn, "%s", "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n\r\n");
 		mg_printf(conn, "%s", "{\"jsonrpc\": \"2.0\", \"error\": {\"code\":-32700,\"message\":\"Parse error\"}, \"id\": null}");
 	}
 }

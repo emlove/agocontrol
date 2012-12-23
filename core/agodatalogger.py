@@ -83,6 +83,8 @@ def GetGraphData(uuid, start, end):
 		ORDER BY timestamp""", con, index_col = 'Date')
 
 		if not df.empty:
+			df.tz_localize('CET')
+
 			df.index = [pandas.datetools.to_datetime(datetime.datetime.fromtimestamp(int(di)).strftime('%Y-%m-%d %H:%M:%S')) for di in df.index]
 
 			ticks = df.ix[:, ['Level', 'Unit']]
