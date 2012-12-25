@@ -14,10 +14,15 @@
  
 <div id="rooms-contain" class="ui-widget">
     <h1>${device['roomname']} ${environment.title()}</h1>
-	<p>
-		Sensor: ${device['name']} <br/>
-		Period: ${begin} - ${end}
-	</p>
+
+    <p>
+	    Sensor: ${device['name']} <br/>
+	    Unit:  ${data["unit"]} <br/>
+	    Period: ${begin} - ${end}
+    </p>
+
+    <div id="placeholder" style="width:910px;height:300px;margin-left: 10px; margin-top: 40px; margin-bottom: 40px;"></div>
+	
     <table id="rooms" class="ui-widget ui-widget-content">
         <thead>
             <tr class="ui-widget-header ">
@@ -27,7 +32,7 @@
             </tr>
         </thead>
         <tbody>
-	    % for key in sorted(data["values"].keys()):
+	    % for key in sorted(data["values"].keys(), reverse=True):
             <tr>
                 <td width = "150px" align="center">${key}</td>
                 <td align="right">${data["values"][key][0]}</td>
@@ -37,5 +42,16 @@
         </tbody>
     </table>
 </div>
+
+<script type="text/javascript">
+$(function () {
+    var d1 = [];
+    % for key in sorted(data["values"].keys()):
+    d1.push([Date.parse("${key}".replace(" ","T")),${data["values"][key][0]}]);
+    % endfor
+	
+    $.plot($("#placeholder"), [ d1 ], { xaxis: { mode: "time", timeformat: "%y-%0m-%0d"} });
+});
+</script>
 
 
