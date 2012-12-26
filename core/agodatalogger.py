@@ -120,8 +120,9 @@ try:
 		try:
 			message = receiver.fetch(timeout=1)
 			if message.content: 
-				if 'level' in message.content:
+				if 'level' in message.content and message.subject:
 					uuid = message.content["uuid"]
+					print message.subject
 					environment =  message.subject.replace('environment.','').replace('changed','').replace('event.','')
 					if 'unit' in message.content:
 						unit =  message.content["unit"]
