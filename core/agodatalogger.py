@@ -3,9 +3,6 @@
 # datalogger - logs data to sqlite db and generates graph data for the AMQP based automation control
 #
 # Copyright (c) 2012 Christoph Jaeger office@diakonesis.at>
-#
-# create sqlite table:
-# CREATE TABLE data(id INTEGER PRIMARY KEY AUTOINCREMENT, uuid TEXT, environment TEXT, unit TEXT, level REAL, timestamp TIMESTAMP);
  
 
 import sys
@@ -60,7 +57,7 @@ syslog.openlog(sys.argv[0], syslog.LOG_PID, syslog.LOG_DAEMON)
 # sys.stderr = LogErr()
 
 # get sqlite connection
-con = lite.connect('agodatalogger.db')
+con = lite.connect('/var/opt/agocontrol/datalogger.db')
 
 
 def GetGraphData(deviceid, start, end, env, freq):

@@ -20,6 +20,10 @@ test -e /etc/opt/agocontrol/inventory.db || (
 	sqlite3 -init /etc/opt/agocontrol/inventory.sql /etc/opt/agocontrol/inventory.db .quit | tee
 )
 
+test -e /var/opt/agocontrol/datalogger.db || (
+	sqlite3 -init /etc/opt/agocontrol/datalogger.sql /var/opt/agocontrol/datalogger.db .quit | tee
+)
+
 sasldblistusers2 -f /etc/qpid/qpidd.sasldb  | grep -q agocontrol || (
 	echo $PASSWD | saslpasswd2 -c -p -f /etc/qpid/qpidd.sasldb -u QPID agocontrol
 )

@@ -34,11 +34,13 @@ install:
 	install -d $(DESTDIR)/etc/opt/agocontrol/ozw
 	install -d $(DESTDIR)/etc/opt/agocontrol/apc
 	install -d $(DESTDIR)/opt/agocontrol/bin
+	install -d $(DESTDIR)/var/opt/agocontrol
 	install -d $(DESTDIR)/lib/systemd/system
 	install conf/config.ini.tpl $(DESTDIR)/etc/opt/agocontrol
 	install conf/schema.yaml $(DESTDIR)/etc/opt/agocontrol
 	install conf/*.service $(DESTDIR)/lib/systemd/system
 	install data/inventory.sql $(DESTDIR)/etc/opt/agocontrol
+	install data/datalogger.sql $(DESTDIR)/etc/opt/agocontrol
 	install core/agoresolver.py $(DESTDIR)/opt/agocontrol/bin
 	install core/agodrain.py $(DESTDIR)/opt/agocontrol/bin
 	install core/agoscenario.py $(DESTDIR)/opt/agocontrol/bin
@@ -47,6 +49,7 @@ install:
 	install core/boolParser.py $(DESTDIR)/opt/agocontrol/bin
 	install core/myavahi.py $(DESTDIR)/opt/agocontrol/bin
 	install core/agoctrl.sh $(DESTDIR)/opt/agocontrol/bin
+	install core/agodatalogger.py $(DESTDIR)/opt/agocontrol/bin
 	install devices/agologger.py $(DESTDIR)/opt/agocontrol/bin
 	install devices/agoowfs.py $(DESTDIR)/opt/agocontrol/bin
 	install devices/enigma2/agoenigma2.py $(DESTDIR)/opt/agocontrol/bin

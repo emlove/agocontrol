@@ -3,9 +3,11 @@ lib/systemd/system/agoevent.service
 lib/systemd/system/agoscenario.service
 lib/systemd/system/agotimer.service
 lib/systemd/system/agorpc.service
+lib/systemd/system/agodatalogger.service
 etc/opt/agocontrol/config.ini.tpl
 etc/opt/agocontrol/schema.yaml
 etc/opt/agocontrol/inventory.sql
+etc/opt/agocontrol/datalogger.sql
 opt/agocontrol/bin/agologger.py
 opt/agocontrol/bin/agoresolver.py
 opt/agocontrol/bin/agoscenario.py
@@ -19,3 +21,4 @@ opt/agocontrol/bin/agochromoflex
 opt/agocontrol/bin/agotimer
 opt/agocontrol/bin/agorpc
 opt/agocontrol/bin/agoctrl.sh
+opt/agocontrol/bin/agodatalogger.py
