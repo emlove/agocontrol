@@ -93,13 +93,13 @@ def GetGraphData(deviceid, start, end, env, freq):
       			df2 = ticks.reindex(date_range).fillna(method='backfill').fillna(method='pad')
 
 			data = map(lambda x: x.strip(), str(df2).splitlines(True))
-			json_map = {}
-			json_map["unit"] = unit
-			json_map["values"] = {}
+			data_map = {}
+			data_map["unit"] = unit
+			data_map["values"] = {}
 			for i in range(len(data) - 1):
-				json_map["values"][data[i][:19]] = data[i][23:].split()
+				data_map["values"][data[i][:19]] = data[i][23:].split()
 
-			return simplejson.dumps(json_map)
+			return data_map
 		else:
 			return "No data"
 
@@ -158,16 +158,12 @@ try:
 							with con:
 								cur = con.cursor()
 								result = cur.execute('select distinct uuid, environment from data').fetchall()
-								sources = []
+								sources = {}
 								for row in result:
-									source = {}
-									source["deviceid"] = row[0]
-									source["environment"] = row[1]
-									sources.append(source)
-							jsonResult = simplejson.dumps(sources)
-							print jsonResult
+									sources[row[0]] = row[1]
+							print sources
                                                 	replysender = session.sender(message.reply_to)
-                                                        reply = Message(content=jsonResult)
+                                                        reply = Message(content=sources)
                                                         replysender.send(reply)
 						except lite.Error as e:
 							print  "Error " + e.args[0]
