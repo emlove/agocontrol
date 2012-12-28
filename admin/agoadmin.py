@@ -240,6 +240,16 @@ class Scenario:
 			return error_tmpl.render(traceback = traceback.traceback)
 	default.exposed = True
 
+class CloudReg:
+    def default(self):
+        try:
+            tmpl = lookup.get_template("cloudreg.html")
+            return tmpl.render(uuid=SYSTEM_UUID)
+        except:
+            traceback = RichTraceback()
+            error_tmpl = lookup.get_template("error-tpl.html")
+            return error_tmpl.render(traceback = traceback.traceback)
+    default.exposed = True
 
 class Root:
 	@cherrypy.expose
@@ -612,6 +622,7 @@ root.event = Event()
 root.createscenario = CreateScenario()
 root.sources = Sources()
 root.graph = Graph()
+root.cloudreg = CloudReg()
 
 def avahicallback(x, y, z):
 	return False
