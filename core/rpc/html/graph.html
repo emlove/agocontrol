@@ -1,0 +1,121 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+                    "http://www.w3.org/TR/html4/loose.dtd">
+<HTML>
+<HEAD><title>rpc test</title>
+<link href="/js/jquery-ui-timepicker-addon.css" rel="stylesheet"></link>
+<link href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery.ui.all.css" rel="stylesheet"></link>
+<script src="http://code.jquery.com/jquery-latest.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
+<script src="/js/jquery-ui-timepicker-addon.js"></script>
+<script src="/js/jquery.flot.js"></script>
+<SCRIPT>
+
+	var url = "/jsonrpc";
+	var options = {
+    		lines: { show: true },
+    		points: { show: true },
+    		//xaxis: { mode: "time",  timeformat: "%y-%m-%d %H:%M:%S",   minTickSize: [5, "minute"]}
+    		xaxis: { mode: "time",  timeformat: "%m-%d %H:%M",   minTickSize: [5, "minute"]}
+	};
+
+function displayGraph(response) {
+ 
+    if (response.result) { 
+	var d1 = []
+	for(var id in response.result.values) {
+		var unixtime = new Date(id.replace(" ", "T")).getTime()
+		d1.push([unixtime, response.result.values[id][0]]);
+	}
+	console.log(d1)
+	$.plot($("#placeholder"), [d1], options);
+ }
+    else if (response.error) { alert("Search error: " + response.error.message); }
+}
+
+function getloggergraph() {
+ 
+	var request = {};
+	request.method = "message";
+	request.params = {};
+	request.params.content = {};
+	request.params.content.command = "getloggergraph";
+	request.params.content.deviceid = document.forms.userdata.elements.device.value;
+	request.params.content.start = document.forms.userdata.elements.start.value;
+	request.params.content.end = document.forms.userdata.elements.end.value;
+	request.params.content.env = document.forms.userdata.elements.environment.value;
+	request.params.content.freq = "5Min";
+	request.id = 1;
+	request.jsonrpc = "2.0";
+
+	document.write("<h1>ago control graph: " + request.params.content.start + " - " + request.params.content.end + "</h1>");
+	document.write("<div id=\"placeholder\" style=\"width:600px;height:300px;\"></div>");
+	$.post(url, JSON.stringify(request), displayGraph, "json");
+
+}
+ 
+
+function displayDeviceEnvironments(response) {
+ 
+    if (response.result) { 
+	var div = document.getElementById('deviceenvironments');
+	
+	for(var id in response.result) {
+		div.innerHTML = div.innerHTML + id+" "+response.result[id]+"<br />";
+	}
+	console.log(response.result)
+ }
+    else if (response.error) { alert("Search error: " + response.error.message); }
+}
+
+function getdeviceenvironments() {
+ 
+	var request = {};
+	request.method = "message";
+	request.params = {};
+	request.params.content = {};
+	request.params.content.command = "getdeviceenvironments";
+	request.id = 1;
+	request.jsonrpc = "2.0";
+	var deviceenvironments_div = document.createElement('div');
+	deviceenvironments_div.innerHTML = '<h2>devices and environments: </h2>';
+	deviceenvironments_div.id = 'deviceenvironments';
+	document.body.appendChild(deviceenvironments_div);
+	$.post(url, JSON.stringify(request), displayDeviceEnvironments, "json");
+
+}
+ 
+$(document).ready(function() {
+
+		$('#start').datetimepicker({
+			showSecond: false,
+			timeFormat: 'HH:mm:ss',
+			dateFormat: 'yy-mm-dd',
+			stepHour: 1,
+			stepMinute: 5,
+			stepSecond: 60
+
+		});
+		$('#end').datetimepicker({
+			showSecond: false,
+			timeFormat: 'HH:mm:ss',
+			dateFormat: 'yy-mm-dd',
+			stepHour: 1,
+			stepMinute: 5,
+			stepSecond: 60
+		});
+		getdeviceenvironments();
+});
+</SCRIPT>
+</HEAD>
+<BODY>
+<div>
+  <form name="userdata" action="" onsubmit="return getloggergraph();">
+	<label>start:</label><input type="text" name="start" id="start" value="" />
+	<label>end:</label><input type="text" name="end" id="end" value="" />
+	<label>device:</label><input type="text" name="device" id="device" value="" />
+	<label>environment:</label><input type="text" name="environment" id="environment" value="" />
+	<input type="submit" value="Submit">
+  </form>
+</div>	
+</BODY>
+</HEAD>
