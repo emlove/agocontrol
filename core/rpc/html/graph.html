@@ -7,6 +7,7 @@
 <script src="http://code.jquery.com/jquery-latest.js"></script>
 <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js"></script>
 <script src="/js/jquery-ui-timepicker-addon.js"></script>
+<script src="/js/jquery.chained.js"></script>
 <script src="/js/jquery.flot.js"></script>
 <SCRIPT>
 
@@ -39,11 +40,12 @@ function getloggergraph() {
 	request.params = {};
 	request.params.content = {};
 	request.params.content.command = "getloggergraph";
-	request.params.content.deviceid = document.forms.userdata.elements.device.value;
+	request.params.content.deviceid = $('#devices option:selected').text();
 	request.params.content.start = document.forms.userdata.elements.start.value;
 	request.params.content.end = document.forms.userdata.elements.end.value;
-	request.params.content.env = document.forms.userdata.elements.environment.value;
-	request.params.content.freq = "5Min";
+	request.params.content.env = $('#environments option:selected').text();
+	//request.params.content.freq = "5Min";
+	request.params.content.freq = $('#ticks option:selected').text();
 	request.id = 1;
 	request.jsonrpc = "2.0";
 
@@ -58,10 +60,21 @@ function displayDeviceEnvironments(response) {
  
     if (response.result) { 
 	var div = document.getElementById('deviceenvironments');
+	var select_devices = document.getElementById('devices');
+	var select_environments = document.getElementById('environments');
 	
 	for(var id in response.result) {
 		div.innerHTML = div.innerHTML + id+" "+response.result[id]+"<br />";
+		select_devices.innerHTML = select_devices.innerHTML + "<option value=\"" + id + "\">"+id+"</option>";
+		var envs = response.result[id]
+		var i,j,env,chunk = 1;
+		for (i=0,j=envs.length; i<j; i+=chunk) {
+			env = envs.slice(i,i+chunk);
+			//alert(env);
+			select_environments.innerHTML = select_environments.innerHTML + "<option value=\"" + env + "\" class=\"" + id + "\">" + env + "</option>";
+		}
 	}
+	$("#environments").chained("#devices"); /* or $("#series").chainedTo("#mark"); */
 	console.log(response.result)
  }
     else if (response.error) { alert("Search error: " + response.error.message); }
@@ -104,18 +117,35 @@ $(document).ready(function() {
 			stepSecond: 60
 		});
 		getdeviceenvironments();
+
 });
+
+
 </SCRIPT>
 </HEAD>
 <BODY>
 <div>
+<h1>ago control graph generator</h1>
   <form name="userdata" action="" onsubmit="return getloggergraph();">
 	<label>start:</label><input type="text" name="start" id="start" value="" />
 	<label>end:</label><input type="text" name="end" id="end" value="" />
-	<label>device:</label><input type="text" name="device" id="device" value="" />
-	<label>environment:</label><input type="text" name="environment" id="environment" value="" />
-	<input type="submit" value="Submit">
+	<label>device:</label>
+	<select id="devices">
+		<option value="">--</option>
+	</select>
+	<label>environment:</label>
+	<select id="environments">
+		<option value="">--</option>
+	</select>
+	<label>ticks:</label>
+	<select id="ticks">
+		<option value="5Min">5Min</option>
+		<option value="10Min">10Min</option>
+		<option value="15Min">15Min</option>
+		<option value="30Min">30Min</option>
+		<option value="60Min">60Min</option>
+	</select>
+	<input type="submit" value="Get Graph">
   </form>
-</div>	
 </BODY>
 </HEAD>
