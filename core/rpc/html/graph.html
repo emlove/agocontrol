@@ -40,7 +40,7 @@ function getloggergraph() {
 	request.params = {};
 	request.params.content = {};
 	request.params.content.command = "getloggergraph";
-	request.params.content.deviceid = $('#devices option:selected').text();
+	request.params.content.deviceid = $('#devices option:selected').val();
 	request.params.content.start = document.forms.userdata.elements.start.value;
 	request.params.content.end = document.forms.userdata.elements.end.value;
 	request.params.content.env = $('#environments option:selected').text();
@@ -59,13 +59,16 @@ function getloggergraph() {
 function displayDeviceEnvironments(response) {
  
     if (response.result) { 
-	var div = document.getElementById('deviceenvironments');
+	// store global
+	DeviceEnvironments = response.result;
+
+	//var div = document.getElementById('deviceenvironments');
 	var select_devices = document.getElementById('devices');
 	var select_environments = document.getElementById('environments');
 	
 	for(var id in response.result) {
-		div.innerHTML = div.innerHTML + id+" "+response.result[id]+"<br />";
-		select_devices.innerHTML = select_devices.innerHTML + "<option value=\"" + id + "\">"+id+"</option>";
+		//div.innerHTML = div.innerHTML + id+" "+response.result[id]+"<br />";
+		select_devices.innerHTML = select_devices.innerHTML + "<option value=\"" + id + "\">" + inventory.inventory[id].name + "</option>";
 		var envs = response.result[id]
 		var i,j,env,chunk = 1;
 		for (i=0,j=envs.length; i<j; i+=chunk) {
@@ -81,7 +84,9 @@ function displayDeviceEnvironments(response) {
 }
 
 function getdeviceenvironments() {
- 
+	// get inventory first
+	getinventory(); 
+
 	var request = {};
 	request.method = "message";
 	request.params = {};
@@ -89,15 +94,57 @@ function getdeviceenvironments() {
 	request.params.content.command = "getdeviceenvironments";
 	request.id = 1;
 	request.jsonrpc = "2.0";
-	var deviceenvironments_div = document.createElement('div');
-	deviceenvironments_div.innerHTML = '<h2>devices and environments: </h2>';
-	deviceenvironments_div.id = 'deviceenvironments';
-	document.body.appendChild(deviceenvironments_div);
+	//var deviceenvironments_div = document.createElement('div');
+	//deviceenvironments_div.innerHTML = '<h2>devices and environments: </h2>';
+	//deviceenvironments_div.id = 'deviceenvironments';
+	//document.body.appendChild(deviceenvironments_div);
 	$.post(url, JSON.stringify(request), displayDeviceEnvironments, "json");
+}
+ 
+function displayInventory(response) {
+ 
+    if (response.result) { 
+	// store inventory global
+	inventory = response.result;
+
+	var inventory_div = document.createElement('div');
+	inventory_div.innerHTML = '<br>';
+	inventory_div.id = 'inventory_div';
+	document.body.appendChild(inventory_div);
+
+	for(var id in response.result.inventory) {
+	//	if(DeviceEnvironments[id]) {
+	//		var environment = DeviceEnvironments[id];
+	//	} else {
+	//		var environment = "&nbsp;";
+	//	}
+		//inventory_div.innerHTML = inventory_div.innerHTML + id +  " " + inventory.inventory[id].name + " (" + inventory.inventory[id].devicetype + " - "+ environment + ")<br>";
+		inventory_div.innerHTML = inventory_div.innerHTML + id +  " " + inventory.inventory[id].name + " (" + inventory.inventory[id].devicetype + ")<br>";
+	}
+	console.log(response.result)
+	
+ }
+    else if (response.error) { alert("Search error: " + response.error.message); }
+}
+
+function getinventory() {
+ 
+	var request = {};
+	request.method = "message";
+	request.params = {};
+	request.params.content = {};
+	request.params.content.command = "inventory";
+	request.id = 1;
+	request.jsonrpc = "2.0";
+
+	$.post(url, JSON.stringify(request), displayInventory, "json");
 
 }
  
 $(document).ready(function() {
+
+		getdeviceenvironments();
+		getinventory();
 
 		$('#start').datetimepicker({
 			showSecond: false,
@@ -116,7 +163,6 @@ $(document).ready(function() {
 			stepMinute: 5,
 			stepSecond: 60
 		});
-		getdeviceenvironments();
 
 });
 
