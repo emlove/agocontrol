@@ -21,6 +21,7 @@ import android.util.Log;
 
 public class AgoConnection {
 	String host;
+	String port;
 	String inventory;
 	Double schemaVersion;
 	ArrayList<AgoDevice> deviceList;
@@ -33,9 +34,10 @@ public class AgoConnection {
 	public static String DEVICE_STATE = "state";
 	public static String DEVICE_NAME = "name";
 	
-	public AgoConnection(String _host) {
-		System.out.println(_host);
-		this.host = _host;
+	public AgoConnection(String host, String port) {
+		this.host = host;
+		this.port = port;
+		System.out.println(host + ":" + port);
 		deviceList = new ArrayList<AgoDevice>();
 		getDevices();
 	}
@@ -57,7 +59,7 @@ public class AgoConnection {
 		      JSONObject devices = inv.getJSONObject(DEVICES);
 		      Log.i(AgoConnection.class.getName(),
 			          "Number of devices: " + devices.length());
-		      Iterator iter = devices.keys();
+		      Iterator<?> iter = devices.keys();
 		      while (iter.hasNext()) {
 		    	  String deviceUuid = (String)iter.next();
 		    	  System.out.println("UUid: " + deviceUuid);
@@ -79,7 +81,7 @@ public class AgoConnection {
 	
 	public boolean sendCommand(UUID uuid, String command) {
 	    HttpClient client = new DefaultHttpClient();
-	    HttpGet httpGet = new HttpGet("http://" + host + ":8000/command/" + uuid.toString() + "/" + command);
+	    HttpGet httpGet = new HttpGet("http://" + host + ":" + port + "/command/" + uuid.toString() + "/" + command);
 	    try {
 	        HttpResponse response = client.execute(httpGet);
 	        StatusLine statusLine = response.getStatusLine();
@@ -97,7 +99,7 @@ public class AgoConnection {
 	
 	public boolean setDeviceLevel(UUID uuid, String level) {
 	    HttpClient client = new DefaultHttpClient();
-	    HttpGet httpGet = new HttpGet("http://" + host + ":8000/setdevicelevel/" + uuid.toString() + "/setlevel/" + level);
+	    HttpGet httpGet = new HttpGet("http://" + host + ":" + port + "/setdevicelevel/" + uuid.toString() + "/setlevel/" + level);
 	    try {
 	        HttpResponse response = client.execute(httpGet);
 	        StatusLine statusLine = response.getStatusLine();
@@ -116,7 +118,7 @@ public class AgoConnection {
 	private String getInventory() {
 	    StringBuilder builder = new StringBuilder();
 	    HttpClient client = new DefaultHttpClient();
-	    HttpGet httpGet = new HttpGet("http://" + host + ":8000/getinventory");
+	    HttpGet httpGet = new HttpGet("http://" + host + ":" + port + "/getinventory");
 	    try {
 	        HttpResponse response = client.execute(httpGet);
 	        StatusLine statusLine = response.getStatusLine();

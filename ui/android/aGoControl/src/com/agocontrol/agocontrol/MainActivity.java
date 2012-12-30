@@ -103,8 +103,8 @@ public class MainActivity extends ListActivity {
 
 		@Override
 		protected Void doInBackground(Void... params) {
-			Log.i(TAG, "Trying connection to " + agoHostname);
-			connection = new AgoConnection(agoHostname);
+			Log.i(TAG, "Trying connection to " + agoHostname + ":" + agoPort);
+			connection = new AgoConnection(agoHostname, agoPort);
 			deviceList = connection.getDeviceList();
 			return null;
 		}

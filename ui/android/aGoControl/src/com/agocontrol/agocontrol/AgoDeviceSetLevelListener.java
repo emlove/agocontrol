@@ -1,7 +1,6 @@
 package com.agocontrol.agocontrol;
 
 import java.io.IOException;
-import java.util.UUID;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
@@ -11,10 +10,8 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 
 import android.os.AsyncTask;
-import android.os.Message;
 import android.util.Log;
 import android.widget.SeekBar;
-import android.os.Handler;
 
 public class AgoDeviceSetLevelListener implements SeekBar.OnSeekBarChangeListener {
 
