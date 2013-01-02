@@ -19,11 +19,16 @@
 #include <string.h>
 
 #include <termios.h>
+#include <malloc.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <errno.h>
 
 #include <sstream>
+#include <map>
+#include <deque>
+
+#include <uuid/uuid.h>
 
 #include <qpid/messaging/Connection.h>
 #include <qpid/messaging/Message.h>
@@ -43,12 +48,26 @@ using namespace std;
 using namespace qpid::messaging;
 using namespace qpid::types;
 
+// qpid session and sender/receiver
 Receiver receiver;
 Sender sender;
 Session session;
 
+// context for embedded web server
 struct mg_context       *ctx;
 
+
+// struct and map for json-rpc event subscriptions
+struct Subscriber
+{
+	deque<Variant::Map> queue;
+	time_t lastAccess;
+};
+
+map<string,Subscriber> subscriptions;
+pthread_mutex_t mutexSubscriptions;
+
+// helper to determine last element
 template <typename Iter>
 Iter next(Iter iter)
 {
@@ -61,6 +80,23 @@ static const char *ajax_reply_start =
   "Content-Type: application/x-javascript\r\n"
   "\r\n";
 
+// generates a uuid as string via libuuid
+string generateUuid() {
+	string strUuid;
+	char *name;
+	if ((name=(char*)malloc(38)) != NULL) {
+		uuid_t tmpuuid;
+		name[0]=0;
+		uuid_generate(tmpuuid);
+		uuid_unparse(tmpuuid,name);
+		strUuid = string(name);
+		free(name);
+	}
+	return strUuid;
+}
+
+
+// json-print qpid Variant Map and List via mongoose
 void mg_printmap(struct mg_connection *conn, Variant::Map map);
 
 void mg_printlist(struct mg_connection *conn, Variant::List list) {
@@ -138,14 +174,9 @@ static void command (struct mg_connection *conn, const struct mg_request_info *r
 	Message message;
 
 	const char *qs = request_info->query_string;
-	printf("querystring: %s",qs);
-	printf("length: %d", strlen(qs == NULL ? "" : qs));
-	printf("length: %d",sizeof(uuid));
-	int cmdlen =  mg_get_var(qs, strlen(qs == NULL ? "" : qs), "command", command, sizeof(uuid)) ;
-	printf("cmdlength: %d\n", cmdlen);
+	// int cmdlen =  mg_get_var(qs, strlen(qs == NULL ? "" : qs), "command", command, sizeof(uuid)) ;
 	if (mg_get_var(qs, strlen(qs == NULL ? "" : qs), "uuid", uuid, sizeof(uuid)) > 0) agocommand["uuid"] = uuid;
 	if (mg_get_var(qs, strlen(qs == NULL ? "" : qs), "command", command, sizeof(command)) > 0) agocommand["command"] = command;
-	printf("command: %s\n", command);
 	if (mg_get_var(qs, strlen(qs == NULL ? "" : qs), "level", level, sizeof(level)) > 0) agocommand["level"] = level;
 
 	encode(agocommand, message);
@@ -201,8 +232,8 @@ bool jsonrpcRequestHandler(struct mg_connection *conn, Json::Value request, bool
 	myId = writer.write(id);
 	if (version == "2.0") {
 		const Json::Value params = request.get("params", Json::Value());
-		if (!(params.isNull())) {
-			if (method == "message" ) {
+		if (method == "message" ) {
+			if (params.isObject()) {
 				Json::Value content = params["content"];
 				Json::Value subject = params["subject"];
 				Variant::Map command = jsonToVariantMap(content);
@@ -239,13 +270,75 @@ bool jsonrpcRequestHandler(struct mg_connection *conn, Json::Value request, bool
 					mg_printf(conn, "{\"jsonrpc\": \"2.0\", \"result\": \"no-reply\", \"id\": %s}",myId.c_str());
 				}
 				
-		
-
 			} else {
-				mg_printf(conn, "{\"jsonrpc\": \"2.0\", \"error\": {\"code\":-32601,\"message\":\"Method not found\"}, \"id\": %s}",myId.c_str());
+				mg_printf(conn, "{\"jsonrpc\": \"2.0\", \"error\": {\"code\":-32602,\"message\":\"Invalid params\"}, \"id\": %s}",myId.c_str());
 			}
+		
+		} else if (method == "subscribe") {
+			string subscriberName = generateUuid();
+			if (id.isNull()) {
+				// JSON-RPC notification is invalid here as we need to return the subscription UUID somehow..
+				mg_printf(conn, "{\"jsonrpc\": \"2.0\", \"error\": {\"code\":-32600,\"message\":\"Invalid Request\"}, \"id\": %s}",myId.c_str());
+			} else if (subscriberName != "") {
+				deque<Variant::Map> empty;
+				Subscriber subscriber;
+				subscriber.lastAccess=time(0);
+				subscriber.queue = empty;
+				pthread_mutex_lock(&mutexSubscriptions);	
+				subscriptions[subscriberName] = subscriber;
+				pthread_mutex_unlock(&mutexSubscriptions);	
+				mg_printf(conn, "{\"jsonrpc\": \"2.0\", \"result\": \"%s\", \"id\": %s}",subscriberName.c_str(), myId.c_str());
+			} else {
+				// uuid is empty so malloc probably failed, we seem to be out of memory
+				mg_printf(conn, "{\"jsonrpc\": \"2.0\", \"error\": {\"code\":-32000,\"message\":\"Out of memory\"}, \"id\": %s}",myId.c_str());
+			}
+
+		} else if (method == "unsubscribe") {
+			if (params.isObject()) {
+				Json::Value content = params["uuid"];
+				if (content.isString()) {
+					pthread_mutex_lock(&mutexSubscriptions);	
+					subscriptions.erase(content.asString());
+					pthread_mutex_unlock(&mutexSubscriptions);	
+					mg_printf(conn, "{\"jsonrpc\": \"2.0\", \"result\": \"success\", \"id\": %s}",myId.c_str());
+				} else {
+					mg_printf(conn, "{\"jsonrpc\": \"2.0\", \"error\": {\"code\":-32602,\"message\":\"Invalid params: need uuid parameter\"}, \"id\": %s}",myId.c_str());
+				}
+			} else {
+				mg_printf(conn, "{\"jsonrpc\": \"2.0\", \"error\": {\"code\":-32602,\"message\":\"Invalid params: need uuid parameter\"}, \"id\": %s}",myId.c_str());
+			}
+		} else if (method == "getevent") {
+			if (params.isObject()) {
+				Json::Value content = params["uuid"];
+				if (content.isString()) {
+					Variant::Map event;
+					pthread_mutex_lock(&mutexSubscriptions);	
+					map<string,Subscriber>::iterator it = subscriptions.find(content.asString());
+					if (it != subscriptions.end()) {
+						while (it->second.queue.size() <1) {
+							pthread_mutex_unlock(&mutexSubscriptions);	
+							usleep(100);
+							pthread_mutex_lock(&mutexSubscriptions);	
+						}
+						event = it->second.queue.front();
+						it->second.queue.pop_front();
+						pthread_mutex_unlock(&mutexSubscriptions);	
+						mg_printf(conn, "{\"jsonrpc\": \"2.0\", \"result\": ");
+						mg_printmap(conn, event);
+						mg_printf(conn, ", \"id\": %s}",myId.c_str());
+					} else {
+						pthread_mutex_unlock(&mutexSubscriptions);	
+						mg_printf(conn, "{\"jsonrpc\": \"2.0\", \"error\": {\"code\":-32602,\"message\":\"Invalid params: no current subscription for uuid\"}, \"id\": %s}",myId.c_str());
+					}
+				} else {
+					mg_printf(conn, "{\"jsonrpc\": \"2.0\", \"error\": {\"code\":-32602,\"message\":\"Invalid params: need uuid parameter\"}, \"id\": %s}",myId.c_str());
+				}
+			} else {
+				mg_printf(conn, "{\"jsonrpc\": \"2.0\", \"error\": {\"code\":-32602,\"message\":\"Invalid params: need uuid parameter\"}, \"id\": %s}",myId.c_str());
+			}
+
 		} else {
-			mg_printf(conn, "{\"jsonrpc\": \"2.0\", \"error\": {\"code\":-32602,\"message\":\"Invalid params\"}, \"id\": %s}",myId.c_str());
+			mg_printf(conn, "{\"jsonrpc\": \"2.0\", \"error\": {\"code\":-32601,\"message\":\"Method not found\"}, \"id\": %s}",myId.c_str());
 		}
 	} else {
 		mg_printf(conn, "{\"jsonrpc\": \"2.0\", \"error\": {\"code\":-32600,\"message\":\"Invalid Request\"}, \"id\": %s}",myId.c_str());
@@ -364,12 +457,44 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 
+	pthread_mutex_init(&mutexSubscriptions, NULL);
+
 	// start web server
 	if((ctx = mg_start(&event_handler, NULL, options)) == NULL) {
 		printf("Cannot start http server\n");
 	}
 
 	while (true) {
-		sleep(10);
+		try{
+			Variant::Map content;
+			string subject;
+			Message message = receiver.fetch(Duration::SECOND * 3);
+			session.acknowledge();
+
+			subject = message.getSubject();
+
+			// test if it is an event
+			if (subject.size()>0) {
+				//printf("received event: %s\n", subject.c_str());	
+				// workaround for bug qpid-3445
+				if (message.getContent().size() < 4) {
+					throw qpid::messaging::EncodingException("message too small");
+				}
+
+				decode(message, content);
+				content["event"] = subject;
+				pthread_mutex_lock(&mutexSubscriptions);	
+				for (map<string,Subscriber>::iterator it = subscriptions.begin(); it != subscriptions.end(); it++) {
+					it->second.queue.push_back(content);
+				}
+				pthread_mutex_unlock(&mutexSubscriptions);	
+			}	
+
+		} catch(const NoMessageAvailable& error) {
+			
+		} catch(const std::exception& error) {
+			std::cerr << error.what() << std::endl;
+		}
 	}
+
 }
