@@ -190,67 +190,79 @@ Variant::Map jsonToVariantMap(Json::Value value) {
 	return map;
 }
 
+void jsonrpcRequestHandler(struct mg_connection *conn, Json::Value request) {
+	Json::StyledWriter writer;
+	string myId;
+	const Json::Value id = request.get("id", Json::Value());
+	const string method = request.get("method", "message").asString();
+	const string version = request.get("jsonrpc", "unspec").asString();
+
+	myId = writer.write(id);
+	if (version == "2.0") {
+		const Json::Value params = request.get("params", Json::Value());
+		if (!(params.isNull())) {
+			if (method == "message" ) {
+				Json::Value content = params["content"];
+				Json::Value subject = params["subject"];
+				Variant::Map command = jsonToVariantMap(content);
+				Variant::Map responseMap;
+				Message message;
+				encode(command, message);
+
+				Address responseQueue("#response-queue; {create:always, delete:always}");
+				Receiver responseReceiver = session.createReceiver(responseQueue);
+				message.setReplyTo(responseQueue);
+				if (subject.isString()) message.setSubject(subject.asString());
+
+				sender.send(message);
+				try {
+					Message response = responseReceiver.fetch(Duration::SECOND * 3);
+					if (response.getContentSize() > 3) {	
+						decode(response,responseMap);
+						mg_printf(conn, "{\"jsonrpc\": \"2.0\", \"result\": ");
+						mg_printmap(conn, responseMap);
+						mg_printf(conn, ", \"id\": %s}",myId.c_str());
+					} else  {
+						mg_printf(conn, "{\"jsonrpc\": \"2.0\", \"result\": \"");
+						mg_printf(conn, "%s", response.getContent().c_str());
+						mg_printf(conn, "\", \"id\": %s}",myId.c_str());
+					}
+
+				} catch (qpid::messaging::NoMessageAvailable) {
+					mg_printf(conn, "{\"jsonrpc\": \"2.0\", \"result\": \"no-reply\", \"id\": %s}",myId.c_str());
+				}
+				
+		
+
+			} else {
+				mg_printf(conn, "{\"jsonrpc\": \"2.0\", \"error\": {\"code\":-32601,\"message\":\"Method not found\"}, \"id\": %s}",myId.c_str());
+			}
+		} else {
+			mg_printf(conn, "{\"jsonrpc\": \"2.0\", \"error\": {\"code\":-32602,\"message\":\"Invalid params\"}, \"id\": %s}",myId.c_str());
+		}
+	} else {
+		mg_printf(conn, "{\"jsonrpc\": \"2.0\", \"error\": {\"code\":-32600,\"message\":\"Invalid Request\"}, \"id\": %s}",myId.c_str());
+	}
+}
+
 static void jsonrpc (struct mg_connection *conn, const struct mg_request_info *request_info) {
 	Json::Value root;
 	Json::Reader reader;
-	Json::StyledWriter writer;
 	char post_data[65535];
 	int post_data_len;
 
 	post_data_len = mg_read(conn, post_data, sizeof(post_data));
 	mg_printf(conn, "%s", ajax_reply_start);		
 	if ( reader.parse(post_data, post_data + post_data_len, root, false) ) {
-		string myId;
-		Json::Value request = root;
-		const Json::Value id = request.get("id", Json::Value());
-		const string method = request.get("method", "message").asString();
-		const string version = request.get("jsonrpc", "unspec").asString();
-	
-		myId = writer.write(id);
-		if (version == "2.0") {
-			const Json::Value params = request.get("params", Json::Value());
-			if (!(params.isNull())) {
-				if (method == "message" ) {
-					Json::Value content = params["content"];
-					Json::Value subject = params["subject"];
-					Variant::Map command = jsonToVariantMap(content);
-					Variant::Map responseMap;
-					Message message;
-					encode(command, message);
-
-					Address responseQueue("#response-queue; {create:always, delete:always}");
-					Receiver responseReceiver = session.createReceiver(responseQueue);
-					message.setReplyTo(responseQueue);
-					if (subject.isString()) message.setSubject(subject.asString());
-
-					sender.send(message);
-					try {
-						Message response = responseReceiver.fetch(Duration::SECOND * 3);
-						if (response.getContentSize() > 3) {	
-							decode(response,responseMap);
-							mg_printf(conn, "{\"jsonrpc\": \"2.0\", \"result\": ");
-							mg_printmap(conn, responseMap);
-							mg_printf(conn, ", \"id\": %s}",myId.c_str());
-						} else  {
-							mg_printf(conn, "{\"jsonrpc\": \"2.0\", \"result\": \"");
-							mg_printf(conn, "%s", response.getContent().c_str());
-							mg_printf(conn, "\", \"id\": %s}",myId.c_str());
-						}
-
-					} catch (qpid::messaging::NoMessageAvailable) {
-						mg_printf(conn, "{\"jsonrpc\": \"2.0\", \"result\": \"no-reply\", \"id\": %s}",myId.c_str());
-					}
-					
-			
-
-				} else {
-					mg_printf(conn, "{\"jsonrpc\": \"2.0\", \"error\": {\"code\":-32601,\"message\":\"Method not found\"}, \"id\": %s}",myId.c_str());
-				}
-			} else {
-				mg_printf(conn, "{\"jsonrpc\": \"2.0\", \"error\": {\"code\":-32602,\"message\":\"Invalid params\"}, \"id\": %s}",myId.c_str());
+		if (root.isArray()) {
+			mg_printf(conn, "[");
+			for (unsigned int i = 0; i< root.size(); i++) {
+				jsonrpcRequestHandler(conn, root[i]);
+				if (i!=root.size()-1) mg_printf(conn, ",");
 			}
+			mg_printf(conn, "]");
 		} else {
-			mg_printf(conn, "{\"jsonrpc\": \"2.0\", \"error\": {\"code\":-32600,\"message\":\"Invalid Request\"}, \"id\": %s}",myId.c_str());
+			jsonrpcRequestHandler(conn, root);
 		}
 	} else {
 		mg_printf(conn, "%s", "{\"jsonrpc\": \"2.0\", \"error\": {\"code\":-32700,\"message\":\"Parse error\"}, \"id\": null}");
