@@ -485,7 +485,13 @@ int main(int argc, char **argv) {
 				content["event"] = subject;
 				pthread_mutex_lock(&mutexSubscriptions);	
 				for (map<string,Subscriber>::iterator it = subscriptions.begin(); it != subscriptions.end(); it++) {
-					it->second.queue.push_back(content);
+					if (it->second.queue.size() > 100) {
+						// this subscription seems to be abandoned, let's remove it to save resources
+						printf("removing subscription %s as the queue size exceeds limits\n", it->first.c_str());
+						subscriptions.erase(it);
+					} else {
+						it->second.queue.push_back(content);
+					}
 				}
 				pthread_mutex_unlock(&mutexSubscriptions);	
 			}	
