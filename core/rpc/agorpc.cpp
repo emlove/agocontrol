@@ -175,8 +175,8 @@ static void command (struct mg_connection *conn, const struct mg_request_info *r
 Variant::Map jsonToVariantMap(Json::Value value) {
 	Variant::Map map;
 	for (Json::ValueIterator it = value.begin(); it != value.end(); it++) {
-		printf("%s\n",it.key().asString().c_str());
-		printf("%s\n", (*it).asString().c_str());
+		// printf("%s\n",it.key().asString().c_str());
+		// printf("%s\n", (*it).asString().c_str());
 		if ((*it).size() > 0) {
 			map[it.key().asString()] = jsonToVariantMap((*it));
 		} else {
@@ -190,12 +190,13 @@ Variant::Map jsonToVariantMap(Json::Value value) {
 	return map;
 }
 
-void jsonrpcRequestHandler(struct mg_connection *conn, Json::Value request) {
+bool jsonrpcRequestHandler(struct mg_connection *conn, Json::Value request, bool firstElem) {
 	Json::StyledWriter writer;
 	string myId;
 	const Json::Value id = request.get("id", Json::Value());
 	const string method = request.get("method", "message").asString();
 	const string version = request.get("jsonrpc", "unspec").asString();
+	bool result;
 
 	myId = writer.write(id);
 	if (version == "2.0") {
@@ -217,15 +218,21 @@ void jsonrpcRequestHandler(struct mg_connection *conn, Json::Value request) {
 				sender.send(message);
 				try {
 					Message response = responseReceiver.fetch(Duration::SECOND * 3);
-					if (response.getContentSize() > 3) {	
-						decode(response,responseMap);
-						mg_printf(conn, "{\"jsonrpc\": \"2.0\", \"result\": ");
-						mg_printmap(conn, responseMap);
-						mg_printf(conn, ", \"id\": %s}",myId.c_str());
-					} else  {
-						mg_printf(conn, "{\"jsonrpc\": \"2.0\", \"result\": \"");
-						mg_printf(conn, "%s", response.getContent().c_str());
-						mg_printf(conn, "\", \"id\": %s}",myId.c_str());
+					if (!(id.isNull())) { // only send reply when id is not null
+						result = true;
+						if (!firstElem) mg_printf(conn, ",");
+						if (response.getContentSize() > 3) {	
+							decode(response,responseMap);
+							mg_printf(conn, "{\"jsonrpc\": \"2.0\", \"result\": ");
+							mg_printmap(conn, responseMap);
+							mg_printf(conn, ", \"id\": %s}",myId.c_str());
+						} else  {
+							mg_printf(conn, "{\"jsonrpc\": \"2.0\", \"result\": \"");
+							mg_printf(conn, "%s", response.getContent().c_str());
+							mg_printf(conn, "\", \"id\": %s}",myId.c_str());
+						}
+					} else {
+						result = false;
 					}
 
 				} catch (qpid::messaging::NoMessageAvailable) {
@@ -243,6 +250,7 @@ void jsonrpcRequestHandler(struct mg_connection *conn, Json::Value request) {
 	} else {
 		mg_printf(conn, "{\"jsonrpc\": \"2.0\", \"error\": {\"code\":-32600,\"message\":\"Invalid Request\"}, \"id\": %s}",myId.c_str());
 	}
+	return result;
 }
 
 static void jsonrpc (struct mg_connection *conn, const struct mg_request_info *request_info) {
@@ -255,14 +263,15 @@ static void jsonrpc (struct mg_connection *conn, const struct mg_request_info *r
 	mg_printf(conn, "%s", ajax_reply_start);		
 	if ( reader.parse(post_data, post_data + post_data_len, root, false) ) {
 		if (root.isArray()) {
+			bool firstElem = true;
 			mg_printf(conn, "[");
 			for (unsigned int i = 0; i< root.size(); i++) {
-				jsonrpcRequestHandler(conn, root[i]);
-				if (i!=root.size()-1) mg_printf(conn, ",");
+				bool result = jsonrpcRequestHandler(conn, root[i], firstElem);
+				if (result) firstElem = false; 
 			}
 			mg_printf(conn, "]");
 		} else {
-			jsonrpcRequestHandler(conn, root);
+			jsonrpcRequestHandler(conn, root, true);
 		}
 	} else {
 		mg_printf(conn, "%s", "{\"jsonrpc\": \"2.0\", \"error\": {\"code\":-32700,\"message\":\"Parse error\"}, \"id\": null}");
