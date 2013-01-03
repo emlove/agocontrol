@@ -317,7 +317,7 @@ bool jsonrpcRequestHandler(struct mg_connection *conn, Json::Value request, bool
 					if (it != subscriptions.end()) {
 						while (it->second.queue.size() <1) {
 							pthread_mutex_unlock(&mutexSubscriptions);	
-							usleep(100);
+							usleep(200000);
 							pthread_mutex_lock(&mutexSubscriptions);	
 						}
 						event = it->second.queue.front();
