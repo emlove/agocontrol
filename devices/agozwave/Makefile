@@ -31,7 +31,7 @@ INCLUDES	:= -I/usr/include/openzwave -I/usr/include/openzwave/value_classes -I/u
 all: agozwave
 
 agozwave: Main.o CDataFile.o
-	$(LD) -o $@ $(LDFLAGS) $^ -pthread -ludev -lqpidmessaging -lqpidtypes -luuid -lopenzwave
+	$(LD) -o $@ $(LDFLAGS) $^ -pthread  -lqpidmessaging -lqpidtypes -luuid -lopenzwave -ludev
 
 clean:
 	rm -f agozwave Main.o CDataFile.o
