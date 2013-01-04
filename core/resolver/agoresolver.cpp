@@ -39,6 +39,7 @@
 #include "../../devices/agozwave/CDataFile.h"
 
 #include "schema.h"
+#include "inventory.h"
 
 using namespace std;
 using namespace qpid::messaging;
@@ -108,11 +109,14 @@ int main(int argc, char **argv) {
 	}
 
 
-	Variant::Map inventory;
-	Variant::Map schema;
+	Variant::Map inventory; // used to hold device registrations
+	Variant::Map schema;  
 	schema = parseSchema("/etc/opt/agocontrol/schema.yaml");
 	cout << inventory << endl;
 
+	Inventory inv("/etc/opt/agocontrol/inventory.db");
+	
+	// discover devices
 	Variant::Map discovercmd;
 	discovercmd["command"] = "discover";
 	Message discovermsg;
@@ -143,8 +147,8 @@ int main(int argc, char **argv) {
 				if (subject == "event.device.announce") {
 					Variant::Map device;
 					device["devicetype"]=content["devicetype"];
-					device["name"]="empty";
-					device["room"]="empty";
+					device["name"]=inv.getdevicename(content["uuid"]);
+					device["room"]=inv.getdeviceroom(content["uuid"]); 
 					device["state"]="-";
 					inventory[content["uuid"]] = device;
 				} 

@@ -24,8 +24,8 @@ INCLUDES	:=
 
 all: agoresolver
 
-agoresolver: agoresolver.o schema.o ../../devices/agozwave/CDataFile.o
-	$(LD) -o $@ $(LDFLAGS) $^ -lqpidmessaging -lqpidtypes -luuid -lyaml-cpp
+agoresolver: agoresolver.o schema.o inventory.o ../../devices/agozwave/CDataFile.o
+	$(LD) -o $@ $(LDFLAGS) $^ -lqpidmessaging -lqpidtypes -luuid -lyaml-cpp  -lsqlite3
 
 clean:
-	rm -f agoresolver agoresolver.o schema.o ../../devices/agozwave/CDataFile.o
+	rm -f agoresolver agoresolver.o schema.o inventory.o ../../devices/agozwave/CDataFile.o
