@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <unistd.h>
+#include <iostream>
 #include <string>
 
 #include "inventory.h"
@@ -48,6 +49,30 @@ string Inventory::getdeviceroomname (string uuid) {
 
 Variant::Map Inventory::getrooms() {
 	Variant::Map result;
+	sqlite3_stmt *stmt;
+	int rc;
+
+	rc = sqlite3_prepare_v2(db, "select uuid, name, location from rooms", -1, &stmt, NULL);
+	if(rc!=SQLITE_OK) {
+                fprintf(stderr, "sql error #%d: %s\n", rc,sqlite3_errmsg(db));
+                return result;
+        }
+        while (sqlite3_step(stmt) == SQLITE_ROW) {
+		Variant::Map entry;
+		const char *roomname = (const char*)sqlite3_column_text(stmt, 1);
+		const char *location = (const char*)sqlite3_column_text(stmt, 2);
+		if (roomname != NULL) {
+			entry["name"] = string(roomname);
+		} else {
+			entry["name"] = "";
+		} 
+		if (location != NULL) {
+			entry["location"] = string(location);
+		} else {	
+			entry["location"] = "";
+		}
+		result[string( (const char*)sqlite3_column_text(stmt, 0))] = entry;
+	}
 	return result;
 } 
 int Inventory::deleteroom (string uuid) {
@@ -76,25 +101,9 @@ string Inventory::getfirst(const char *query) {
 	return result;
 }
 
-/*	
+/*
 int main(int argc, char **argv){
 	Inventory inv("/etc/opt/agocontrol/inventory.db");
-	string uuid = "41885e9b-126e-4178-9c4c-37f018bb019d";
-	string room = inv.getroomname(uuid);
-	printf("room: %s\n", room.c_str());
-
-	for (int i=0;i<sqlite3_column_count(stmt);i++) {
-		printf("%s = ",sqlite3_column_name(stmt, i));
-		switch(sqlite3_column_type(stmt, i)) {
-			case SQLITE_TEXT:
-				printf("%s",sqlite3_column_text(stmt, i));
-				break;
-			default:
-				printf("(unknown: %d)",sqlite3_column_type(stmt, i));
-
-		}
-		printf("\n");
-	}
-	
+	cout << inv.getrooms();
 }
 */

@@ -112,7 +112,6 @@ int main(int argc, char **argv) {
 	Variant::Map inventory; // used to hold device registrations
 	Variant::Map schema;  
 	schema = parseSchema("/etc/opt/agocontrol/schema.yaml");
-	cout << inventory << endl;
 
 	Inventory inv("/etc/opt/agocontrol/inventory.db");
 	
@@ -161,7 +160,7 @@ int main(int argc, char **argv) {
 					Variant::Map rooms;
 					reply["inventory"] = inventory;
 					reply["schema"] = schema;	
-					reply["rooms"] =  rooms;
+					reply["rooms"] = inv.getrooms();
 
 					const Address& replyaddress = message.getReplyTo();	
 					if (replyaddress) {
