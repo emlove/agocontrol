@@ -475,6 +475,9 @@ int main(int argc, char **argv) {
 
 			// test if it is an event
 			if (subject.size()>0) {
+				// don't flood clients with unneeded events
+				if (subject == "event.environment.timechanged") continue;
+
 				//printf("received event: %s\n", subject.c_str());	
 				// workaround for bug qpid-3445
 				if (message.getContent().size() < 4) {
