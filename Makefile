@@ -1,9 +1,12 @@
 LD     := g++
 
-all: messagesend  agotimer agozwave agochromoflex agoknx agorpc
+all: messagesend resolver agotimer agozwave agochromoflex agoknx agorpc
 
 messagesend: 
 	$(MAKE) -C core/messagesend
+
+resolver:
+	$(MAKE) -C core/resolver
 
 agotimer:
 	$(MAKE) -C core/agotimer
@@ -25,6 +28,7 @@ clean:
 	$(MAKE) -C devices/agozwave clean
 	$(MAKE) -C devices/agoknx clean
 	$(MAKE) -C core/agotimer clean
+	$(MAKE) -C core/resolver clean
 	$(MAKE) -C core/messagesend clean
 
 install:
@@ -65,4 +69,5 @@ install:
 	install core/messagesend.py $(DESTDIR)/opt/agocontrol/bin
 	install core/messagesend/messagesend $(DESTDIR)/opt/agocontrol/bin
 	install core/rpc/agorpc $(DESTDIR)/opt/agocontrol/bin
+	install core/resolver/agoresolver $(DESTDIR)/opt/agocontrol/bin
 	install core/agotimer/agotimer $(DESTDIR)/opt/agocontrol/bin

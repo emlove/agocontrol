@@ -10,6 +10,7 @@ etc/opt/agocontrol/inventory.sql
 etc/opt/agocontrol/datalogger.sql
 opt/agocontrol/bin/agologger.py
 opt/agocontrol/bin/agoresolver.py
+opt/agocontrol/bin/agoresolver
 opt/agocontrol/bin/agoscenario.py
 opt/agocontrol/bin/agoevent.py
 opt/agocontrol/bin/inventory.py
