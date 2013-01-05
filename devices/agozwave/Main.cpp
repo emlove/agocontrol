@@ -645,6 +645,7 @@ int main( int argc, char* argv[] )
 		// printf("Reads: %d Writes: %d CAN: %d NAK: %d ACK: %d Out of Frame: %d\n", data.s_readCnt, data.s_writeCnt, data.s_CANCnt, data.s_NAKCnt, data.s_ACKCnt, data.s_OOFCnt);
 		// printf("Dropped: %d Retries: %d\n", data.s_dropped, data.s_retries);
 
+		printf("agozwave startup complete, reporting devices\n");
 		reportDevices();
 	 	int ourNodeId = Manager::Get()->GetControllerNodeId(g_homeId);
 

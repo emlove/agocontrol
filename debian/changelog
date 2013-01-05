@@ -1,4 +1,4 @@
-agocontrol (1.0-94) UNRELEASED; urgency=low
+agocontrol (1.0-95) UNRELEASED; urgency=low
 
   * Non-maintainer upload.
   * add error pages for django and upstart script
@@ -86,8 +86,9 @@ agocontrol (1.0-94) UNRELEASED; urgency=low
   * jsonrpc improvements
   * new package version
   * add c++ resolver to package
+  * add startup output to agozwave
 
- -- root <root@pluto.vt100.at>  Sat, 05 Jan 2013 19:12:58 +0100
+ -- root <root@pluto.vt100.at>  Sat, 05 Jan 2013 23:19:41 +0100
 
 agocontrol (1.0-14) UNRELEASED; urgency=low
 
