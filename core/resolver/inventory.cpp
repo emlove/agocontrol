@@ -26,7 +26,19 @@ string Inventory::getdeviceroom (string uuid) {
 }
 
 int Inventory::setdevicename (string uuid, string name) {
-	return 0;
+        if (getdevicename(uuid) == "") { // does not exist, create
+                string query = "insert into devices (name, uuid) VALUES ('" + name + "','" + uuid + "')";
+                printf("creating device: %s\n", query.c_str());
+                getfirst(query.c_str());
+        } else {
+                string query = "update devices set name = '" + name + "' where uuid = '" + uuid + "'";
+                getfirst(query.c_str());
+        }
+        if (getdevicename(uuid) == name) {
+                return 0;
+        } else {
+                return 1;
+        }
 } 
 
 string Inventory::getroomname (string uuid) {
@@ -35,11 +47,29 @@ string Inventory::getroomname (string uuid) {
 }
 
 int Inventory::setroomname (string uuid, string name) { 
-	return 0;
+	if (getroomname(uuid) == "") { // does not exist, create
+		string query = "insert into rooms (name, uuid) VALUES ('" + name + "','" + uuid + "')";
+		printf("creating room: %s\n", query.c_str());
+		getfirst(query.c_str());
+	} else {
+		string query = "update rooms set name = '" + name + "' where uuid = '" + uuid + "'";
+		getfirst(query.c_str());
+	}
+	if (getroomname(uuid) == name) {
+		return 0;
+	} else {
+		return 1;
+	}
 } 
 
 int Inventory::setdeviceroom (string deviceuuid, string roomuuid) {
-	return 0;
+	string query = "update devices set room = '" + roomuuid + "' where uuid = '" + deviceuuid + "'";
+	getfirst(query.c_str());
+	if (getdeviceroom(deviceuuid) == roomuuid) {
+		return 0;
+	} else {
+		return 1;
+	}
 } 
 
 string Inventory::getdeviceroomname (string uuid) {
@@ -76,6 +106,15 @@ Variant::Map Inventory::getrooms() {
 	return result;
 } 
 int Inventory::deleteroom (string uuid) {
+	string query = "update devices set room = '' where uuid = '" + uuid + "'";
+	getfirst(query.c_str());
+	query = "delete from rooms where uuid = '" + uuid + "'";
+	getfirst(query.c_str());
+	if (getroomname(uuid) == "") {
+		return 0;
+	} else {
+		return 1;
+	}
 	return 0;
 }
 string Inventory::getfirst(const char *query) {
@@ -101,9 +140,12 @@ string Inventory::getfirst(const char *query) {
 	return result;
 }
 
-/*
+/* 
 int main(int argc, char **argv){
 	Inventory inv("/etc/opt/agocontrol/inventory.db");
+	cout << inv.setdevicename("1234", "1235") << endl;
+	cout << inv.deleteroom("1234") << endl;
+	cout << inv.getdevicename("1234");
 	cout << inv.getrooms();
 }
 */

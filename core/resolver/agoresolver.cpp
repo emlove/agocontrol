@@ -65,9 +65,12 @@ string generateUuid() {
 	return strUuid;
 }
 
+void handleEvent(Variant::Map *device, string subject, Variant::Map *content);
+
 int main(int argc, char **argv) {
 	string broker;
 	string port; 
+	string schemafile;
 
 	Variant::Map connectionOptions;
 	CDataFile ExistingDF("/etc/opt/agocontrol/config.ini");
@@ -92,6 +95,14 @@ int main(int argc, char **argv) {
 	else		
 		connectionOptions["password"]=szPassword;
 
+	t_Str szSchemafile  = t_Str("");
+	szSchemafile = ExistingDF.GetString("schema", "system");
+	if ( szSchemafile.size() == 0 )
+		schemafile = "/etc/opt/agocontrol/schema.yaml";
+	else		
+		schemafile =szPassword;
+
+
 	connectionOptions["reconnect"] = "true";
 
 
@@ -111,7 +122,7 @@ int main(int argc, char **argv) {
 
 	Variant::Map inventory; // used to hold device registrations
 	Variant::Map schema;  
-	schema = parseSchema("/etc/opt/agocontrol/schema.yaml");
+	schema = parseSchema(schemafile.c_str());
 
 	Inventory inv("/etc/opt/agocontrol/inventory.db");
 	
@@ -150,7 +161,22 @@ int main(int argc, char **argv) {
 					device["room"]=inv.getdeviceroom(content["uuid"]); 
 					device["state"]="-";
 					inventory[content["uuid"]] = device;
-				} 
+				} else if (subject == "event.device.statechanged") {// event.device.statechange
+					string uuid = content["uuid"];
+					if (uuid != "") {
+						Variant::Map *device;
+						string level = content["level"];
+						string uuid = content["uuid"];
+						device = &inventory[uuid].asMap();
+						(*device)["state"]= level;
+					}
+				} else {
+					if (content["uuid"].asString() != "") {
+						string uuid = content["uuid"];
+						handleEvent(&inventory[uuid].asMap(), subject, &content);
+					}
+
+				}
 				//printf("received event: %s\n", subject.c_str());	
 
 			} else {
@@ -173,7 +199,87 @@ int main(int argc, char **argv) {
 							printf("could not send reply\n");
 						}
 					}
-				}
+				} else if (content["command"] == "setroomname") {
+					string uuid = content["uuid"];
+					// if no uuid is provided, we need to generate one for a new room
+					if (uuid == "") uuid = generateUuid();
+					inv.setroomname(uuid, content["name"]);
+					const Address& replyaddress = message.getReplyTo();	
+					if (replyaddress) {
+						Sender replysender = session.createSender(replyaddress);
+						// the web admin expects us to just return the plain uuid
+						Message response(uuid);
+						try {
+							replysender.send(response);
+						} catch(const std::exception& error) {
+							printf("could not send reply\n");
+						}
+					}
+				} else if (content["command"] == "setdeviceroom") {
+					string result;
+					if ((content["uuid"].asString() != "") && (inv.setdeviceroom(content["uuid"], content["room"]) == 0)) {
+						result = "OK"; // TODO: unify responses
+						// update room in local device map
+						Variant::Map *device;
+						string room = inv.getdeviceroom(content["uuid"]);
+						string uuid = content["uuid"];
+						device = &inventory[uuid].asMap();
+						(*device)["room"]= room;
+					} else {
+						result = "ERR"; // TODO: unify responses
+					}
+					const Address& replyaddress = message.getReplyTo();	
+					if (replyaddress) {
+						Sender replysender = session.createSender(replyaddress);
+						Message response(result);
+						try {
+							replysender.send(response);
+						} catch(const std::exception& error) {
+							printf("could not send reply\n");
+						}
+					}
+				} else if (content["command"] == "setdevicename") {
+					string result;
+					if ((content["uuid"].asString() != "") && (inv.setdevicename(content["uuid"], content["name"]) == 0)) {
+						result = "OK"; // TODO: unify responses
+                                                // update name in local device map
+                                                Variant::Map *device;
+                                                string name = inv.getdevicename(content["uuid"]);
+                                                string uuid = content["uuid"];
+                                                device = &inventory[uuid].asMap();
+                                                (*device)["name"]= name;
+                                        } else {
+                                                result = "ERR"; // TODO: unify responses
+                                        }
+                                        const Address& replyaddress = message.getReplyTo();
+                                        if (replyaddress) {
+                                                Sender replysender = session.createSender(replyaddress);
+                                                Message response(result);
+                                                try {
+                                                        replysender.send(response);
+                                                } catch(const std::exception& error) {
+                                                        printf("could not send reply\n");
+                                                }
+                                        }
+
+				} else if (content["command"] == "deleteroom") {
+					string result;
+					if (inv.deleteroom(content["uuid"]) == 0) {
+						result = "OK";
+					} else {
+						result = "ERR";
+					}
+                                        const Address& replyaddress = message.getReplyTo();
+                                        if (replyaddress) {
+                                                Sender replysender = session.createSender(replyaddress);
+                                                Message response(result);
+                                                try {
+                                                        replysender.send(response);
+                                                } catch(const std::exception& error) {
+                                                        printf("could not send reply\n");
+                                                }
+                                        }
+				} 
 			}
 
 		} catch(const NoMessageAvailable& error) {
@@ -183,4 +289,14 @@ int main(int argc, char **argv) {
 		}
 	}
 
+}
+
+
+void handleEvent(Variant::Map *device, string subject, Variant::Map *content) {
+	if (subject == "event.environment.temperaturechanged") {
+		Variant::Map *values;
+		string elem = "values";
+		values = &(*device)[elem].asMap();
+		(*values)["temperature"] = (*content)["level"];
+	}
 }
