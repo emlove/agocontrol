@@ -91,6 +91,7 @@ Variant::Map Inventory::getrooms() {
 		Variant::Map entry;
 		const char *roomname = (const char*)sqlite3_column_text(stmt, 1);
 		const char *location = (const char*)sqlite3_column_text(stmt, 2);
+		const char *uuid = (const char*)sqlite3_column_text(stmt, 0);
 		if (roomname != NULL) {
 			entry["name"] = string(roomname);
 		} else {
@@ -101,7 +102,9 @@ Variant::Map Inventory::getrooms() {
 		} else {	
 			entry["location"] = "";
 		}
-		result[string( (const char*)sqlite3_column_text(stmt, 0))] = entry;
+		if (uuid != NULL) {
+			result[uuid] = entry;
+		}
 	}
 	return result;
 } 

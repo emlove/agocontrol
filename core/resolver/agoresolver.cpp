@@ -155,20 +155,17 @@ int main(int argc, char **argv) {
 			// test if it is an event
 			if (subject.size()>0) {
 				if (subject == "event.device.announce") {
-					Variant::Map device;
-					device["devicetype"]=content["devicetype"];
-					device["name"]=inv.getdevicename(content["uuid"]);
-					device["room"]=inv.getdeviceroom(content["uuid"]); 
-					device["state"]="-";
-					inventory[content["uuid"]] = device;
-				} else if (subject == "event.device.statechanged") {// event.device.statechange
 					string uuid = content["uuid"];
 					if (uuid != "") {
-						Variant::Map *device;
-						string level = content["level"];
-						string uuid = content["uuid"];
-						device = &inventory[uuid].asMap();
-						(*device)["state"]= level;
+						printf("adding device: uuid=%s\n", uuid.c_str());
+						Variant::Map device;
+						Variant::Map values;
+						device["devicetype"]=content["devicetype"];
+						device["name"]=inv.getdevicename(content["uuid"].asString());
+						device["room"]=inv.getdeviceroom(content["uuid"].asString()); 
+						device["state"]="-";
+						device["values"]=values;
+						inventory[uuid] = device;
 					}
 				} else {
 					if (content["uuid"].asString() != "") {
@@ -291,12 +288,39 @@ int main(int argc, char **argv) {
 
 }
 
+// helper to determine last element
+template <typename Iter>
+Iter next(Iter iter)
+{
+	return ++iter;
+}
+
+string valuesToString(Variant::Map *values) {
+	string result;
+	for (Variant::Map::const_iterator it = values->begin(); it != values->end(); ++it) {
+		result += it->second.asString();
+		if ((it != values->end()) && (next(it) != values->end())) result += "/";	
+	}
+	return result;
+}
 
 void handleEvent(Variant::Map *device, string subject, Variant::Map *content) {
-	if (subject == "event.environment.temperaturechanged") {
+	if (subject == "event.device.statechanged") {// event.device.statechange
+		Variant::Map *values;
+		values = &(*device)["values"].asMap();
+		(*values)["state"] = (*content)["level"];
+		(*device)["state"]  = valuesToString(values);
+	} else if (subject == "event.environment.temperaturechanged") {
 		Variant::Map *values;
 		string elem = "values";
 		values = &(*device)[elem].asMap();
 		(*values)["temperature"] = (*content)["level"];
+		(*device)["state"]  = valuesToString(values);
+	} else if (subject == "event.environment.humiditychanged") {
+		Variant::Map *values;
+		string elem = "values";
+		values = &(*device)[elem].asMap();
+		(*values)["humidity"] = (*content)["level"];
+		(*device)["state"]  = valuesToString(values);
 	}
 }
