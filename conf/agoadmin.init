@@ -1,0 +1,14 @@
+# agoadmin
+#
+# This service starts up the agocontrol webadmin
+# started until it is shut down again.
+
+description	"Start agocontrol webadmin"
+author		"Harald Klein <hari@vt100.at>"
+
+start on stopped rc RUNLEVEL=[2345]
+stop on runlevel [!2345]
+
+respawn
+chdir /opt/agocontrol/admin
+exec /usr/bin/python /opt/agocontrol/admin/agoadmin.py
