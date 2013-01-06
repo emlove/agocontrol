@@ -29,14 +29,36 @@
 % endfor
 </div>
 <%def name="makerow(device)">
-	<tr>
-		<td>${device["id"]}</td><td>${device["name"]}</td><td>${device["devicetype"]}</td><td>${device["state"]}</td><td><button class="switch_on" rel="${device["id"]}">On</button><button class="switch_off" rel="${device["id"]}">Off</button></td>
-	</tr>
+        <tr>
+                <td>${device["id"]}</td><td>${device["name"]}</td><td>${device["devicetype"]}</td><td>${device["state"]}</td><td>${devicetype_commands(device["devicetype"],device["id"],device["state"])}</td>
+        </tr>
 </%def>
 <%def name="devicestate(state)">
 % if state == 0:
 off\
 % else:
 on\
+% endif
+</%def>
+<%def name="devicetype_commands_values(devicetype)">
+% if devicetype in schema["devicetypes"]:
+  % for command in schema["devicetypes"][devicetype]["commands"]:
+        ${command},
+  % endfor
+% endif
+</%def>
+<%def name="devicetype_commands(devicetype,uuid,state)">
+% if devicetype in schema["devicetypes"]:
+  % for command in schema["devicetypes"][devicetype]["commands"]:
+      % if command == "setlevel":
+        <div class="slider level" rel="${uuid}" def_value="${state}"></div>
+      % else:
+        % if command in schema["commands"]:
+        <button class="switch_${command}" rel="${uuid}">${schema["commands"][command]["name"]}</button>
+        % else:
+        <button class="switch_${command}" rel="${uuid}">name missing from schema</button>
+        % endif
+      % endif
+  % endfor
 % endif
 </%def>

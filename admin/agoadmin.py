@@ -257,7 +257,7 @@ class Root:
 		try:
 			tmpl = lookup.get_template("index.html")
 			inventory = discover()
-			return tmpl.render(salutation="Hello", inventory=getDevices(inventory), rooms=getRooms(inventory))
+			return tmpl.render(salutation="Hello", inventory=getDevices(inventory), rooms=getRooms(inventory), schema=inventory["schema"])
 		except:
 			traceback = RichTraceback()
 			error_tmpl = lookup.get_template("error-tpl.html")
@@ -329,9 +329,9 @@ class Root:
 			message = conn.get_videoframe(uuid)
 			now = datetime.datetime.now()
 	
-			basedir = "archive/" + SYSTEM_UUID + "/" + str(now.year) + "/" + str(now.month) + "/" + str(now.day) + "/" 
+			basedir = "archive/" + SYSTEM_UUID + "/" + str(now.year) + "/" + str(now.month) + "/" + str(now.day) + "/" + str(now.hour) + "/" 
 			subprocess.call(['mkdir', '-p', basedir])
-			filename = basedir + str(now.hour) + "-" + str(now.minute) + "-" + str(now.second) + ".jpg"
+			filename = basedir + str(now.minute) + "-" + str(now.second) + ".jpg"
 			myFile = file(filename, 'wb')
 			myFile.write(message.content)
 			myFile.close()
