@@ -55,17 +55,21 @@ on\
 % endif
 </%def>
 <%def name="devicetype_commands(devicetype,uuid,state)">
-% if devicetype in schema["devicetypes"]:
-  % for command in schema["devicetypes"][devicetype]["commands"]:
-      % if command == "setlevel":
-        <div class="slider level" rel="${uuid}" def_value="${state}"></div>
-      % else:
-        % if command in schema["commands"]:
-        <button class="switch_${command}" rel="${uuid}">${schema["commands"][command]["name"]}</button>
-        % else:
-        <button class="switch_${command}" rel="${uuid}">name missing from schema</button>
-        % endif
-      % endif
-  % endfor
+% if schema:
+	% if "devicetypes" in schema:
+		% if devicetype in schema["devicetypes"]:
+		  % for command in schema["devicetypes"][devicetype]["commands"]:
+		      % if command == "setlevel":
+			<div class="slider level" rel="${uuid}" def_value="${state}"></div>
+		      % else:
+			% if command in schema["commands"]:
+			<button class="switch_${command}" rel="${uuid}">${schema["commands"][command]["name"]}</button>
+			% else:
+			<button class="switch_${command}" rel="${uuid}">name missing from schema</button>
+			% endif
+		      % endif
+		  % endfor
+		% endif
+	% endif
 % endif
 </%def>
