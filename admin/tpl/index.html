@@ -6,10 +6,17 @@
 <div id="dashboard">
 % for device in inventory:
     % if device["devicetype"] == "switch":
-	<div class="switch ${devicestate(device["state"])}" rel="${device["id"]}"><p class="devicename">${device["name"]}</p></div>
+	<div class="comicitem">
+	  <div class="switch ${devicestate(device["state"])}" rel="${device["id"]}"><p class="devicename">${device["name"]}</p></div>
+	</div>
     % endif
     % if device["devicetype"] == "dimmer":
-	<div class="dimmer ${devicestate(device["state"])}" rel="${device["id"]}"><p class="devicename">${device["name"]}</p></div>
+	<div class="comicitem">
+	  <div class="dimmerwrap">
+	    <div class="switch ${devicestate(device["state"])}" rel="${device["id"]}"><p class="devicename">${device["name"]}</p></div>
+	    <div class="slider level" rel="${device["id"]}" def_value="${device["state"]}"></div>
+	  </div>
+	</div>
     % endif
 % endfor
 <br clear="left">

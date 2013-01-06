@@ -1,5 +1,5 @@
 #dashboard {
-	margin: 00px 0px;
+	margin: 0px 0px;
 }
 #dashboard .off {
         width:80px;
@@ -27,55 +27,6 @@
 	text-align: center;
 }
 
-
-#dashboard dimmersection {
-	width: 128px;
-	height: auto;
-	margin: 100px auto 0;
-	position: relative;
-}
-#dashboard #dimmer{
-	width: 128px;
-	position: absolute;
-	top: 64px;
-	height: 12px;
-	border: none;
-	background-color: transparent;
-	background: url('../images/buttons/dimmer_track.png') no-repeat top left;
-    	left: 0px;
-}
-#dashboard .level {
-	content: "";
-	display: inline-block;
-	width: 128px;
-	height: 64px;
-	left: 5px;
-	top: 0px;
-	background: url('../images/buttons/dimmer_level.png') no-repeat 0 -640px;
-	position: absolute;
-	margin-top: -5px;
-}
-
-#dashboard .ui-slider .ui-slider-handle{
-	position: absolute;
-	outline: none;
-	cursor: pointer;
-	background: url('../images/buttons/dimmer_handle.png') no-repeat 50% 50%;
-	border:none;
-	border-style:none; 
-	width: 24px;
-	height: 24px;
-	top: -7px;
-	margin-left: -12px;
-}
-
-#dashboard .ui-slider-range {
-	background: none;
-	position: absolute;
-	border: 0;
-	top: 0;
-	height: 100%;
-}
 
 /* Table Sorter styles * begin */
 /* tables */
@@ -195,4 +146,19 @@ table.tablesorter thead tr .headerSortDown, table.tablesorter thead tr .headerSo
 	color: #000;
 	font-size: 100%;
 	margin: 0 0 .5em;
+}
+
+#dashboard .dimmerwrap {
+	width: 74px;
+	float: left;
+}
+#dashboard .dimmerwrap .slider {
+	margin-top: 64px;
+	width: 54px;
+}
+#dashboard .comicitem {
+	margin-top: 15px;
+	width: 100px;
+	height: 110px;
+	float: left;
 }
