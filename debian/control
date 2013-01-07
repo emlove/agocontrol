@@ -32,7 +32,7 @@ Description: ZWave interface driver
 
 Package: agocontrol-knx
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, libqpidmessaging2, libqpidclient2, libqpidcommon2, libqpidtypes1, libuuid1, agocontrol, libeibclient0, libtinyxml2
+Depends: ${shlibs:Depends}, ${misc:Depends}, libqpidmessaging2, libqpidclient2, libqpidcommon2, libqpidtypes1, libuuid1, agocontrol, libeibclient0, libtinyxml2-0.0.0
 Description: KNX interface driver
 
 Package: agocontrol-iscp
