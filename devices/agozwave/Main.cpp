@@ -703,9 +703,13 @@ int main( int argc, char* argv[] )
 
 					const Address& replyaddress = message.getReplyTo();
 					if (replyaddress) {
-						Sender replysender = session.createSender(replyaddress);
-						Message response("ACK");
-						replysender.send(response);
+						try {
+							Sender replysender = session.createSender(replyaddress);
+							Message response("ACK");
+							replysender.send(response);
+						} catch(const std::exception& error) {
+							printf("can't send reply\n");
+						}
 					} 
 				} else {
 					// this command lacks an uuid so is probably for the z-wave device itself, check for special commands here
