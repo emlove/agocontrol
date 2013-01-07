@@ -64,6 +64,7 @@ int main(int argc, char **argv) {
 	std::string myuuid;
 
 	rain8net rain8;
+	int rc;
 
 	Variant::Map connectionOptions;
 
@@ -107,10 +108,11 @@ int main(int argc, char **argv) {
 		printf("can't open rainnet device %s\n", devicefile.c_str());
 		exit(1);
 	}
-	if (rain8.comCheck() != 0) {
-		printf("can't talk to rainnet device %s, comcheck failed\n", devicefile.c_str());
+	if ((rc = rain8.comCheck()) != 0) {
+		printf("can't talk to rainnet device %s, comcheck failed: %i\n", devicefile.c_str(),rc);
 		exit(1);
 	}
+	printf("connection to rain8net established\n");
 	unsigned char status;
 	if (rain8.getStatus(1,status) == 0) {
 		printf("can't get zone status, aborting\n");
