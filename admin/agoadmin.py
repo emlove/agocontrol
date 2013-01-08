@@ -67,8 +67,7 @@ except ConfigParser.NoOptionError, e:
 	DEVICES_QUEUE = "agocontrol"
 
 try:
-        strPORT = config.get("admin", "port")
-        PORT = int(strPORT)
+        PORT = config.getint("admin", "port")
 except:
 	PORT = 8000
 
