@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="script.agoevents" name="AGOControl Event Handler" version="0.1.0" provider-name="Agocontrol">
+    <requires>
+        <import addon="xbmc.python" version="2.0"/>
+    </requires>
+ 
+    <extension point="xbmc.service" library="agoevents.py" start="startup" />
+ 
+    <extension point="xbmc.addon.metadata">
+        <platform>all</platform>
+        <language>en</language>
+        <summary lang="en">AGOControl Event Handler</summary>
+        <description lang="en">This plugin will send XBMC playback events to agocontrol</description>
+        <disclaimer lang="en">This addon requires agocontrol.</disclaimer>
+    </extension>
+</addon>
+
