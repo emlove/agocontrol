@@ -28,4 +28,4 @@ messagesend: messagesend.o ../../devices/agozwave/CDataFile.o
 	$(LD) -o $@ $(LDFLAGS) $^ -lqpidmessaging -lqpidtypes
 
 clean:
-	rm -f messagesend.o ../../devices/agozwave/CDataFile.o
+	rm -f messagesend messagesend.o ../../devices/agozwave/CDataFile.o
