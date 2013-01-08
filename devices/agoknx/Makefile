@@ -28,4 +28,4 @@ agoknx: agoknx.o ../agozwave/CDataFile.o Telegram.o
 	$(LD) -o $@ $(LDFLAGS) $^ -lqpidmessaging -lqpidtypes -luuid -leibclient -ltinyxml2
 
 clean:
-	rm -f knx knx.o Telegram.o ../agozwave/CDataFile.o
+	rm -f agoknx agoknx.o Telegram.o ../agozwave/CDataFile.o
