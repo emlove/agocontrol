@@ -182,6 +182,19 @@ void setDevice_level(Variant::Map device, int level=0) {
 }
 
 /**
+ * set device strobe
+ */
+void setDevice_strobe(Variant::Map device, int strobe=0) {
+	if (device["strobe"]) {
+		string channel = device["strobe"];
+		ola_setChannel(atoi(channel.c_str()), (int) ( 255.0 * strobe / 100 ));
+		ola_send();
+	} else {
+		printf("Strobe command not supported on device\n");
+	}
+}
+
+/**
  * announces our devices in the devicemap to the resolver
  */
 void reportDevices(Variant::Map devicemap) {
@@ -307,6 +320,8 @@ int main(int argc, char **argv) {
 							setDevice_level(it->second.asMap(), content["level"]);
 						} else if (content["command"] == "setcolor") {
 							setDevice_color(it->second.asMap(), content["red"], content["green"], content["blue"]);
+						} else if (content["command"] == "setstrobe") {
+							setDevice_strobe(it->second.asMap(), content["strobe"]);
 						} else {
 							handled=false;
 						}
