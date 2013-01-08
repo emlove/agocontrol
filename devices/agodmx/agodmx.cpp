@@ -149,15 +149,6 @@ bool ola_send(int universe = 0) {
 }
 
 /**
- * set device level 
- */
-void setDevice_level(Variant::Map device, int level=0) {
-	string channel = device["level"];
-	ola_setChannel(atoi(channel.c_str()), level);
-	ola_send();
-}
-
-/**
  * set a device to a color
  */
 void setDevice_color(Variant::Map device, int red=0, int green=0, int blue=0) {
@@ -168,6 +159,26 @@ void setDevice_color(Variant::Map device, int red=0, int green=0, int blue=0) {
 	ola_setChannel(atoi(channel_green.c_str()), green);
 	ola_setChannel(atoi(channel_blue.c_str()), blue);
 	ola_send();
+}
+
+/**
+ * set device level 
+ */
+void setDevice_level(Variant::Map device, int level=0) {
+	if (device["level"]) {
+		string channel = device["level"];
+		ola_setChannel(atoi(channel.c_str()), level);
+		ola_send();
+	} else {
+	        string channel_red = device["red"];
+        	string channel_green = device["green"];
+	        string channel_blue = device["blue"];
+		int red = (int) ( buffer.Get(atoi(channel_red.c_str())) * level / 100);
+		int green = (int) ( buffer.Get(atoi(channel_green.c_str())) * level / 100);
+		int blue = (int) ( buffer.Get(atoi(channel_blue.c_str())) * level / 100);
+		printf("calculated RGB values for level %i are: red %i, green %i, blue %i\n");
+		setDevice_color(device, red, green, blue);
+	}
 }
 
 /**
