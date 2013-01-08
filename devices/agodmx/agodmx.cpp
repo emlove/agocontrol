@@ -300,7 +300,7 @@ int main(int argc, char **argv) {
 						printf("received command  %s for device %s\n", content["command"].asString().c_str(), it->first.c_str());
 						bool handled=true;
 						if (content["command"] == "on") {
-							setDevice_level(it->second.asMap(), 255);
+							setDevice_level(it->second.asMap(), 100);
 						} else if (content["command"] == "off") {
 							setDevice_level(it->second.asMap(), 0);
 						} else if (content["command"] == "setlevel") {
