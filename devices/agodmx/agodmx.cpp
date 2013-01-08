@@ -167,7 +167,7 @@ void setDevice_color(Variant::Map device, int red=0, int green=0, int blue=0) {
 void setDevice_level(Variant::Map device, int level=0) {
 	if (device["level"]) {
 		string channel = device["level"];
-		ola_setChannel(atoi(channel.c_str()), level);
+		ola_setChannel(atoi(channel.c_str()), (int) ( 255.0 * level / 100 ));
 		ola_send();
 	} else {
 	        string channel_red = device["red"];
