@@ -1,0 +1,3 @@
+lib/systemd/system/agojointspace.service
+opt/agocontrol/bin/agojointspace.py
+
