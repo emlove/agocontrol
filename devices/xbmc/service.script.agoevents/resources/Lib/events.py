@@ -54,7 +54,7 @@ class xbmcEvents(object):
 	content = {}
 
 	def RaiseEvent(self, event):
-		self.content["state"] = event
+		self.content["new_state"] = event
 		message = Message(subject="event.mediaplayer.statechanged", content=self.content)
 		self.sender.send(message)
 
