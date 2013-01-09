@@ -1,6 +1,6 @@
 LD     := g++
 
-all: messagesend resolver agotimer agozwave agochromoflex agoknx agorpc
+all: messagesend resolver agotimer agozwave agochromoflex agoknx agorpc agodmx
 
 messagesend: 
 	$(MAKE) -C core/messagesend
@@ -23,6 +23,9 @@ agochromoflex:
 agoknx:
 	$(MAKE) -C devices/agoknx
 
+agodmx:
+	$(MAKE) -C devices/agodmx
+
 clean:
 	$(MAKE) -C devices/chromoflex clean
 	$(MAKE) -C devices/agozwave clean
@@ -30,6 +33,7 @@ clean:
 	$(MAKE) -C core/agotimer clean
 	$(MAKE) -C core/resolver clean
 	$(MAKE) -C core/messagesend clean
+	$(MAKE) -C devices/agodmx clean
 
 install:
 	@echo Installing
@@ -71,3 +75,4 @@ install:
 	install core/rpc/agorpc $(DESTDIR)/opt/agocontrol/bin
 	install core/resolver/agoresolver $(DESTDIR)/opt/agocontrol/bin
 	install core/agotimer/agotimer $(DESTDIR)/opt/agocontrol/bin
+	install devices/agodmx/agodmx $(DESTDIR)/opt/agocontrol/bin
