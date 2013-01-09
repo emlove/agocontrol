@@ -75,4 +75,4 @@ install:
 	install core/rpc/agorpc $(DESTDIR)/opt/agocontrol/bin
 	install core/resolver/agoresolver $(DESTDIR)/opt/agocontrol/bin
 	install core/agotimer/agotimer $(DESTDIR)/opt/agocontrol/bin
-	install devices/agodmx/agodmx $(DESTDIR)/opt/agocontrol/bin
+#	install devices/agodmx/agodmx $(DESTDIR)/opt/agocontrol/bin
