@@ -19,6 +19,7 @@ import urllib2
 import json
 import binascii
 import uuid
+import signal
 
 from socket import *
 from struct import *
@@ -83,6 +84,9 @@ class LogErr:
 	def write(self, data):
 		syslog.syslog(syslog.LOG_ERR, data)
 
+class deviceInfo:
+	pass
+
 syslog.openlog(sys.argv[0], syslog.LOG_PID, syslog.LOG_DAEMON)
 # sys.stderr = LogErr()
 
@@ -92,6 +96,28 @@ session = connection.session()
 receiver = session.receiver("agocontrol; {create: always, node: {type: topic}}")
 sender = session.sender("agocontrol; {create: always, node: {type: topic}}")
 
+# Update store (pickle file) and set name if new device
+def updateDevice(deviceUUID, deviceIP, deviceName):
+	# if device is new create new object, set name and send new name to resolver
+	if deviceUUID in uuidmap:
+		d=uuidmap[deviceUUID]
+	else:
+		d=deviceInfo()
+		d.name=deviceName
+		setDeviceName(deviceUUID,deviceName)
+	# update "Last seen" timestamp and device IP address
+	d.lastseen=time.time()
+	d.ip=deviceIP
+	# store updated pickle
+	uuidmap[deviceUUID]=d
+	try:
+		uuidmapfile = open("/etc/opt/agocontrol/jointspace/uuidmap.pck","w")
+		pickle.dump(uuidmap, uuidmapfile, 0)
+		uuidmapfile.close()
+	except IOError, e:
+		syslog.syslog(syslog.LOG_ERR, 'Error: Cannot update device store')
+
+# Transmit new device name to resolver
 def setDeviceName(deviceUUID, name):
 	try:
 		content = {}
@@ -103,7 +129,8 @@ def setDeviceName(deviceUUID, name):
 	except SendError, e:
 		print e
 
-def reportdevice(deviceUUID, type, product):
+# Announce device to resolver
+def reportDevice(deviceUUID, type, product):
 	try:
 		content = {}
 		content["devicetype"]=type
@@ -114,6 +141,18 @@ def reportdevice(deviceUUID, type, product):
 	except SendError, e:
 		print e
 
+# Report changed state to resolver
+def sendStateChangedEvent(deviceUUID, level):
+	try:
+		content = {}
+		content["uuid"] = deviceUUID
+		content["level"] = level
+		message = Message(content=content,subject="event.device.statechanged")
+		sender.send(message)
+	except SendError, e:
+		print e
+
+		
 # broadcast discovery packet to LAN
 def broadcast_discovery(frequency):
 	buffer = pack('!32sii16s96s96s96s', 'Test', 0x01000000,0x02000000,myUUID.bytes,'Agocontrol-jointSpace','Agocontrol','Agocontrol')
@@ -148,6 +187,7 @@ def player_info():
 		# extract data
 		playerIP=addr[0]
 		playerUUID=str(tempUUID.UUID(bytes=message[3]))
+		playerUUID="dd9578f5-20bb-471b-b6ba-7df192b90166" # DEBUG
 		playerName=message[4].strip('\0')
 		playerVendor=message[5].strip('\0')
 		playerModel=message[6].strip('\0')
@@ -161,10 +201,18 @@ def player_info():
 			#print log # DEBUG
 			syslog.syslog(syslog.LOG_NOTICE, log)
 			# report to server and name device
-			reportdevice(playerUUID, "avreceiver", playerModel)
-			setDeviceName(playerUUID,playerName + " (" + playerVendor + " " + playerModel + ")")
+			reportDevice(playerUUID, "avreceiver", playerModel)
+			updateDevice(playerUUID, playerIP, playerName + " (" + playerVendor + " " + playerModel + ")")
 		
 syslog.syslog(syslog.LOG_NOTICE, "agocontrol jointspace device is starting up")
+
+# read persistent uuid mapping from file
+try:
+	uuidmapfile = open("/etc/opt/agocontrol/jointspace/uuidmap.pck","r")
+	uuidmap = pickle.load(uuidmapfile)
+	uuidmapfile.close()
+except IOError, e:
+	uuidmap = {}
 
 # Create player info collector thread
 try:
@@ -180,48 +228,61 @@ except:
 	syslog.syslog(syslog.LOG_ERR, 'Error: unable to start discovery broadcast thread')
 	raise
 
+# exit the clean way on SIGINT
+def signal_handler(signal, frame):
+	#syslog.syslog(syslog.LOG_NOTICE, "agocontrol jointspace device is shutting down")
+	# do some cleanup functions here
+	#time.sleep(1)
+	syslog.syslog(syslog.LOG_NOTICE, "agocontrol jointspace device has stopped")
+	sys.exit(0)
+
+# register signal handler for SIGINT
+signal.signal(signal.SIGINT, signal_handler)
+
 syslog.syslog(syslog.LOG_NOTICE, "agocontrol jointspace device is running")
 
+# main loop
 while True:
 	try:
 		message = receiver.fetch(timeout=1)
 		if message.content:
 			if 'command' in message.content:
-				#print message
+				#print message; #DEBUG
+				# respond to broadcast commands
 				if message.content['command'] == 'discover':
 					syslog.syslog(syslog.LOG_NOTICE, "discovering devices")
-					#discovery()
 				elif message.content['command'] == 'inventory':
 					syslog.syslog(syslog.LOG_NOTICE, "ignoring inventory command")
+				# if not a broadcast command, check if command is for us
 				else:
-					#print "ignoring "+message.content['command']+" command"
-					'''
-					if 'uuid' in message.content:
-						for (path, uuid) in uuidmap.iteritems():
-							if message.content['uuid'] == uuid:
-								# send reply
-								if message.reply_to:
-									replysender = session.sender(message.reply_to)
-									response = Message("ACK")
-									try:
-										replysender.send(response)
-									except SendError, e:
-										print "Can't send ACK: ", e
-									except NotFound, e:
-										print "Can't send ACK: ", e
-								# print path, uuid
-								command = ''
-								if message.content['command'] == 'on':
-									print "device switched on"
-									#result = set_outlet_state(path, 'on')
-									#if "on" in result:
-									#	sendStateChangedEvent(uuid, 255)
-								if message.content['command'] == 'off':
-									print "device switched off"
-									#result = set_outlet_state(path, 'off')
-									#if "off" in result:
-									#	sendStateChangedEvent(uuid, 0)
-					'''
+					# if message is for one of our childs, treat it
+					if ('uuid' in message.content) and (message.content['uuid'] in uuidmap):
+						#print "message is for one of our childs" # DEBUG
+						deviceUUID=message.content['uuid']
+						d=uuidmap[deviceUUID]
+						# send ACK to acknowledge message reception if asked for
+						if message.reply_to:
+							replysender = session.sender(message.reply_to)
+							response = Message("ACK")
+							try:
+								replysender.send(response)
+							except SendError, e:
+								print "Can't send ACK: ", e
+							except NotFound, e:
+								print "Can't send ACK: ", e
+						command = ''
+						if message.content['command'] == 'on':
+							print d.name+" switched on" # DEBUG
+							#result = set_outlet_state(path, 'on')
+							#if "on" in result:
+							sendStateChangedEvent(deviceUUID, 255)
+						elif message.content['command'] == 'off':
+							print d.name+" switched off" # DEBUG
+							#result = set_outlet_state(path, 'off')
+							#if "off" in result:
+							sendStateChangedEvent(deviceUUID, 0)
+					else:
+						print "ignoring "+message.content['command']+" command" # DEBUG
 	except Empty, e:
 		pass
 	except KeyError, e:
@@ -229,4 +290,3 @@ while True:
 	except ReceiverError, e:
 		syslog.syslog(syslog.LOG_ERR, 'Error: '+e)
 		time.sleep(1)
-
