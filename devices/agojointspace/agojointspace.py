@@ -71,8 +71,7 @@ else:
 	enable("qpid", WARN)
 
  
-parser = optparse.OptionParser(usage="usage: %prog <command> [options] [ PARAMETERS ... ]",
-                               description="send automation control commands")
+parser = optparse.OptionParser(usage="usage: %prog <command> [options] [ PARAMETERS ... ]", description="send automation control commands")
 parser.add_option("-b", "--broker", default=broker, help="hostname of broker (default %default)")
 parser.add_option("-u", "--username", default=username, help="specify a username")
 parser.add_option("-P", "--password", default=password, help="specify a password")
@@ -90,7 +89,7 @@ class deviceInfo:
 syslog.openlog(sys.argv[0], syslog.LOG_PID, syslog.LOG_DAEMON)
 # sys.stderr = LogErr()
 
-connection = Connection(opts.broker, username=opts.username, password=opts.password,  reconnect=True)
+connection = Connection(opts.broker, username=opts.username, password=opts.password, reconnect=True)
 connection.open()
 session = connection.session()
 receiver = session.receiver("agocontrol; {create: always, node: {type: topic}}")
@@ -213,8 +212,8 @@ def player_info():
 # simulate a TV remote key press 
 def send_key(device,key):
 	url = "http://"+device.ip+":"+str(jointspaceport)+"/1/input/key"
-	req = urllib2.Request(url, json.dumps({'key': key}), {'Content-Type': 'application/json'})
 	try:
+		req = urllib2.Request(url, json.dumps({'key': key}), {'Content-Type': 'application/json'})
 		f = urllib2.urlopen(req)
 		response = f.read()
 	except urllib2.URLError,e:
@@ -224,14 +223,13 @@ def send_key(device,key):
 		return False
 	else:
 		f.close()
-		print response # DEBUG
 		return True
 		
 # set device power state
 def set_device_power(device,state):
 	if state == 'off':
 		syslog.syslog(syslog.LOG_NOTICE, 'Powering off ' + device.name)
-		if send_key(device,'standby'):
+		if send_key(device,'Standby'):
 			return True
 		else:
 			return False
@@ -266,13 +264,11 @@ def set_device_volume(device,volume):
 def get_device_volume(device):
 	url = "http://" + device.ip + ":" + str(jointspaceport) + "/1/audio/volume"
 	try:
-		jsonurl = urlopen(url)
-		answer = json.loads(jsonurl.read())
-		print answer
-		device.volume_min=answer['min']
-		device.volume_max=answer['max']
-		device.volume_muted=answer['muted']
-		device.volume_current=answer['current']
+		data = json.load(urllib2.urlopen(url))
+		device.volume_min = data['min']
+		device.volume_max = data['max']
+		device.volume_muted = data['muted']
+		device.volume_current = data['current']
 		return True
 	except:
 		return False
