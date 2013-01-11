@@ -96,7 +96,17 @@ session = connection.session()
 receiver = session.receiver("agocontrol; {create: always, node: {type: topic}}")
 sender = session.sender("agocontrol; {create: always, node: {type: topic}}")
 
-# Update store (pickle file) and set name if new device
+
+# Update store (pickle file)
+def updateStore():
+	try:
+		uuidmapfile = open("/etc/opt/agocontrol/jointspace/uuidmap.pck","w")
+		pickle.dump(uuidmap, uuidmapfile, 0)
+		uuidmapfile.close()
+	except IOError, e:
+		syslog.syslog(syslog.LOG_ERR, 'Error: Cannot update device store')
+
+# Update device name, ip address and lastseen timestamp
 def updateDevice(deviceUUID, deviceIP, deviceName):
 	# if device is new create new object, set name and send new name to resolver
 	if deviceUUID in uuidmap:
@@ -108,14 +118,11 @@ def updateDevice(deviceUUID, deviceIP, deviceName):
 	# update "Last seen" timestamp and device IP address
 	d.lastseen=time.time()
 	d.ip=deviceIP
+	if not get_device_volume(d):
+		syslog.syslog(syslog.LOG_ERR, 'Error getting volume from ' + d.name)
 	# store updated pickle
 	uuidmap[deviceUUID]=d
-	try:
-		uuidmapfile = open("/etc/opt/agocontrol/jointspace/uuidmap.pck","w")
-		pickle.dump(uuidmap, uuidmapfile, 0)
-		uuidmapfile.close()
-	except IOError, e:
-		syslog.syslog(syslog.LOG_ERR, 'Error: Cannot update device store')
+	updateStore()
 
 # Transmit new device name to resolver
 def setDeviceName(deviceUUID, name):
@@ -187,7 +194,7 @@ def player_info():
 		# extract data
 		playerIP=addr[0]
 		playerUUID=str(tempUUID.UUID(bytes=message[3]))
-		playerUUID="dd9578f5-20bb-471b-b6ba-7df192b90166" # DEBUG
+		#playerUUID="dd9578f5-20bb-471b-b6ba-7df192b90166" # DEBUG
 		playerName=message[4].strip('\0')
 		playerVendor=message[5].strip('\0')
 		playerModel=message[6].strip('\0')
@@ -198,11 +205,77 @@ def player_info():
 				+", name:"+playerName \
 				+", vendor:"+ playerVendor \
 				+", model:"+ playerModel
-			#print log # DEBUG
 			syslog.syslog(syslog.LOG_NOTICE, log)
 			# report to server and name device
 			reportDevice(playerUUID, "avreceiver", playerModel)
 			updateDevice(playerUUID, playerIP, playerName + " (" + playerVendor + " " + playerModel + ")")
+
+# simulate a TV remote key press 
+def send_key(device,key):
+	url = "http://"+device.ip+":"+str(jointspaceport)+"/1/input/key"
+	req = urllib2.Request(url, json.dumps({'key': key}), {'Content-Type': 'application/json'})
+	try:
+		f = urllib2.urlopen(req)
+		response = f.read()
+	except urllib2.URLError,e:
+		syslog.syslog(syslog.LOG_ERR, 'Error: ' + str(e.reason))
+		return False
+	except:
+		return False
+	else:
+		f.close()
+		print response # DEBUG
+		return True
+		
+# set device power state
+def set_device_power(device,state):
+	if state == 'off':
+		syslog.syslog(syslog.LOG_NOTICE, 'Powering off ' + device.name)
+		if send_key(device,'standby'):
+			return True
+		else:
+			return False
+	elif state == 'on':
+		syslog.syslog(syslog.LOG_NOTICE, 'Powering on ' + device.name)
+		syslog.syslog(syslog.LOG_ERR, 'Error:  power on currently not supported')
+		return False
+	else:
+		print "State "+state+" unknown"
+		return False
+
+# get device volume, mute state and minimum / maximum possible volume values
+def set_device_volume(device,volume):
+	url = "http://"+device.ip+":"+jointspaceport+"/1/audio/volume"
+	if volume == '+':
+		send_key(device,'VolumeUp')
+	elif volume == '-':
+		send_key(device,'VolumeDown')
+	elif volume == 'mute':
+		data = {'muted': True}
+		jsonurl = urlopen(url)
+		answer = json.loads(jsonurl.read())
+		print answer
+	else:
+		data = {'muted': False, 'current': volume}
+		jsonurl = urlopen(url)
+		answer = json.loads(jsonurl.read())
+		print answer
+	return True
+
+# get device volume, mute state and minimum / maximum possible volume values
+def get_device_volume(device):
+	url = "http://" + device.ip + ":" + str(jointspaceport) + "/1/audio/volume"
+	try:
+		jsonurl = urlopen(url)
+		answer = json.loads(jsonurl.read())
+		print answer
+		device.volume_min=answer['min']
+		device.volume_max=answer['max']
+		device.volume_muted=answer['muted']
+		device.volume_current=answer['current']
+		return True
+	except:
+		return False
 		
 syslog.syslog(syslog.LOG_NOTICE, "agocontrol jointspace device is starting up")
 
@@ -272,15 +345,27 @@ while True:
 								print "Can't send ACK: ", e
 						command = ''
 						if message.content['command'] == 'on':
-							print d.name+" switched on" # DEBUG
-							#result = set_outlet_state(path, 'on')
-							#if "on" in result:
-							sendStateChangedEvent(deviceUUID, 255)
+							if set_device_power(d, 'on'):
+								sendStateChangedEvent(deviceUUID, 255)
+							else:
+								syslog.syslog(syslog.LOG_ERR, 'Error executing the power on command for '+d.name)
 						elif message.content['command'] == 'off':
-							print d.name+" switched off" # DEBUG
-							#result = set_outlet_state(path, 'off')
-							#if "off" in result:
-							sendStateChangedEvent(deviceUUID, 0)
+							if set_device_power(d, 'off'):
+								sendStateChangedEvent(deviceUUID, 0)
+							else:
+								syslog.syslog(syslog.LOG_ERR, 'Error executing the power off command for '+d.name)
+						elif message.content['command'] == 'vol+':
+							if set_device_volume(d, '+'):
+								# send new volume to resolver here
+								pass 
+							else:
+								syslog.syslog(syslog.LOG_ERR, 'Error executing the vol+ command for '+d.name)
+						elif message.content['command'] == 'vol-':
+							if set_device_volume(d, '-'):
+								# send new volume to resolver here
+								pass 
+							else:
+								syslog.syslog(syslog.LOG_ERR, 'Error executing the vol- command for '+d.name)
 					else:
 						print "ignoring "+message.content['command']+" command" # DEBUG
 	except Empty, e:
