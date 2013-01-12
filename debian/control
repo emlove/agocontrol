@@ -54,3 +54,8 @@ Package: agocontrol-apc
 Architecture: all
 Depends: ${shlibs:Depends}, ${misc:Depends}, python-qpid, python-pysnmp4
 Description: APC Switched Rack PDU interface
+
+Package: agocontrol-jointspace
+Architecture: all
+Depends: ${shlibs:Depends}, ${misc:Depends}, python-qpid
+Description: JointSpace interface
