@@ -23,6 +23,13 @@ commands:
         name: level to set
         type: integer
         range: [0, 100]
+  setchannel:
+    name: set channel
+    parameters:
+      channel:
+        name: channel to set
+        type: integer
+        range: [0, 9999]
   setcolor:
     name: set color
     parameters:
@@ -61,6 +68,10 @@ commands:
     name: volume up
   vol-:
     name: volume down
+  chan+:
+    name: next channel
+  chan-:
+    name: previous channel
   setinput:
     name: input selector
     type: option
@@ -161,6 +172,10 @@ devicetypes:
     name: AV receiver
     description: AV receiver
     commands: ["on", "off", mute, unmute, mutetoggle, vol+, vol-, setinput, setlevel]
+  tv:
+    name: TV
+    description: TV
+    commands: ["on", "off", mute, unmute, vol+, vol-, chan+, chan-, setchannel, setinput, setlevel]
   dimmerrgb:
     name: RGB dimmer
     description: allows to set different colors
@@ -189,6 +204,9 @@ values:
   level:
     name: level
     description: level value
+  channel:
+    name: channel
+    description: channel number
   devicetype:
     name: device type
     description: device type
