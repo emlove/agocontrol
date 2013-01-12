@@ -41,6 +41,7 @@ install:
 	install -d $(DESTDIR)/etc/opt/agocontrol/owfs
 	install -d $(DESTDIR)/etc/opt/agocontrol/ozw
 	install -d $(DESTDIR)/etc/opt/agocontrol/apc
+	install -d $(DESTDIR)/etc/opt/agocontrol/jointspace
 	install -d $(DESTDIR)/opt/agocontrol/bin
 	install -d $(DESTDIR)/var/opt/agocontrol
 	install -d $(DESTDIR)/lib/systemd/system
@@ -69,6 +70,7 @@ install:
 	install devices/agoknx/agoknx $(DESTDIR)/opt/agocontrol/bin
 	install devices/chromoflex/agochromoflex $(DESTDIR)/opt/agocontrol/bin
 	install devices/agoapc/agoapc.py $(DESTDIR)/opt/agocontrol/bin
+	install devices/agojointspace/agojointspace.py $(DESTDIR)/opt/agocontrol/bin
 	install gateways/agomeloware.py $(DESTDIR)/opt/agocontrol/bin
 	install core/messagesend.py $(DESTDIR)/opt/agocontrol/bin
 	install core/messagesend/messagesend $(DESTDIR)/opt/agocontrol/bin

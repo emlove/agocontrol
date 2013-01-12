@@ -245,7 +245,7 @@ def player_info():
 				+", model:"+ playerModel
 			syslog.syslog(syslog.LOG_NOTICE, log)
 			# report to server and name device
-			reportDevice(playerUUID, "avreceiver", playerModel)
+			reportDevice(playerUUID, "tv", playerModel)
 			updateDevice(playerUUID, playerIP, playerName + " (" + playerVendor + " " + playerModel + ")")
 ###
 ### JOITSPACE REST API COMMUNICATION
