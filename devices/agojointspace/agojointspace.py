@@ -95,6 +95,9 @@ session = connection.session()
 receiver = session.receiver("agocontrol; {create: always, node: {type: topic}}")
 sender = session.sender("agocontrol; {create: always, node: {type: topic}}")
 
+###
+### LOCAL PERSISTENT DEVICE INFO STORE
+###
 
 # Update store (pickle file)
 def updateStore():
@@ -123,6 +126,10 @@ def updateDevice(deviceUUID, deviceIP, deviceName):
 	uuidmap[deviceUUID]=d
 	updateStore()
 
+###
+### COMMUNICATION WITH RESOLVER
+###
+
 # Transmit new device name to resolver
 def setDeviceName(deviceUUID, name):
 	try:
@@ -133,7 +140,11 @@ def setDeviceName(deviceUUID, name):
 		message = Message(content=content)
 		sender.send(message)
 	except SendError, e:
-		print e
+		syslog.syslog(syslog.LOG_ERR, 'Error: (setDeviceName) ' + e)
+
+###
+### EVENTS TO REPORT BACK TO RESOLVER
+###
 
 # Announce device to resolver
 def reportDevice(deviceUUID, type, product):
@@ -145,7 +156,7 @@ def reportDevice(deviceUUID, type, product):
 		message = Message(content=content,subject="event.device.announce")
 		sender.send(message)
 	except SendError, e:
-		print e
+		syslog.syslog(syslog.LOG_ERR, 'Error: (reportDevice) ' + e)
 
 # Report changed state to resolver
 def sendStateChangedEvent(deviceUUID, level):
@@ -156,17 +167,45 @@ def sendStateChangedEvent(deviceUUID, level):
 		message = Message(content=content,subject="event.device.statechanged")
 		sender.send(message)
 	except SendError, e:
-		print e
+		syslog.syslog(syslog.LOG_ERR, 'Error: (sendStateChangedEvent) ' + e)
 
-		
+# Report changed device volume to resolver
+def sendVolumeChangedEvent(deviceUUID, level):
+	try:
+		content = {}
+		content["uuid"] = deviceUUID
+		content["level"] = level
+		message = Message(content=content,subject="event.device.volumechanged")
+		#sender.send(message)
+		syslog.syslog(syslog.LOG_NOTICE, "Volume changed event not yet available on core")
+	except SendError, e:
+		syslog.syslog(syslog.LOG_ERR, 'Error: '+e)
+
+# Report changed device channel to resolver
+def sendChannelChangedEvent(deviceUUID, channel):
+	try:
+		content = {}
+		content["uuid"] = deviceUUID
+		content["channel"] = channel
+		message = Message(content=content,subject="event.device.channelchanged")
+		#sender.send(message)
+		syslog.syslog(syslog.LOG_NOTICE, "Channel changed event not yet available on core")
+	except SendError, e:
+		syslog.syslog(syslog.LOG_ERR, 'Error: '+e)
+
+###
+### DIRECTFB / VOODOO PLAYER DISCOVERY
+### used to discover jointspace capable devices on LAN
+###
+
 # broadcast discovery packet to LAN
 def broadcast_discovery(frequency):
-	buffer = pack('!32sii16s96s96s96s', 'Test', 0x01000000,0x02000000,myUUID.bytes,'Agocontrol-jointSpace','Agocontrol','Agocontrol')
+	buffer = pack('!32sii16s96s96s96s', 'V1.0', 0x01000000,0x02000000,myUUID.bytes,'Agocontrol-jointSpace','Agocontrol','Agocontrol')
 	s = socket(AF_INET, SOCK_DGRAM)
 	try:
 		s.bind(('', 0))
 	except ReceiverError, e:
-		syslog.syslog(syslog.LOG_ERR, 'broadcast_discovery: failure to bind')
+		syslog.syslog(syslog.LOG_ERR, 'Error: Failure to bind (broadcast_discovery)')
 		s.close()
 		raise	
 	s.setsockopt(SOL_SOCKET, SO_BROADCAST, 1)
@@ -182,7 +221,7 @@ def player_info():
 	try:
 		s.bind(('', voodooPort))
 	except ReceiverError, e:
-		syslog.syslog(syslog.LOG_ERR, 'player_info: failure to bind')
+		syslog.syslog(syslog.LOG_ERR, 'Error: Failure to bind (player_info)')
 		s.close()
 		raise
 	while True:
@@ -208,14 +247,19 @@ def player_info():
 			# report to server and name device
 			reportDevice(playerUUID, "avreceiver", playerModel)
 			updateDevice(playerUUID, playerIP, playerName + " (" + playerVendor + " " + playerModel + ")")
+###
+### JOITSPACE REST API COMMUNICATION
+###
 
-# simulate a TV remote key press 
-def send_key(device,key):
-	url = "http://"+device.ip+":"+str(jointspaceport)+"/1/input/key"
+# post json data to jointspace REST API
+def post_json(device, json, path):
+	#print "JSON: "+json #DEBUG
+	url = "http://"+device.ip+":"+str(jointspaceport)+path
 	try:
-		req = urllib2.Request(url, json.dumps({'key': key}), {'Content-Type': 'application/json'})
+		req = urllib2.Request(url, json, {'Content-Type': 'application/json'})
 		f = urllib2.urlopen(req)
 		response = f.read()
+		#print response # DEBUG
 	except urllib2.URLError,e:
 		syslog.syslog(syslog.LOG_ERR, 'Error: ' + str(e.reason))
 		return False
@@ -224,6 +268,10 @@ def send_key(device,key):
 	else:
 		f.close()
 		return True
+
+# simulate a TV remote key press 
+def send_key(device,key):
+	return post_json(device, json.dumps({'key': key}),"/1/input/key")
 		
 # set device power state
 def set_device_power(device,state):
@@ -238,41 +286,59 @@ def set_device_power(device,state):
 		syslog.syslog(syslog.LOG_ERR, 'Error:  power on currently not supported')
 		return False
 	else:
-		print "State "+state+" unknown"
+		syslog.syslog(syslog.LOG_ERR, 'Error: (set_device_power) State ' + state + " unknown")
 		return False
 
-# get device volume, mute state and minimum / maximum possible volume values
+# set device volume and mute state
 def set_device_volume(device,volume):
-	url = "http://"+device.ip+":"+jointspaceport+"/1/audio/volume"
 	if volume == '+':
 		send_key(device,'VolumeUp')
 	elif volume == '-':
 		send_key(device,'VolumeDown')
 	elif volume == 'mute':
 		data = {'muted': True}
-		jsonurl = urlopen(url)
-		answer = json.loads(jsonurl.read())
-		print answer
+		return post_json(device, json.dumps(data),"/1/audio/volume")
 	else:
-		data = {'muted': False, 'current': volume}
-		jsonurl = urlopen(url)
-		answer = json.loads(jsonurl.read())
-		print answer
-	return True
+		data = {'muted': False, 'current': int(volume) * device.volume_max / 100}
+		if post_json(device, json.dumps(data),"/1/audio/volume"):
+			device.volume_current = int(volume)
+			updateStore()
+			return True
+		else:
+			return False
 
 # get device volume, mute state and minimum / maximum possible volume values
 def get_device_volume(device):
 	url = "http://" + device.ip + ":" + str(jointspaceport) + "/1/audio/volume"
 	try:
 		data = json.load(urllib2.urlopen(url))
-		device.volume_min = data['min']
-		device.volume_max = data['max']
+		device.volume_min = int(data['min'])
+		device.volume_max = int(data['max'])
 		device.volume_muted = data['muted']
-		device.volume_current = data['current']
+		device.volume_current = int(data['current'])
 		return True
 	except:
 		return False
-		
+
+# set device channel
+def set_device_channel(device,channel):
+	if channel == '+':
+		send_key(device,'ChannelStepUp')
+	elif channel == '-':
+		send_key(device,'ChannelStepDown')
+	else:
+		data = {'id': channel}
+		if post_json(device, json.dumps(data),"/1/channels/current"):
+			device.channel_current = int(channel)
+			updateStore()
+			return True
+		else:
+			return False
+
+###
+### MAIN WORKING SPAGHETTI
+###
+	
 syslog.syslog(syslog.LOG_NOTICE, "agocontrol jointspace device is starting up")
 
 # read persistent uuid mapping from file
@@ -309,7 +375,7 @@ def signal_handler(signal, frame):
 signal.signal(signal.SIGINT, signal_handler)
 
 syslog.syslog(syslog.LOG_NOTICE, "agocontrol jointspace device is running")
-
+#cfrom pprint import pprint DEBUG
 # main loop
 while True:
 	try:
@@ -326,7 +392,7 @@ while True:
 				else:
 					# if message is for one of our childs, treat it
 					if ('uuid' in message.content) and (message.content['uuid'] in uuidmap):
-						#print "message is for one of our childs" # DEBUG
+						#pprint(message.content) # DEBUG
 						deviceUUID=message.content['uuid']
 						d=uuidmap[deviceUUID]
 						# send ACK to acknowledge message reception if asked for
@@ -336,38 +402,79 @@ while True:
 							try:
 								replysender.send(response)
 							except SendError, e:
-								print "Can't send ACK: ", e
+								syslog.syslog(syslog.LOG_ERR, "Error: Can't send ACK: ", e)
+
 							except NotFound, e:
-								print "Can't send ACK: ", e
+								syslog.syslog(syslog.LOG_ERR, "Error: Can't send ACK: ", e)
 						command = ''
+						
+						# Power ON
 						if message.content['command'] == 'on':
 							if set_device_power(d, 'on'):
-								sendStateChangedEvent(deviceUUID, 255)
+								sendStateChangedEvent(deviceUUID, 100)
 							else:
 								syslog.syslog(syslog.LOG_ERR, 'Error executing the power on command for '+d.name)
+						
+						# Power OFF
 						elif message.content['command'] == 'off':
 							if set_device_power(d, 'off'):
 								sendStateChangedEvent(deviceUUID, 0)
 							else:
 								syslog.syslog(syslog.LOG_ERR, 'Error executing the power off command for '+d.name)
+						
+						# Volume +
 						elif message.content['command'] == 'vol+':
 							if set_device_volume(d, '+'):
 								# send new volume to resolver here
 								pass 
 							else:
 								syslog.syslog(syslog.LOG_ERR, 'Error executing the vol+ command for '+d.name)
+						
+						# Volume -
 						elif message.content['command'] == 'vol-':
 							if set_device_volume(d, '-'):
 								# send new volume to resolver here
 								pass 
 							else:
 								syslog.syslog(syslog.LOG_ERR, 'Error executing the vol- command for '+d.name)
+						
+						# set volume level
+						elif (message.content['command'] == 'setlevel') and ('level' in message.content):
+							if set_device_volume(d, message.content['level']):
+								# send new volume to resolver here
+								sendVolumeChangedEvent(deviceUUID, d.volume_current / d.volume_max * 100)
+							else:
+								syslog.syslog(syslog.LOG_ERR, 'Error setting the volume for '+d.name)
+						# Channel +
+						elif message.content['command'] == 'chan+':
+							if set_device_channel(d, '+'):
+								# send new channel to resolver here
+								pass 
+							else:
+								syslog.syslog(syslog.LOG_ERR, 'Error executing the channel+ command for '+d.name)
+						
+						# Channel -
+						elif message.content['command'] == 'chan-':
+							if set_device_channel(d, '-'):
+								# send new channel to resolver here
+								pass 
+							else:
+								syslog.syslog(syslog.LOG_ERR, 'Error executing the channel- command for '+d.name)
+						
+						# set channel number
+						elif (message.content['command'] == 'setchannel') and ('channel' in message.content):
+							if set_device_channel(d, message.content['channel']):
+								# send new channel to resolver here
+								sendChannelChangedEvent(deviceUUID, d.channel_current)
+							else:
+								syslog.syslog(syslog.LOG_ERR, 'Error setting the channel for '+d.name)
 					else:
-						print "ignoring "+message.content['command']+" command" # DEBUG
+						#print "ignoring "+message.content['command']+" command" # DEBUG
+						pass
 	except Empty, e:
 		pass
 	except KeyError, e:
-		print "key error in command evaluation", e
+		syslog.syslog(syslog.LOG_ERR, "Error:  Key error in command evaluation", e)
 	except ReceiverError, e:
 		syslog.syslog(syslog.LOG_ERR, 'Error: '+e)
 		time.sleep(1)
