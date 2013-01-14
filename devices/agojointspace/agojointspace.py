@@ -187,8 +187,7 @@ def sendVolumeChangedEvent(deviceUUID, level):
 		content["uuid"] = deviceUUID
 		content["level"] = level
 		message = Message(content=content,subject="event.device.volumechanged")
-		#sender.send(message)
-		syslog.syslog(syslog.LOG_NOTICE, "Volume changed event not yet available on core")
+		sender.send(message)
 	except SendError, e:
 		syslog.syslog(syslog.LOG_ERR, 'Error: '+e)
 
@@ -199,8 +198,7 @@ def sendChannelChangedEvent(deviceUUID, channel):
 		content["uuid"] = deviceUUID
 		content["channel"] = channel
 		message = Message(content=content,subject="event.device.channelchanged")
-		#sender.send(message)
-		syslog.syslog(syslog.LOG_NOTICE, "Channel changed event not yet available on core")
+		sender.send(message)
 	except SendError, e:
 		syslog.syslog(syslog.LOG_ERR, 'Error: '+e)
 
@@ -274,13 +272,11 @@ def player_info():
 
 # post json data to jointspace REST API
 def post_json(device, json, path):
-	print "JSON: "+json #DEBUG
 	url = "http://"+device.ip+":"+str(jointspaceport)+path
 	try:
 		req = urllib2.Request(url, json, {'Content-Type': 'application/json'})
 		f = urllib2.urlopen(req)
 		response = f.read()
-		print response # DEBUG
 	except urllib2.URLError,e:
 		syslog.syslog(syslog.LOG_ERR, 'Error: ' + str(e.reason))
 		return False
@@ -325,8 +321,11 @@ def set_device_volume(device,volume):
 	elif volume == 'mute':
 		data = {'muted': True}
 		return post_json(device, json.dumps(data),"/1/audio/volume")
+	elif volume == 'unmute':
+		data = {'muted': False}
+		return post_json(device, json.dumps(data),"/1/audio/volume")
 	else:
-		data = {'current': int(volume) * device.volume_max / 100}
+		data = {'muted': False, 'current': int(volume) * device.volume_max / 100}
 		if post_json(device, json.dumps(data),"/1/audio/volume"):
 			device.volume_current = int(volume)
 			updateStore()
@@ -415,7 +414,6 @@ while True:
 		message = receiver.fetch(timeout=1)
 		if message.content:
 			if 'command' in message.content:
-				#print message; #DEBUG
 				# respond to broadcast commands
 				if message.content['command'] == 'discover':
 					syslog.syslog(syslog.LOG_NOTICE, "discovering devices")
@@ -425,7 +423,6 @@ while True:
 				else:
 					# if message is for one of our childs, treat it
 					if ('uuid' in message.content) and (message.content['uuid'] in uuidmap):
-						#pprint(message.content) # DEBUG
 						deviceUUID=message.content['uuid']
 						d=uuidmap[deviceUUID]
 						# send ACK to acknowledge message reception if asked for
@@ -471,6 +468,22 @@ while True:
 								pass 
 							else:
 								syslog.syslog(syslog.LOG_ERR, 'Error executing the vol- command for '+d.name)
+
+						# Mute
+						elif message.content['command'] == 'mute':
+							if set_device_volume(d, 'mute'):
+								# send new volume to resolver here
+								pass 
+							else:
+								syslog.syslog(syslog.LOG_ERR, 'Error executing the mute command for '+d.name)
+
+						# Unmute
+						elif message.content['command'] == 'unmute':
+							if set_device_volume(d, 'unmute'):
+								# send new volume to resolver here
+								pass 
+							else:
+								syslog.syslog(syslog.LOG_ERR, 'Error executing the unmute command for '+d.name)
 						
 						# set volume level
 						elif (message.content['command'] == 'setlevel') and ('level' in message.content):
