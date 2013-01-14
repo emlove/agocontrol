@@ -7,13 +7,13 @@
 % for device in inventory:
     % if device["devicetype"] == "switch":
 	<div class="comicitem">
-	  <div class="toogleswitch" state="${device["state"]}" command="${devicestate(device["state"])}" rel="${device["id"]}"><p class="devicename">${device["name"]}</p></div>
+	  <div class="toogleswitch" state="${device["state"]}" ${devicestate(device["state"])} rel="${device["id"]}"><p class="devicename">${device["name"]}</p></div>
 	</div>
     % endif
     % if device["devicetype"] == "dimmer":
 	<div class="comicitem">
 	  <div class="dimmerwrap">
-	    <div class="toogleswitch" state="${device["state"]}" command="${devicestate(device["state"])}" rel="${device["id"]}"><p class="devicename">${device["name"]}</p></div>
+	    <div class="toogleswitch" state="${device["state"]}" ${devicestate(device["state"])} rel="${device["id"]}"><p class="devicename">${device["name"]}</p></div>
 	    <div class="slider level" rel="${device["id"]}" def_value="${device["state"]}"></div>
 	  </div>
 	</div>
@@ -42,9 +42,11 @@
 </%def>
 <%def name="devicestate(state)">
 % if state == 0:
-off\
+command="off"\
+% elif state == "0":
+command="off"\
 % else:
-on\
+command="on"\
 % endif
 </%def>
 <%def name="devicetype_commands_values(devicetype)">
