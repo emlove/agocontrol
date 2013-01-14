@@ -51,11 +51,6 @@ except ConfigParser.NoOptionError, e:
 	debug = "WARN"
 
 try:
-	jointspacehost = config.get("jointspace","device")
-except:
-	jointspacehost = "localhost"
-
-try:
 	jointspaceport = int(config.get("jointspace","port"))
 except:
 	jointspaceport = 1925
@@ -64,7 +59,12 @@ try:
 	voodooPort = int(config.get("jointspace","voodooport"))
 except:
 	voodooPort = 2323
-	
+
+try:
+	deviceTimeout = int(config.get("jointspace","timeout"))
+except:
+	deviceTimeout = 65
+
 if debug=="DEBUG":
 	enable("qpid", DEBUG)
 else:
@@ -158,6 +158,17 @@ def reportDevice(deviceUUID, type, product):
 	except SendError, e:
 		syslog.syslog(syslog.LOG_ERR, 'Error: (reportDevice) ' + e)
 
+# Remove device from resolver
+def removeDevice(deviceUUID):
+	syslog.syslog(syslog.LOG_NOTICE, "Removing " + uuidmap[deviceUUID].name + " from resolver")
+	try:
+		content = {}
+		content["uuid"] = deviceUUID
+		message = Message(content=content,subject="event.device.remove")
+		sender.send(message)
+	except SendError, e:
+		syslog.syslog(syslog.LOG_ERR, 'Error: (removeDevice) ' + e)
+
 # Report changed state to resolver
 def sendStateChangedEvent(deviceUUID, level):
 	try:
@@ -193,6 +204,14 @@ def sendChannelChangedEvent(deviceUUID, channel):
 	except SendError, e:
 		syslog.syslog(syslog.LOG_ERR, 'Error: '+e)
 
+# Scan through device list and remove devices not seen for a specified period of time
+def scanDeviceTimeouts():
+    for deviceUUID, device in uuidmap.items():
+		if (time.time() - device.lastseen > deviceTimeout):
+			removeDevice(deviceUUID)
+			del uuidmap[deviceUUID]
+			updateStore()
+
 ###
 ### DIRECTFB / VOODOO PLAYER DISCOVERY
 ### used to discover jointspace capable devices on LAN
@@ -211,6 +230,7 @@ def broadcast_discovery(frequency):
 	s.setsockopt(SOL_SOCKET, SO_BROADCAST, 1)
 	time.sleep(2)
 	while True:
+		scanDeviceTimeouts()
 		s.sendto(buffer, ('<broadcast>', voodooPort))
 		time.sleep(frequency)
 	
@@ -247,19 +267,20 @@ def player_info():
 			# report to server and name device
 			reportDevice(playerUUID, "tv", playerModel)
 			updateDevice(playerUUID, playerIP, playerName + " (" + playerVendor + " " + playerModel + ")")
+
 ###
 ### JOITSPACE REST API COMMUNICATION
 ###
 
 # post json data to jointspace REST API
 def post_json(device, json, path):
-	#print "JSON: "+json #DEBUG
+	print "JSON: "+json #DEBUG
 	url = "http://"+device.ip+":"+str(jointspaceport)+path
 	try:
 		req = urllib2.Request(url, json, {'Content-Type': 'application/json'})
 		f = urllib2.urlopen(req)
 		response = f.read()
-		#print response # DEBUG
+		print response # DEBUG
 	except urllib2.URLError,e:
 		syslog.syslog(syslog.LOG_ERR, 'Error: ' + str(e.reason))
 		return False
@@ -292,14 +313,20 @@ def set_device_power(device,state):
 # set device volume and mute state
 def set_device_volume(device,volume):
 	if volume == '+':
-		send_key(device,'VolumeUp')
+		if send_key(device,'VolumeUp'):
+			return True
+		else:
+			return False
 	elif volume == '-':
-		send_key(device,'VolumeDown')
+		if send_key(device,'VolumeDown'):
+			return True
+		else:
+			return False
 	elif volume == 'mute':
 		data = {'muted': True}
 		return post_json(device, json.dumps(data),"/1/audio/volume")
 	else:
-		data = {'muted': False, 'current': int(volume) * device.volume_max / 100}
+		data = {'current': int(volume) * device.volume_max / 100}
 		if post_json(device, json.dumps(data),"/1/audio/volume"):
 			device.volume_current = int(volume)
 			updateStore()
@@ -323,9 +350,15 @@ def get_device_volume(device):
 # set device channel
 def set_device_channel(device,channel):
 	if channel == '+':
-		send_key(device,'ChannelStepUp')
+		if send_key(device,'ChannelStepUp'):
+			return True
+		else:
+			return False
 	elif channel == '-':
-		send_key(device,'ChannelStepDown')
+		if send_key(device,'ChannelStepDown'):
+			return True
+		else:
+			return False
 	else:
 		data = {'id': channel}
 		if post_json(device, json.dumps(data),"/1/channels/current"):
@@ -358,7 +391,7 @@ except:
 
 # Create discovery packet broadcast thread
 try:
-	thread.start_new_thread( broadcast_discovery, (10,) )
+	thread.start_new_thread( broadcast_discovery, (30,) )
 except:
 	syslog.syslog(syslog.LOG_ERR, 'Error: unable to start discovery broadcast thread')
 	raise
@@ -375,7 +408,7 @@ def signal_handler(signal, frame):
 signal.signal(signal.SIGINT, signal_handler)
 
 syslog.syslog(syslog.LOG_NOTICE, "agocontrol jointspace device is running")
-#cfrom pprint import pprint DEBUG
+
 # main loop
 while True:
 	try:
@@ -419,6 +452,7 @@ while True:
 						elif message.content['command'] == 'off':
 							if set_device_power(d, 'off'):
 								sendStateChangedEvent(deviceUUID, 0)
+								removeDevice(deviceUUID)
 							else:
 								syslog.syslog(syslog.LOG_ERR, 'Error executing the power off command for '+d.name)
 						
@@ -441,6 +475,7 @@ while True:
 						# set volume level
 						elif (message.content['command'] == 'setlevel') and ('level' in message.content):
 							if set_device_volume(d, message.content['level']):
+								syslog.syslog(syslog.LOG_NOTICE, d.name + " changed volume to " + str(d.volume_current))
 								# send new volume to resolver here
 								sendVolumeChangedEvent(deviceUUID, d.volume_current / d.volume_max * 100)
 							else:
