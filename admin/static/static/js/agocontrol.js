@@ -80,19 +80,12 @@ function add_scenario_command(command) {
 
 $(document).ready(function () {
 
-    $(".switch_on").click(function (event) {
+    $(".switch").click(function (event) {
         var rel = $(this).attr('rel');
+        var command = $(this).attr('command');
         $.ajax({
             type: "GET",
-            url: "/command/" + rel + "/on"
-        });
-    });
-
-    $(".switch_off").click(function (event) {
-        var rel = $(this).attr('rel');
-        $.ajax({
-            type: "GET",
-            url: "/command/" + rel + "/off"
+            url: "/command/" + rel + "/" + command
         });
     });
 
@@ -156,16 +149,16 @@ $(document).ready(function () {
 
 
     // comic buttons toogle
-    $(".switch").click(function (event) {
+    $(".toogleswitch").click(function (event) {
         var rel = $(this).attr('rel');
-        if ($(this).attr("class") == "switch off") {
+        if ($(this).attr("command") == "off") {
             $.ajax({
                 type: "GET",
                 url: "/command/" + rel + "/on"
             });
-            $(this).attr("class", "switch on");
+            $(this).attr("command", "on");
         } else {
-            $(this).attr("class", "switch off");
+            $(this).attr("command", "off");
             $.ajax({
                 type: "GET",
                 url: "/command/" + rel + "/off"
@@ -173,8 +166,9 @@ $(document).ready(function () {
         }
     });
 
+
     // dimmer section
-    var dimmer = $('#dimmer');
+    var dimmer = $('.dimmer');
 
     //Call the dimmer
     dimmer.slider({
@@ -277,7 +271,7 @@ $(document).ready(function () {
 
     $(".slider").each(function () {
         $(this).empty().slider({
-            value: $(this).attr('def_value'),
+            value: $(this).attr('state'),
             min: 0,
             max: 100,
             step: 5,

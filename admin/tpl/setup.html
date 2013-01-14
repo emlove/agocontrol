@@ -68,12 +68,10 @@
 % if devicetype in schema["devicetypes"]:
   % for command in schema["devicetypes"][devicetype]["commands"]:
       % if command == "setlevel":
-        <div class="slider level" rel="${uuid}" def_value="${state}"></div>
+        <div class="slider level" rel="${uuid}" state="${state}"></div>
       % else:
         % if command in schema["commands"]:
-	<button class="switch_${command}" rel="${uuid}">${schema["commands"][command]["name"]}</button>
-        % else:
-	<button class="switch_${command}" rel="${uuid}">name missing from schema</button>
+	<button class="switch" command="${command}" rel="${uuid}" state="${state}">${schema["commands"][command]["name"]}</button>
 	% endif
       % endif
   % endfor
