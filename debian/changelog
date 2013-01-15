@@ -1,4 +1,4 @@
-agocontrol (1.0-97.1) UNRELEASED; urgency=low
+agocontrol (1.0-98) UNRELEASED; urgency=low
 
   * Non-maintainer upload.
   * add error pages for django and upstart script
@@ -90,8 +90,9 @@ agocontrol (1.0-97.1) UNRELEASED; urgency=low
   * new package version for agozwave startup complete message
   * fix knx dependency
   * make some commands work in webadmin and in jointspace
+  * Reading channel and input list from TV devices
 
- -- root <root@agocontrol.swa.local>  Sun, 13 Jan 2013 11:58:36 +0100
+ -- root <root@agocontrol.swa.local>  Sun, 13 Jan 2013 15:08:56 +0100
 
 agocontrol (1.0-14) UNRELEASED; urgency=low
 
