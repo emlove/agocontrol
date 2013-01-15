@@ -346,6 +346,28 @@ def get_device_volume(device):
 	except:
 		return False
 
+# get list of available channels from device			
+def get_device_channels(device):
+	url = "http://" + device.ip + ":" + str(jointspaceport) + "/1/channels"
+	try:
+		data = json.load(urllib2.urlopen(url))
+		device.channels = json.dumps(data)
+		updateStore()
+		return True
+	except:
+		return False
+
+# get active device channel
+def get_device_actual_channel(device):
+	url = "http://" + device.ip + ":" + str(jointspaceport) + "/1/channels/current "
+	try:
+		data = json.load(urllib2.urlopen(url))
+		device.active_channel = data['id']
+		updateStore()
+		return True
+	except:
+		return False
+
 # set device channel
 def set_device_channel(device,channel):
 	if channel == '+':
@@ -366,7 +388,29 @@ def set_device_channel(device,channel):
 			return True
 		else:
 			return False
+			
+# get list of available inputs on device			
+def get_device_inputs(device):
+	url = "http://" + device.ip + ":" + str(jointspaceport) + "/1/sources"
+	try:
+		data = json.load(urllib2.urlopen(url))
+		device.inputs = json.dumps(data)
+		updateStore()
+		return True
+	except:
+		return False
 
+# get active device inputs
+def get_device_actual_input(device):
+	url = "http://" + device.ip + ":" + str(jointspaceport) + "/1/sources/current"
+	try:
+		data = json.load(urllib2.urlopen(url))
+		device.active_input = data['id']
+		updateStore()
+		return True
+	except:
+		return False
+		
 ###
 ### MAIN WORKING SPAGHETTI
 ###
