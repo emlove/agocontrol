@@ -65,9 +65,12 @@ command="on"\
 			<div class="slider level" rel="${uuid}" def_value="${state}"></div>
 		      % else:
 			% if command in schema["commands"]:
-			<button class="switch_${command}" rel="${uuid}">${schema["commands"][command]["name"]}</button>
+			<button class="switch" command="${command}" rel="${uuid}">${schema["commands"][command]["name"]}</button>
+                           % if command == "setcolor":
+                           <input class="color" size=8 value="">
+                           % endif
 			% else:
-			<button class="switch_${command}" rel="${uuid}">name missing from schema</button>
+			<button class="switch" command="${command}" rel="${uuid}">name missing from schema</button>
 			% endif
 		      % endif
 		  % endfor
