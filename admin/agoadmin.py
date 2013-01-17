@@ -120,7 +120,7 @@ config={
 
 class Command:
 	def default(self, uuid, command):
-		conn.send_command(uuid, command, "")
+		conn.send_command(uuid, command)
 	default.exposed = True
 
 class CreateRoom:
@@ -542,7 +542,16 @@ class Event(object):
 
 class SetDeviceLevel:
 	def default(self, uuid, command, level):
-		conn.send_command(uuid, command, level)
+		conn.send_command(uuid, command, {"level" : level})
+	default.exposed = True
+
+class SetDeviceColor:
+	def default(self, uuid, command, color):
+                red = int(color[0:2], 16)
+                green = int(color[2:4], 16)
+                blue = int(color[4:6], 16)
+                
+		conn.send_command(uuid, command, {"red" : red, "green" : green, "blue" : blue})
 	default.exposed = True
 
 class CreateScenario(object):
@@ -615,6 +624,7 @@ root.setroomname = SetRoomName()
 root.setdevicename = SetDeviceName()
 root.setdeviceroom = SetDeviceRoom()
 root.setdevicelevel = SetDeviceLevel()
+root.setdevicecolor = SetDeviceColor()
 root.get_rooms = GetRoomsJson()
 root.getinventory = GetInventory()
 root.schema = GetSchema()

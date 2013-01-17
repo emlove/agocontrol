@@ -83,9 +83,13 @@ $(document).ready(function () {
     $(".switch").click(function (event) {
         var rel = $(this).attr('rel');
         var command = $(this).attr('command');
+        var url = "/command/" + rel + "/" + command
+        if (command == "setcolor") {
+            url = "/setdevicecolor/" + rel + "/setcolor/" + $(this).siblings(".color").val();
+        }
         $.ajax({
             type: "GET",
-            url: "/command/" + rel + "/" + command
+            url: url 
         });
     });
 

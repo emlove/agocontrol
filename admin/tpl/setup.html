@@ -72,6 +72,9 @@
       % else:
         % if command in schema["commands"]:
 	<button class="switch" command="${command}" rel="${uuid}" state="${state}">${schema["commands"][command]["name"]}</button>
+            % if command == "setcolor":
+            <input class="color" size=8 value="">
+            % endif
 	% endif
       % endif
   % endfor

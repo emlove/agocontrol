@@ -60,12 +60,13 @@ class Connector:
 
         return self.send_raw_message(content)
 
-    def send_command(self, uuid, command, level = None):
+    def send_command(self, uuid, command, args = None):
         content = {}
         content["uuid"] = uuid
         content["command"] = command
-        if level:
-            content["level"] = level
+        if args:
+            for key in args.iterkeys():
+                content[key] = args[key]
 
         return self.send_raw_message(content)
 
