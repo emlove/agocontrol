@@ -61,6 +61,11 @@ except:
 	voodooPort = 2323
 
 try:
+	pollInterval = int(config.get("jointspace","interval"))
+except:
+	pollInterval = 30
+
+try:
 	deviceTimeout = int(config.get("jointspace","timeout"))
 except:
 	deviceTimeout = 65
@@ -292,6 +297,7 @@ def send_key(device,key):
 		
 # set device power state
 def set_device_power(device,state):
+	return False
 	if state == 'off':
 		syslog.syslog(syslog.LOG_NOTICE, 'Powering off ' + device.name)
 		if send_key(device,'Standby'):
@@ -460,13 +466,12 @@ while True:
 			if 'command' in message.content:
 				# respond to broadcast commands
 				if message.content['command'] == 'discover':
-					syslog.syslog(syslog.LOG_NOTICE, "discovering devices")
-				elif message.content['command'] == 'inventory':
-					syslog.syslog(syslog.LOG_NOTICE, "ignoring inventory command")
+					syslog.syslog(syslog.LOG_NOTICE, "Ignoring discovery command")
 				# if not a broadcast command, check if command is for us
 				else:
 					# if message is for one of our childs, treat it
 					if ('uuid' in message.content) and (message.content['uuid'] in uuidmap):
+						#print message.content
 						deviceUUID=message.content['uuid']
 						d=uuidmap[deviceUUID]
 						# send ACK to acknowledge message reception if asked for
@@ -494,6 +499,7 @@ while True:
 							if set_device_power(d, 'off'):
 								sendStateChangedEvent(deviceUUID, 0)
 								removeDevice(deviceUUID)
+								pass
 							else:
 								syslog.syslog(syslog.LOG_ERR, 'Error executing the power off command for '+d.name)
 						
