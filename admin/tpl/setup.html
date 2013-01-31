@@ -1,6 +1,8 @@
 <%inherit file="base.html"/>
 <%block name="title">ago control device setup</%block>
-
+<script type="text/javascript">
+    document._schema = ${schema_json};
+</script>
 <div id="devices">
 <h2>Device Setup</h2>
 <table id="DeviceSetup" class="tablesorter">
@@ -50,6 +52,10 @@
     </table>
 </div>
 
+<div id="modal-command" title="Command Params">
+    Test
+</div>
+
 <h3>Create Room</h3>
 <div class="row">
   <div class="tree columns">
@@ -67,15 +73,22 @@
 <%def name="devicetype_commands(devicetype,uuid,state)">
 % if devicetype in schema["devicetypes"]:
   % for command in schema["devicetypes"][devicetype]["commands"]:
-      % if command == "setlevel":
+      % if command == "on":
+         <button class="switch" command="${command}" rel="${uuid}" state="${state}">${schema["commands"][command]["name"]}</button> 
+      % elif command == "off":
+         <button class="switch" command="${command}" rel="${uuid}" state="${state}">${schema["commands"][command]["name"]}</button>
+      % elif command == "setlevel":
         <div class="slider level" rel="${uuid}" state="${state}"></div>
       % else:
         % if command in schema["commands"]:
-	<button class="switch" command="${command}" rel="${uuid}" state="${state}">${schema["commands"][command]["name"]}</button>
             % if command == "setcolor":
-            <input class="color" size=8 value="">
+              <input class="color" size=8 value="" />
+            % elif "parameters" in schema["commands"][command]:
+              <button class="command" rel="${uuid}" command="${command}" >${command}</button>
+            % else:
+              <button class="switch" command="${command}" rel="${uuid}" state="${state}">${schema["commands"][command]["name"]}</button> 
             % endif
-	% endif
+    	% endif
       % endif
   % endfor
 % endif

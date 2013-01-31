@@ -123,6 +123,13 @@ class Command:
 		conn.send_command(uuid, command)
 	default.exposed = True
 
+class ExtCommand:
+    def default(self, uuid, command, params):
+        print simplejson.loads(params)
+        conn.send_command(uuid, command, simplejson.loads(params))
+        raise cherrypy.HTTPRedirect("/setup")
+    default.exposed = True
+
 class CreateRoom:
 	def default(self, name):
 		conn.create_room(name)
@@ -221,7 +228,7 @@ class Setup:
 		try:
 			tmpl = lookup.get_template("setup.html")
 			inventory = discover()
-			return tmpl.render(inventory=getDevices(inventory), rooms=getRooms(inventory), schema=inventory["schema"])
+			return tmpl.render(inventory=getDevices(inventory), rooms=getRooms(inventory), schema=inventory["schema"], schema_json=simplejson.dumps(inventory["schema"]))
 		except:
 			traceback = RichTraceback()
 			error_tmpl = lookup.get_template("error-tpl.html")
@@ -613,6 +620,7 @@ class EditScenario:
 
 root = Root()
 root.command = Command()
+root.ext_command = ExtCommand()
 root.rooms = Rooms()
 root.setup = Setup()
 root.scenario = Scenario()
@@ -636,8 +644,8 @@ root.cloudreg = CloudReg()
 
 def avahicallback(x, y, z):
 	return False
-s = myavahi.zmqconf(avahicallback)
-s.add_service("ago control admin", "_http._tcp", 8000, "this is the ago control web administration interface")
+#s = myavahi.zmqconf(avahicallback)
+#s.add_service("ago control admin", "_http._tcp", 8000, "this is the ago control web administration interface")
 
 cherrypy.quickstart(root, '/', config)
 

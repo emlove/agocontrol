@@ -78,6 +78,7 @@ function add_scenario_command(command) {
 
 }
 
+
 $(document).ready(function () {
 
     $(".switch").click(function (event) {
@@ -91,6 +92,59 @@ $(document).ready(function () {
             type: "GET",
             url: url 
         });
+    });
+
+    $(".command").click(function (event) {
+        var rel = $(this).attr('rel');
+        var command = $(this).attr('command');
+        $("#modal-command").html("");
+
+        var cmd_form = document.createElement("form");
+        cmd_form.action = "/ext_command/" + rel + "/" + command;
+        cmd_form.method = "post";
+        
+        var params = document.createElement("input");
+        params.name = "params";
+        params.type = "hidden";
+        params.id = "params";
+        cmd_form.appendChild(params);
+
+        for (param in document._schema.commands[command].parameters) {
+            var param_name = document._schema.commands[command].parameters[param].name;
+            var label = document.createElement("label");
+            label.innerHTML = "<b>" + param_name + "</b>";
+            var input_f = document.createElement("input");
+            input_f.name = param_name;
+            input_f.type = "text";
+            cmd_form.appendChild(label);
+            cmd_form.appendChild(input_f);
+            cmd_form.appendChild(document.createElement("br"));
+        }
+        
+        var input_f = document.createElement("input");
+        input_f.type = "submit";
+        input_f.value = "Execute command";
+        cmd_form.appendChild(input_f);
+        
+        document.getElementById("modal-command").appendChild(cmd_form);
+        
+        cmd_form.onsubmit = function() {
+            var params = {};
+            var to_remove = [];
+            for (var i = 0; i < cmd_form.elements.length; i++) {
+                if (cmd_form.elements[i].type != "text") {
+                    continue;
+                }
+                params[cmd_form.elements[i].name] = cmd_form.elements[i].value;
+                to_remove.push(cmd_form.elements[i]);
+            }
+            for (var i = 0; i < to_remove.length; i++) {
+                cmd_form.removeChild(to_remove[i]);
+            }
+            document.getElementById("params").value = JSON.stringify(params);
+        };
+        
+        $("#modal-command").dialog({height: 250, width: 400, modal:true});
     });
 
     $(".delete_room").click(function (event) {
