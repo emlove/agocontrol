@@ -133,7 +133,7 @@ commands:
     name: reset network info
     parameters:
       name: confirm
-      type: integer
+      type: boolean
 devicetypes:
   phone:
     name: telephone
