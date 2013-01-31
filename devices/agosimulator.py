@@ -113,6 +113,8 @@ devices["2ab0e80d-7b48-4d17-b083-58fda121d6e3"] = "switch"
 devices["40cbb44c-5997-4f30-b1f5-d4d6c2accfad"] = "switch"
 devices["52abead4-82b0-4fd2-ac3a-c9de1cb12b9b"] = "dimmer"
 devices["69fac346-875f-4a80-b9af-c53459cc13dd"] = "multilevelsensor"
+devices["5194cdcb-8d81-4d3c-a12f-19c554a70b1f"] = "dimmerrgb"
+devices["e3a5c630-12bf-4956-8d1f-1da1dfd31c0a"] = "zwavecontroller"
 
 def discovery():
 	for (uuid, devicetype) in devices.iteritems():
