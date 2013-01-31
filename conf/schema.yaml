@@ -131,6 +131,9 @@ commands:
     name: save network config
   reset:
     name: reset network info
+    parameters:
+      name: confirm
+      type: integer
 devicetypes:
   phone:
     name: telephone
