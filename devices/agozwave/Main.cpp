@@ -463,7 +463,7 @@ void sendAlarmTypeChangedEvent(string uuid, string level, string unit) {
 	sendEvent(uuid, level, unit, "event.security.alarmtypechanged");
 }
 void sendSensorChangedEvent(string uuid, string level, string unit) {
-	sendEvent(uuid, level, unit, "event.environment.sensorchanged");
+	sendEvent(uuid, level, unit, "event.environment.sensortriggered");
 }
 void sendPowerChangedEvent(string uuid, string level, string unit) {
 	sendEvent(uuid, level, unit, "event.environment.power");

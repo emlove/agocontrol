@@ -166,6 +166,8 @@ while True:
 		try:
 			for sensor in root.sensors():
 				if sensor._type == 'DS18S20' or sensor._type == 'DS18B20' or sensor._type == 'DS2438':
+					if startup:
+						reportdevice(sensor._path)
 					temp = round(float(sensor.temperature),1)
 					if sensor._path in sensors:
 						if 'temp' in sensors[sensor._path]:
@@ -176,8 +178,6 @@ while True:
 						sendtempevent( sensor._path, temp)
 						sensors[sensor._path]={}
 						sensors[sensor._path]['temp'] = temp
-					if startup:
-						reportdevice(sensor._path)
 				if sensor._type == 'DS2438':
 					try:
 						if ow.owfs_get('%s/MultiSensor/type' % sensor._path) == 'MS-TL':
