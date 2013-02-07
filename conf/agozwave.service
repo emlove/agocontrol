@@ -4,6 +4,8 @@ Description=ago control Z-Wave Device
 [Service]
 ExecStart=/opt/agocontrol/bin/agozwave
 WorkingDirectory=/opt/agocontrol/bin
+StandardOutput=syslog
+StandardError=syslog
 Restart=always
 RestartSec=2
 User=agocontrol
