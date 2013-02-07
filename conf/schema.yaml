@@ -293,3 +293,6 @@ events:
   event.mediaplayer.statechanged:
     description: mediaplayer changed play state
     parameters: [new_state]
+  event.security.intruderalert:
+    description: intruder alarm
+    parameters: [uuid]
