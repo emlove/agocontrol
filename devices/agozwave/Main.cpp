@@ -26,6 +26,7 @@
 #include <openzwave/Node.h>
 #include <openzwave/Group.h>
 #include <openzwave/Notification.h>
+#include <openzwave/platform/Log.h>
 #include <openzwave/value_classes/ValueStore.h>
 #include <openzwave/value_classes/Value.h>
 #include <openzwave/value_classes/ValueBool.h>
@@ -623,6 +624,12 @@ int main( int argc, char* argv[] )
 	// The second argument is the path for saved Z-Wave network state and the log file.  If you leave it NULL 
 	// the log file will appear in the program's working directory.
 	Options::Create( "/etc/openzwave/config/", "/etc/opt/agocontrol/ozw/", "" );
+	Options::Get()->AddOptionInt( "SaveLogLevel", LogLevel_Detail );
+	Options::Get()->AddOptionInt( "QueueLogLevel", LogLevel_Debug );
+	Options::Get()->AddOptionInt( "DumpTrigger", LogLevel_Error );
+	Options::Get()->AddOptionInt( "PollInterval", 500 );
+	Options::Get()->AddOptionBool( "IntervalBetweenPolls", true );
+	Options::Get()->AddOptionBool("ValidateValueChanges", true);
 	Options::Get()->Lock();
 
 	Manager::Create();
@@ -632,6 +639,7 @@ int main( int argc, char* argv[] )
 	Manager::Get()->AddDriver(devicefile );
 
 	// Now we just wait for the driver to become ready
+	printf("waiting for OZW driver to become ready\n");
 	pthread_cond_wait( &initCond, &initMutex );
 
 	if( !g_initFailed )
@@ -641,9 +649,9 @@ int main( int argc, char* argv[] )
 
 		Driver::DriverData data;
 		Manager::Get()->GetDriverStatistics( g_homeId, &data );
-		// printf("SOF: %d ACK Waiting: %d Read Aborts: %d Bad Checksums: %d\n", data.s_SOFCnt, data.s_ACKWaiting, data.s_readAborts, data.s_badChecksum);
-		// printf("Reads: %d Writes: %d CAN: %d NAK: %d ACK: %d Out of Frame: %d\n", data.s_readCnt, data.s_writeCnt, data.s_CANCnt, data.s_NAKCnt, data.s_ACKCnt, data.s_OOFCnt);
-		// printf("Dropped: %d Retries: %d\n", data.s_dropped, data.s_retries);
+		printf("SOF: %d ACK Waiting: %d Read Aborts: %d Bad Checksums: %d\n", data.m_SOFCnt, data.m_ACKWaiting, data.m_readAborts, data.m_badChecksum);
+		printf("Reads: %d Writes: %d CAN: %d NAK: %d ACK: %d Out of Frame: %d\n", data.m_readCnt, data.m_writeCnt, data.m_CANCnt, data.m_NAKCnt, data.m_ACKCnt, data.m_OOFCnt);
+		printf("Dropped: %d Retries: %d\n", data.m_dropped, data.m_retries);
 
 		printf("agozwave startup complete, reporting devices\n");
 		reportDevices();
