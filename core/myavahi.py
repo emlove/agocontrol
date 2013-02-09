@@ -56,7 +56,7 @@ class zmqconf:
 		t = Thread(target=self.main_loop.run)
 		t.setDaemon(True)
 		t.start()
-	except dbus.exceptions.DBusException, e:
+	except:
 		print "can't connect to avahi"
 
     def browse_services(self, type, domain=''):
@@ -153,7 +153,7 @@ class zmqconf:
 			avahi.string_array_to_txt_array(txt))
 		self.group.Commit()
 		self._services.append((name, proto, port, txt))
-	except AttributeError, e:
+	except:
 		print "can't connect to avahi"
 
     def remove_services(self):
