@@ -24,8 +24,8 @@ INCLUDES	:=
 
 all: tests
 
-tests: agoclient.o tests.o
+tests: agoclient.o tests.o CDataFile.o
 	$(LD) -o $@ $(LDFLAGS) $^ -lqpidmessaging -lqpidtypes -luuid -ljsoncpp
 
 clean:
-	rm -f tests agoclient.o
+	rm -f tests agoclient.o tests.o CDataFile.o

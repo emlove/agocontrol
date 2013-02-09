@@ -10,6 +10,9 @@ int main(int argc, char **argv) {
 	testmap = jsonStringToVariantMap(teststring);		
 	printf("accessing testmap[\"key\"]: %s\n",testmap["key"].asString().c_str());
 	printf("uuid test: %s\n",generateUuid().c_str());
+	printf("config option test: [system],broker: %s\n", getConfigOption("system", "broker", "wherever").c_str());
+	printf("config option test: [system],broker: %s\n", getConfigOption("system", "invalid", "doesnotexist").c_str());
+
 		
 	
 

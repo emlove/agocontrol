@@ -116,3 +116,16 @@ std::string agocontrol::generateUuid() {
 	return strUuid;
 }
 
+std::string agocontrol::getConfigOption(const char *section, const char *option, const char *defaultvalue) {
+	std::string result;
+	t_Str value = t_Str("");
+	CDataFile ExistingDF(CONFIG_FILE);
+
+	value = ExistingDF.GetString(option, section);
+	if (value.size() == 0)
+		result = defaultvalue;
+	else
+		result = value;
+	return result;
+}
+

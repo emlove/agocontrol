@@ -15,14 +15,23 @@
 
 #include <uuid/uuid.h>
 
+#include "CDataFile.h"
+
+#define CONFIG_FILE "/etc/opt/agocontrol/config.ini"
+
 namespace agocontrol {
 
+	// these will convert back and forth between a Variant type and JSON
 	std::string variantMapToJSONString(qpid::types::Variant::Map map);
 	std::string variantListToJSONString(qpid::types::Variant::List list);
 	qpid::types::Variant::Map jsonToVariantMap(Json::Value value);
 	qpid::types::Variant::Map jsonStringToVariantMap(std::string jsonstring);
+
+	// helper to generate a string containing a uuid
 	std::string generateUuid();
 
+	// fetch a value from the config file
+	std::string getConfigOption(const char *section, const char *option, const char *defaultvalue);
 }
 
 
