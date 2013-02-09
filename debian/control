@@ -7,7 +7,7 @@ Standards-Version: 3.9.2
 
 Package: agocontrol
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, python, uuid-runtime, sqlite3, python-pysqlite2, python-qpid, libqpidmessaging2, libqpidtypes1, systemd, sasl2-bin, libsasl2-2, libsasl2-modules, qpidd, systemd-sysv, python-yaml, python-pandas, libjsoncpp0, libyaml-cpp0.3, libsqlite3-0
+Depends: ${shlibs:Depends}, ${misc:Depends}, systemd, systemd-sysv, python, uuid-runtime, sqlite3, python-pysqlite2, python-qpid, libqpidmessaging2, libqpidtypes1, sasl2-bin, libsasl2-2, libsasl2-modules, qpidd, python-yaml, python-pandas, libjsoncpp0, libyaml-cpp0.3, libsqlite3-0
 Description: automation system
 
 Package: agocontrol-admin
