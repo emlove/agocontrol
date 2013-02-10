@@ -32,6 +32,29 @@ namespace agocontrol {
 
 	// fetch a value from the config file
 	std::string getConfigOption(const char *section, const char *option, const char *defaultvalue);
+
+	// connection class
+	class AgoConnection {
+		protected:
+			qpid::messaging::Connection connection;
+			qpid::messaging::Sender sender;
+			qpid::messaging::Receiver receiver;
+			qpid::messaging::Session session;
+			qpid::types::Variant::Map deviceMap; // this holds the internal device list
+			qpid::types::Variant::Map uuidMap; // this holds the permanent uuid to internal id mapping
+			bool storeUuidMap(); // stores the map on disk
+			bool loadUuidMap(); // loads it
+			string uuidMapFile;
+			std::string uuidToInternalId(std::string uuid); // lookup in map
+			std::string internalIdToUuid(std::string internalId); // lookup in map
+			void reportDevices();
+		public:
+			AgoConnection();
+			~AgoConnection();
+			void run();
+			bool addDevice(const char *internalId, const char *deviceType);
+			bool addHandler(void *handler);
+	};
 }
 
 

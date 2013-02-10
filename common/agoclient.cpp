@@ -1,5 +1,8 @@
 #include <string>
 
+#include <stdio.h>
+#include <unistd.h>
+
 #include <jsoncpp/json/reader.h>
 #include "agoclient.h"
 
@@ -127,5 +130,126 @@ std::string agocontrol::getConfigOption(const char *section, const char *option,
 	else
 		result = value;
 	return result;
+}
+
+agocontrol::AgoConnection::AgoConnection() {
+	Variant::Map connectionOptions;
+	connectionOptions["username"] = getConfigOption("system", "username", "agocontrol");
+	connectionOptions["password"] = getConfigOption("system", "password", "letmein");
+	connectionOptions["reconnect"] = "true";
+
+	uuidMapFile = "/tmp/test.uuidmap";
+	loadUuidMap();
+
+	connection = Connection(getConfigOption("system", "broker", "localhost:5672"),connectionOptions);
+	try {
+		connection.open(); 
+		session = connection.createSession(); 
+		receiver = session.createReceiver("agocontrol; {create: always, node: {type: topic}}");
+		sender = session.createSender("agocontrol; {create: always, node: {type: topic}}"); 
+	} catch(const std::exception& error) {
+		std::cerr << error.what() << std::endl;
+		connection.close();
+		printf("could not connect to broker\n");
+		_exit(1);
+	}
+}
+
+agocontrol::AgoConnection::~AgoConnection() {
+	try {
+		connection.close();
+	} catch(const std::exception& error) {
+		std::cerr << error.what() << std::endl;
+	}
+}
+
+
+void agocontrol::AgoConnection::run() {
+	reportDevices();
+	while( true ) {
+		try{
+			Variant::Map content;
+			Message message = receiver.fetch(Duration::SECOND * 3);
+
+			// workaround for bug qpid-3445
+			if (message.getContent().size() < 4) {
+				throw qpid::messaging::EncodingException("message too small");
+			}
+
+			decode(message, content);
+			std::cout << content << std::endl;
+
+			session.acknowledge();
+		} catch(const NoMessageAvailable& error) {
+			
+		} catch(const std::exception& error) {
+			std::cerr << error.what() << std::endl;
+		}
+	}
+}
+
+bool agocontrol::AgoConnection::addDevice(const char *internalId, const char *deviceType) {
+	if (internalIdToUuid(internalId).size()==0) {
+		// need to generate new uuid
+		uuidMap[generateUuid()] = internalId;
+		storeUuidMap();
+	}
+	Variant::Map device;
+	device["devicetype"] = deviceType;
+	device["internalid"] = internalId;
+	deviceMap[internalIdToUuid(internalId)] = device;
+	return true;
+}
+
+std::string agocontrol::AgoConnection::uuidToInternalId(std::string uuid) {
+	return uuidMap[uuid].asString();
+} 
+
+std::string agocontrol::AgoConnection::internalIdToUuid(std::string internalId) {
+	string result;
+	for (Variant::Map::const_iterator it = uuidMap.begin(); it != uuidMap.end(); ++it) {
+		if (it->second.asString() == internalId) return it->first;
+	}
+	return result;
+}
+
+void agocontrol::AgoConnection::reportDevices() {
+	for (Variant::Map::const_iterator it = deviceMap.begin(); it != deviceMap.end(); ++it) {
+		Variant::Map device;
+		Variant::Map content;
+		Message event;
+
+		// printf("uuid: %s\n", it->first.c_str());
+		device = it->second.asMap();
+		// printf("devicetype: %s\n", device["devicetype"].asString().c_str());
+		content["devicetype"] = device["devicetype"].asString();
+		content["uuid"] = it->first;
+		encode(content, event);
+		event.setSubject("event.device.announce");
+		sender.send(event);
+	}
+}
+
+bool agocontrol::AgoConnection::storeUuidMap() {
+	ofstream mapfile;
+	mapfile.open(uuidMapFile.c_str());
+	mapfile << variantMapToJSONString(uuidMap);
+	mapfile.close();
+	return true;
+}
+
+bool agocontrol::AgoConnection::loadUuidMap() {
+	string content;
+	ifstream mapfile (uuidMapFile.c_str());
+	if (mapfile.is_open()) {
+		while (mapfile.good()) {
+			string line;
+			getline(mapfile, line);
+			content += line;
+		}
+		mapfile.close();
+	}
+	uuidMap = jsonStringToVariantMap(content);
+	return true;
 }
 

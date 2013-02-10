@@ -13,7 +13,9 @@ int main(int argc, char **argv) {
 	printf("config option test: [system],broker: %s\n", getConfigOption("system", "broker", "wherever").c_str());
 	printf("config option test: [system],broker: %s\n", getConfigOption("system", "invalid", "doesnotexist").c_str());
 
-		
-	
-
+	AgoConnection agoConnection = AgoConnection();		
+	printf("connection established\n");
+	agoConnection.addDevice("123", "dimmer");
+	agoConnection.addDevice("124", "switch");
+	agoConnection.run();
 }
