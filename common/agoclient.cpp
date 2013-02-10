@@ -177,9 +177,39 @@ void agocontrol::AgoConnection::run() {
 			}
 
 			decode(message, content);
-			std::cout << content << std::endl;
-
+			// std::cout << content << std::endl;
 			session.acknowledge();
+
+			if (message.getSubject().size() == 0) {
+				// no subject, this is a command
+				if (content["command"] == "discover") {
+					reportDevices(); // make resolver happy and announce devices on discover request
+				} else {
+					// lets see if this is for one of our devices
+					string internalid = uuidToInternalId(content["uuid"].asString());
+					if (internalid.size() > 0) {
+						// found a match, reply to sender and pass the command to the assigned handler method
+						const Address& replyaddress = message.getReplyTo();
+						if (replyaddress) {
+							try {
+								Sender replysender = session.createSender(replyaddress);
+								Message response("ACK");
+								replysender.send(response);
+							} catch(const std::exception& error) {
+								printf("can't send reply\n");
+							}
+						} 
+
+						// printf("command for id %s found, calling handler\n", internalid.c_str());
+						content["internalid"] = internalid;
+						string status = commandHandler(content);
+						Variant::Map state;
+						state["level"] = status;
+						state["uuid"] = content["uuid"];
+						sendMessage("event.device.statechanged", state);
+					}
+				}
+			}
 		} catch(const NoMessageAvailable& error) {
 			
 		} catch(const std::exception& error) {
@@ -253,3 +283,26 @@ bool agocontrol::AgoConnection::loadUuidMap() {
 	return true;
 }
 
+bool agocontrol::AgoConnection::addHandler(std::string (*handler)(qpid::types::Variant::Map)) {
+	commandHandler = handler;
+	return true;
+}
+
+bool agocontrol::AgoConnection::sendMessage(const char *subject, qpid::types::Variant::Map content) {
+	Message message;
+
+	try {
+		encode(content, message);
+		message.setSubject(subject);
+		sender.send(message);
+	} catch(const std::exception& error) {
+		std::cerr << error.what() << std::endl;
+	}
+	
+	return true;
+}
+
+bool agocontrol::AgoConnection::sendMessage(qpid::types::Variant::Map content) {
+	sendMessage("",content);
+	return true;
+}

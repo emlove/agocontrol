@@ -2,20 +2,21 @@
 
 using namespace agocontrol;
 
-int main(int argc, char **argv) {
-	qpid::types::Variant::Map testmap;
-	testmap["key"] = "value";
-	std::string teststring = variantMapToJSONString(testmap);
-	printf("json test: %s\n",teststring.c_str());
-	testmap = jsonStringToVariantMap(teststring);		
-	printf("accessing testmap[\"key\"]: %s\n",testmap["key"].asString().c_str());
-	printf("uuid test: %s\n",generateUuid().c_str());
-	printf("config option test: [system],broker: %s\n", getConfigOption("system", "broker", "wherever").c_str());
-	printf("config option test: [system],broker: %s\n", getConfigOption("system", "invalid", "doesnotexist").c_str());
+std::string commandHandler(qpid::types::Variant::Map command) {
+	if (command["command"] == "on") {
+		printf("Switch %s ON\n", command["internalid"].asString().c_str());
+		return "255";
+	} else {
+		printf("Switch %s OFF\n", command["internalid"].asString().c_str());
+		return "0";
+	}	
+}
 
+int main(int argc, char **argv) {
 	AgoConnection agoConnection = AgoConnection();		
 	printf("connection established\n");
 	agoConnection.addDevice("123", "dimmer");
 	agoConnection.addDevice("124", "switch");
+	agoConnection.addHandler(commandHandler);
 	agoConnection.run();
 }
