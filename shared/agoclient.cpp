@@ -132,13 +132,15 @@ std::string agocontrol::getConfigOption(const char *section, const char *option,
 	return result;
 }
 
-agocontrol::AgoConnection::AgoConnection() {
+agocontrol::AgoConnection::AgoConnection(const char *interfacename) {
 	Variant::Map connectionOptions;
 	connectionOptions["username"] = getConfigOption("system", "username", "agocontrol");
 	connectionOptions["password"] = getConfigOption("system", "password", "letmein");
 	connectionOptions["reconnect"] = "true";
 
-	uuidMapFile = "/tmp/test.uuidmap";
+	uuidMapFile = "/etc/opt/agocontrol/uuidmap/";
+	uuidMapFile += interfacename;
+	uuidMapFile += ".json";
 	loadUuidMap();
 
 	connection = Connection(getConfigOption("system", "broker", "localhost:5672"),connectionOptions);

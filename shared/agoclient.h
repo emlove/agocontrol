@@ -50,7 +50,7 @@ namespace agocontrol {
 			void reportDevices();
 			std::string (*commandHandler)(qpid::types::Variant::Map);
 		public:
-			AgoConnection();
+			AgoConnection(const char *interfacename);
 			~AgoConnection();
 			void run();
 			bool addDevice(const char *internalId, const char *deviceType);
