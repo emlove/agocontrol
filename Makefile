@@ -1,6 +1,6 @@
 LD     := g++
 
-all: common messagesend resolver agotimer agozwave agochromoflex agoknx agorpc
+all: common messagesend resolver agotimer agozwave agochromoflex agoknx agorpc rain8net
 
 common:
 	$(MAKE) -C shared
@@ -26,6 +26,9 @@ agochromoflex:
 agoknx:
 	$(MAKE) -C devices/agoknx
 
+rain8net:
+	$(MAKE) -C devices/rain8net
+
 agodmx:
 	$(MAKE) -C devices/agodmx
 
@@ -34,6 +37,7 @@ clean:
 	$(MAKE) -C devices/chromoflex clean
 	$(MAKE) -C devices/agozwave clean
 	$(MAKE) -C devices/agoknx clean
+	$(MAKE) -C devices/rain8net clean
 	$(MAKE) -C core/agotimer clean
 	$(MAKE) -C core/resolver clean
 	$(MAKE) -C core/messagesend clean
@@ -75,6 +79,7 @@ install:
 	install devices/onkyo/agoiscp.py $(DESTDIR)/opt/agocontrol/bin
 	install devices/agozwave/agozwave $(DESTDIR)/opt/agocontrol/bin
 	install devices/agoknx/agoknx $(DESTDIR)/opt/agocontrol/bin
+	install devices/rain8net/agorain8net $(DESTDIR)/opt/agocontrol/bin
 	install devices/chromoflex/agochromoflex $(DESTDIR)/opt/agocontrol/bin
 	install devices/agoapc/agoapc.py $(DESTDIR)/opt/agocontrol/bin
 	install devices/agojointspace/agojointspace.py $(DESTDIR)/opt/agocontrol/bin

@@ -34,8 +34,8 @@ using namespace agocontrol;
 
 std::string commandHandler(qpid::types::Variant::Map content) {
 	int valve = 0;
-	printf("command: %s internal id: %s\n", content["command"].asString().c_str(), content["internalid"].asString().c_str());
 	valve = atoi(content["internalid"].asString().c_str());
+	printf("command: %s internal id: %i\n", content["command"].asString().c_str(), valve);
 	if (content["command"] == "on" ) {
 		if (rain8.zoneOn(1,valve) != 0) {
 			printf("can't switch on\n");

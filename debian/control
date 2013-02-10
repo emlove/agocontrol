@@ -71,3 +71,8 @@ Package: agocontrol-jointspace
 Architecture: all
 Depends: ${shlibs:Depends}, ${misc:Depends}, python-qpid
 Description: JointSpace interface
+
+Package: agocontrol-rain8net
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, libagoclient1.0
+Description: Rain8net interface driver

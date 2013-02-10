@@ -1,0 +1,2 @@
+lib/systemd/system/agorain8net.service
+opt/agocontrol/bin/agorain8net

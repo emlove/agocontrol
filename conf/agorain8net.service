@@ -1,0 +1,12 @@
+[Unit]
+Description=ago control rain8net Device
+
+[Service]
+ExecStart=/opt/agocontrol/bin/agorain8net
+WorkingDirectory=/opt/agocontrol/bin
+Restart=always
+RestartSec=2
+User=agocontrol
+
+[Install]
+WantedBy=multi-user.target
