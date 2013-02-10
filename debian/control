@@ -10,7 +10,7 @@ Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, systemd, systemd-sysv, python, uuid-runtime, sqlite3, python-pysqlite2, python-qpid, libqpidmessaging2, libqpidtypes1, sasl2-bin, libsasl2-2, libsasl2-modules, qpidd, python-yaml, python-pandas, libjsoncpp0, libyaml-cpp0.3, libsqlite3-0
 Description: automation system
 
-Pacakge: libagoclient1.0
+Package: libagoclient1.0
 Section: libs
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, libqpidmessaging2, libqpidtypes1, libqpidclient2, libqpidcommon2, libuuid1, libjsoncpp0
