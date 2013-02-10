@@ -57,9 +57,7 @@ std::string commandHandler(qpid::types::Variant::Map content) {
 int main(int argc, char **argv) {
 	std::string devicefile;
 
-
-	// szDevice = ExistingDF.GetString("device", "rain8net");
-		devicefile="/dev/ttyS_01";
+	devicefile=getConfigOption("rain8net", "device", "/dev/ttyS_01");
 
 	if (rain8.init(devicefile.c_str()) != 0) {
 		printf("can't open rainnet device %s\n", devicefile.c_str());
@@ -73,8 +71,12 @@ int main(int argc, char **argv) {
 
 	AgoConnection agoConnection = AgoConnection();		
 	printf("connection established\n");
-	agoConnection.addDevice("123", "dimmer");
-	agoConnection.addDevice("124", "switch");
+
+	for (int i=1; i<8; i++) {
+		std::string valve;
+		valve += i;
+		agoConnection.addDevice(valve.c_str(), "switch");
+	}
 	agoConnection.addHandler(commandHandler);
 
 	unsigned char status;
