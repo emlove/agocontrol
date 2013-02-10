@@ -8,10 +8,10 @@ LD     := g++
 AR     := ar rc
 RANLIB := ranlib
 
-DEBUG_CFLAGS    := -Wall -Wno-format -g -DDEBUG
+DEBUG_CFLAGS    := -Wall -Werror -Wno-format -g -DDEBUG -fpic
 RELEASE_CFLAGS  := -Wall -Wno-unknown-pragmas -Wno-format -O3
-
-DEBUG_LDFLAGS	:= -g
+LIB_VER         := .1
+DEBUG_LDFLAGS	:= -g -shared -Wl,-soname,libagoclient.so$(LIB_VER)
 
 # Change for DEBUG or RELEASE
 CFLAGS	:= -c $(DEBUG_CFLAGS)
@@ -22,10 +22,10 @@ INCLUDES	:=
 %.o : %.cpp
 	$(CXX) $(CFLAGS) $(INCLUDES) -o $@ $<
 
-all: tests
+all: libagoclient.so
 
-tests: agoclient.o tests.o CDataFile.o
-	$(LD) -o $@ $(LDFLAGS) $^ -lqpidmessaging -lqpidtypes -luuid -ljsoncpp
+libagoclient.so: agoclient.o CDataFile.o
+	$(LD) -o $(@)$(LIB_VER) $(LDFLAGS) $^ -lqpidmessaging -lqpidtypes -luuid -ljsoncpp
 
 clean:
-	rm -f tests agoclient.o tests.o CDataFile.o
+	rm -f agoclient.o CDataFile.o
