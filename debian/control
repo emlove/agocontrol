@@ -10,6 +10,18 @@ Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, systemd, systemd-sysv, python, uuid-runtime, sqlite3, python-pysqlite2, python-qpid, libqpidmessaging2, libqpidtypes1, sasl2-bin, libsasl2-2, libsasl2-modules, qpidd, python-yaml, python-pandas, libjsoncpp0, libyaml-cpp0.3, libsqlite3-0
 Description: automation system
 
+Pacakge: libagoclient1.0
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, libqpidmessaging2, libqpidtypes1, libqpidclient2, libqpidcommon2, libuuid1, libjsoncpp0
+Description: client routines and utility functions for ago control device interfaces
+
+Package: libagoclient1.0-dev
+Section: libdevel
+Depends: ${misc:Depends}, libagoclient1.0
+Architecture: any
+Description: Development header files for the agocontrol client library
+
 Package: agocontrol-admin
 Architecture: all
 Depends: ${shlibs:Depends}, ${misc:Depends}, python-cherrypy3, python-mako, python-qpid, python-simplejson, agocontrol, python-avahi, python-dbus, python-gobject
