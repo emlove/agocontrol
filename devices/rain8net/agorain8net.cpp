@@ -10,6 +10,7 @@
 */
 
 #include <iostream>
+#include <sstream>
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -71,14 +72,12 @@ int main(int argc, char **argv) {
 	printf("connection to rain8net established\n");
 
 	AgoConnection agoConnection = AgoConnection("rain8net");		
-	printf("connection established\n");
+	printf("connection to agocontrol established\n");
 
 	for (int i=1; i<8; i++) {
-		std::string valve;
-		valve += i;
-	
-		printf("announcing valve %s %i\n", valve.c_str(), atoi(valve.c_str()));
-		agoConnection.addDevice(valve.c_str(), "switch");
+		std::stringstream valve;
+		valve << i;
+		agoConnection.addDevice(valve.str().c_str(), "switch");
 	}
 	agoConnection.addHandler(commandHandler);
 
