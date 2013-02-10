@@ -42,6 +42,7 @@ clean:
 install:
 	@echo Installing
 	install -d $(DESTDIR)/etc/opt/agocontrol
+	install -d $(DESTDIR)/etc/opt/agocontrol/uuidmap
 	install -d $(DESTDIR)/etc/opt/agocontrol/owfs
 	install -d $(DESTDIR)/etc/opt/agocontrol/ozw
 	install -d $(DESTDIR)/etc/opt/agocontrol/apc
