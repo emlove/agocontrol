@@ -33,6 +33,7 @@ using namespace agocontrol;
 
 std::string commandHandler(qpid::types::Variant::Map content) {
 	int valve = 0;
+	printf("command: %s internal id: %s\n", content["command"].asString().c_str(), content["internalid"].asString().c_str());
 	valve = atoi(content["internalid"].asString().c_str());
 	if (content["command"] == "on" ) {
 		if (rain8.zoneOn(1,valve) != 0) {
@@ -69,24 +70,27 @@ int main(int argc, char **argv) {
 	}
 	printf("connection to rain8net established\n");
 
-	AgoConnection agoConnection = AgoConnection();		
+	AgoConnection agoConnection = AgoConnection("rain8net");		
 	printf("connection established\n");
 
 	for (int i=1; i<8; i++) {
 		std::string valve;
 		valve += i;
+	
+		printf("announcing valve %s %i\n", valve.c_str(), atoi(valve.c_str()));
 		agoConnection.addDevice(valve.c_str(), "switch");
 	}
 	agoConnection.addHandler(commandHandler);
 
+	printf("fetching zone status\n");
 	unsigned char status;
 	if (rain8.getStatus(1,status) == 0) {
 		printf("can't get zone status, aborting\n");
 		exit(1);
 	} else {
-		printf("Zone status: 8:%d 7:%d 6:%d 5:%d 4:%d 3:%d 2:%d 1:%d", (status & 128)?1:0, (status & 64)?1:0, (status &32)?1:0,(status&16)?1:0,(status&8)?1:0,(status&4)?1:0,(status&2)?1:0,(status&1)?1:0);
+		printf("Zone status: 8:%d 7:%d 6:%d 5:%d 4:%d 3:%d 2:%d 1:%d\n", (status & 128)?1:0, (status & 64)?1:0, (status &32)?1:0,(status&16)?1:0,(status&8)?1:0,(status&4)?1:0,(status&2)?1:0,(status&1)?1:0);
 	}
-
+	printf("waiting for messages\n");
 	agoConnection.run();
 
 }
