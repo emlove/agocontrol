@@ -10,6 +10,7 @@ std::string commandHandler(qpid::types::Variant::Map command) {
 		printf("Switch %s OFF\n", command["internalid"].asString().c_str());
 		return "0";
 	}	
+	return "";
 }
 
 int main(int argc, char **argv) {
