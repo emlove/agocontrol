@@ -74,7 +74,7 @@ int main(int argc, char **argv) {
 	AgoConnection agoConnection = AgoConnection("rain8net");		
 	printf("connection to agocontrol established\n");
 
-	for (int i=1; i<8; i++) {
+	for (int i=1; i<9; i++) {
 		std::stringstream valve;
 		valve << i;
 		agoConnection.addDevice(valve.str().c_str(), "switch");
