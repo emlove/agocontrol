@@ -26,6 +26,7 @@ all: libagoclient.so
 
 libagoclient.so: agoclient.o CDataFile.o
 	$(LD) -o $(@)$(LIB_VER) $(LDFLAGS) $^ -lqpidmessaging -lqpidtypes -luuid -ljsoncpp
+	ln -s $(@)$(LIB_VER) $(@)
 
 clean:
-	rm -f agoclient.o CDataFile.o libagoclient.so.*
+	rm -f agoclient.o CDataFile.o libagoclient.so*

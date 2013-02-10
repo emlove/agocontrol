@@ -1,6 +1,9 @@
 LD     := g++
 
-all: messagesend resolver agotimer agozwave agochromoflex agoknx agorpc
+all: common messagesend resolver agotimer agozwave agochromoflex agoknx agorpc
+
+common:
+	$(MAKE) -C shared
 
 messagesend: 
 	$(MAKE) -C core/messagesend
@@ -27,6 +30,7 @@ agodmx:
 	$(MAKE) -C devices/agodmx
 
 clean:
+	$(MAKE) -C shared clean
 	$(MAKE) -C devices/chromoflex clean
 	$(MAKE) -C devices/agozwave clean
 	$(MAKE) -C devices/agoknx clean
@@ -44,6 +48,8 @@ install:
 	install -d $(DESTDIR)/etc/opt/agocontrol/jointspace
 	install -d $(DESTDIR)/opt/agocontrol/bin
 	install -d $(DESTDIR)/var/opt/agocontrol
+	install -d $(DESTDIR)/usr/include/agocontrol
+	install -d $(DESTDIR)/usr/lib
 	install -d $(DESTDIR)/lib/systemd/system
 	install conf/config.ini.tpl $(DESTDIR)/etc/opt/agocontrol
 	install conf/schema.yaml $(DESTDIR)/etc/opt/agocontrol
@@ -77,4 +83,6 @@ install:
 	install core/rpc/agorpc $(DESTDIR)/opt/agocontrol/bin
 	install core/resolver/agoresolver $(DESTDIR)/opt/agocontrol/bin
 	install core/agotimer/agotimer $(DESTDIR)/opt/agocontrol/bin
+	install shared/libagoclient.so.1 $(DESTDIR)/usr/lib
+	install shared/agoclient.h $(DESTDIR)/usr/include/agocontrol
 #	install devices/agodmx/agodmx $(DESTDIR)/opt/agocontrol/bin

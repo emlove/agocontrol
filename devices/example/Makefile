@@ -11,13 +11,13 @@ RANLIB := ranlib
 DEBUG_CFLAGS    := -Wall -Wno-format -g -DDEBUG
 RELEASE_CFLAGS  := -Wall -Wno-unknown-pragmas -Wno-format -O3
 
-DEBUG_LDFLAGS	:= -g -L../../common
+DEBUG_LDFLAGS	:= -g -L../../shared
 
 # Change for DEBUG or RELEASE
 CFLAGS	:= -c $(DEBUG_CFLAGS)
 LDFLAGS	:= $(DEBUG_LDFLAGS)
 
-INCLUDES	:=  -I../../common
+INCLUDES	:=  -I../../shared
 
 %.o : %.cpp
 	$(CXX) $(CFLAGS) $(INCLUDES) -o $@ $<
