@@ -8,6 +8,7 @@ etc/opt/agocontrol/config.ini.tpl
 etc/opt/agocontrol/schema.yaml
 etc/opt/agocontrol/inventory.sql
 etc/opt/agocontrol/datalogger.sql
+etc/opt/agocontrol/uuidmap
 opt/agocontrol/bin/agologger.py
 opt/agocontrol/bin/agoresolver.py
 opt/agocontrol/bin/agoresolver
