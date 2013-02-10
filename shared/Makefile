@@ -28,4 +28,4 @@ libagoclient.so: agoclient.o CDataFile.o
 	$(LD) -o $(@)$(LIB_VER) $(LDFLAGS) $^ -lqpidmessaging -lqpidtypes -luuid -ljsoncpp
 
 clean:
-	rm -f agoclient.o CDataFile.o
+	rm -f agoclient.o CDataFile.o libagoclient.so.*
