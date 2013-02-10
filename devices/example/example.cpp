@@ -13,7 +13,7 @@ std::string commandHandler(qpid::types::Variant::Map command) {
 }
 
 int main(int argc, char **argv) {
-	AgoConnection agoConnection = AgoConnection();		
+	AgoConnection agoConnection = AgoConnection("example");
 	printf("connection established\n");
 	agoConnection.addDevice("123", "dimmer");
 	agoConnection.addDevice("124", "switch");
