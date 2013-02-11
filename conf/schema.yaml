@@ -56,6 +56,12 @@ commands:
         name: security pin
         type: integer
         range: [0, 999999]
+  sendir:
+    name: send infrared remote code
+    parameters:
+      ircode:
+        name: infrared code to send
+        type: string
   getvideoframe:
     name: get video frame
   mute:
@@ -135,6 +141,14 @@ commands:
       name: confirm
       type: boolean
 devicetypes:
+  hdmicec:
+    name: HDMI CEC interface
+    description: control devices on the HDMI bus
+    commands: [alloff]
+  infaredblaster:
+    name: infraredblaster
+    description: send infrared remote commands
+    commands: [sendir]
   phone:
     name: telephone
     description: a phone

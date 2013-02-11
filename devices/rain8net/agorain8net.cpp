@@ -65,6 +65,7 @@ int main(int argc, char **argv) {
 		printf("can't open rainnet device %s\n", devicefile.c_str());
 		exit(1);
 	}
+	rain8.setTimeout(10000);
 	if ((rc = rain8.comCheck()) != 0) {
 		printf("can't talk to rainnet device %s, comcheck failed: %i\n", devicefile.c_str(),rc);
 		exit(1);
