@@ -624,16 +624,16 @@ int main( int argc, char* argv[] )
 	// The second argument is the path for saved Z-Wave network state and the log file.  If you leave it NULL 
 	// the log file will appear in the program's working directory.
 	Options::Create( "/etc/openzwave/config/", "/etc/opt/agocontrol/ozw/", "" );
-	Options::Get()->AddOptionBool("Logging", true );
-	Options::Get()->AddOptionInt("SaveLogLevel", LogLevel_Error );
-	Options::Get()->AddOptionString("LogFileName", "OZW_Log.txt",  true ); 
-	Options::Get()->AddOptionBool("ConsoleOutput", true ); 
-	Options::Get()->AddOptionInt("QueueLogLevel", LogLevel_Debug );
-	Options::Get()->AddOptionInt("DumpTrigger", LogLevel_Error );
-	Options::Get()->AddOptionInt("PollInterval", 50000 );
-	Options::Get()->AddOptionBool("IntervalBetweenPolls", true );
-	Options::Get()->AddOptionBool("ValidateValueChanges", true);
-	Options::Get()->AddOptionBool("SuppressValueRefresh", false );
+//	Options::Get()->AddOptionBool("Logging", true );
+//	Options::Get()->AddOptionInt("SaveLogLevel", LogLevel_Error );
+//	Options::Get()->AddOptionString("LogFileName", "OZW_Log.txt",  true ); 
+//	Options::Get()->AddOptionBool("ConsoleOutput", true ); 
+//	Options::Get()->AddOptionInt("QueueLogLevel", LogLevel_Debug );
+//	Options::Get()->AddOptionInt("DumpTrigger", LogLevel_Error );
+//	Options::Get()->AddOptionInt("PollInterval", 50000 );
+//	Options::Get()->AddOptionBool("IntervalBetweenPolls", true );
+//	Options::Get()->AddOptionBool("ValidateValueChanges", true);
+//	Options::Get()->AddOptionBool("SuppressValueRefresh", false );
 	Options::Get()->Lock();
 
 	Manager::Create();
