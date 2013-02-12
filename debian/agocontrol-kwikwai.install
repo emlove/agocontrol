@@ -1,0 +1,2 @@
+lib/systemd/system/agokwikwai.service
+opt/agocontrol/bin/agokwikwai

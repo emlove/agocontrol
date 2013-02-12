@@ -76,3 +76,13 @@ Package: agocontrol-rain8net
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, libagoclient1.0
 Description: Rain8net interface driver
+
+Package: agocontrol-irtransethernet
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, libagoclient1.0
+Description: IRTrans Ethernet interface driver
+
+Package: agocontrol-kwikwai
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, libagoclient1.0
+Description: Kwikwai HDMI CEC bridge interface driver

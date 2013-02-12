@@ -1,0 +1,12 @@
+[Unit]
+Description=ago control IRTrans Ethernet infrared blaster Device
+
+[Service]
+ExecStart=/opt/agocontrol/bin/agoirtrans_ethernet
+WorkingDirectory=/opt/agocontrol/bin
+Restart=always
+RestartSec=2
+User=agocontrol
+
+[Install]
+WantedBy=multi-user.target
