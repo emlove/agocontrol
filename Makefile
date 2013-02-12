@@ -35,6 +35,9 @@ irtransethernet:
 kwikwai:
 	$(MAKE) -C devices/kwikwai
 
+firmata:
+	$(MAKE) -C devices/firmata
+
 agodmx:
 	$(MAKE) -C devices/agodmx
 
@@ -44,6 +47,7 @@ clean:
 	$(MAKE) -C devices/agozwave clean
 	$(MAKE) -C devices/agoknx clean
 	$(MAKE) -C devices/kwikwai clean
+	$(MAKE) -C devices/firmata clean
 	$(MAKE) -C devices/irtrans_ethernet clean
 	$(MAKE) -C devices/rain8net clean
 	$(MAKE) -C core/agotimer clean
@@ -87,6 +91,7 @@ install:
 	install devices/onkyo/agoiscp.py $(DESTDIR)/opt/agocontrol/bin
 	install devices/agozwave/agozwave $(DESTDIR)/opt/agocontrol/bin
 	install devices/agoknx/agoknx $(DESTDIR)/opt/agocontrol/bin
+	install devices/firmata/agofirmata $(DESTDIR)/opt/agocontrol/bin
 	install devices/rain8net/agorain8net $(DESTDIR)/opt/agocontrol/bin
 	install devices/irtrans_ethernet/agoirtrans_ethernet $(DESTDIR)/opt/agocontrol/bin
 	install devices/kwikwai/agokwikwai $(DESTDIR)/opt/agocontrol/bin

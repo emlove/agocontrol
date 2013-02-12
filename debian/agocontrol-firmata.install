@@ -1,0 +1,2 @@
+lib/systemd/system/agofirmata.service
+opt/agocontrol/bin/agofirmata

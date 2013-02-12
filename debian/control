@@ -86,3 +86,8 @@ Package: agocontrol-kwikwai
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, libagoclient1.0
 Description: Kwikwai HDMI CEC bridge interface driver
+
+Package: agocontrol-firmata
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, libagoclient1.0
+Description: Arduino Firmata interface driver
