@@ -1,6 +1,6 @@
 LD     := g++
 
-all: common messagesend resolver agotimer agozwave agochromoflex agoknx agorpc rain8net kwikwai irtransethernet
+all: common messagesend resolver agotimer agozwave agochromoflex agoknx agorpc rain8net kwikwai irtransethernet firmata
 
 common:
 	$(MAKE) -C shared
