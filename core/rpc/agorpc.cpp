@@ -77,6 +77,7 @@ Iter next(Iter iter)
 static const char *ajax_reply_start =
   "HTTP/1.1 200 OK\r\n"
   "Cache: no-cache\r\n"
+  "Access-Control-Allow-Origin: *\r\n"
   "Content-Type: application/x-javascript\r\n"
   "\r\n";
 
