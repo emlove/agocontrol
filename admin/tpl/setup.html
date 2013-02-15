@@ -2,6 +2,62 @@
 <%block name="title">ago control device setup</%block>
 <script type="text/javascript">
     document._schema = ${schema_json};
+    
+    var subscription = null;
+    var url = "http://" + window.location.hostname + ":8008/jsonrpc";
+
+    function handleEvent(response) {
+        if (response.result) { 
+            console.log(response.result);
+            var states = document.getElementsByClassName("state");
+            for (var i = 0; i < states.length; i++) {
+                if (states[i].getAttribute("rel") == response.result.uuid) {
+                    states[i].innerHTML = response.result.level;
+                }
+            }
+            var slider = document.getElementsByClassName("slider");
+            for (var i = 0; i < slider.length; i++) {
+                if (slider[i].getAttribute("rel") == response.result.uuid) {
+                    $(slider[i]).slider('value', response.result.level);
+                }
+            }
+            
+        }
+        getNextEvent();
+    }
+
+
+    function getNextEvent() {
+	    var request = {};
+	    request.method = "getevent";
+	    request.params = {};
+	    request.params.uuid = subscription;
+	    request.id = 1;
+	    request.jsonrpc = "2.0";
+
+	    $.post(url, JSON.stringify(request), handleEvent, "json");
+    }
+
+
+    function subscribe() {
+	    var request = {};
+	    request.method = "subscribe";
+	    request.id = 1;
+	    request.jsonrpc = "2.0";
+
+	    $.post(url, JSON.stringify(request), handleSubscribe, "json");
+    }
+    
+    function handleSubscribe(response) {
+	    if (response.result) { 
+		    subscription = response.result;
+		    console.log(subscription);
+		   getNextEvent();
+	    }
+    }
+    
+    subscribe();
+
 </script>
 <div id="devices">
 <h2>Device Setup</h2>
@@ -22,7 +78,7 @@
         <td class="edit_device" rel="${device["id"]}">${device["name"]}</td>
         <td class="select_device_room" rel="${device["id"]}">${device["roomname"]}</td>
         <td>${device["devicetype"]}</td>
-        <td>${device["state"]}</td>
+        <td class="state" rel="${device["id"]}">${device["state"]}</td>
         <td>${devicetype_commands(device["devicetype"],device["id"],device["state"])}</td>
     </tr>
 % endfor
