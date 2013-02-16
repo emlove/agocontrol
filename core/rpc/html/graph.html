@@ -11,13 +11,13 @@
 <script src="/js/jquery.flot.js"></script>
 <SCRIPT>
 
-	var url = "/jsonrpc";
-	var options = {
-    		lines: { show: true },
-    		points: { show: true },
-    		//xaxis: { mode: "time",  timeformat: "%y-%m-%d %H:%M:%S",   minTickSize: [5, "minute"]}
-    		xaxis: { mode: "time",  timeformat: "%m-%d %H:%M",   minTickSize: [5, "minute"]}
-	};
+var url = "/jsonrpc";
+var options = {
+	lines: { show: true },
+    	points: { show: true },
+	xaxis: { mode: "time",  timeformat: "%m-%d %H:%M",   minTickSize: [5, "minute"]}
+};
+var inventory = null;
 
 function displayGraph(response) {
  
@@ -44,7 +44,6 @@ function getloggergraph() {
 	request.params.content.start = document.forms.userdata.elements.start.value;
 	request.params.content.end = document.forms.userdata.elements.end.value;
 	request.params.content.env = $('#environments option:selected').text();
-	//request.params.content.freq = "5Min";
 	request.params.content.freq = $('#ticks option:selected').text();
 	request.id = 1;
 	request.jsonrpc = "2.0";
@@ -62,20 +61,20 @@ function displayDeviceEnvironments(response) {
 	// store global
 	DeviceEnvironments = response.result;
 
-	//var div = document.getElementById('deviceenvironments');
 	var select_devices = document.getElementById('devices');
 	var select_environments = document.getElementById('environments');
 	
 	for(var id in response.result) {
-		//div.innerHTML = div.innerHTML + id+" "+response.result[id]+"<br />";
+		if (inventory.inventory[id] == undefined) continue; 
 		select_devices.innerHTML = select_devices.innerHTML + "<option value=\"" + id + "\">" + inventory.inventory[id].name + "</option>";
-		var envs = response.result[id]
-		var i,j,env,chunk = 1;
-		for (i=0,j=envs.length; i<j; i+=chunk) {
-			env = envs.slice(i,i+chunk);
-			//alert(env);
+		var envs = response.result[id].split(",");
+		var i = 0;
+		var env;
+		for (i=0; i<envs.length; i++) {
+			env = envs[i];
 			select_environments.innerHTML = select_environments.innerHTML + "<option value=\"" + env + "\" class=\"" + id + "\">" + env + "</option>";
 		}
+
 	}
 	$("#environments").chained("#devices"); /* or $("#series").chainedTo("#mark"); */
 	console.log(response.result)
@@ -94,14 +93,13 @@ function getdeviceenvironments() {
 	request.params.content.command = "getdeviceenvironments";
 	request.id = 1;
 	request.jsonrpc = "2.0";
-	//var deviceenvironments_div = document.createElement('div');
-	//deviceenvironments_div.innerHTML = '<h2>devices and environments: </h2>';
-	//deviceenvironments_div.id = 'deviceenvironments';
-	//document.body.appendChild(deviceenvironments_div);
 	$.post(url, JSON.stringify(request), displayDeviceEnvironments, "json");
 }
  
 function displayInventory(response) {
+    // When we already have one do do nothing
+    if (inventory != null)
+	return;
  
     if (response.result) { 
 	// store inventory global
@@ -113,12 +111,6 @@ function displayInventory(response) {
 	document.body.appendChild(inventory_div);
 
 	for(var id in response.result.inventory) {
-	//	if(DeviceEnvironments[id]) {
-	//		var environment = DeviceEnvironments[id];
-	//	} else {
-	//		var environment = "&nbsp;";
-	//	}
-		//inventory_div.innerHTML = inventory_div.innerHTML + id +  " " + inventory.inventory[id].name + " (" + inventory.inventory[id].devicetype + " - "+ environment + ")<br>";
 		inventory_div.innerHTML = inventory_div.innerHTML + id +  " " + inventory.inventory[id].name + " (" + inventory.inventory[id].devicetype + ")<br>";
 	}
 	console.log(response.result)
@@ -128,6 +120,10 @@ function displayInventory(response) {
 }
 
 function getinventory() {
+
+	// When we already have one do do nothing
+	if (inventory != null)
+		return;
  
 	var request = {};
 	request.method = "message";
@@ -137,14 +133,21 @@ function getinventory() {
 	request.id = 1;
 	request.jsonrpc = "2.0";
 
-	$.post(url, JSON.stringify(request), displayInventory, "json");
+	$.ajax({
+	    type: 'POST',
+	    url: url,
+	    data: JSON.stringify(request),
+	    success: displayInventory,
+	    dataType: "json",
+	    async:false
+    });
+
 
 }
  
 $(document).ready(function() {
 
 		getdeviceenvironments();
-		getinventory();
 
 		$('#start').datetimepicker({
 			showSecond: false,
