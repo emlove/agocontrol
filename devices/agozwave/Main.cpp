@@ -645,6 +645,7 @@ int main( int argc, char* argv[] )
 	// Now we just wait for the driver to become ready
 	printf("waiting for OZW driver to become ready\n");
 	pthread_cond_wait( &initCond, &initMutex );
+	printf("pthread_cond_wait returned\n");
 
 	if( !g_initFailed )
 	{
