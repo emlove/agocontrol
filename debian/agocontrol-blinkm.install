@@ -1,0 +1,2 @@
+lib/systemd/system/agoblinkm.service
+opt/agocontrol/bin/agoblinkm

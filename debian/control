@@ -91,3 +91,8 @@ Package: agocontrol-firmata
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, libagoclient1.0
 Description: Arduino Firmata interface driver
+
+Package: agocontrol-blinkm
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, libagoclient1.0, i2c-tools
+Description: blinkm interface driver
