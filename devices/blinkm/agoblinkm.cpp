@@ -30,7 +30,8 @@ bool i2ccommand(const char *device, int i2caddr, int command, size_t size, __u8 
 	}
 	else
 		printf("open i2c slave 0x%02x: succeeded.\n\n", i2caddr);
-	i2c_smbus_write_block_data(file, command, size,buf);
+	int result = i2c_smbus_write_block_data(file, command, size,buf);
+	printf("result: %d\n",result);
 
 	return true;
 }
