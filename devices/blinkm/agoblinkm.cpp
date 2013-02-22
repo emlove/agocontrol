@@ -58,9 +58,15 @@ std::string commandHandler(qpid::types::Variant::Map content) {
 		i2ccommand(devicefile.c_str(),atoi(devicefile.c_str()),0x63,3,buf); // stop script on blinkm
 		return "0";
 	} else if (content["command"] == "setcolor") {
-		buf[0] = atoi(content["red"].asString().c_str()) * 255 / 100;
-		buf[1] = atoi(content["green"].asString().c_str()) * 255 / 100;
-		buf[2] = atoi(content["blue"].asString().c_str()) * 255 / 100;
+		int red = 0;
+		int green = 0;
+		int blue = 0;
+		red = content["red"];
+		green = content["green"];
+		blue = content["blue"];
+		buf[0] = red * 255 / 100;
+		buf[1] = green * 255 / 100;
+		buf[2] = blue * 255 / 100;
 		i2ccommand(devicefile.c_str(),atoi(devicefile.c_str()),0x63,3,buf); // stop script on blinkm
 	}
 	return "";
