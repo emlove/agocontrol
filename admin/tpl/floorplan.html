@@ -1,0 +1,44 @@
+<%inherit file="base.html"/>
+<%block name="title">ago control floorplan</%block>
+
+<script type="text/javascript">
+	var inventory = ${inventory};
+	$(document).ready(function () {
+		for (var i = 0; i < inventory.length; i++) {
+			var elem = $('<div class="device" style="border: 1px dashed #000; float: left; width: 150px; height: 50px; margin: 5px;">' +
+						  inventory[i].name + " (" + inventory[i].devicetype + ") </div>")
+			elem.appendTo("#devices");
+			elem.draggable({
+				containment: "#plan #devices",
+				stack: "#devices div",
+				cursor: "move",
+				snap: ".device"
+			});
+		}
+
+		$('<br style="clear:both" />').appendTo("#devices");
+
+		$("#devices").droppable({
+			accept: ".device",
+			drop: function(event, ui) {
+				 ui.draggable.css("position", "auto");
+				 ui.draggable.css("left", "auto");
+				 ui.draggable.css("top", "auto");
+				 console.log(ui.draggable);
+			}
+		});
+
+		$("#plan").droppable({
+			accept: ".device",
+			drop: function(event, ui) {
+				console.log("done");
+			}
+		});
+	});
+</script>
+
+<div id="devices">
+</div>
+<br style="clear:both" />
+<div id="plan" style="width:100%;border:1px solid; height: 800px;">
+</div>

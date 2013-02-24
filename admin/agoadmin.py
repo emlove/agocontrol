@@ -593,7 +593,7 @@ class EditScenario:
                 scenarioName = dev["name"]
                 break
         tpl = lookup.get_template("edit_scenario.html")
-        return tpl.render(inventory=getDevices(inventory), rooms=getRooms(inventory), uuid=uuid,
+        return tpl.render(inventory=devs, rooms=getRooms(inventory), uuid=uuid,
                          schema=inventory["schema"], name=scenarioName, commands = simplejson.dumps(map["scenariomap"]))
 
     @cherrypy.expose
@@ -618,6 +618,13 @@ class EditScenario:
         else:
             return "Error"
 
+class FloorPlan:
+	@cherrypy.expose
+	def default(self):
+		inventory = discover()  
+		tpl = lookup.get_template("floorplan.html")
+		return tpl.render(inventory=simplejson.dumps(getDevices(inventory)))
+
 root = Root()
 root.command = Command()
 root.ext_command = ExtCommand()
@@ -641,6 +648,7 @@ root.createscenario = CreateScenario()
 root.sources = Sources()
 root.graph = Graph()
 root.cloudreg = CloudReg()
+root.floorplan = FloorPlan()
 
 def avahicallback(x, y, z):
 	return False
