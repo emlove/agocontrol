@@ -37,25 +37,25 @@ bool i2ccommand(const char *device, int i2caddr, int command, size_t size, __u8 
 }
 
 std::string commandHandler(qpid::types::Variant::Map content) {
-	// int i2caddr = atoi(content["internalid"].asString().c_str());
+	int i2caddr = atoi(content["internalid"].asString().c_str());
 	__u8 buf[10];
 	if (content["command"] == "on" ) {
 		buf[0]=0xff;
 		buf[1]=0xff;
 		buf[2]=0xff;
-		i2ccommand(devicefile.c_str(),atoi(devicefile.c_str()),0x63,3,buf); // stop script on blinkm
+		i2ccommand(devicefile.c_str(),i2caddr,0x63,3,buf); // stop script on blinkm
 		return "255";
 	} else if (content["command"] == "off") {
 		buf[0]=0x0;
 		buf[1]=0x0;
 		buf[2]=0x0;
-		i2ccommand(devicefile.c_str(),atoi(devicefile.c_str()),0x63,3,buf); // stop script on blinkm
+		i2ccommand(devicefile.c_str(),i2caddr,0x63,3,buf); // stop script on blinkm
 		return "0";
 	} else if (content["command"] == "setlevel") {
 		buf[0] = atoi(content["level"].asString().c_str()) * 255 / 100;
 		buf[1] = atoi(content["level"].asString().c_str()) * 255 / 100;
 		buf[2] = atoi(content["level"].asString().c_str()) * 255 / 100;
-		i2ccommand(devicefile.c_str(),atoi(devicefile.c_str()),0x63,3,buf); // stop script on blinkm
+		i2ccommand(devicefile.c_str(),i2caddr,0x63,3,buf); // stop script on blinkm
 		return "0";
 	} else if (content["command"] == "setcolor") {
 		int red = 0;
@@ -67,7 +67,7 @@ std::string commandHandler(qpid::types::Variant::Map content) {
 		buf[0] = red * 255 / 100;
 		buf[1] = green * 255 / 100;
 		buf[2] = blue * 255 / 100;
-		i2ccommand(devicefile.c_str(),atoi(devicefile.c_str()),0x63,3,buf); // stop script on blinkm
+		i2ccommand(devicefile.c_str(),i2caddr,0x63,3,buf); // stop script on blinkm
 	}
 	return "";
 }
