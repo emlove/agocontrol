@@ -199,6 +199,7 @@ void agocontrol::AgoConnection::run() {
 								replysender.send(response);
 							} catch(const std::exception& error) {
 								printf("can't send reply\n");
+								session.acknowledge();
 							}
 						} 
 
