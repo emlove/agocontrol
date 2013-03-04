@@ -300,12 +300,20 @@ bool agocontrol::AgoConnection::sendMessage(const char *subject, qpid::types::Va
 		sender.send(message);
 	} catch(const std::exception& error) {
 		std::cerr << error.what() << std::endl;
+		return false;
 	}
 	
 	return true;
 }
 
 bool agocontrol::AgoConnection::sendMessage(qpid::types::Variant::Map content) {
-	sendMessage("",content);
-	return true;
+	return sendMessage("",content);
+}
+
+bool agocontrol::AgoConnection::emitEvent(const char *internalId, const char *eventType, const char *level, const char *unit) {
+	Variant::Map content;
+	content["level"] = level;
+	content["unit"] = unit;
+	content["uuid"] = internalIdToUuid(internalId);
+	return sendMessage(eventType, content);
 }

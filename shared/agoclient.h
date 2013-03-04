@@ -57,6 +57,7 @@ namespace agocontrol {
 			bool addHandler(std::string (*handler)(qpid::types::Variant::Map));
 			bool sendMessage(const char *subject, qpid::types::Variant::Map content);
 			bool sendMessage(qpid::types::Variant::Map content);
+			bool emitEvent(const char *internalId, const char *eventType, const char *level, const char *units);
 	};
 }
 
