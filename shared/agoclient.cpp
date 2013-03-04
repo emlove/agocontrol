@@ -206,10 +206,12 @@ void agocontrol::AgoConnection::run() {
 						// printf("command for id %s found, calling handler\n", internalid.c_str());
 						content["internalid"] = internalid;
 						string status = commandHandler(content);
-						Variant::Map state;
-						state["level"] = status;
-						state["uuid"] = content["uuid"];
-						sendMessage("event.device.statechanged", state);
+						if (status != "") {
+							Variant::Map state;
+							state["level"] = status;
+							state["uuid"] = content["uuid"];
+							sendMessage("event.device.statechanged", state);
+						}
 					}
 				}
 			}
