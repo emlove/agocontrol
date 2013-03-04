@@ -209,12 +209,34 @@ void OnNotification
 				// Add the new value to our list
 				nodeInfo->m_values.push_back( _notification->GetValueID() );
 				ValueID id = _notification->GetValueID();
-				printf("Notification: Value Added Home 0x%08x Node %d Genre %d Class %d Instance %d Index %d Type %d - ID: %" PRIu64 "\n", _notification->GetHomeId(), _notification->GetNodeId(), id.GetGenre(), id.GetCommandClassId(), id.GetInstance(), id.GetIndex(), id.GetType(),id.GetId());
+				printf("Notification: Value Added Home 0x%08x Node %d Genre %d Class %x Instance %d Index %d Type %d - ID: %" PRIu64 "\n", _notification->GetHomeId(), _notification->GetNodeId(), id.GetGenre(), id.GetCommandClassId(), id.GetInstance(), id.GetIndex(), id.GetType(),id.GetId());
 				string tempstring;
 				tempstring = uint64ToString(id.GetId());
-				if (id.GetCommandClassId() == 0x25) {
-					printf("adding ago device switch for value id: %s\n", tempstring.c_str());
-					agoConnection->addDevice(tempstring.c_str(), "switch");
+				switch(id.GetCommandClassId()) {
+					case COMMAND_CLASS_SWITCH_MULTILEVEL:
+						printf("adding ago device dimmer for value id: %s\n", tempstring.c_str());
+						agoConnection->addDevice(tempstring.c_str(), "dimmer");
+					break;
+					case COMMAND_CLASS_SWITCH_BINARY:
+						printf("adding ago device switch for value id: %s\n", tempstring.c_str());
+						agoConnection->addDevice(tempstring.c_str(), "switch");
+					break;
+					case COMMAND_CLASS_SENSOR_BINARY:
+						printf("adding ago device binarysensor for value id: %s\n", tempstring.c_str());
+						agoConnection->addDevice(tempstring.c_str(), "binarysensor");
+					break;
+					case COMMAND_CLASS_SENSOR_MULTILEVEL:
+						printf("adding ago device multilevelsensor for value id: %s\n", tempstring.c_str());
+						agoConnection->addDevice(tempstring.c_str(), "multilevelsensor");
+					break;
+					case COMMAND_CLASS_BASIC_WINDOW_COVERING:
+						printf("adding ago device drapes for value id: %s\n", tempstring.c_str());
+						agoConnection->addDevice(tempstring.c_str(), "drapes");
+					break;
+					case COMMAND_CLASS_THERMOSTAT_SETPOINT:
+						printf("adding ago device thermostat for value id: %s\n", tempstring.c_str());
+						agoConnection->addDevice(tempstring.c_str(), "thermostat");
+					break;
 				}
 			}
 			break;
@@ -250,10 +272,41 @@ void OnNotification
 					string label = Manager::Get()->GetValueLabel(id);
 					string units = Manager::Get()->GetValueUnits(id);
 					string level = str;
+					string eventtype = "";
 					if (str == "True") level="255";
 					if (str == "False") level="0";
 					printf("Value: %s Label: %s Unit: %s\n",str.c_str(),label.c_str(),units.c_str());
-						
+					if (label == "Basic") {
+						eventtype="event.device.statechanged";
+					}
+					if (label == "Luminance") {
+						eventtype="event.environment.brightnesschanged";
+					}
+					if (label == "Temperature") {
+						eventtype="event.environment.temperaturechanged";
+					}
+					if (label == "Relative Humidity") {
+						eventtype="event.environment.humiditychanged";
+					}
+					if (label == "Battery Level") {
+						eventtype="event.device.batterylevelchanged";
+					}
+					if (label == "Alarm Level") {
+						eventtype="event.security.alarmlevelchanged";
+					}
+					if (label == "Alarm Type") {
+						eventtype="event.security.alarmtypechanged";
+					}
+					if (label == "Sensor") {
+						eventtype="event.environment.sensortriggered";
+					}
+					if (label == "Energy") {
+						eventtype="event.environment.energy";
+					}
+					if (label == "Power") {
+						eventtype="event.environment.power";
+					}
+					if (eventtype != "") agoConnection->emitEvent(uint64ToString(id.GetId()).c_str(), eventtype.c_str(), level.c_str(), units.c_str());	
 				}
 			}
 			break;
