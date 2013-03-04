@@ -418,16 +418,53 @@ std::string commandHandler(qpid::types::Variant::Map content) {
 	printf("command: %s internal id: %s\n", content["command"].asString().c_str(), internalid.c_str());
 	ValueID *tmpValueID = getValueID(internalid);
 	if (tmpValueID == NULL) {
-		printf("can't resolve ValueID\n");
+		if (internalid == "zwavecontroller") {
+			printf("z-wave specific controller command received\n");
+			if (content["command"] == "addnode") {
+				Manager::Get()->BeginControllerCommand(g_homeId, Driver::ControllerCommand_AddDevice, controller_update, NULL, true);
+			} else if (content["command"] == "removenode") {
+				Manager::Get()->BeginControllerCommand(g_homeId, Driver::ControllerCommand_RemoveDevice, controller_update, NULL, true);
+			} else if (content["command"] == "addassociation") {
+				int mynode = content["node"];
+				int mygroup = content["group"];
+				int mytarget = content["target"];
+				printf("adding association: %i %i %i\n",mynode,mygroup,mytarget);
+				Manager::Get()->AddAssociation(g_homeId, mynode, mygroup, mytarget);
+			} else if (content["command"] == "removeassociation") {
+				Manager::Get()->RemoveAssociation(g_homeId, content["node"], content["group"], content["target"]);
+			} else if (content["command"] == "setconfigparam") {
+				int mynode = content["node"];
+				int myparam = content["param"];
+				int myvalue = content["value"];
+				int mysize = content["size"];
+				printf("setting config param: node: %i param: %i size: %i value: %i\n",mynode,myparam,mysize,myvalue);
+				Manager::Get()->SetConfigParam(g_homeId,mynode,myparam,myvalue,mysize); 
+			} else if (content["command"] == "downloadconfig") {
+				Manager::Get()->BeginControllerCommand(g_homeId, Driver::ControllerCommand_ReceiveConfiguration, controller_update, NULL, true);
+			} else if (content["command"] == "cancel") {
+				Manager::Get()->CancelControllerCommand(g_homeId);
+			} else if (content["command"] == "saveconfig") {
+				Manager::Get()->WriteConfig( g_homeId );
+			} else if (content["command"] == "allon") {
+				Manager::Get()->SwitchAllOn(g_homeId );
+			} else if (content["command"] == "alloff") {
+				Manager::Get()->SwitchAllOff(g_homeId );
+			} else if (content["command"] == "reset") {
+				Manager::Get()->ResetController(g_homeId);
+			}
+
+		} else {
+			printf("can't resolve ValueID\n");
+		}
 		return "";
 	} else {
 		printf("command received for node id %i\n", tmpValueID->GetNodeId());
 		if (content["command"] == "on" ) {
 			Manager::Get()->SetValue(*tmpValueID , true);
-			return "255";
+			return "";
 		} else if (content["command"] == "off" ) {
 			Manager::Get()->SetValue(*tmpValueID, false);
-			return "0";
+			return "";
 		}
 	}
 	return "";
@@ -480,11 +517,8 @@ int main(int argc, char **argv) {
 		printf("Dropped: %d Retries: %d\n", data.m_dropped, data.m_retries);
 
 		printf("agozwave startup complete, starting agoConnection->run()\n");
-	 	stringstream ourNodeId;
-		ourNodeId << Manager::Get()->GetControllerNodeId(g_homeId);
 
-
-		agoConnection->addDevice(ourNodeId.str().c_str(), "zwavecontroller");
+		agoConnection->addDevice("zwavecontroller", "zwavecontroller");
 		agoConnection->addHandler(commandHandler);
 
 		agoConnection->run();
