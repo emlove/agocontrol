@@ -1,0 +1,11 @@
+#!/bin/bash
+# agocontrol-blinkm postinst script
+
+# test if we're running on a raspberry
+test -e /etc/modprobe.d/raspi-blacklist.conf && (
+	sed -i 's/^\(blacklist i2c-bcm2708\)/#\1/' /etc/modprobe.d/raspi-blacklist.conf
+	grep i2c-bcm2708 /etc/modules > /dev/null || echo i2c-bcm2708 >> /etc/modules
+	grep i2c_dev /etc/modules > /dev/null || echo i2c_dev >> /etc/modules
+)
+adduser agocontrol i2c
+
