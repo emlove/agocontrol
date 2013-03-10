@@ -1,5 +1,5 @@
 #
-# ago client library example deivce
+# ago client library example device
 #
 # copyright (c) 2013 Harald Klein <hari+ago@vt100.at>
 #
@@ -44,7 +44,7 @@ client.addHandler(messageHandler)
 # if you need to fetch any settings from config.ini, use the getConfigOption call. The first parameter is the section name in the file (should be yor instance name)
 # the second one is the parameter name, and the third one is the default value for the case when nothing is set in the config.ini
 
-print agoclient.getConfigOption("test", "parameter", "0")
+print agoclient.getConfigOption("example", "parameter", "0")
 
 
 # of course you need to tell the client library about the devices you provide. The addDevice call expects a internal id and a device type (you can find all valid types
