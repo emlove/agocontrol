@@ -15,7 +15,7 @@ config.read('/etc/opt/agocontrol/config.ini')
 def getConfigOption(section, option, default):
 	try:
 		value = config.get(section,option)
-	except ConfigParser.NoOptionError, e:
+	except:
 		value = default
 	return value
 
