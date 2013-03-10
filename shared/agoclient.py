@@ -55,8 +55,11 @@ class AgoConnection:
 			simplejson.dump(self.uuids, outfile)
 
 	def loadUuidMap(self):
-                with open('/etc/opt/agocontrol/uuidmap/' + self.instance + '.json' , 'r') as infile:
-			self.uuids = simplejson.load(infile)
+		try:
+			with open('/etc/opt/agocontrol/uuidmap/' + self.instance + '.json' , 'r') as infile:
+				self.uuids = simplejson.load(infile)
+		except:
+			pass
 
 	def addDevice(self, internalid, devicetype):
 		if (self.internalIdToUuid(internalid) == None):
