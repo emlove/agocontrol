@@ -8,6 +8,11 @@
 
 import agoclient
 
+# we'll also use a background thread in this example
+
+import threading
+import time
+
 
 # then we create an AgoConnection object. You need to specify an instance name as parameter. 
 # This will be used to uniquely name the mappings file for internal id to uuid mapping and to identify the client devices ("handled-by" parameter)
@@ -41,6 +46,7 @@ def messageHandler(internalid, content):
 # specify our message handler method
 client.addHandler(messageHandler)
 
+
 # if you need to fetch any settings from config.ini, use the getConfigOption call. The first parameter is the section name in the file (should be yor instance name)
 # the second one is the parameter name, and the third one is the default value for the case when nothing is set in the config.ini
 
@@ -56,6 +62,29 @@ print agoclient.getConfigOption("example", "parameter", "0")
 # we add a switch and a dimmer 
 client.addDevice("123", "dimmer")
 client.addDevice("124", "switch")
+# for our threading example in the next section we also add a binary sensor:
+client.addDevice("125", "binarysensor")
+
+# then we add a background thread. This is not required and just shows how to send events from a separate thread. This might be handy when you have to poll something
+# in the background or need to handle some other communication. If you don't need one or if you want to keep things simple at the moment just skip this section.
+
+class testEvent(threading.Thread):
+    def __init__(self,):
+        threading.Thread.__init__(self)    
+    def run(self):
+    	level = 0
+        while (True):
+			client.emitEvent("125", "event.security.sensortriggered", level, "")
+			if (level == 0):
+				level = 255
+			else:
+				level = 0
+			time.sleep (5)
+      
+background = testEvent()
+background.setDaemon(True)
+background.start()
+
 
 # now you should have added all devices, set up all your internal and device specific stuff, started everything like listener threads or whatever. The call to run()
 # is blocking and will start the message handling
