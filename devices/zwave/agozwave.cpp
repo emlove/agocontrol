@@ -212,10 +212,14 @@ void OnNotification
 				printf("Notification: Value Added Home 0x%08x Node %d Genre %d Class %x Instance %d Index %d Type %d - ID: %" PRIu64 "\n", _notification->GetHomeId(), _notification->GetNodeId(), id.GetGenre(), id.GetCommandClassId(), id.GetInstance(), id.GetIndex(), id.GetType(),id.GetId());
 				string tempstring;
 				tempstring = uint64ToString(id.GetId());
+				string label = Manager::Get()->GetValueLabel(id);
+				printf("label: %s\n",label.c_str());
 				switch(id.GetCommandClassId()) {
 					case COMMAND_CLASS_SWITCH_MULTILEVEL:
-						printf("adding ago device dimmer for value id: %s\n", tempstring.c_str());
-						agoConnection->addDevice(tempstring.c_str(), "dimmer");
+						if (label == "Level") {
+							printf("adding ago device dimmer for value id: %s - Label: %s\n", tempstring.c_str(),label.c_str());
+							agoConnection->addDevice(tempstring.c_str(), "dimmer");
+						}
 					break;
 					case COMMAND_CLASS_SWITCH_BINARY:
 						printf("adding ago device switch for value id: %s\n", tempstring.c_str());
@@ -276,7 +280,7 @@ void OnNotification
 					if (str == "True") level="255";
 					if (str == "False") level="0";
 					printf("Value: %s Label: %s Unit: %s\n",str.c_str(),label.c_str(),units.c_str());
-					if (label == "Basic") {
+					if ((label == "Basic") || (label == "Switch")) {
 						eventtype="event.device.statechanged";
 					}
 					if (label == "Luminance") {
