@@ -4,13 +4,13 @@ cat /etc/opt/agocontrol/config.ini | grep -v ^uuid | grep -v ^#
 echo ==== PSINF ====
 ps auxw | grep ago | grep -v grep
 echo ==== QPIDD ====
-systemctl status qpidd.service
+which systemctl > /dev/null && systemctl status qpidd.service
 ps auxw | grep qpid | grep -v grep
 sasldblistusers2 -f /etc/qpid/qpidd.sasldb 
 ls -l /etc/qpid/qpidd.acl
 cat /etc/qpid/qpidd.acl | grep -v ^# | sort -u
 echo ==== SYSTD ====
-for i in /lib/systemd/system/ago*.service; do systemctl status $(basename $i); done
+which systemctl > /dev/null && for i in /lib/systemd/system/ago*.service; do systemctl status $(basename $i); done
 which dpkg > /dev/null && (
 echo ==== PKGLI ====
 dpkg -l | grep agoc
