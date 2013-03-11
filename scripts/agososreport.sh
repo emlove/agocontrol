@@ -19,3 +19,4 @@ echo ==== DMESG ====
 dmesg
 echo ==== SYSLG ====
 grep ago /var/log/daemon.log | tac | tail -5000
+grep ago /var/log/syslog | tac | tail -5000
