@@ -112,3 +112,4 @@ install:
 	install shared/libagoclient.so.1 $(DESTDIR)/usr/lib
 	install shared/agoclient.h $(DESTDIR)/usr/include/agocontrol
 #	install devices/agodmx/agodmx $(DESTDIR)/opt/agocontrol/bin
+	install scripts/agososreport.sh $(DESTDIR)/opt/agocontrol/bin

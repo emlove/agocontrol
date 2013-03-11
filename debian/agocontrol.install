@@ -24,3 +24,4 @@ opt/agocontrol/bin/agotimer
 opt/agocontrol/bin/agorpc
 opt/agocontrol/bin/agoctrl.sh
 opt/agocontrol/bin/agodatalogger.py
+opt/agocontrol/bin/agososreport.sh
