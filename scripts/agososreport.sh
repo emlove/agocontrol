@@ -11,6 +11,11 @@ ls -l /etc/qpid/qpidd.acl
 cat /etc/qpid/qpidd.acl | grep -v ^# | sort -u
 echo ==== SYSTD ====
 for i in /lib/systemd/system/ago*.service; do systemctl status $(basename $i); done
+which dpkg > /dev/null && (
+echo ==== PKGLI ====
+dpkg -l | grep agoc
+dpkg -l | grep qpid
+)
 echo ==== LSUSB ====
 lsusb -v
 echo ==== UDEVI ====
