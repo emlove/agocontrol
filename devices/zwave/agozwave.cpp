@@ -402,11 +402,17 @@ void OnNotification
 
 		case Notification::Type_AwakeNodesQueried:
 		case Notification::Type_AllNodesQueried:
+		case Notification::Type_AllNodesQueriedSomeDead:
 		{
-				pthread_cond_broadcast(&initCond);
-				break;
+			pthread_cond_broadcast(&initCond);
+			break;
 		}
 
+		case Notification::Type_DriverReset:
+		case Notification::Type_Notification:
+		case Notification::Type_NodeNaming:
+		case Notification::Type_NodeProtocolInfo:
+		case Notification::Type_NodeQueriesComplete:
 		default:
 		{
 		}
