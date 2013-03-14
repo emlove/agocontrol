@@ -662,7 +662,7 @@ int main( int argc, char* argv[] )
 //	Options::Get()->AddOptionInt("DumpTrigger", LogLevel_Error );
 //	Options::Get()->AddOptionInt("PollInterval", 50000 );
 //	Options::Get()->AddOptionBool("IntervalBetweenPolls", true );
-//	Options::Get()->AddOptionBool("ValidateValueChanges", true);
+	Options::Get()->AddOptionBool("ValidateValueChanges", true);
 //	Options::Get()->AddOptionBool("SuppressValueRefresh", false );
 	Options::Get()->Lock();
 
