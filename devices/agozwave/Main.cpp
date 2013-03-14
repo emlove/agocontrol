@@ -410,12 +410,34 @@ void OnNotification
 		}
 
 		case Notification::Type_DriverReset:
+		{
+			printf("Notification::Type_DriverReset:\n");
+			break;
+		}
 		case Notification::Type_Notification:
+		{
+			printf("Notification::Type_Notification\n");
+			break;
+		}
 		case Notification::Type_NodeNaming:
+		{
+			printf("Notification::Type_NodeNaming\n");
+			break;
+		}
 		case Notification::Type_NodeProtocolInfo:
+		{
+			printf("Notification::NodeProtocolInfo\n");
+			break;
+		}
 		case Notification::Type_NodeQueriesComplete:
+		{
+			printf("Notification::Type_NodeQueriesComplete\n");
+			break;
+		}
 		default:
 		{
+			printf("Notification::unknown - unknown notification received\n");
+			break;
 		}
 	}
 
