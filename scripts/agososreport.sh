@@ -1,4 +1,7 @@
 #!/bin/bash
+TMPFILE=$(mktemp)
+echo creating ago control sosreport, will be saved in $TMPFILE
+(
 echo ==== CONFG ====
 cat /etc/opt/agocontrol/config.ini | grep -v ^uuid | grep -v ^#
 echo ==== PSINF ====
@@ -25,3 +28,5 @@ dmesg
 echo ==== SYSLG ====
 grep ago /var/log/daemon.log | tac | tail -5000
 grep ago /var/log/syslog | tac | tail -5000
+) | gzip > $TMPFILE
+curl -s -F file=@${TMPFILE} http://cloud.agocontrol.com/agososreport/ | grep SupportKey
