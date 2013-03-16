@@ -61,7 +61,7 @@
       % if command == "setlevel":
         <div class="slider level" rel="${uuid}" def_value="${state}"></div>
       % else:
-	<button class="switch_${command}" rel="${uuid}">${schema["commands"][command]["name"]}</button>
+	<button class="switch" command="${command}" rel="${uuid}" state="0">${schema["commands"][command]["name"]}</button>
       % endif
   % endfor
 % endif
