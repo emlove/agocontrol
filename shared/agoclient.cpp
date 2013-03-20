@@ -219,6 +219,7 @@ void agocontrol::AgoConnection::run() {
 			
 		} catch(const std::exception& error) {
 			std::cerr << error.what() << std::endl;
+			usleep(50);
 		}
 	}
 }
