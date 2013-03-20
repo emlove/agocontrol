@@ -167,15 +167,22 @@ NodeInfo* GetNodeInfo
 }
 
 
-ValueID* getValueID(string id) {
-	uint64_t tmpid;
-	tmpid=atoll(id.c_str());
+ValueID* getValueID(int nodeid, int instance, string label) {
+
+	printf("getValueID: Node ID: %d Instance: %d\n",nodeid, instance);
 
         for( list<NodeInfo*>::iterator it = g_nodes.begin(); it != g_nodes.end(); ++it )
         {
 		for (list<ValueID>::iterator it2 = (*it)->m_values.begin(); it2 != (*it)->m_values.end(); it2++ ) {
 			// printf("Node ID: %3d Value ID: %d\n", (*it)->m_nodeId, (*it2).GetId());
-			if ((*it2).GetId() == tmpid) return &(*it2);
+			if ( ((*it)->m_nodeId == nodeid) && ((*it2).GetInstance() == instance) ) {
+				string valuelabel = Manager::Get()->GetValueLabel((*it2));
+				printf("Label: %s\n",valuelabel.c_str());
+				if (label == valuelabel) {
+					printf("Found ValueID: %d\n",(*it2).GetId());
+					return &(*it2);
+				}
+			}
 		}
 	}
 	return NULL;
@@ -209,11 +216,12 @@ void OnNotification
 				// Add the new value to our list
 				nodeInfo->m_values.push_back( _notification->GetValueID() );
 				ValueID id = _notification->GetValueID();
-				printf("Notification: Value Added Home 0x%08x Node %d Genre %d Class %x Instance %d Index %d Type %d - ID: %" PRIu64 "\n", _notification->GetHomeId(), _notification->GetNodeId(), id.GetGenre(), id.GetCommandClassId(), id.GetInstance(), id.GetIndex(), id.GetType(),id.GetId());
-				string tempstring;
-				tempstring = uint64ToString(id.GetId());
+				stringstream tempstream;
+				tempstream << (int) _notification->GetNodeId();
+				tempstream << "/";
+				tempstream << (int) id.GetInstance();
+				string tempstring = tempstream.str();
 				string label = Manager::Get()->GetValueLabel(id);
-				printf("label: %s\n",label.c_str());
 				switch(id.GetCommandClassId()) {
 					case COMMAND_CLASS_SWITCH_MULTILEVEL:
 						if (label == "Level") {
@@ -222,25 +230,41 @@ void OnNotification
 						}
 					break;
 					case COMMAND_CLASS_SWITCH_BINARY:
-						printf("adding ago device switch for value id: %s\n", tempstring.c_str());
-						agoConnection->addDevice(tempstring.c_str(), "switch");
+						if (label == "Switch") {
+							printf("adding ago device switch for value id: %s\n", tempstring.c_str());
+							agoConnection->addDevice(tempstring.c_str(), "switch");
+						}
 					break;
 					case COMMAND_CLASS_SENSOR_BINARY:
-						printf("adding ago device binarysensor for value id: %s\n", tempstring.c_str());
-						agoConnection->addDevice(tempstring.c_str(), "binarysensor");
+						if (label == "Sensor") {
+							printf("adding ago device binarysensor for value id: %s\n", tempstring.c_str());
+							agoConnection->addDevice(tempstring.c_str(), "binarysensor");
+						}
 					break;
 					case COMMAND_CLASS_SENSOR_MULTILEVEL:
-						printf("adding ago device multilevelsensor for value id: %s\n", tempstring.c_str());
-						agoConnection->addDevice(tempstring.c_str(), "multilevelsensor");
+						if (label == "Luminance") {
+							printf("adding ago device multilevelsensor for value id: %s\n", tempstring.c_str());
+							agoConnection->addDevice(tempstring.c_str(), "multilevelsensor");
+						} else {
+							printf("WARNING: unhandled label for SENSOR_MULTILEVEL: %s - adding generic multilevelsensor\n",label.c_str());
+							agoConnection->addDevice(tempstring.c_str(), "multilevelsensor");
+						}
 					break;
 					case COMMAND_CLASS_BASIC_WINDOW_COVERING:
-						printf("adding ago device drapes for value id: %s\n", tempstring.c_str());
-						agoConnection->addDevice(tempstring.c_str(), "drapes");
+						if (label == "Open") {
+							printf("adding ago device drapes for value id: %s\n", tempstring.c_str());
+							agoConnection->addDevice(tempstring.c_str(), "drapes");
+						}
 					break;
 					case COMMAND_CLASS_THERMOSTAT_SETPOINT:
 						printf("adding ago device thermostat for value id: %s\n", tempstring.c_str());
 						agoConnection->addDevice(tempstring.c_str(), "thermostat");
 					break;
+					default:
+						printf("Notification: Unassigned Value Added Home 0x%08x Node %d Genre %d Class %x Instance %d Index %d Type %d - ID: %" PRIu64 "\n", _notification->GetHomeId(), _notification->GetNodeId(), id.GetGenre(), id.GetCommandClassId(), id.GetInstance(), id.GetIndex(), id.GetType(),id.GetId());
+						// printf("CONSTRUCTED ID: %s\n",tempstring.c_str());
+						printf("label: %s\n",label.c_str());
+
 				}
 			}
 			break;
@@ -426,54 +450,68 @@ void OnNotification
 std::string commandHandler(qpid::types::Variant::Map content) {
 	std::string internalid = content["internalid"].asString();
 	printf("command: %s internal id: %s\n", content["command"].asString().c_str(), internalid.c_str());
-	ValueID *tmpValueID = getValueID(internalid);
-	if (tmpValueID == NULL) {
-		if (internalid == "zwavecontroller") {
-			printf("z-wave specific controller command received\n");
-			if (content["command"] == "addnode") {
-				Manager::Get()->BeginControllerCommand(g_homeId, Driver::ControllerCommand_AddDevice, controller_update, NULL, true);
-			} else if (content["command"] == "removenode") {
-				Manager::Get()->BeginControllerCommand(g_homeId, Driver::ControllerCommand_RemoveDevice, controller_update, NULL, true);
-			} else if (content["command"] == "addassociation") {
-				int mynode = content["node"];
-				int mygroup = content["group"];
-				int mytarget = content["target"];
-				printf("adding association: %i %i %i\n",mynode,mygroup,mytarget);
-				Manager::Get()->AddAssociation(g_homeId, mynode, mygroup, mytarget);
-			} else if (content["command"] == "removeassociation") {
-				Manager::Get()->RemoveAssociation(g_homeId, content["node"], content["group"], content["target"]);
-			} else if (content["command"] == "setconfigparam") {
-				int mynode = content["node"];
-				int myparam = content["param"];
-				int myvalue = content["value"];
-				int mysize = content["size"];
-				printf("setting config param: node: %i param: %i size: %i value: %i\n",mynode,myparam,mysize,myvalue);
-				Manager::Get()->SetConfigParam(g_homeId,mynode,myparam,myvalue,mysize); 
-			} else if (content["command"] == "downloadconfig") {
-				Manager::Get()->BeginControllerCommand(g_homeId, Driver::ControllerCommand_ReceiveConfiguration, controller_update, NULL, true);
-			} else if (content["command"] == "cancel") {
-				Manager::Get()->CancelControllerCommand(g_homeId);
-			} else if (content["command"] == "saveconfig") {
-				Manager::Get()->WriteConfig( g_homeId );
-			} else if (content["command"] == "allon") {
-				Manager::Get()->SwitchAllOn(g_homeId );
-			} else if (content["command"] == "alloff") {
-				Manager::Get()->SwitchAllOff(g_homeId );
-			} else if (content["command"] == "reset") {
-				Manager::Get()->ResetController(g_homeId);
-			}
 
-		} else {
-			printf("can't resolve ValueID\n");
+	if (internalid == "zwavecontroller") {
+		printf("z-wave specific controller command received\n");
+		if (content["command"] == "addnode") {
+			Manager::Get()->BeginControllerCommand(g_homeId, Driver::ControllerCommand_AddDevice, controller_update, NULL, true);
+		} else if (content["command"] == "removenode") {
+			Manager::Get()->BeginControllerCommand(g_homeId, Driver::ControllerCommand_RemoveDevice, controller_update, NULL, true);
+		} else if (content["command"] == "addassociation") {
+			int mynode = content["node"];
+			int mygroup = content["group"];
+			int mytarget = content["target"];
+			printf("adding association: %i %i %i\n",mynode,mygroup,mytarget);
+			Manager::Get()->AddAssociation(g_homeId, mynode, mygroup, mytarget);
+		} else if (content["command"] == "removeassociation") {
+			Manager::Get()->RemoveAssociation(g_homeId, content["node"], content["group"], content["target"]);
+		} else if (content["command"] == "setconfigparam") {
+			int mynode = content["node"];
+			int myparam = content["param"];
+			int myvalue = content["value"];
+			int mysize = content["size"];
+			printf("setting config param: node: %i param: %i size: %i value: %i\n",mynode,myparam,mysize,myvalue);
+			Manager::Get()->SetConfigParam(g_homeId,mynode,myparam,myvalue,mysize); 
+		} else if (content["command"] == "downloadconfig") {
+			Manager::Get()->BeginControllerCommand(g_homeId, Driver::ControllerCommand_ReceiveConfiguration, controller_update, NULL, true);
+		} else if (content["command"] == "cancel") {
+			Manager::Get()->CancelControllerCommand(g_homeId);
+		} else if (content["command"] == "saveconfig") {
+			Manager::Get()->WriteConfig( g_homeId );
+		} else if (content["command"] == "allon") {
+			Manager::Get()->SwitchAllOn(g_homeId );
+		} else if (content["command"] == "alloff") {
+			Manager::Get()->SwitchAllOff(g_homeId );
+		} else if (content["command"] == "reset") {
+			Manager::Get()->ResetController(g_homeId);
 		}
-		return "";
+
 	} else {
-		printf("command received for node id %i\n", tmpValueID->GetNodeId());
+		unsigned pos = internalid.find("/");
+		int nodeid = atoi(internalid.substr(0,pos).c_str());
+		int instance = atoi(internalid.substr(pos+1).c_str());
+
+		printf("command received for node %d/%d\n", nodeid, instance);
+
 		if (content["command"] == "on" ) {
-			Manager::Get()->SetValue(*tmpValueID , true);
+			ValueID *tmpValueID = getValueID(nodeid,instance, "Switch");
+			if (tmpValueID) {
+				printf("Found ValueID: %d\n",tmpValueID->GetId());
+				Manager::Get()->SetValue(*tmpValueID , true);
+			}
 			return "";
 		} else if (content["command"] == "off" ) {
-			Manager::Get()->SetValue(*tmpValueID, false);
+			ValueID *tmpValueID = getValueID(nodeid,instance, "Switch");
+			if (tmpValueID) Manager::Get()->SetValue(*tmpValueID, false);
+			return "";
+		} else if (content["command"] == "setlevel") {
+			int level = atoi(content["level"].asString().c_str());
+			ValueID *tmpValueID = getValueID(nodeid,instance, "Basic");
+			if (tmpValueID) {
+				printf("Found ValueID: %d\n",tmpValueID->GetId());
+				printf("Setting level: %d\n",level);
+				Manager::Get()->SetValue(*tmpValueID, level);
+			}
 			return "";
 		}
 	}
