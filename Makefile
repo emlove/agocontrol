@@ -111,5 +111,6 @@ install:
 	install core/agotimer/agotimer $(DESTDIR)/opt/agocontrol/bin
 	install shared/libagoclient.so.1 $(DESTDIR)/usr/lib
 	install shared/agoclient.h $(DESTDIR)/usr/include/agocontrol
+	install shared/agoclient.py $(DESTDIR)/opt/agocontrol/bin
 #	install devices/agodmx/agodmx $(DESTDIR)/opt/agocontrol/bin
 	install scripts/agososreport.sh $(DESTDIR)/opt/agocontrol/bin

@@ -128,4 +128,4 @@ class AgoConnection:
 
 			except ReceiverError, e:
 				syslog.syslog(syslog.LOG_ERR, "can't receive message: " + e)
-				time.sleep(1)
+				time.sleep(0.05)

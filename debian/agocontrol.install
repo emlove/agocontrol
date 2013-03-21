@@ -15,6 +15,7 @@ opt/agocontrol/bin/agoresolver
 opt/agocontrol/bin/agoscenario.py
 opt/agocontrol/bin/agoevent.py
 opt/agocontrol/bin/inventory.py
+opt/agocontrol/bin/agoclient.py
 opt/agocontrol/bin/boolParser.py
 opt/agocontrol/bin/myavahi.py
 opt/agocontrol/bin/agodrain.py
