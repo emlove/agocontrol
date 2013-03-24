@@ -15,3 +15,6 @@ device=/dev/ttyUSB0
 
 [owfs]
 device=/dev/ttyUSB2
+
+[squeezebox]
+server=192.168.1.65:9000

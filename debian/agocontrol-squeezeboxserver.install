@@ -1,0 +1,3 @@
+lib/systemd/system/agosqueezeboxserver.service
+opt/agocontrol/bin/agosqueezeboxserver.py
+opt/agocontrol/bin/squeezeboxserver.py
