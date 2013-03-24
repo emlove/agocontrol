@@ -2,7 +2,7 @@
 Description=ago control Resolver
 
 [Service]
-ExecStart=/opt/agocontrol/bin/agoresolver.py
+ExecStart=/opt/agocontrol/bin/agoresolver
 WorkingDirectory=/opt/agocontrol/bin
 StandardOutput=syslog
 StandardError=syslog
