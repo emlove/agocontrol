@@ -29,7 +29,7 @@ import datetime
 
 import myavahi
 
-lookup = TemplateLookup(directories=['tpl'], module_directory='mod')
+lookup = TemplateLookup(directories=['tpl'], module_directory='mod', default_filters=['decode.utf8'])
 
 PATH = os.path.abspath(os.path.dirname(__file__))
 
