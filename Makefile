@@ -1,6 +1,6 @@
 LD     := g++
 
-all: common messagesend resolver agotimer agozwave agochromoflex agoknx agorpc rain8net kwikwai irtransethernet firmata blinkm
+all: common messagesend resolver agotimer zwave agochromoflex agoknx agorpc rain8net kwikwai irtransethernet firmata blinkm
 
 common:
 	$(MAKE) -C shared
@@ -17,8 +17,8 @@ agotimer:
 blinkm:
 	$(MAKE) -C devices/blinkm
 
-agozwave:
-	$(MAKE) -C devices/agozwave
+zwave:
+	$(MAKE) -C devices/zwave
 
 agorpc:
 	$(MAKE) -C core/rpc
@@ -47,7 +47,7 @@ agodmx:
 clean:
 	$(MAKE) -C shared clean
 	$(MAKE) -C devices/chromoflex clean
-	$(MAKE) -C devices/agozwave clean
+	$(MAKE) -C devices/zwave clean
 	$(MAKE) -C devices/agoknx clean
 	$(MAKE) -C devices/kwikwai clean
 	$(MAKE) -C devices/firmata clean
@@ -93,7 +93,7 @@ install:
 	install devices/onkyo/core.py $(DESTDIR)/opt/agocontrol/bin
 	install devices/onkyo/commands.py $(DESTDIR)/opt/agocontrol/bin
 	install devices/onkyo/agoiscp.py $(DESTDIR)/opt/agocontrol/bin
-	install devices/agozwave/agozwave $(DESTDIR)/opt/agocontrol/bin
+	install devices/zwave/agozwave $(DESTDIR)/opt/agocontrol/bin
 	install devices/agoknx/agoknx $(DESTDIR)/opt/agocontrol/bin
 	install devices/firmata/agofirmata $(DESTDIR)/opt/agocontrol/bin
 	install devices/rain8net/agorain8net $(DESTDIR)/opt/agocontrol/bin
@@ -114,3 +114,4 @@ install:
 	install shared/agoclient.py $(DESTDIR)/opt/agocontrol/bin
 #	install devices/agodmx/agodmx $(DESTDIR)/opt/agocontrol/bin
 	install scripts/agososreport.sh $(DESTDIR)/opt/agocontrol/bin
+	install scripts/convert-zwave-uuid.py $(DESTDIR)/opt/agocontrol/bin

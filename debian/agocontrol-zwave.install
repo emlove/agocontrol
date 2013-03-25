@@ -1,2 +1,3 @@
 lib/systemd/system/agozwave.service
 opt/agocontrol/bin/agozwave
+opt/agocontrol/bin/convert-zwave-uuid.py

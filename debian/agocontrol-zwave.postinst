@@ -2,3 +2,8 @@
 # agocontrol-zwave postinst script
 mkdir -p /etc/opt/agocontrol/ozw
 chown -R agocontrol:agocontrol /etc/opt/agocontrol/ozw
+
+test -e /etc/opt/agocontrol/uuidmap/zwave.json || (
+	echo migrating zwave uuids for new driver
+	/opt/agocontrol/bin/convert-zwave-uuid.py $(ls -tr /etc/opt/agocontrol/ozw/zwcfg_0x*.xml| tail -1)
+)
