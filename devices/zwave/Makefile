@@ -26,7 +26,7 @@ INCLUDES	:=  -I../../shared -I/usr/include/openzwave -I/usr/include/openzwave/va
 all: agozwave
 
 agozwave: agozwave.o
-	$(LD) -o $@ $(LDFLAGS) $^ -lagoclient -ludev -lopenzwave
+	$(LD) -o $@ $(LDFLAGS) $^ -lagoclient -lopenzwave -ludev
 
 clean:
 	rm -f agozwave agozwave.o
