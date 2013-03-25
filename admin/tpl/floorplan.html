@@ -15,6 +15,29 @@
 	}
 
 	$(document).ready(function () {
+         $( "#dialog-form" ).dialog({
+            autoOpen: true,
+            height: 300,
+            width: 350,
+            modal: true,
+            buttons: {
+                "Continue": function() {
+                    var w = parseInt($("#width").val());
+                    var h = parseInt($("#height").val());
+                    if (w == 0 || h == 0 || isNaN(w) || isNaN(h)) {
+                        alert("Invalid size");
+                        return;
+                    }
+                    $("#plan").width(w);
+                    $("#plan").height(h);
+                    $(this).dialog("close");
+                    init_plan();
+                }
+           }
+         });
+	});
+	
+	function init_plan() {
 		for (var i = 0; i < inventory.length; i++) {
 			var elem = $('<div class="device" style="border: 1px dashed #000; float: left; width: 150px; height: 50px; margin: 5px;">' +
 						  inventory[i].name + " (" + inventory[i].devicetype + ") </div>")
@@ -44,9 +67,20 @@
 				ui.draggable.draggable('destroy');
 				set_dragable(ui.draggable);
 			}
-		});
-	});
+		});	 
+		
+		return false;   
+	}
 </script>
+<div id="dialog-form" title="Floor Plan Settings">
+    <form>
+        <fieldset>
+        <label for="width">Plan width:</label>
+        <input type="text" name="width" id="width" /><br />
+        <label for="height">Plan height:</label>
+        <input type="text" name="height" id="height" /><br />
+    </form>
+</div>
 
 <div id="devices">
 </div>

@@ -333,6 +333,7 @@ $(document).ready(function () {
             min: 0,
             max: 100,
             step: 5,
+            disabled: $(this).attr('state') == '-',
             stop: function (event, ui) {
                 var value = ui.value;
                 var rel = $(this).attr('rel');
