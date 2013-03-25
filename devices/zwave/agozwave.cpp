@@ -392,8 +392,18 @@ void OnNotification
 			{
 				// We have received an event from the node, caused by a
 				// basic_set or hail message.
-				// TBD...
-				// TODO: send level changed on basic set
+				ValueID id = _notification->GetValueID();
+
+				stringstream tempstream;
+				tempstream << (int) _notification->GetNodeId();
+				tempstream << "/";
+				tempstream << (int) id.GetInstance();
+				stringstream level;
+				level << _notification->GetByte();
+				string eventtype = "event.device.statechanged";
+				if (debug) printf("Sending %s event from child %s\n",eventtype.c_str(), tempstream.str().c_str());
+				agoConnection->emitEvent(tempstream.str().c_str(), eventtype.c_str(), level.str().c_str(), "");	
+
 			}
 			break;
 		}
