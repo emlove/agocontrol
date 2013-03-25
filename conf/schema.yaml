@@ -225,8 +225,8 @@ devicetypes:
     commands: ["on", "off"]
   squeezebox:
     name: Squeezebox Player
-	description: Plays music
-	commands: ["on", "off", "play", "pause", "stop"]
+    description: Plays music
+    commands: ["on", "off", "play", "pause", "stop"]
 values:
   level:
     name: level
