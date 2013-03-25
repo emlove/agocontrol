@@ -43,6 +43,8 @@ using namespace std;
 using namespace agocontrol;
 using namespace OpenZWave;
 
+bool debug = true;
+
 AgoConnection *agoConnection;
 
 static uint32 g_homeId = 0;
@@ -168,18 +170,14 @@ NodeInfo* GetNodeInfo
 
 
 ValueID* getValueID(int nodeid, int instance, string label) {
-
-	printf("getValueID: Node ID: %d Instance: %d\n",nodeid, instance);
-
         for( list<NodeInfo*>::iterator it = g_nodes.begin(); it != g_nodes.end(); ++it )
         {
 		for (list<ValueID>::iterator it2 = (*it)->m_values.begin(); it2 != (*it)->m_values.end(); it2++ ) {
 			// printf("Node ID: %3d Value ID: %d\n", (*it)->m_nodeId, (*it2).GetId());
 			if ( ((*it)->m_nodeId == nodeid) && ((*it2).GetInstance() == instance) ) {
 				string valuelabel = Manager::Get()->GetValueLabel((*it2));
-				printf("Label: %s\n",valuelabel.c_str());
 				if (label == valuelabel) {
-					printf("Found ValueID: %d\n",(*it2).GetId());
+					// printf("Found ValueID: %d\n",(*it2).GetId());
 					return &(*it2);
 				}
 			}
@@ -261,9 +259,8 @@ void OnNotification
 						agoConnection->addDevice(tempstring.c_str(), "thermostat");
 					break;
 					default:
-						printf("Notification: Unassigned Value Added Home 0x%08x Node %d Genre %d Class %x Instance %d Index %d Type %d - ID: %" PRIu64 "\n", _notification->GetHomeId(), _notification->GetNodeId(), id.GetGenre(), id.GetCommandClassId(), id.GetInstance(), id.GetIndex(), id.GetType(),id.GetId());
-						// printf("CONSTRUCTED ID: %s\n",tempstring.c_str());
-						printf("label: %s\n",label.c_str());
+						printf("Notification: Unassigned Value Added Home 0x%08x Node %d Genre %d Class %x Instance %d Index %d Type %d - Label: %s\n", _notification->GetHomeId(), _notification->GetNodeId(), id.GetGenre(), id.GetCommandClassId(), id.GetInstance(), id.GetIndex(), id.GetType(),label.c_str());
+						// printf("Notification: Unassigned Value Added Home 0x%08x Node %d Genre %d Class %x Instance %d Index %d Type %d - ID: %" PRIu64 "\n", _notification->GetHomeId(), _notification->GetNodeId(), id.GetGenre(), id.GetCommandClassId(), id.GetInstance(), id.GetIndex(), id.GetType(),id.GetId());
 
 				}
 			}
@@ -299,6 +296,12 @@ void OnNotification
 			      if (Manager::Get()->GetValueAsString(id, &str)) {
 					string label = Manager::Get()->GetValueLabel(id);
 					string units = Manager::Get()->GetValueUnits(id);
+
+					stringstream tempstream;
+					tempstream << (int) _notification->GetNodeId();
+					tempstream << "/";
+					tempstream << (int) id.GetInstance();
+
 					string level = str;
 					string eventtype = "";
 					if (str == "True") level="255";
@@ -334,7 +337,10 @@ void OnNotification
 					if (label == "Power") {
 						eventtype="event.environment.power";
 					}
-					if (eventtype != "") agoConnection->emitEvent(uint64ToString(id.GetId()).c_str(), eventtype.c_str(), level.c_str(), units.c_str());	
+					if (eventtype != "") {
+						if (debug) printf("Sending %s event from child %s\n",eventtype.c_str(), tempstream.str().c_str());
+						agoConnection->emitEvent(tempstream.str().c_str(), eventtype.c_str(), level.c_str(), units.c_str());	
+					}
 				}
 			}
 			break;
@@ -449,7 +455,7 @@ void OnNotification
 
 std::string commandHandler(qpid::types::Variant::Map content) {
 	std::string internalid = content["internalid"].asString();
-	printf("command: %s internal id: %s\n", content["command"].asString().c_str(), internalid.c_str());
+	// printf("command: %s internal id: %s\n", content["command"].asString().c_str(), internalid.c_str());
 
 	if (internalid == "zwavecontroller") {
 		printf("z-wave specific controller command received\n");
@@ -494,23 +500,30 @@ std::string commandHandler(qpid::types::Variant::Map content) {
 		printf("command received for node %d/%d\n", nodeid, instance);
 
 		if (content["command"] == "on" ) {
-			ValueID *tmpValueID = getValueID(nodeid,instance, "Switch");
+			ValueID *tmpValueID = getValueID(nodeid,instance, "Basic");
 			if (tmpValueID) {
-				printf("Found ValueID: %d\n",tmpValueID->GetId());
-				Manager::Get()->SetValue(*tmpValueID , true);
+				// printf("Type: %s\n",Value::GetTypeNameFromEnum(tmpValueID->GetType()));
+				if (debug) printf("Basic on\n");
+				// printf("Found ValueID: %d\n",tmpValueID->GetId());
+				bool result = Manager::Get()->SetValue(*tmpValueID , (uint8) 255);
+				printf("Result: %d\n",result);
 			}
 			return "";
 		} else if (content["command"] == "off" ) {
-			ValueID *tmpValueID = getValueID(nodeid,instance, "Switch");
-			if (tmpValueID) Manager::Get()->SetValue(*tmpValueID, false);
+			ValueID *tmpValueID = getValueID(nodeid,instance, "Basic");
+			if (tmpValueID) { 
+				if (debug) printf("Basic off\n");
+				bool result = Manager::Get()->SetValue(*tmpValueID, (uint8) 0);
+				printf("Result: %d\n",result);
+			}
 			return "";
 		} else if (content["command"] == "setlevel") {
-			int level = atoi(content["level"].asString().c_str());
-			ValueID *tmpValueID = getValueID(nodeid,instance, "Basic");
+			uint8 level = atoi(content["level"].asString().c_str());
+			ValueID *tmpValueID = getValueID(nodeid,instance, "Level");
 			if (tmpValueID) {
-				printf("Found ValueID: %d\n",tmpValueID->GetId());
 				printf("Setting level: %d\n",level);
-				Manager::Get()->SetValue(*tmpValueID, level);
+				bool result = Manager::Get()->SetValue(*tmpValueID, level);
+				printf("Result: %d\n",result);
 			}
 			return "";
 		}
