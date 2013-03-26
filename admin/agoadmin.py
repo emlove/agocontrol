@@ -85,14 +85,15 @@ def getDevices(content):
 	devices = []
 	if "inventory" in content:
 		for id, device in content["inventory"].iteritems():
-			newdevice = device
-			newdevice["id"] = id
-			if "room" in device:
-				if device["room"] in content["rooms"]:
-					newdevice["roomname"] =  content["rooms"][device["room"]]["name"]
-				else:
-					newdevice["roomname"] = ""
-			devices.append(newdevice)
+			if device:
+				newdevice = device
+				newdevice["id"] = id
+				if "room" in device:
+					if device["room"] in content["rooms"]:
+						newdevice["roomname"] =  content["rooms"][device["room"]]["name"]
+					else:
+						newdevice["roomname"] = ""
+				devices.append(newdevice)
 	return devices
 
 def getRooms(content):
