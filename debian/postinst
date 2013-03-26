@@ -6,6 +6,8 @@ if ! getent passwd agocontrol > /dev/null ; then
     echo 'Adding system-user for agocontrol' 1>&2
     adduser --system --home /var/run/agocontrol --group --disabled-password agocontrol
     adduser agocontrol dialout
+    mkdir -p /var/run/agocontrol
+    chown agocontrol:agocontrol /var/run/agocontrol
 fi
 
 # replace config.ini if there is an old version without username setting
