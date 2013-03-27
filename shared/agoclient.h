@@ -49,6 +49,7 @@ namespace agocontrol {
 			std::string internalIdToUuid(std::string internalId); // lookup in map
 			void reportDevices();
 			std::string (*commandHandler)(qpid::types::Variant::Map);
+			void (*eventHandler)(qpid::types::Variant::Map);
 		public:
 			AgoConnection(const char *interfacename);
 			~AgoConnection();

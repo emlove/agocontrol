@@ -182,11 +182,11 @@ void agocontrol::AgoConnection::run() {
 			// std::cout << content << std::endl;
 			session.acknowledge();
 
-			if (message.getSubject().size() == 0) {
-				// no subject, this is a command
-				if (content["command"] == "discover") {
-					reportDevices(); // make resolver happy and announce devices on discover request
-				} else {
+			if (content["command"] == "discover") {
+				reportDevices(); // make resolver happy and announce devices on discover request
+			} else {
+				if (message.getSubject().size() == 0) {
+					// no subject, this is a command
 					// lets see if this is for one of our devices
 					string internalid = uuidToInternalId(content["uuid"].asString());
 					if (internalid.size() > 0) {
@@ -213,7 +213,7 @@ void agocontrol::AgoConnection::run() {
 							sendMessage("event.device.statechanged", state);
 						}
 					}
-				}
+				} // TODO: handle events
 			}
 		} catch(const NoMessageAvailable& error) {
 			
