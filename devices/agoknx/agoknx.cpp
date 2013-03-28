@@ -204,7 +204,7 @@ void *listener(void *param) {
 							content["level"] = tl.getFloatData(); 
 							content["unit"] = "mA";
 							encode(content, event);
-							event.setSubject("event.environment.energy");
+							event.setSubject("event.environment.power");
 						} else if (type == "energyusage") {
 							unsigned char buffer[4];
 							if (tl.getUserData(buffer,4) == 4) {
@@ -213,7 +213,7 @@ void *listener(void *param) {
 							content["level"] = "";
 							content["unit"] = "Wh";
 							encode(content, event);
-							event.setSubject("event.environment.energyusage");
+							event.setSubject("event.environment.power");
 						} else if (type == "binary") {
 							content["level"] = tl.getShortUserData()==1 ? 255 : 0; 
 							encode(content, event);

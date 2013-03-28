@@ -335,7 +335,7 @@ void OnNotification
 						eventtype="event.environment.energy";
 					}
 					if (label == "Power") {
-						eventtype="event.environment.power";
+						eventtype="event.environment.energy";
 					}
 					if (eventtype != "") {
 						if (debug) printf("Sending %s event from child %s\n",eventtype.c_str(), tempstream.str().c_str());
