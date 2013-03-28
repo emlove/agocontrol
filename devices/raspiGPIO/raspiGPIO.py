@@ -1,4 +1,5 @@
-#! /usr/bin/env python
+#! /usr/bin/env python 
+
 #
 # ago raspberry pi GPIO device
 #
@@ -37,12 +38,12 @@ for pin in outputs:
 def messageHandler(internalid, content):
 	if "command" in content:
 		if content["command"] == "on":
-			print "switching on: " + internalid
-			GPIO.output(int(internalid), True)
+			print "switching on test: ", internalid
+			GPIO.output(internalid, True)
 			client.emitEvent(internalid, "event.device.state", "255", "")
 		if content["command"] == "off":
-			print "switching off: " + internalid
-			GPIO.output(int(internalid), False)
+			print "switching off: ", internalid
+			GPIO.output(internalid, False)
 			client.emitEvent(internalid, "event.device.state", "0", "")
 
 client.addHandler(messageHandler)
