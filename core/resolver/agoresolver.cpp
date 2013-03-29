@@ -36,7 +36,7 @@
 #include <qpid/messaging/Session.h>
 #include <qpid/messaging/Address.h>
 
-#include "../../devices/agozwave/CDataFile.h"
+#include "../../shared/agoclient.h"
 
 #include "schema.h"
 #include "inventory.h"
@@ -44,26 +44,13 @@
 using namespace std;
 using namespace qpid::messaging;
 using namespace qpid::types;
+using namespace agocontrol;
+
 
 // qpid session and sender/receiver
 Receiver receiver;
 Sender sender;
 Session session;
-
-// generates a uuid as string via libuuid
-string generateUuid() {
-	string strUuid;
-	char *name;
-	if ((name=(char*)malloc(38)) != NULL) {
-		uuid_t tmpuuid;
-		name[0]=0;
-		uuid_generate(tmpuuid);
-		uuid_unparse(tmpuuid,name);
-		strUuid = string(name);
-		free(name);
-	}
-	return strUuid;
-}
 
 void handleEvent(Variant::Map *device, string subject, Variant::Map *content);
 
@@ -71,41 +58,19 @@ int main(int argc, char **argv) {
 	string broker;
 	string port; 
 	string schemafile;
-
 	Variant::Map connectionOptions;
-	CDataFile ExistingDF("/etc/opt/agocontrol/config.ini");
 
-	t_Str szBroker  = t_Str("");
-	szBroker = ExistingDF.GetString("broker", "system");
-	if ( szBroker.size() == 0 )
-		broker="localhost:5672";
-	else		
-		broker= szBroker;
-	t_Str szUsername  = t_Str("");
-	szUsername = ExistingDF.GetString("username", "system");
-	if ( szUsername.size() == 0 )
-		connectionOptions["username"]="agocontrol";
-	else		
-		connectionOptions["username"] = szUsername;
+	clog.rdbuf(new agocontrol::Log("agoresolver", LOG_LOCAL0));
+	clog << agocontrol::kLogNotice << "starting up" << std::endl;
 
-	t_Str szPassword  = t_Str("");
-	szPassword = ExistingDF.GetString("password", "system");
-	if ( szPassword.size() == 0 )
-		connectionOptions["password"]="letmein";
-	else		
-		connectionOptions["password"]=szPassword;
-
-	t_Str szSchemafile  = t_Str("");
-	szSchemafile = ExistingDF.GetString("schema", "system");
-	if ( szSchemafile.size() == 0 )
-		schemafile = "/etc/opt/agocontrol/schema.yaml";
-	else		
-		schemafile =szPassword;
-
+	broker=getConfigOption("system", "broker", "localhost:5672");
+	connectionOptions["username"]=getConfigOption("system", "username", "agocontrol");
+	connectionOptions["password"]=getConfigOption("system", "password", "letmein");
+	schemafile=getConfigOption("system", "schema", "/etc/opt/agocontrol/schema.yaml");
 
 	connectionOptions["reconnect"] = "true";
 
-
+	clog << agocontrol::kLogDebug << "connecting to broker" << std::endl;
 	Connection connection(broker, connectionOptions);
 	try {
 		connection.open(); 
@@ -122,11 +87,15 @@ int main(int argc, char **argv) {
 
 	Variant::Map inventory; // used to hold device registrations
 	Variant::Map schema;  
+
+	clog << agocontrol::kLogDebug << "parsing schema file" << std::endl;
 	schema = parseSchema(schemafile.c_str());
 
+	clog << agocontrol::kLogDebug << "reading inventory" << std::endl;
 	Inventory inv("/etc/opt/agocontrol/inventory.db");
 	
 	// discover devices
+	clog << agocontrol::kLogDebug << "discovering devices" << std::endl;
 	Variant::Map discovercmd;
 	discovercmd["command"] = "discover";
 	Message discovermsg;
@@ -134,7 +103,7 @@ int main(int argc, char **argv) {
 	try {
 		sender.send(discovermsg);
 	} catch(const std::exception& error) {
-		printf("could not send discover msg\n");
+		clog << agocontrol::kLogEmerg << "can't discover devices" << std::endl;
 		return 1;
 	}
 
@@ -143,28 +112,36 @@ int main(int argc, char **argv) {
 			Variant::Map content;
 			string subject;
 			Message message = receiver.fetch(Duration::SECOND * 3);
+			clog << agocontrol::kLogDebug << "acknowledge message" << std::endl;
 			session.acknowledge();
 
 			// workaround for bug qpid-3445
 			if (message.getContent().size() < 4) {
+				clog << agocontrol::kLogDebug << "working aroung qpid bug 3445" << std::endl;
 				throw qpid::messaging::EncodingException("message too small");
 			}
+
+			clog << agocontrol::kLogDebug << "decoding message" << std::endl;
 			decode(message, content);
 			subject = message.getSubject();
+			clog << agocontrol::kLogDebug << "subject:" << subject << "size:" << subject.size() << std::endl;
 
 			// test if it is an event
 			if (subject.size()>0) {
 				if (subject == "event.device.announce") {
 					string uuid = content["uuid"];
 					if (uuid != "") {
-						printf("adding device: uuid=%s\n", uuid.c_str());
+						clog << agocontrol::kLogDebug << "preparing device: uuid="  << uuid << std::endl;
 						Variant::Map device;
 						Variant::Map values;
-						device["devicetype"]=content["devicetype"];
+						device["devicetype"]=content["devicetype"].asString();
+						clog << agocontrol::kLogDebug << "getting name from inventory" << endl;
 						device["name"]=inv.getdevicename(content["uuid"].asString());
+						clog << agocontrol::kLogDebug << "getting room from inventory" << endl;
 						device["room"]=inv.getdeviceroom(content["uuid"].asString()); 
-						device["state"]="-";
+						device["state"]="0";
 						device["values"]=values;
+						clog << agocontrol::kLogDebug << "adding device: uuid="  << uuid  << " type: " << device["devicetype"].asString() << std::endl;
 						inventory[uuid] = device;
 					}
 				} else {
@@ -179,6 +156,7 @@ int main(int argc, char **argv) {
 			} else {
 				// this is a command
 				if (content["command"] == "inventory") {
+					clog << agocontrol::kLogDebug << "responding to inventory request" << std::endl;
 					Variant::Map reply;
 					Variant::Map rooms;
 					reply["inventory"] = inventory;
@@ -193,7 +171,7 @@ int main(int argc, char **argv) {
 						try {
 							replysender.send(response);
 						} catch(const std::exception& error) {
-							printf("could not send reply\n");
+							clog << agocontrol::kLogErr << "cannot reply to request: " << error.what() << std::endl;
 						}
 					}
 				} else if (content["command"] == "setroomname") {
@@ -209,7 +187,7 @@ int main(int argc, char **argv) {
 						try {
 							replysender.send(response);
 						} catch(const std::exception& error) {
-							printf("could not send reply\n");
+							clog << agocontrol::kLogErr << "cannot reply to request: " << error.what() << std::endl;
 						}
 					}
 				} else if (content["command"] == "setdeviceroom") {
@@ -232,7 +210,7 @@ int main(int argc, char **argv) {
 						try {
 							replysender.send(response);
 						} catch(const std::exception& error) {
-							printf("could not send reply\n");
+							clog << agocontrol::kLogErr << "cannot reply to request: " << error.what() << std::endl;
 						}
 					}
 				} else if (content["command"] == "setdevicename") {
@@ -255,7 +233,7 @@ int main(int argc, char **argv) {
                                                 try {
                                                         replysender.send(response);
                                                 } catch(const std::exception& error) {
-                                                        printf("could not send reply\n");
+							clog << agocontrol::kLogErr << "cannot reply to request: " << error.what() << std::endl;
                                                 }
                                         }
 
@@ -273,7 +251,7 @@ int main(int argc, char **argv) {
                                                 try {
                                                         replysender.send(response);
                                                 } catch(const std::exception& error) {
-                                                        printf("could not send reply\n");
+							clog << agocontrol::kLogErr << "cannot reply to request: " << error.what() << std::endl;
                                                 }
                                         }
 				} 
@@ -282,7 +260,7 @@ int main(int argc, char **argv) {
 		} catch(const NoMessageAvailable& error) {
 			
 		} catch(const std::exception& error) {
-			std::cerr << error.what() << std::endl;
+			clog << agocontrol::kLogCrit << "Unhandled exception: " << error.what() << std::endl;
 		}
 	}
 
@@ -309,18 +287,19 @@ void handleEvent(Variant::Map *device, string subject, Variant::Map *content) {
 		Variant::Map *values;
 		values = &(*device)["values"].asMap();
 		(*values)["state"] = (*content)["level"];
-		(*device)["state"]  = valuesToString(values);
+		(*device)["state"]  = (*content)["level"];
+		// (*device)["state"]  = valuesToString(values);
 	} else if (subject == "event.environment.temperaturechanged") {
 		Variant::Map *values;
 		string elem = "values";
 		values = &(*device)[elem].asMap();
 		(*values)["temperature"] = (*content)["level"];
-		(*device)["state"]  = valuesToString(values);
+		// (*device)["state"]  = valuesToString(values);
 	} else if (subject == "event.environment.humiditychanged") {
 		Variant::Map *values;
 		string elem = "values";
 		values = &(*device)[elem].asMap();
 		(*values)["humidity"] = (*content)["level"];
-		(*device)["state"]  = valuesToString(values);
+		// (*device)["state"]  = valuesToString(values);
 	}
 }

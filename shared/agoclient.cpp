@@ -1,4 +1,5 @@
 #include <string>
+#include <string.h>
 
 #include <stdio.h>
 #include <unistd.h>
@@ -320,3 +321,38 @@ bool agocontrol::AgoConnection::emitEvent(const char *internalId, const char *ev
 	content["uuid"] = internalIdToUuid(internalId);
 	return sendMessage(eventType, content);
 }
+
+
+
+agocontrol::Log::Log(std::string ident, int facility) {
+    facility_ = facility;
+    priority_ = LOG_DEBUG;
+    strncpy(ident_, ident.c_str(), sizeof(ident_));
+    ident_[sizeof(ident_)-1] = '\0';
+
+    openlog(ident_, LOG_PID, facility_);
+}
+
+int agocontrol::Log::sync() {
+    if (buffer_.length()) {
+        syslog(priority_, buffer_.substr(0,buffer_.length()-1).c_str());
+        buffer_.erase();
+        priority_ = LOG_DEBUG; // default to debug for each message
+    }
+    return 0;
+}
+
+int agocontrol::Log::overflow(int c) {
+    if (c != EOF) {
+        buffer_ += static_cast<char>(c);
+    } else {
+        sync();
+    }
+    return c;
+}
+
+std::ostream& agocontrol::operator<< (std::ostream& os, const agocontrol::LogPriority& log_priority) {
+    static_cast<agocontrol::Log *>(os.rdbuf())->priority_ = (int)log_priority;
+    return os;
+}
+

@@ -136,7 +136,7 @@ string Inventory::getfirst(const char *query) {
 			fprintf(stderr, "step error: %s\n",sqlite3_errmsg(db));
 			break;
 		case SQLITE_ROW:
-			result =string( (const char*)sqlite3_column_text(stmt, 0));
+			if (sqlite3_column_type(stmt, 0) == SQLITE_TEXT) result =string( (const char*)sqlite3_column_text(stmt, 0));
 			break;
 	}
 	sqlite3_finalize(stmt);
