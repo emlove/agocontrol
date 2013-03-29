@@ -399,7 +399,7 @@ void OnNotification
 				tempstream << "/";
 				tempstream << (int) id.GetInstance();
 				stringstream level;
-				level << _notification->GetByte();
+				level << (int) _notification->GetByte();
 				string eventtype = "event.device.statechanged";
 				if (debug) printf("Sending %s event from child %s\n",eventtype.c_str(), tempstream.str().c_str());
 				agoConnection->emitEvent(tempstream.str().c_str(), eventtype.c_str(), level.str().c_str(), "");	
