@@ -41,7 +41,7 @@ for device in readDevices:
         sys.exit()
     devices.append(device)
     print 'addDevice', device
-    client.addDevice(device, "temperturesensor")
+    client.addDevice(device, "temperaturesensor")
 
 print devices
 
@@ -77,7 +77,7 @@ class read1WGPIO(threading.Thread):
                         temperaturedata = secondline.split(" ")[9] 
                         temperature = float(temperaturedata[2:]) 
                         temperature = temperature / 1000
-                        client.emitEvent(device, "event.environment.temperaturechanged", temperature, "C") 
+                        client.emitEvent(device, "event.environment.temperaturechanged", temperature, "degC") 
                         print device, temperature
                         crcok = True
             print '---', interval, '---'
