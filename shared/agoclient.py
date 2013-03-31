@@ -34,10 +34,14 @@ class AgoConnection:
 		self.devices = {}
 		self.uuids = {}
 		self.handler = None
+		self.eventhandler = None
 		self.loadUuidMap()
 
 	def addHandler(self, handler):
 		self.handler = handler
+		
+	def addEventHandler(self, eventhandler):
+		self.eventhandler = eventhandler
 
 	def internalIdToUuid(self, internalid):
 		for uuid in self.uuids:
@@ -123,6 +127,10 @@ class AgoConnection:
 											replysender.send(response)
 										except SendError, e:
 											syslog.syslog(syslog.LOG_ERR, "can't send reply: " + e)
+				if message.subject:
+					if 'event' in message.subject:
+						if self.eventhandler:
+							self.eventhandler(message.subject, message.content)
 			except Empty, e:
 				pass
 
