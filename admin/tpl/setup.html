@@ -19,11 +19,11 @@
             for (var i = 0; i < slider.length; i++) {
                 if (slider[i].getAttribute("rel") == response.result.uuid) {
                     if (response.result.level != "-") {
-                        $(slider[i])slider('option', 'disabled', false);
+                        $(slider[i]).slider('option', 'disabled', false);
                         $(slider[i]).slider('value', response.result.level);
                     }
                     else {
-                        $(slider[i])slider('option', 'disabled', true);
+                        $(slider[i]).slider('option', 'disabled', true);
                     }
                 }
             }
