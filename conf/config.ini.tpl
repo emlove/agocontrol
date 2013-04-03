@@ -3,6 +3,7 @@ uuid=<uuid>
 broker=localhost
 username=agocontrol
 password=letmein
+units=SI
 
 # debug: WARN, DEBUG
 debug=WARN
@@ -21,6 +22,3 @@ server=192.168.1.65:9000
 
 [radiothermostat]
 ipaddress=192.168.80.222
-
-[system]
-units=SI
