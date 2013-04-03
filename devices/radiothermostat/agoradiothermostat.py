@@ -29,12 +29,12 @@ def messageHandler(internalid, content):
 			elif tstatMode =="Cool":
 				t.setCoolPoint(float(content["temperature"]))
 				client.emitEvent(internalid, "event.environment.temperaturechanged", content["temperature"], "")
-	      	if content["command"] == "setradiothermostatmode":
-	                print "set radio thermostat mode: " + internalid
+	      	if content["command"] == "setthermostatmode":
+	                print "set thermostat mode: " + internalid
 	                #client.emitEvent(internalid, "event.device.state", "0", "")
-    		if content["command"] == "setradiothermostatfanmode":
+    		if content["command"] == "setthermostatfanmode":
 			print "set radio thermostat fan mode: " + internalid
-		if content["command"] == "setradiothermostathold":
+		if content["command"] == "setthermostathold":
 			print "set radio thermostat hold: " + internalid
 
 
@@ -43,7 +43,7 @@ def messageHandler(internalid, content):
 client.addHandler(messageHandler)
 
 ipAddress =  agoclient.getConfigOption("radiothermostat", "ipaddress", "0.0.0.0")
-tempUnit = agoclient.getConfigOption("radiothermostat", "unit", "degC")
+tempUnit = agoclient.getConfigOption("system", "unit", "SI")
 #print "IP: ", ipAddress
 #print "UNIT: ", tempUnit
 t = TStat(ipAddress)
@@ -69,7 +69,7 @@ class readThermostat(threading.Thread):
 	currentTemp = float(0)  
         while (True):
 			tTemp = float(t.getCurrentTemp())
-			if (tempUnit == "degC"):
+			if (tempUnit == "SI"):
 				tTemp = round((tTemp - 32.0) / (9.0/5.0),1)
       			if (tTemp != currentTemp):
 				client.emitEvent(ipAddress, "event.environment.temperaturechanged", str(tTemp), tempUnit)

@@ -21,5 +21,6 @@ server=192.168.1.65:9000
 
 [radiothermostat]
 ipaddress=192.168.80.222
-unit=degC
 
+[system]
+units=SI
