@@ -1,3 +1,4 @@
+
 # Device wrapper for Python-TStat
 # copyright (c) 2013 Michael Dingman <michael@mdingman.com>
 
@@ -43,7 +44,7 @@ def messageHandler(internalid, content):
 client.addHandler(messageHandler)
 
 ipAddress =  agoclient.getConfigOption("radiothermostat", "ipaddress", "0.0.0.0")
-tempUnit = agoclient.getConfigOption("system", "unit", "SI")
+tempUnit = agoclient.getConfigOption("system", "units", "SI")
 #print "IP: ", ipAddress
 #print "UNIT: ", tempUnit
 t = TStat(ipAddress)
