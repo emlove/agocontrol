@@ -51,9 +51,11 @@ using namespace agocontrol;
 Receiver receiver;
 Sender sender;
 Session session;
+Connection agoConnection;
 
 bool replyMessage(const Address& replyaddress, Message response) {
 	if (replyaddress) {
+		Session replysession = agoConnection.createSession();
 		Sender replysender = session.createSender(replyaddress);
 		try {
 			replysender.send(response);
@@ -61,6 +63,7 @@ bool replyMessage(const Address& replyaddress, Message response) {
 		} catch(const std::exception& error) {
 			clog << agocontrol::kLogErr << "cannot reply to request: " << error.what() << std::endl;
 		}
+		replysession.close();
 	}
 	return false;
 }
@@ -84,15 +87,15 @@ int main(int argc, char **argv) {
 	connectionOptions["reconnect"] = "true";
 
 	clog << agocontrol::kLogDebug << "connecting to broker" << std::endl;
-	Connection connection(broker, connectionOptions);
+	agoConnection = Connection(broker, connectionOptions);
 	try {
-		connection.open(); 
-		session = connection.createSession(); 
+		agoConnection.open(); 
+		session = agoConnection.createSession(); 
 		receiver = session.createReceiver("agocontrol; {create: always, node: {type: topic}}"); 
 		sender = session.createSender("agocontrol; {create: always, node: {type: topic}}"); 
 	} catch(const std::exception& error) {
 		std::cerr << error.what() << std::endl;
-		connection.close();
+		agoConnection.close();
 		printf("could not startup\n");
 		return 1;
 	}
@@ -178,7 +181,7 @@ int main(int argc, char **argv) {
 					reply["schema"] = schema;	
 					reply["rooms"] = inv.getrooms();
 
-					cout << agocontrol::kLogDebug << "inv: " << inventory << std::endl;
+					// cout << agocontrol::kLogDebug << "inv: " << inventory << std::endl;
 					Message response;
 					encode(reply, response);
 					replyMessage(message.getReplyTo(), response);
