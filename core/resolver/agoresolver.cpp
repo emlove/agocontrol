@@ -52,6 +52,19 @@ Receiver receiver;
 Sender sender;
 Session session;
 
+bool replyMessage(const Address& replyaddress, Message response) {
+	if (replyaddress) {
+		Sender replysender = session.createSender(replyaddress);
+		try {
+			replysender.send(response);
+			return true;
+		} catch(const std::exception& error) {
+			clog << agocontrol::kLogErr << "cannot reply to request: " << error.what() << std::endl;
+		}
+	}
+	return false;
+}
+
 void handleEvent(Variant::Map *device, string subject, Variant::Map *content);
 
 int main(int argc, char **argv) {
@@ -137,9 +150,12 @@ int main(int argc, char **argv) {
 						device["devicetype"]=content["devicetype"].asString();
 						clog << agocontrol::kLogDebug << "getting name from inventory" << endl;
 						device["name"]=inv.getdevicename(content["uuid"].asString());
+						device["name"].setEncoding("utf8");
 						clog << agocontrol::kLogDebug << "getting room from inventory" << endl;
 						device["room"]=inv.getdeviceroom(content["uuid"].asString()); 
+						device["room"].setEncoding("utf8");
 						device["state"]="0";
+						device["state"].setEncoding("utf8");
 						device["values"]=values;
 						clog << agocontrol::kLogDebug << "adding device: uuid="  << uuid  << " type: " << device["devicetype"].asString() << std::endl;
 						inventory[uuid] = device;
@@ -158,38 +174,21 @@ int main(int argc, char **argv) {
 				if (content["command"] == "inventory") {
 					clog << agocontrol::kLogDebug << "responding to inventory request" << std::endl;
 					Variant::Map reply;
-					Variant::Map rooms;
 					reply["inventory"] = inventory;
 					reply["schema"] = schema;	
 					reply["rooms"] = inv.getrooms();
 
-					const Address& replyaddress = message.getReplyTo();	
-					if (replyaddress) {
-						Sender replysender = session.createSender(replyaddress);
-						Message response;
-						encode(reply, response);
-						try {
-							replysender.send(response);
-						} catch(const std::exception& error) {
-							clog << agocontrol::kLogErr << "cannot reply to request: " << error.what() << std::endl;
-						}
-					}
+					cout << agocontrol::kLogDebug << "inv: " << inventory << std::endl;
+					Message response;
+					encode(reply, response);
+					replyMessage(message.getReplyTo(), response);
 				} else if (content["command"] == "setroomname") {
 					string uuid = content["uuid"];
 					// if no uuid is provided, we need to generate one for a new room
 					if (uuid == "") uuid = generateUuid();
 					inv.setroomname(uuid, content["name"]);
-					const Address& replyaddress = message.getReplyTo();	
-					if (replyaddress) {
-						Sender replysender = session.createSender(replyaddress);
-						// the web admin expects us to just return the plain uuid
-						Message response(uuid);
-						try {
-							replysender.send(response);
-						} catch(const std::exception& error) {
-							clog << agocontrol::kLogErr << "cannot reply to request: " << error.what() << std::endl;
-						}
-					}
+					Message response(uuid);
+					replyMessage(message.getReplyTo(), response);
 				} else if (content["command"] == "setdeviceroom") {
 					string result;
 					if ((content["uuid"].asString() != "") && (inv.setdeviceroom(content["uuid"], content["room"]) == 0)) {
@@ -203,16 +202,8 @@ int main(int argc, char **argv) {
 					} else {
 						result = "ERR"; // TODO: unify responses
 					}
-					const Address& replyaddress = message.getReplyTo();	
-					if (replyaddress) {
-						Sender replysender = session.createSender(replyaddress);
-						Message response(result);
-						try {
-							replysender.send(response);
-						} catch(const std::exception& error) {
-							clog << agocontrol::kLogErr << "cannot reply to request: " << error.what() << std::endl;
-						}
-					}
+					Message response(result);
+					replyMessage(message.getReplyTo(), response);
 				} else if (content["command"] == "setdevicename") {
 					string result;
 					if ((content["uuid"].asString() != "") && (inv.setdevicename(content["uuid"], content["name"]) == 0)) {
@@ -226,16 +217,8 @@ int main(int argc, char **argv) {
                                         } else {
                                                 result = "ERR"; // TODO: unify responses
                                         }
-                                        const Address& replyaddress = message.getReplyTo();
-                                        if (replyaddress) {
-                                                Sender replysender = session.createSender(replyaddress);
-                                                Message response(result);
-                                                try {
-                                                        replysender.send(response);
-                                                } catch(const std::exception& error) {
-							clog << agocontrol::kLogErr << "cannot reply to request: " << error.what() << std::endl;
-                                                }
-                                        }
+					Message response(result);
+					replyMessage(message.getReplyTo(), response);
 
 				} else if (content["command"] == "deleteroom") {
 					string result;
@@ -244,16 +227,8 @@ int main(int argc, char **argv) {
 					} else {
 						result = "ERR";
 					}
-                                        const Address& replyaddress = message.getReplyTo();
-                                        if (replyaddress) {
-                                                Sender replysender = session.createSender(replyaddress);
-                                                Message response(result);
-                                                try {
-                                                        replysender.send(response);
-                                                } catch(const std::exception& error) {
-							clog << agocontrol::kLogErr << "cannot reply to request: " << error.what() << std::endl;
-                                                }
-                                        }
+					Message response(result);
+					replyMessage(message.getReplyTo(), response);
 				} 
 			}
 
@@ -283,23 +258,16 @@ string valuesToString(Variant::Map *values) {
 }
 
 void handleEvent(Variant::Map *device, string subject, Variant::Map *content) {
+	Variant::Map *values;
+	values = &(*device)["values"].asMap();
 	if (subject == "event.device.statechanged") {// event.device.statechange
-		Variant::Map *values;
-		values = &(*device)["values"].asMap();
 		(*values)["state"] = (*content)["level"];
 		(*device)["state"]  = (*content)["level"];
+		(*device)["state"].setEncoding("utf8");
 		// (*device)["state"]  = valuesToString(values);
 	} else if (subject == "event.environment.temperaturechanged") {
-		Variant::Map *values;
-		string elem = "values";
-		values = &(*device)[elem].asMap();
 		(*values)["temperature"] = (*content)["level"];
-		// (*device)["state"]  = valuesToString(values);
 	} else if (subject == "event.environment.humiditychanged") {
-		Variant::Map *values;
-		string elem = "values";
-		values = &(*device)[elem].asMap();
 		(*values)["humidity"] = (*content)["level"];
-		// (*device)["state"]  = valuesToString(values);
 	}
 }
