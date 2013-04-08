@@ -121,12 +121,14 @@ class AgoConnection:
 									if self.handler:
 										self.handler(myid, message.content)
 									if message.reply_to:
-										replysender = self.session.sender(message.reply_to)
+										replysession = self.connection.session()
+										replysender = replysession.sender(message.reply_to)
 										response = Message("ACK")
 										try:
 											replysender.send(response)
 										except SendError, e:
 											syslog.syslog(syslog.LOG_ERR, "can't send reply: " + e)
+										replysession.close()
 				if message.subject:
 					if 'event' in message.subject:
 						if self.eventhandler:

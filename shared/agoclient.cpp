@@ -194,13 +194,15 @@ void agocontrol::AgoConnection::run() {
 						// found a match, reply to sender and pass the command to the assigned handler method
 						const Address& replyaddress = message.getReplyTo();
 						if (replyaddress) {
+							Session replysession = connection.createSession();
 							try {
-								Sender replysender = session.createSender(replyaddress);
+								Sender replysender = replysession.createSender(replyaddress);
 								Message response("ACK");
 								replysender.send(response);
+								replysession.close();
 							} catch(const std::exception& error) {
 								printf("can't send reply\n");
-								session.acknowledge();
+								replysession.close();
 							}
 						} 
 
