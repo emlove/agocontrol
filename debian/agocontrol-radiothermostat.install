@@ -1,0 +1,5 @@
+lib/systemd/system/agoradiothermostat.service
+opt/agocontrol/bin/agoradiothermostat.py
+opt/agocontrol/bin/TStatAPI.py
+opt/agocontrol/bin/TStat.py
+
