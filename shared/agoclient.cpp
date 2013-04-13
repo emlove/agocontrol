@@ -190,7 +190,7 @@ void agocontrol::AgoConnection::run() {
 					// no subject, this is a command
 					// lets see if this is for one of our devices
 					string internalid = uuidToInternalId(content["uuid"].asString());
-					if (internalid.size() > 0) {
+					if (internalid.size() > 0 && commandHandler != NULL) {
 						// found a match, reply to sender and pass the command to the assigned handler method
 						const Address& replyaddress = message.getReplyTo();
 						if (replyaddress) {
