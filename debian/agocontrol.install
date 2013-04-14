@@ -24,5 +24,6 @@ opt/agocontrol/bin/agochromoflex
 opt/agocontrol/bin/agotimer
 opt/agocontrol/bin/agorpc
 opt/agocontrol/bin/agoctrl.sh
+opt/agocontrol/bin/agoman
 opt/agocontrol/bin/agodatalogger.py
 opt/agocontrol/bin/agososreport.sh

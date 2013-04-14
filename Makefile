@@ -5,6 +5,9 @@ all: common messagesend resolver agotimer zwave agochromoflex agoknx agorpc rain
 common:
 	$(MAKE) -C shared
 
+manager:
+	$(MAKE) -C core/manager
+	
 messagesend: 
 	$(MAKE) -C core/messagesend
 
@@ -56,6 +59,7 @@ clean:
 	$(MAKE) -C devices/rain8net clean
 	$(MAKE) -C core/agotimer clean
 	$(MAKE) -C core/resolver clean
+	$(MAKE) -C core/manager clean
 	$(MAKE) -C core/messagesend clean
 	$(MAKE) -C devices/agodmx clean
 
@@ -108,6 +112,7 @@ install:
 	install core/messagesend/messagesend $(DESTDIR)/opt/agocontrol/bin
 	install core/rpc/agorpc $(DESTDIR)/opt/agocontrol/bin
 	install core/resolver/agoresolver $(DESTDIR)/opt/agocontrol/bin
+	install core/manager/agoman $(DESTDIR)/opt/agocontrol/bin
 	install core/agotimer/agotimer $(DESTDIR)/opt/agocontrol/bin
 	install shared/libagoclient.so.1 $(DESTDIR)/usr/lib
 	install shared/agoclient.h $(DESTDIR)/usr/include/agocontrol
