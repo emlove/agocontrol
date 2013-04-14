@@ -128,7 +128,7 @@ int main(int argc, char **argv) {
 			Variant::Map content;
 			string subject;
 			Message message = receiver.fetch(Duration::SECOND * 3);
-			clog << agocontrol::kLogDebug << "acknowledge message" << std::endl;
+			// clog << agocontrol::kLogDebug << "acknowledge message" << std::endl;
 			session.acknowledge();
 
 			// workaround for bug qpid-3445
@@ -137,24 +137,24 @@ int main(int argc, char **argv) {
 				throw qpid::messaging::EncodingException("message too small");
 			}
 
-			clog << agocontrol::kLogDebug << "decoding message" << std::endl;
+			// clog << agocontrol::kLogDebug << "decoding message" << std::endl;
 			decode(message, content);
 			subject = message.getSubject();
-			clog << agocontrol::kLogDebug << "subject:" << subject << "size:" << subject.size() << std::endl;
+			// clog << agocontrol::kLogDebug << "subject:" << subject << "size:" << subject.size() << std::endl;
 
 			// test if it is an event
 			if (subject.size()>0) {
 				if (subject == "event.device.announce") {
 					string uuid = content["uuid"];
 					if (uuid != "") {
-						clog << agocontrol::kLogDebug << "preparing device: uuid="  << uuid << std::endl;
+						// clog << agocontrol::kLogDebug << "preparing device: uuid="  << uuid << std::endl;
 						Variant::Map device;
 						Variant::Map values;
 						device["devicetype"]=content["devicetype"].asString();
-						clog << agocontrol::kLogDebug << "getting name from inventory" << endl;
+						// clog << agocontrol::kLogDebug << "getting name from inventory" << endl;
 						device["name"]=inv.getdevicename(content["uuid"].asString());
 						device["name"].setEncoding("utf8");
-						clog << agocontrol::kLogDebug << "getting room from inventory" << endl;
+						// clog << agocontrol::kLogDebug << "getting room from inventory" << endl;
 						device["room"]=inv.getdeviceroom(content["uuid"].asString()); 
 						device["room"].setEncoding("utf8");
 						device["state"]="0";
@@ -162,6 +162,15 @@ int main(int argc, char **argv) {
 						device["values"]=values;
 						clog << agocontrol::kLogDebug << "adding device: uuid="  << uuid  << " type: " << device["devicetype"].asString() << std::endl;
 						inventory[uuid] = device;
+					}
+				} else if (subject == "event.device.remove") {
+					string uuid = content["uuid"];
+					if (uuid != "") {
+						clog << agocontrol::kLogDebug << "removing device: uuid="  << uuid  << std::endl;
+						Variant::Map::iterator it = inventory.find(uuid);
+						if (it != inventory.end()) {
+							inventory.erase(it);
+						}
 					}
 				} else {
 					if (content["uuid"].asString() != "") {
