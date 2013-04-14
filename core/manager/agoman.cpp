@@ -23,7 +23,6 @@ qpid::types::Variant::Map pids;
 std::list<string> services;
 
 void listServices() {
-	DIR *enabled = opendir("/opt/agocontrol/devices-enabled");
 	
 	services.empty();
 	// add core services to list
@@ -32,18 +31,21 @@ void listServices() {
 	services.push_back("agorpc");
 	services.push_back("agoevent.py");
 	services.push_back("agoscenario.py");
-	while (struct dirent *entry = readdir(enabled)) {
-		string path = "/opt/agocontrol/devices-enabled/";
-		path += entry->d_name;
-		struct stat sb;
-		if (lstat(path.c_str(), &sb) != -1) {
-			if (S_IFLNK == (sb.st_mode & S_IFMT)) {
-				services.push_back(string(entry->d_name));
-				// cout << "Enabling device: " << entry->d_name << endl;
+	DIR *enabled = opendir("/opt/agocontrol/devices-enabled");
+	if (enabled != NULL) {
+		while (struct dirent *entry = readdir(enabled)) {
+			string path = "/opt/agocontrol/devices-enabled/";
+			path += entry->d_name;
+			struct stat sb;
+			if (lstat(path.c_str(), &sb) != -1) {
+				if (S_IFLNK == (sb.st_mode & S_IFMT)) {
+					services.push_back(string(entry->d_name));
+					// cout << "Enabling device: " << entry->d_name << endl;
+				}
 			}
 		}
+		closedir(enabled);
 	}
-	closedir(enabled);
 
 }
 
