@@ -1855,7 +1855,7 @@ ago control Styles
 
 /* Rounded corners FF, Safari, Chrome */
 #col-right .grid-item {
-	-moz-border-radius: 10px;
+    -moz-border-radius: 10px;
     -webkit-border-radius: 10px;
     -khtml-border-radius: 10px;
     border-radius: 10px;
@@ -1959,3 +1959,17 @@ ago control Styles
 #col-right #grid  .slider {
 	margin: 0px 13px 0px 4px;
 }
+
+
+	
+/* =Content Area
+-----------------------------------------------------------------------------*/
+#col-right #contentarea {
+    margin: 0 20px;
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+    -khtml-border-radius: 10px;
+    border-radius: 10px;
+    background-color: #FFFFFF;
+}
+
