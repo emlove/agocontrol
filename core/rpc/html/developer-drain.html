@@ -1,0 +1,156 @@
+<!doctype html>
+<!--[if lt IE 7]> <html class="no-js ie6 oldie" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js ie7 oldie" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js ie8 oldie" lang="en"> <![endif]-->
+<!--[if IE 9]>    <html class="no-js ie9" lang="en"> <![endif]-->
+<!-- Consider adding an manifest.appcache: h5bp.com/d/Offline -->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" itemscope itemtype="http://schema.org/Product"> <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="description" content="" />
+  <meta name="keywords" content="" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+  <title>ago control - JS admin - drain</title>
+
+  <link rel="shortcut icon" href="favicon.png" type="image/x-icon" />
+  <link rel="stylesheet" href="css/gumby.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.2/themes/cupertino/jquery-ui.min.css" />
+
+  <script src="js/libs/modernizr-2.0.6.min.js"></script>
+  <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+  <script src="http://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
+  <script>
+
+
+var subscription = "";
+var url = "/jsonrpc";
+
+function displayEvent(response) {
+
+	if (response.result) { 
+		var output = document.getElementById('output');
+		output.innerHTML = '<br />';
+		if (response.result.event == 'event.environment.timechanged') {
+			output.innerHTML = output.innerHTML + " " + response.result.event + " " + response.result.hour+ ":" + response.result.minute +  "<br>";
+		} else {
+			output.innerHTML = output.innerHTML + " " + response.result + "<br>";
+
+		}
+	}
+	console.log(response.result)
+	getevent();
+
+}
+function getevent() {
+	var request = {};
+	request.method = "getevent";
+	request.params = {};
+	request.params.uuid = subscription;
+	request.id = 1;
+	request.jsonrpc = "2.0";
+
+	$.post(url, JSON.stringify(request), displayEvent, "json");
+}
+
+
+function handleSubscribe(response) {
+
+	if (response.result) { 
+		subscription = response.result;
+		console.log(subscription);
+		var output = document.getElementById('output');
+		output.innerHTML = '<br>';
+		output.innerHTML = output.innerHTML + "<li class=\"success alert\">Client subscription uuid: " + subscription + "</li>";
+		getevent();
+	}
+
+}
+ 
+function subscribe() {
+	var request = {};
+	request.method = "subscribe";
+	request.id = 1;
+	request.jsonrpc = "2.0";
+
+	$.post(url, JSON.stringify(request), handleSubscribe, "json");
+}
+
+
+  	$(function() {
+    	$( ".slider" ).slider();
+    	
+		// 100% hight col-right
+    	$(window).resize(function() {
+        	$('div#col-right').height($(window).height() - $('div#col-right').offset().top);
+    	});
+    	$(window).resize();
+  	});
+
+	$(document).ready(function() {
+		subscribe();
+	});
+  </script>
+</head>
+
+<body>
+  <div class="container">
+  	<div class="row">
+  		<div class="two columns" id="col-left">
+			<div class="pretty medium success btn btn-full icon-left icon-heart"><a href="#">System Status</a></div>
+			<hr />
+  			<div class="pretty medium primary btn btn-full icon-left icon-home"><a href="#">Dashboard</a></div>
+  			<div class="pretty medium primary btn btn-full icon-left icon-list"><a href="#">Devices</a></div>
+  			<div class="pretty medium primary btn btn-full icon-left icon-share"><a href="#">Scenarios</a></div>
+  			<div class="pretty medium primary btn btn-full icon-left icon-bell"><a href="#">Events</a></div>
+			<div class="pretty medium primary btn btn-full icon-left icon-layout"><a href="#">Floorplans</a></div>
+
+			<hr />
+
+			<div class="pretty medium primary btn btn-full icon-left icon-cloud"><a href="#">Cloud</a></div>
+			<div class="pretty medium primary btn btn-full icon-left icon-tools"><a href="#">System</a></div>
+  		</div>
+  	
+  		<div class="ten columns" id="col-right">
+  			<div class="row" id="header">
+  				<div class="nine columns" id="info">
+  					<a href="www.agocontrol.com" target="_blank">www.agocontrol.com</a>
+  				</div>
+  				<div class="three columns" id="logo">
+  					<a href="www.agocontrol.com" target="_blank"><img src="img/agocontrol_logo.png"/></a>
+  				</div>  		
+  			</div>
+  			<div class="container" id="contentarea">
+  				<div class="row">
+					<h2>Developer - Drain</h2>
+					<div id="output">
+					</div><!-- row output end -->
+					<br />
+					<br />
+					<br />
+					<br />
+					<br />
+
+  				</div>  		
+  			</div> 	  				 			
+  		</div>  <!-- col-right END -->
+	</div> <!-- row end -->
+  </div> <!-- container end -->
+  
+  <script src="js/libs/gumby.min.js"></script>
+  <script src="js/plugins.js"></script>
+  <script src="js/main.js"></script>
+
+  <!-- Prompt IE 6 users to install Chrome Frame. Remove this if you want to support IE 6.
+       chromium.org/developers/how-tos/chrome-frame-getting-started -->
+  <!--[if lt IE 7 ]>
+    <script src="//ajax.googleapis.com/ajax/libs/chrome-frame/1.0.3/CFInstall.min.js"></script>
+    <script>window.attachEvent('onload',function(){CFInstall.check({mode:'overlay'})})</script>
+  <![endif]-->
+
+  </body>
+</html>
+
+
