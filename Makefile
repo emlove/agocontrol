@@ -1,6 +1,6 @@
 LD     := g++
 
-all: common messagesend resolver agotimer zwave agochromoflex agoknx agorpc rain8net kwikwai irtransethernet firmata blinkm
+all: common manager messagesend resolver agotimer zwave agochromoflex agoknx agorpc rain8net kwikwai irtransethernet firmata blinkm
 
 common:
 	$(MAKE) -C shared
