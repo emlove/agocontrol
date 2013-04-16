@@ -508,23 +508,63 @@ std::string commandHandler(qpid::types::Variant::Map content) {
 		int instance = atoi(internalid.substr(pos+1).c_str());
 
 		printf("command received for node %d/%d\n", nodeid, instance);
-
+		printf("device tpye: %s\n", agoConnection->getDeviceType(internalid.c_str()).c_str()); // Level , Switch
 		if (content["command"] == "on" ) {
-			ValueID *tmpValueID = getValueID(nodeid,instance, "Basic");
-			if (tmpValueID) {
-				// printf("Type: %s\n",Value::GetTypeNameFromEnum(tmpValueID->GetType()));
-				if (debug) printf("Basic on\n");
-				// printf("Found ValueID: %d\n",tmpValueID->GetId());
-				bool result = Manager::Get()->SetValue(*tmpValueID , (uint8) 255);
-				printf("Result: %d\n",result);
+			ValueID *tmpValueID;
+			if (agoConnection->getDeviceType(internalid.c_str()) == "switch") {
+				tmpValueID = getValueID(nodeid,instance, "Switch");
+				if (tmpValueID) {
+					printf("Type: %s\n",Value::GetTypeNameFromEnum(tmpValueID->GetType()));
+					if (debug) printf("on\n");
+					// printf("Found ValueID: %d\n",tmpValueID->GetId());
+					bool result = Manager::Get()->SetValue(*tmpValueID , true);
+					printf("Result: %d\n",result);
+				}
+			} else if (agoConnection->getDeviceType(internalid.c_str()) == "dimmer") {
+				tmpValueID = getValueID(nodeid,instance, "Level");
+				if (tmpValueID) {
+					printf("Type: %s\n",Value::GetTypeNameFromEnum(tmpValueID->GetType()));
+					if (debug) printf("on\n");
+					// printf("Found ValueID: %d\n",tmpValueID->GetId());
+					bool result = Manager::Get()->SetValue(*tmpValueID , (uint8) 255);
+					printf("Result: %d\n",result);
+				}
+			} else {
+				tmpValueID = getValueID(nodeid,instance, "Basic");
+				if (tmpValueID) {
+					printf("Type: %s\n",Value::GetTypeNameFromEnum(tmpValueID->GetType()));
+					if (debug) printf("on\n");
+					// printf("Found ValueID: %d\n",tmpValueID->GetId());
+					bool result = Manager::Get()->SetValue(*tmpValueID , (uint8) 255);
+					printf("Result: %d\n",result);
+				}
 			}
 			return "";
 		} else if (content["command"] == "off" ) {
-			ValueID *tmpValueID = getValueID(nodeid,instance, "Basic");
-			if (tmpValueID) { 
-				if (debug) printf("Basic off\n");
-				bool result = Manager::Get()->SetValue(*tmpValueID, (uint8) 0);
-				printf("Result: %d\n",result);
+			ValueID *tmpValueID;
+			if (agoConnection->getDeviceType(internalid.c_str()) == "switch") {
+				tmpValueID = getValueID(nodeid,instance, "Switch");
+				if (tmpValueID) { 
+					if (debug) printf("Basic off\n");
+					bool result = Manager::Get()->SetValue(*tmpValueID, false);
+					printf("Result: %d\n",result);
+				}
+			} else if (agoConnection->getDeviceType(internalid.c_str()) == "dimmer") {
+				tmpValueID = getValueID(nodeid,instance, "Level");
+				if (tmpValueID) {
+					printf("Type: %s\n",Value::GetTypeNameFromEnum(tmpValueID->GetType()));
+					if (debug) printf("on\n");
+					// printf("Found ValueID: %d\n",tmpValueID->GetId());
+					bool result = Manager::Get()->SetValue(*tmpValueID , (uint8) 0);
+					printf("Result: %d\n",result);
+				}
+			} else {
+				tmpValueID = getValueID(nodeid,instance, "Basic");
+				if (tmpValueID) { 
+					if (debug) printf("Basic off\n");
+					bool result = Manager::Get()->SetValue(*tmpValueID, (uint8) 0);
+					printf("Result: %d\n",result);
+				}
 			}
 			return "";
 		} else if (content["command"] == "setlevel") {
