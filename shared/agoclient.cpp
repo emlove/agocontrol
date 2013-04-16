@@ -325,6 +325,14 @@ bool agocontrol::AgoConnection::emitEvent(const char *internalId, const char *ev
 }
 
 
+string agocontrol::AgoConnection::getDeviceType(const char *internalId) {
+	string uuid = internalIdToUuid(internalId);
+	if (uuid.size() > 0) {
+		Variant::Map device = deviceMap[internalIdToUuid(internalId)].asMap();
+		return device["devicetype"];
+	} else return "";
+
+}
 
 agocontrol::Log::Log(std::string ident, int facility) {
     facility_ = facility;
