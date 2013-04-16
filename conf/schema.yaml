@@ -85,7 +85,7 @@ commands:
   play:
     name: play media
   pause:
-    name: play media
+    name: pause media
   stop:
     name: stop media
   addnode:
