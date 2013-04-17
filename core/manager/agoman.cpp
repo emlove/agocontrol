@@ -6,12 +6,16 @@
 #include <sys/wait.h>
 #include <sys/stat.h>
 
+#include <fcntl.h>
 #include <signal.h>
 #include <pwd.h>
 #include <dirent.h>
+#include <libgen.h>
+#include <string.h>
 
 #include <string>
 #include <iostream>
+#include <cerrno>
 
 #include "agoclient.h"
 
@@ -20,6 +24,7 @@ using namespace std;
 using namespace agocontrol;
 
 qpid::types::Variant::Map pids;
+qpid::types::Variant::Map pipefds;
 std::list<string> services;
 
 void listServices() {
@@ -69,22 +74,44 @@ void signalChild(int arg){
 	signal(SIGCHLD, signalChild) ;
 }
 
-int spawnProcess(const char *path) {
-	pid_t pid = fork();
+int spawnProcess(const char *path, int *mypipefd) {
+	int pipefd[2];
 	char *newargv[] = { NULL };
 	char *newenviron[] = { NULL };
-	
+	char tmppath[1024];
+	strncpy (tmppath, path, 1023);
+	tmppath[1023] = 0;
+	int flags;
+
+	pipe(pipefd);
+	pid_t pid = fork();
+		
 	switch (pid) {
 		case -1: 
 			std::cerr << "ERROR, can't fork!" << std::endl;
 			return -1;
 		case 0:
 			// child
+			umask(0);
+			if (setsid() < 0) {
+				std::cerr << "setsid() failed: "<< errno << std::endl;
+				exit(1);
+			}
+			if (chdir(dirname(tmppath)) < 0) std::cerr << "warning, can't chdir(): " << errno << std::endl;
+			close(pipefd[0]);
+			freopen( "/dev/null", "r", stdin);
+			dup2(pipefd[1], 1);
+			dup2(pipefd[1], 2);
+			close(pipefd[1]);
 			execve(path, newargv, newenviron);
 			std::cerr << "execve() returned" << std::endl;
 			exit(1);
 		default:
 			//parent
+			close(pipefd[1]);
+			flags = fcntl(pipefd[0], F_GETFL, 0);
+			fcntl(pipefd[0], F_SETFL, flags | O_NONBLOCK);
+			*mypipefd = pipefd[0];
 			std::cout << "spawned pid: " << pid << std::endl;
 			return pid;
 	}
@@ -133,14 +160,26 @@ int main(int argc, char **argv) {
 	{
 		std::cout<< "Starting: " << *list_iter<<endl;
 		string service = "/opt/agocontrol/bin/" + *list_iter;
-		int pid = spawnProcess(service.c_str());
+		int pipefd;
+		int pid = spawnProcess(service.c_str(), &pipefd);
 		pids[*list_iter] = pid;
+		pipefds[*list_iter] = pipefd;
 		sleep(1);
+	}
+	
+	while(true) {
+		for (qpid::types::Variant::Map::const_iterator it = pipefds.begin(); it != pipefds.end(); ++it) {
+			char buffer[1024];
+			if (read(it->second, buffer, sizeof(buffer)) != 0) {
+				printf("%s", buffer);
+			}
+		}
+
 	}
 	AgoConnection agoConnection = AgoConnection("agomanager");	
 	agoConnection.addDevice("agomanager", "agomanager");
 	agoConnection.addHandler(commandHandler);
-
+	
 	agoConnection.run();
 //	int status;
 //	waitpid(pid, &status, 0);
