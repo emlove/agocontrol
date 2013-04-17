@@ -38,32 +38,32 @@ config.read('/etc/opt/agocontrol/config.ini')
 
 try:
 	SYSTEM_USERNAME = config.get("system","username")
-except ConfigParser.NoOptionError, e:
+except:
 	SYSTEM_USERNAME = "agocontrol"
 
 try:
 	SYSTEM_PASSWORD = config.get("system","password")
-except ConfigParser.NoOptionError, e:
+except:
 	SYSTEM_PASSWORD = "letmein"
 
 try:
 	SYSTEM_BROKER = config.get("system","broker")
-except ConfigParser.NoOptionError, e:
+except:
 	SYSTEM_BROKER = "localhost"
 
 try:
 	SYSTEM_DEBUG = config.get("system","debug")
-except ConfigParser.NoOptionError, e:
+except:
 	SYSTEM_DEBUG = "WARN"
 
 try:
 	SYSTEM_UUID = config.get('system', 'uuid')
-except ConfigParser.NoOptionError, e:
+except:
 	SYSTEM_UUID = ""
 
 try:
 	DEVICES_QUEUE = config.get('devices', 'queue')
-except ConfigParser.NoOptionError, e:
+except:
 	DEVICES_QUEUE = "agocontrol"
 
 try:
