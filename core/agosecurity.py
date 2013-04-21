@@ -19,36 +19,32 @@ config.read('/etc/opt/agocontrol/config.ini')
 
 try:
 	username = config.get("system","username")
-except ConfigParser.NoOptionError, e:
+except:
 	username = "agocontrol"
 
 try:
 	password = config.get("system","password")
-except ConfigParser.NoOptionError, e:
+except:
 	password = "letmein"
 
 try:
 	broker = config.get("system","broker")
-except ConfigParser.NoOptionError, e:
+except:
 	broker = "localhost"
 
 try:
 	debug = config.get("system","debug")
-except ConfigParser.NoOptionError, e:
+except:
 	debug = "WARN"
 
 try:
 	securitypin = config.get("security","pin")
-except ConfigParser.NoOptionError, e:
-	securitypin = "1234"
-except ConfigParser.NoSectionError, e:
+except:
 	securitypin = "1234"
 
 try:
 	securitypin = config.get("security","silentpin")
-except ConfigParser.NoOptionError, e:
-	silentpin = "4321"
-except ConfigParser.NoSectionError, e:
+except:
 	silentpin = "4321"
 
 if debug=="DEBUG":
