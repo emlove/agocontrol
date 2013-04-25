@@ -120,3 +120,4 @@ install:
 #	install devices/agodmx/agodmx $(DESTDIR)/opt/agocontrol/bin
 	install scripts/agososreport.sh $(DESTDIR)/opt/agocontrol/bin
 	install scripts/convert-zwave-uuid.py $(DESTDIR)/opt/agocontrol/bin
+	install devices/raspiGPIO/raspiGPIO.py $(DESTDIR)/opt/agocontrol/bin
