@@ -96,3 +96,8 @@ Package: agocontrol-blinkm
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, libagoclient1.0, i2c-tools
 Description: blinkm interface driver
+
+Package: agocontrol-raspiGPIO
+Architecture: armhf
+Depends: ${shlibs:Depends}, ${misc:Depends}, python-qpid
+Description: raspberry pi GPIO driver
