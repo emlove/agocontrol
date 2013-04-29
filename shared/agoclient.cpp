@@ -139,6 +139,8 @@ agocontrol::AgoConnection::AgoConnection(const char *interfacename) {
 	connectionOptions["password"] = getConfigOption("system", "password", "letmein");
 	connectionOptions["reconnect"] = "true";
 
+	filterCommands = true; // only pass commands for child devices to handler by default
+
 	uuidMapFile = "/etc/opt/agocontrol/uuidmap/";
 	uuidMapFile += interfacename;
 	uuidMapFile += ".json";
@@ -188,9 +190,9 @@ void agocontrol::AgoConnection::run() {
 			} else {
 				if (message.getSubject().size() == 0) {
 					// no subject, this is a command
-					// lets see if this is for one of our devices
+					// lets see if this is for one of our devices or if we shall pass everything unfiltered
 					string internalid = uuidToInternalId(content["uuid"].asString());
-					if (internalid.size() > 0 && commandHandler != NULL) {
+					if ((internalid.size() > 0 || (!(filterCommands))) && commandHandler != NULL) {
 						// found a match, reply to sender and pass the command to the assigned handler method
 						const Address& replyaddress = message.getReplyTo();
 						if (replyaddress) {
@@ -207,7 +209,7 @@ void agocontrol::AgoConnection::run() {
 						} 
 
 						// printf("command for id %s found, calling handler\n", internalid.c_str());
-						content["internalid"] = internalid;
+						if (internalid.size() > 0) content["internalid"] = internalid;
 						string status = commandHandler(content);
 						if (status != "") {
 							Variant::Map state;
@@ -216,7 +218,9 @@ void agocontrol::AgoConnection::run() {
 							sendMessage("event.device.statechanged", state);
 						}
 					}
-				} // TODO: handle events
+				} else if (eventHandler != NULL) {
+					eventHandler(message.getSubject(), content);
+				}
 			}
 		} catch(const NoMessageAvailable& error) {
 			
@@ -332,6 +336,15 @@ string agocontrol::AgoConnection::getDeviceType(const char *internalId) {
 		return device["devicetype"];
 	} else return "";
 
+}
+bool agocontrol::AgoConnection::setFilter(bool filter) {
+	filterCommands = filter;
+	return filterCommands;
+}
+
+bool agocontrol::AgoConnection::addEventHandler(void (*handler)(std::string, qpid::types::Variant::Map)) {
+	eventHandler = handler;
+	return true;
 }
 
 agocontrol::Log::Log(std::string ident, int facility) {
