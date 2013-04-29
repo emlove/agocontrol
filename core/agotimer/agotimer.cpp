@@ -47,6 +47,7 @@ void *suntimer(void *param) {
 			if (seconds < sunrise) {
 				// it is night, we're waiting for the sunrise
 				message.setSubject("event.environment.sunrise");
+				syslog(LOG_NOTICE, "minutes to wait for sunrise: %ld\n",(sunrise-seconds)/60);
 				// printf("minutes to wait for sunrise: %ld\n",(sunrise-seconds)/60);
 				// printf("sunrise: %s\n",asctime(localtime(&sunrise)));
 				sleep(sunrise-seconds);
@@ -54,14 +55,21 @@ void *suntimer(void *param) {
 			} else if (seconds > sunset) {
 				// printf("it is dark\n");
 				message.setSubject("event.environment.sunrise");
+				syslog(LOG_NOTICE, "minutes to wait for sunrise: %ld\n",(sunrise_tomorrow-seconds)/60);
 				sleep(sunrise_tomorrow-seconds);
 				syslog(LOG_NOTICE, "sending sunrise event");
 			} else {
 				message.setSubject("event.environment.sunset");
+				syslog(LOG_NOTICE, "minutes to wait for sunset: %ld\n",(sunset-seconds)/60);
 				sleep(sunset-seconds);
 				syslog(LOG_NOTICE, "sending sunset event");
 			}
-			sender.send(message, true);	
+			try {
+				sender.send(message, true);	
+			} catch(const std::exception& error) {
+				syslog(LOG_CRIT, "ERROR, raising exception: %s",error.what());
+				// std::cout << error.what() << std::endl;
+			}
 			sleep(2);
 		} else {
 			syslog(LOG_CRIT, "ERROR determining sunrise/sunset time");
