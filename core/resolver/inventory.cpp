@@ -2,6 +2,8 @@
 #include <unistd.h>
 #include <iostream>
 #include <string>
+#include <sstream>
+#include <stdlib.h>
 
 #include "inventory.h"
 
@@ -143,12 +145,115 @@ string Inventory::getfirst(const char *query) {
 	return result;
 }
 
-/* 
+string Inventory::getfloorplanname(std::string uuid) {
+	string query = "select name from devices where uuid = '" + uuid + "'";
+	return getfirst(query.c_str());
+}
+
+int Inventory::setfloorplanname(std::string uuid, std::string name) {
+	if (getfloorplanname(uuid) == "") { // does not exist, create
+		string query = "insert into floorplans (name, uuid) VALUES ('" + name + "','" + uuid + "')";
+		printf("creating floorplan: %s\n", query.c_str());
+		getfirst(query.c_str());
+	} else {
+		string query = "update floorplans set name = '" + name + "' where uuid = '" + uuid + "'";
+		getfirst(query.c_str());
+	}
+	if (getfloorplanname(uuid) == name) {
+		return 0;
+	} else {
+		return 1;
+	}
+}
+
+int Inventory::setdevicefloorplan(std::string deviceuuid, std::string floorplanuuid, int x, int y) {
+	stringstream xstr, ystr;
+	xstr << x;
+	ystr << y;
+	string query = "select floorplan from devicesfloorplan where floorplan = '" + floorplanuuid + "' and device = '" + deviceuuid + "'";
+	if (getfirst(query.c_str())==floorplanuuid) {
+		// already exists, update
+		query = "update devicesfloorplan set x=" + xstr.str() + ", y=" + ystr.str() + " where floorplan = '" + floorplanuuid + "' and device = '" + deviceuuid + "'";
+		getfirst(query.c_str());
+
+	} else {
+		// create new record
+		query = "insert into devicesfloorplan (x, y, floorplan, device) VALUES (" + xstr.str() + "," + ystr.str() + ", '" + floorplanuuid + "', '" + deviceuuid + "')";
+		cout << query << endl;
+		getfirst(query.c_str());
+	}
+
+	return 0;
+}
+
+int Inventory::deletefloorplan(std::string uuid) {
+	string query = "delete from devicesfloorplan where floorplan = '" + uuid + "'";
+	getfirst(query.c_str());
+	query = "delete from floorplan where uuid = '" + uuid + "'";
+	getfirst(query.c_str());
+	if (getroomname(uuid) == "") {
+		return 0;
+	} else {
+		return 1;
+	}
+	return 0;
+}
+
+Variant::Map Inventory::getfloorplans() {
+	Variant::Map result;
+	sqlite3_stmt *stmt;
+	int rc;
+
+	rc = sqlite3_prepare_v2(db, "select uuid, name from floorplans", -1, &stmt, NULL);
+	if(rc!=SQLITE_OK) {
+                fprintf(stderr, "sql error #%d: %s\n", rc,sqlite3_errmsg(db));
+                return result;
+        }
+        while (sqlite3_step(stmt) == SQLITE_ROW) {
+		Variant::Map entry;
+		const char *floorplanname = (const char*)sqlite3_column_text(stmt, 1);
+		const char *uuid = (const char*)sqlite3_column_text(stmt, 0);
+		if (floorplanname != NULL) {
+			entry["name"] = string(floorplanname);
+		} else {
+			entry["name"] = "";
+		} 
+
+		// for each floorplan now fetch the device coordinates
+		sqlite3_stmt *stmt2;
+		int rc2;
+		string query = "select device, x, y from devicesfloorplan where floorplan = '" + string(uuid) +  "'";
+		rc2 = sqlite3_prepare_v2(db, query.c_str(), -1, &stmt2, NULL);
+		if (rc2 != SQLITE_OK) {
+			fprintf(stderr, "sql error #%d: %s\n", rc2,sqlite3_errmsg(db));
+			continue;
+		}
+		while (sqlite3_step(stmt2) == SQLITE_ROW) {
+			Variant::Map device;
+			const char *deviceuuid = (const char*)sqlite3_column_text(stmt2, 0);
+			const char *x = (const char*)sqlite3_column_text(stmt2, 1);
+			const char *y = (const char*)sqlite3_column_text(stmt2, 2);
+			device["x"] = atoi(x);
+			device["y"] = atoi(y);
+			entry[deviceuuid] = device;
+		}
+			
+
+		if (uuid != NULL) {
+			result[uuid] = entry;
+		}
+	}
+	return result;
+} 
+/*
 int main(int argc, char **argv){
-	Inventory inv("/etc/opt/agocontrol/inventory.db");
+	Inventory inv("inventory.db");
 	cout << inv.setdevicename("1234", "1235") << endl;
 	cout << inv.deleteroom("1234") << endl;
 	cout << inv.getdevicename("1234");
 	cout << inv.getrooms();
+	cout << inv.setfloorplanname("2235", "floorplan2");
+	cout << inv.setdevicefloorplan("1234", "2235", 5, 2);
+	cout << inv.getfloorplans();
 }
 */

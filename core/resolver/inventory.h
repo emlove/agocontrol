@@ -25,6 +25,13 @@ class Inventory {
 		string getdeviceroomname (string uuid);
 		Variant::Map getrooms();
 		int deleteroom (string uuid);
+
+		string getfloorplanname (string uuid);
+		int setfloorplanname(string uuid, string name);
+		int setdevicefloorplan(string deviceuuid, string floorplanuuid, int x, int y);
+		int deletefloorplan(string uuid);
+		Variant::Map getfloorplans();
+		
 	private:
 		sqlite3 *db;
 		string getfirst(const char *query);

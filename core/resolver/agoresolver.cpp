@@ -189,6 +189,7 @@ int main(int argc, char **argv) {
 					reply["inventory"] = inventory;
 					reply["schema"] = schema;	
 					reply["rooms"] = inv.getrooms();
+					reply["floorplans"] = inv.getfloorplans();
 
 					// cout << agocontrol::kLogDebug << "inv: " << inventory << std::endl;
 					Message response;
@@ -241,7 +242,33 @@ int main(int argc, char **argv) {
 					}
 					Message response(result);
 					replyMessage(message.getReplyTo(), response);
-				} 
+				} else if (content["command"] == "setfloorplanname") {
+					string uuid = content["uuid"];
+					// if no uuid is provided, we need to generate one for a new floorplan
+					if (uuid == "") uuid = generateUuid();
+					inv.setfloorplanname(uuid, content["name"]);
+					Message response(uuid);
+					replyMessage(message.getReplyTo(), response);
+				} else if (content["command"] == "setdevicefloorplan") {
+					string result;
+					if ((content["uuid"].asString() != "") && (inv.setdevicefloorplan(content["uuid"], content["floorplan"], content["x"], content["y"]) == 0)) {
+						result = "OK"; // TODO: unify responses
+					} else {
+						result = "ERR"; // TODO: unify responses
+					}
+					Message response(result);
+					replyMessage(message.getReplyTo(), response);
+
+				} else if (content["command"] == "deletefloorplan") {
+					string result;
+					if (inv.deletefloorplan(content["uuid"]) == 0) {
+						result = "OK";
+					} else {
+						result = "ERR";
+					}
+					Message response(result);
+					replyMessage(message.getReplyTo(), response);
+				}
 			}
 
 		} catch(const NoMessageAvailable& error) {
