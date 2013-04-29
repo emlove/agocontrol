@@ -84,6 +84,7 @@ int main(int argc, char** argv) {
 	struct tm *tms;
 	int waitsec;
 
+	openlog(NULL, LOG_PID & LOG_CONS, LOG_DAEMON);
         std::string broker;
         Variant::Map connectionOptions;
         CDataFile ExistingDF("/etc/opt/agocontrol/config.ini");
