@@ -140,6 +140,8 @@ agocontrol::AgoConnection::AgoConnection(const char *interfacename) {
 	connectionOptions["reconnect"] = "true";
 
 	filterCommands = true; // only pass commands for child devices to handler by default
+	commandHandler = NULL;
+	eventHandler = NULL;
 
 	uuidMapFile = "/etc/opt/agocontrol/uuidmap/";
 	uuidMapFile += interfacename;
