@@ -74,6 +74,7 @@
         <th>Device Name</th> 
         <th>Room Name</th> 
         <th>Device Type</th> 
+        <th>IntID</th> 
         <th>Value &nbsp;&nbsp;</th> 
         <th>Action</th> 
     </tr> 
@@ -84,6 +85,7 @@
         <td class="edit_device" rel="${device["id"]}">${device["name"]}</td>
         <td class="select_device_room" rel="${device["id"]}">${device["roomname"]}</td>
         <td>${device["devicetype"]}</td>
+        <td>${device["internalid"]}</td>
         <td class="state" rel="${device["id"]}">${device["state"]}</td>
         <td>${devicetype_commands(device["devicetype"],device["id"],device["state"])}</td>
     </tr>
