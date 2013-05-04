@@ -151,6 +151,7 @@ int main(int argc, char **argv) {
 						Variant::Map device;
 						Variant::Map values;
 						device["devicetype"]=content["devicetype"].asString();
+						device["internalid"]=content["internalid"].asString();
 						// clog << agocontrol::kLogDebug << "getting name from inventory" << endl;
 						device["name"]=inv.getdevicename(content["uuid"].asString());
 						device["name"].setEncoding("utf8");
