@@ -268,6 +268,7 @@ void agocontrol::AgoConnection::reportDevices() {
 		device = it->second.asMap();
 		// printf("devicetype: %s\n", device["devicetype"].asString().c_str());
 		content["devicetype"] = device["devicetype"].asString();
+		content["internalid"] = device["internalid"].asString();
 		content["uuid"] = it->first;
 		encode(content, event);
 		event.setSubject("event.device.announce");
