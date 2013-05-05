@@ -17,15 +17,15 @@ DEBUG_LDFLAGS	:= -g
 CFLAGS	:= -c $(DEBUG_CFLAGS)
 LDFLAGS	:= $(DEBUG_LDFLAGS)
 
-INCLUDES	:= 
+INCLUDES	:=  -I../../shared
 
 %.o : %.cpp
 	$(CXX) $(CFLAGS) $(INCLUDES) -o $@ $<
 
 all: agoknx
 
-agoknx: agoknx.o ../agozwave/CDataFile.o Telegram.o
-	$(LD) -o $@ $(LDFLAGS) $^ -lqpidmessaging -lqpidtypes -luuid -leibclient -ltinyxml2
+agoknx: agoknx.o Telegram.o
+	$(LD) -o $@ $(LDFLAGS) $^ -lqpidmessaging -lqpidtypes -luuid -leibclient -ltinyxml2 -lagoclient
 
 clean:
-	rm -f agoknx agoknx.o Telegram.o ../agozwave/CDataFile.o
+	rm -f agoknx agoknx.o Telegram.o

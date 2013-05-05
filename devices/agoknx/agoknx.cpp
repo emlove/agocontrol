@@ -29,12 +29,13 @@
 #include <eibclient.h>
 #include "Telegram.h"
 
-#include "../agozwave/CDataFile.h"
+#include "agoclient.h"
 
 using namespace qpid::messaging;
 using namespace qpid::types;
 using namespace tinyxml2;
 using namespace std;
+using namespace agocontrol;
 
 
 Sender sender;
@@ -237,42 +238,11 @@ int main(int argc, char **argv) {
 	Variant::Map connectionOptions;
 
 	// parse config
-	CDataFile ExistingDF("/etc/opt/agocontrol/config.ini");
-
-	t_Str szBroker  = t_Str("");
-	szBroker = ExistingDF.GetString("broker", "system");
-	if ( szBroker.size() == 0 )
-		broker="localhost:5672";
-	else		
-		broker= szBroker;
-
-	t_Str szDevice = t_Str("");
-	szDevice = ExistingDF.GetString("url", "knx");
-	if ( szDevice.size() == 0 )
-		eibdurl="ip:127.0.0.1";
-	else		
-		eibdurl= szDevice;
-
-	t_Str szUsername  = t_Str("");
-	szUsername = ExistingDF.GetString("username", "system");
-	if ( szUsername.size() == 0 )
-		connectionOptions["username"]="agocontrol";
-	else		
-		connectionOptions["username"] = szUsername;
-
-	t_Str szPassword  = t_Str("");
-	szPassword = ExistingDF.GetString("password", "system");
-	if ( szPassword.size() == 0 )
-		connectionOptions["password"]="letmein";
-	else		
-		connectionOptions["password"]=szPassword;
-
-	t_Str szDevicesFile  = t_Str("");
-	szDevicesFile = ExistingDF.GetString("devicesfile", "knx");
-	if ( szDevicesFile.size() == 0 )
-		devicesFile="/etc/opt/agocontrol/knx/devices.xml";
-	else		
-		devicesFile=szDevicesFile;
+	broker=getConfigOption("system", "broker", "localhost:5672");
+	connectionOptions["username"]=getConfigOption("system", "username", "agocontrol");
+	connectionOptions["password"]=getConfigOption("system", "password", "letmein");
+	eibdurl=getConfigOption("knx", "url", "ip:127.0.0.1");
+	devicesFile=getConfigOption("knx", "devicesfile", "/etc/opt/agocontrol/knx/devices.xml");
 
 	// load xml file into map
 	if (!loadDevices(devicesFile, deviceMap)) {
