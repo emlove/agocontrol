@@ -142,6 +142,7 @@ agocontrol::AgoConnection::AgoConnection(const char *interfacename) {
 	filterCommands = true; // only pass commands for child devices to handler by default
 	commandHandler = NULL;
 	eventHandler = NULL;
+	instance = interfacename;
 
 	uuidMapFile = "/etc/opt/agocontrol/uuidmap/";
 	uuidMapFile += interfacename;
@@ -269,6 +270,7 @@ void agocontrol::AgoConnection::reportDevices() {
 		// printf("devicetype: %s\n", device["devicetype"].asString().c_str());
 		content["devicetype"] = device["devicetype"].asString();
 		content["internalid"] = device["internalid"].asString();
+		content["handled-by"] = instance;
 		content["uuid"] = it->first;
 		encode(content, event);
 		event.setSubject("event.device.announce");

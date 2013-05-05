@@ -47,6 +47,7 @@ namespace agocontrol {
 			bool storeUuidMap(); // stores the map on disk
 			bool loadUuidMap(); // loads it
 			string uuidMapFile;
+			string instance;
 			std::string uuidToInternalId(std::string uuid); // lookup in map
 			std::string internalIdToUuid(std::string internalId); // lookup in map
 			void reportDevices();
