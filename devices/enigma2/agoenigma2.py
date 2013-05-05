@@ -169,13 +169,15 @@ def messageHandler(internalid, content):
 		if content['command'] == 'vol-':
 			setvolume(host, "down")
 		if content['command'] == 'setlevel':
-			setvolume(host, 'set%s' % message.content['level'])
+			if 'level' in content:
+				setvolume(host, 'set%s' % content['level'])
 		if content['command'] == 'zap':
-			channel = message.content['channel']
-			services = getallservices(host)
-			for (bouquet, servicelist) in services.iteritems():
-				if channel in servicelist:
-					zap(host, servicelist[channel])
+			if 'channel' in content:
+				channel = content['channel']
+				services = getallservices(host)
+				for (bouquet, servicelist) in services.iteritems():
+					if channel in servicelist:
+						zap(host, servicelist[channel])
 		if content['command'] == 'getepg':
 			epg={}
 			for (bouquet, bref) in getbouquets(host).iteritems():
