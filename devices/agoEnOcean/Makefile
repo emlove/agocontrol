@@ -15,9 +15,9 @@ DEBUG_LDFLAGS	:= -g
 
 # Change for DEBUG or RELEASE
 CFLAGS	:= -c $(DEBUG_CFLAGS)
-LDFLAGS	:= $(DEBUG_LDFLAGS)
+LDFLAGS	:= $(DEBUG_LDFLAGS) -L../../shared
 
-INCLUDES	:= 
+INCLUDES	:= -I../../shared
 
 %.o : %.cpp
 	$(CXX) $(CFLAGS) $(INCLUDES) -o $@ $<
@@ -29,8 +29,8 @@ enoceanlib:
 	$(CC) -c -fPIC -o EnOceanPort.o libEnOcean/EnOceanPort.c
 	$(CC) -c -fPIC -o TCM120.o libEnOcean/TCM120.c
 
-agoEnOcean: agoEnOcean.o ../agozwave/CDataFile.o
-	$(LD) -o $@ cssl.o EnOceanPort.o TCM120.o $(LDFLAGS) $^ -lqpidmessaging -lqpidtypes -luuid
+agoEnOcean: agoEnOcean.o
+	$(LD) -o $@ cssl.o EnOceanPort.o TCM120.o $(LDFLAGS) $^ -lagoclient
 
 clean:
-	rm -f agoEnOcean agoEnOcean.o ../agozwave/CDataFile.o
+	rm -f agoEnOcean agoEnOcean.o
