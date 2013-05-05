@@ -152,6 +152,7 @@ int main(int argc, char **argv) {
 						Variant::Map values;
 						device["devicetype"]=content["devicetype"].asString();
 						device["internalid"]=content["internalid"].asString();
+						device["handled-by"]=content["handled-by"].asString();
 						// clog << agocontrol::kLogDebug << "getting name from inventory" << endl;
 						device["name"]=inv.getdevicename(content["uuid"].asString());
 						device["name"].setEncoding("utf8");
@@ -276,7 +277,13 @@ int main(int argc, char **argv) {
 			
 		} catch(const std::exception& error) {
 			clog << agocontrol::kLogCrit << "Unhandled exception: " << error.what() << std::endl;
-			sleep(1);
+			if (session.hasError()) {
+				clog << agocontrol::kLogCrit << "Session has error, recreating" << std::endl;
+				session.close();
+				session = agoConnection.createSession(); 
+				receiver = session.createReceiver("agocontrol; {create: always, node: {type: topic}}"); 
+				sender = session.createSender("agocontrol; {create: always, node: {type: topic}}"); 
+			}
 		}
 	}
 
