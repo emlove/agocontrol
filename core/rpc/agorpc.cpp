@@ -41,12 +41,13 @@
 #include <json/reader.h>
 #include <json/writer.h>
 
-#include "../../devices/agozwave/CDataFile.h"
+#include "agoclient.h"
 
 
 using namespace std;
 using namespace qpid::messaging;
 using namespace qpid::types;
+using namespace agocontrol; 
 
 // qpid session and sender/receiver
 Receiver receiver;
@@ -80,22 +81,6 @@ static const char *ajax_reply_start =
   "Access-Control-Allow-Origin: *\r\n"
   "Content-Type: application/x-javascript\r\n"
   "\r\n";
-
-// generates a uuid as string via libuuid
-string generateUuid() {
-	string strUuid;
-	char *name;
-	if ((name=(char*)malloc(38)) != NULL) {
-		uuid_t tmpuuid;
-		name[0]=0;
-		uuid_generate(tmpuuid);
-		uuid_unparse(tmpuuid,name);
-		strUuid = string(name);
-		free(name);
-	}
-	return strUuid;
-}
-
 
 // json-print qpid Variant Map and List via mongoose
 void mg_printmap(struct mg_connection *conn, Variant::Map map);
@@ -203,23 +188,6 @@ static void command (struct mg_connection *conn, const struct mg_request_info *r
 		printf("WARNING, no reply message to fetch\n");
 	}
 
-}
-Variant::Map jsonToVariantMap(Json::Value value) {
-	Variant::Map map;
-	for (Json::ValueIterator it = value.begin(); it != value.end(); it++) {
-		// printf("%s\n",it.key().asString().c_str());
-		// printf("%s\n", (*it).asString().c_str());
-		if ((*it).size() > 0) {
-			map[it.key().asString()] = jsonToVariantMap((*it));
-		} else {
-			if ((*it).isString()) map[it.key().asString()] = (*it).asString();
-			if ((*it).isBool()) map[it.key().asString()] = (*it).asBool();
-			if ((*it).isInt()) map[it.key().asString()] = (*it).asInt();
-			if ((*it).isUInt()) map[it.key().asString()] = (*it).asUInt();
-			if ((*it).isDouble()) map[it.key().asString()] = (*it).asDouble();
-		}
-	}	
-	return map;
 }
 
 bool jsonrpcRequestHandler(struct mg_connection *conn, Json::Value request, bool firstElem) {
@@ -407,34 +375,10 @@ int main(int argc, char **argv) {
 	string port; 
 
 	Variant::Map connectionOptions;
-	CDataFile ExistingDF("/etc/opt/agocontrol/config.ini");
-
-	t_Str szBroker  = t_Str("");
-	szBroker = ExistingDF.GetString("broker", "system");
-	if ( szBroker.size() == 0 )
-		broker="localhost:5672";
-	else		
-		broker= szBroker;
-	t_Str szUsername  = t_Str("");
-	szUsername = ExistingDF.GetString("username", "system");
-	if ( szUsername.size() == 0 )
-		connectionOptions["username"]="agocontrol";
-	else		
-		connectionOptions["username"] = szUsername;
-
-	t_Str szPassword  = t_Str("");
-	szPassword = ExistingDF.GetString("password", "system");
-	if ( szPassword.size() == 0 )
-		connectionOptions["password"]="letmein";
-	else		
-		connectionOptions["password"]=szPassword;
-
-	t_Str szRPCPort  = t_Str("");
-	szRPCPort = ExistingDF.GetString("rpcport", "system");
-	if ( szRPCPort.size() == 0 )
-		port = "8008";
-	else		
-		port = szRPCPort;
+	broker=getConfigOption("system", "broker", "localhost:5672");
+	connectionOptions["username"]=getConfigOption("system", "username", "agocontrol");
+	connectionOptions["password"]=getConfigOption("system", "password", "letmein");
+	port=getConfigOption("system", "rpcport", "8008");
 
 	static const char *options[] = {
 	  "document_root", "html",
@@ -443,7 +387,6 @@ int main(int argc, char **argv) {
 	  NULL
 	};
 	connectionOptions["reconnect"] = "true";
-
 
 	Connection connection(broker, connectionOptions);
 	try {

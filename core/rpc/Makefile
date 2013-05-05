@@ -17,15 +17,15 @@ DEBUG_LDFLAGS	:= -g
 CFLAGS	:= -c $(DEBUG_CFLAGS)
 LDFLAGS	:= $(DEBUG_LDFLAGS)
 
-INCLUDES	:= -I/usr/include/jsoncpp
+INCLUDES	:= -I/usr/include/jsoncpp -I../../shared
 
 %.o : %.cpp
 	$(CXX) $(CFLAGS) $(INCLUDES) -o $@ $<
 
 all: agorpc
 
-agorpc: agorpc.o mongoose.o ../../devices/agozwave/CDataFile.o
-	$(LD) -o $@ $(LDFLAGS) $^ -lqpidmessaging -lqpidtypes -luuid -ljsoncpp
+agorpc: agorpc.o mongoose.o
+	$(LD) -o $@ $(LDFLAGS) $^ -lqpidmessaging -lqpidtypes -luuid -ljsoncpp -lagoclient
 
 clean:
-	rm -f agorpc agorpc.o mongoose.o ../../devices/agozwave/CDataFile.o
+	rm -f agorpc agorpc.o mongoose.o
