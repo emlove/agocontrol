@@ -229,6 +229,14 @@ void agocontrol::AgoConnection::run() {
 			
 		} catch(const std::exception& error) {
 			std::cerr << error.what() << std::endl;
+			if (session.hasError()) {
+				clog << agocontrol::kLogCrit << "Session has error, recreating" << std::endl;
+				session.close();
+				session = connection.createSession(); 
+				receiver = session.createReceiver("agocontrol; {create: always, node: {type: topic}}"); 
+				sender = session.createSender("agocontrol; {create: always, node: {type: topic}}"); 
+			}
+
 			usleep(50);
 		}
 	}
