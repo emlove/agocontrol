@@ -17,15 +17,15 @@ DEBUG_LDFLAGS	:= -g
 CFLAGS	:= -c $(DEBUG_CFLAGS)
 LDFLAGS	:= $(DEBUG_LDFLAGS)
 
-INCLUDES	:= 
+INCLUDES	:=  -I../../shared
 
 %.o : %.cpp
 	$(CXX) $(CFLAGS) $(INCLUDES) -o $@ $<
 
 all: agochromoflex
 
-agochromoflex: chromoflex.o ../agozwave/CDataFile.o
-	$(LD) -o $@ $(LDFLAGS) $^ -lqpidmessaging -lqpidtypes -luuid
+agochromoflex: chromoflex.o 
+	$(LD) -o $@ $(LDFLAGS) $^ -lqpidmessaging -lqpidtypes -luuid -lagoclient
 
 clean:
-	rm -f agochromoflex Main.o ../agozwave/CDataFile.o
+	rm -f agochromoflex Main.o
