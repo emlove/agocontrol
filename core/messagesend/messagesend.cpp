@@ -20,10 +20,7 @@
 #include <vector>
 #include <ctime>
 
-#include "../../devices/agozwave/CDataFile.h"
-
-
-using namespace qpid::messaging;
+using namespace std;
 using namespace qpid::types;
 
 using std::stringstream;
@@ -50,47 +47,14 @@ using std::string;
 int main(int argc, char **argv)
 {
 		for (int i=0;i<argc;i++) {
-			printf("%i %c\n",i,argv[i]);
+			printf("%i %s\n",i,argv[i]);
 		}
-        std::string broker;
-        Variant::Map connectionOptions;
-        CDataFile ExistingDF("/etc/opt/agocontrol/config.ini");
 
-        t_Str szBroker  = t_Str("");
-        szBroker = ExistingDF.GetString("broker", "system");
-        if ( szBroker.size() == 0 )
-                broker="localhost:5672";
-        else
-                broker= szBroker;
-
-        t_Str szUsername  = t_Str("");
-        szUsername = ExistingDF.GetString("username", "system");
-        if ( szUsername.size() == 0 )
-                connectionOptions["username"]="agocontrol";
-        else
-                connectionOptions["username"] = szUsername;
-
-        t_Str szPassword  = t_Str("");
-        szPassword = ExistingDF.GetString("password", "system");
-        if ( szPassword.size() == 0 )
-                connectionOptions["password"]="letmein";
-        else
-                connectionOptions["password"]=szPassword;
-
-        connectionOptions["reconnect"] = "true";
-
-        Connection connection(broker, connectionOptions);
-        try {
-            connection.open();
-            Session session = connection.createSession();
-            Sender sender = session.createSender("agocontrol; {create: always, node: {type: topic}}");
- 
-            Message message;
 		Variant::Map content;
 		std::string value;
 		value = "";
 		for (int i=1;i<argc;i++) {
-			printf("%i %c\n",i,argv[i]);
+			printf("%i %s\n",i,argv[i]);
 			string name;
 			name = "uuid";
 			if (nameval(string(argv[i]),name, value)) {
@@ -101,15 +65,7 @@ int main(int argc, char **argv)
 				content["command"]=value;
 			}
 		}
-		encode(content, message);
-                sender.send(message, true);
-		session.close();
-		connection.close();
-        } catch(const std::exception& error) {
-		std::cout << error.what() << std::endl;
-		connection.close();
-		exit(1);
-        }
+	cout << content << endl;
 	exit(0);
 }
 
