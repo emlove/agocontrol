@@ -15,7 +15,7 @@
 
 #include <sstream>
 
-#include "../../devices/agozwave/CDataFile.h"
+#include "../../shared/CDataFile.h"
 #include "sunrise.h"
 
 using namespace qpid::messaging;
