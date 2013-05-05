@@ -15,7 +15,7 @@ DEBUG_LDFLAGS	:= -g
 
 # Change for DEBUG or RELEASE
 CFLAGS	:= -c $(DEBUG_CFLAGS)
-LDFLAGS	:= $(DEBUG_LDFLAGS)
+LDFLAGS	:= $(DEBUG_LDFLAGS) -L../../shared
 
 INCLUDES	:= 
 

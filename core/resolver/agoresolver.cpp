@@ -115,8 +115,8 @@ int main(int argc, char **argv) {
 	Variant::Map discovercmd;
 	discovercmd["command"] = "discover";
 	Message discovermsg;
-	encode(discovercmd, discovermsg);
 	try {
+		encode(discovercmd, discovermsg);
 		sender.send(discovermsg);
 	} catch(const std::exception& error) {
 		clog << agocontrol::kLogEmerg << "can't discover devices" << std::endl;
@@ -276,6 +276,7 @@ int main(int argc, char **argv) {
 			
 		} catch(const std::exception& error) {
 			clog << agocontrol::kLogCrit << "Unhandled exception: " << error.what() << std::endl;
+			sleep(1);
 		}
 	}
 
