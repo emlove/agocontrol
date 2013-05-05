@@ -55,15 +55,15 @@ Connection agoConnection;
 
 bool replyMessage(const Address& replyaddress, Message response) {
 	if (replyaddress) {
-		Session replysession = agoConnection.createSession();
-		Sender replysender = session.createSender(replyaddress);
 		try {
+			Session replysession = agoConnection.createSession();
+			Sender replysender = session.createSender(replyaddress);
 			replysender.send(response);
+			replysession.close();
 			return true;
 		} catch(const std::exception& error) {
 			clog << agocontrol::kLogErr << "cannot reply to request: " << error.what() << std::endl;
 		}
-		replysession.close();
 	}
 	return false;
 }
