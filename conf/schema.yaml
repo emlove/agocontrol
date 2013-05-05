@@ -10,6 +10,26 @@ commands:
     name: turn all off
   "run":
     name: run
+  settemperature:
+    name: set temperature
+    parameters:
+      temperature:
+        name: temperature to set
+        type: float
+  setthermostatmode:
+    name: adjust thermostat mode
+    parameters:
+      mode:
+        name: thermostat mode to set
+        type: option
+        options: ["heat", "cool", "auto"]
+  setthermostatfanmode:
+    name: adjust thermostat fan mode
+    parameters:
+      mode:
+        name: fan mode to set
+        type: option
+        options: ["on", "off", "auto"]
   dial:
     name: dial number
     parameters:
@@ -146,6 +166,8 @@ commands:
     parameters:
       name: confirm
       type: boolean
+  getepg:
+    name: get electronic program guide
 devicetypes:
   hdmicec:
     name: HDMI CEC interface
@@ -210,7 +232,7 @@ devicetypes:
   thermostat:
     name: thermostat
     description: controls temperature
-    commands: []
+    commands: [settemperature, setthermostatmode, setthermostatfanmode]
   drapes:
     name: drapes
     description: window drapes or blinds
@@ -226,7 +248,11 @@ devicetypes:
   squeezebox:
     name: Squeezebox Player
     description: Plays music
-    commands: ["on", "off", "play", "pause", "stop"]
+    commands: ["on", "off", play, pause, stop]
+  settopbox:
+    name: Set top box
+    description: Receives TV Service
+    commands: ["on", "off", mute, unmute, mutetoggle, vol+, vol-, setlevel, setchannel, getepg]
 values:
   level:
     name: level
@@ -249,9 +275,12 @@ values:
   unit:
     name: unit
     description: unit of a value
-  internal-id:
+  internalid:
     name: internal id for a device
     description: internal id used by interface device
+  handled-by:
+    name: instance name
+    descroption: instance which handles the device
   minute:
     name: minute
     description: minute
