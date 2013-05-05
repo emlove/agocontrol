@@ -17,7 +17,7 @@ DEBUG_LDFLAGS	:= -g
 CFLAGS	:= -c $(DEBUG_CFLAGS)
 LDFLAGS	:= $(DEBUG_LDFLAGS) -L../../shared
 
-INCLUDES	:= 
+INCLUDES	:= -I../../shared
 
 %.o : %.cpp
 	$(CXX) $(CFLAGS) $(INCLUDES) -o $@ $<
@@ -25,7 +25,7 @@ INCLUDES	:=
 all: messagesend
 
 messagesend: messagesend.o
-	$(LD) -o $@ $(LDFLAGS) $^ -lqpidmessaging -lqpidtypes
+	$(LD) -o $@ $(LDFLAGS) $^ -lagoclient
 
 clean:
 	rm -f messagesend messagesend.o
