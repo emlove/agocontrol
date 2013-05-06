@@ -430,6 +430,12 @@ int main(int argc, char **argv) {
 
 				decode(message, content);
 				content["event"] = subject;
+				if ((subject.find("event.environment.") != std::string::npos) && (subject.find("changed")!= std::string::npos)) {
+					string quantity = subject;
+					quantity.erase(quantity.begin(),quantity.begin()+18);
+					quantity.erase(quantity.end()-7,quantity.end());	
+					content["quantity"] = quantity;
+				}
 				pthread_mutex_lock(&mutexSubscriptions);	
 				for (map<string,Subscriber>::iterator it = subscriptions.begin(); it != subscriptions.end(); ) {
 					if (it->second.queue.size() > 100) {
