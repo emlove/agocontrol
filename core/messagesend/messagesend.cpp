@@ -37,6 +37,10 @@ static bool nameval(const std::string& in, std::string& name, std::string& value
 }
 
 int main(int argc, char **argv) {
+	if (argc < 2) {
+		cout << "Usage example: " << argv[0] << " uuid=ca9424e6-406d-4144-8931-584046eaaa34 command=setlevel level=50" << endl;
+		return -1;
+	}
 	AgoConnection agoConnection = AgoConnection("messagesend");		
 
 	qpid::types::Variant::Map content;
