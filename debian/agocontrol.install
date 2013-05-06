@@ -20,6 +20,7 @@ opt/agocontrol/bin/boolParser.py
 opt/agocontrol/bin/myavahi.py
 opt/agocontrol/bin/agodrain.py
 opt/agocontrol/bin/messagesend.py
+opt/agocontrol/bin/messagesend
 opt/agocontrol/bin/agochromoflex
 opt/agocontrol/bin/agotimer
 opt/agocontrol/bin/agorpc
