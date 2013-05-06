@@ -99,9 +99,9 @@ qpid::types::Variant::Map agocontrol::jsonStringToVariantMap(std::string jsonstr
 
 	if ( reader.parse(jsonstring, root)) {
 		result = jsonToVariantMap(root);
-	} else { 
+	}/* else { 
 		printf("warning, could not parse json to Variant::Map: %s\n",jsonstring.c_str());
-	}
+	}*/
 	return result;
 }
 
