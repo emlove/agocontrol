@@ -218,8 +218,8 @@ App.IndexController = Ember.ObjectController.extend({
 
 	console.log("---");
 	for (var k in deviceMap) {
-	    if (deviceMap[k].devicetype == "scenario" || deviceMap[k].devicetype == "event") {
-		continue;
+	    if (deviceMap[k].devicetype == "scenario" || deviceMap[k].devicetype == "event" || deviceMap[k].devicetype == "zwavecontroller") {
+		    continue;
 	    }
 	    devs.push(deviceMap[k]);
 	}
