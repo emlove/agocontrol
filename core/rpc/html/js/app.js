@@ -218,7 +218,9 @@ App.IndexController = Ember.ObjectController.extend({
 
 	console.log("---");
 	for (var k in deviceMap) {
-	    console.log(deviceMap[k].devicetype);
+	    if (deviceMap[k].devicetype == "scenario" || deviceMap[k].devicetype == "event") {
+		continue;
+	    }
 	    devs.push(deviceMap[k]);
 	}
 	console.log("---");
