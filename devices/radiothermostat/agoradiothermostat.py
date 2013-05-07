@@ -32,7 +32,7 @@ def messageHandler(internalid, content):
 				client.emitEvent(internalid, "event.environment.temperaturechanged", content["temperature"], "")
 	      	if content["command"] == "setthermostatmode":
 	                print "set thermostat mode: " + internalid
-	                #client.emitEvent(internalid, "event.device.state", "0", "")
+	                #client.emitEvent(internalid, "event.device.statechanged", "0", "")
     		if content["command"] == "setthermostatfanmode":
 			print "set radio thermostat fan mode: " + internalid
 		if content["command"] == "setthermostathold":

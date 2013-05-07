@@ -37,11 +37,11 @@ def messageHandler(internalid, content):
 			# depending on if the operation was successful, you want to report state back to ago control. We just send 255 in this case 
 			# so that ago control changes the device state in the inventory to on
 
-			client.emitEvent(internalid, "event.device.state", "255", "")
+			client.emitEvent(internalid, "event.device.statechanged", "255", "")
 
 		if content["command"] == "off":
 			print "switching off: " + internalid
-			client.emitEvent(internalid, "event.device.state", "0", "")
+			client.emitEvent(internalid, "event.device.statechanged", "0", "")
 
 # specify our message handler method
 client.addHandler(messageHandler)

@@ -15,14 +15,14 @@ def messageHandler(internalid, content):
 	if "command" in content:
 		if content["command"] == "on":
 			print "switching on: " + internalid
-			client.emitEvent(internalid, "event.device.state", "255", "")
+			client.emitEvent(internalid, "event.device.statechanged", "255", "")
 		if content["command"] == "off":
 			print "switching off: " + internalid
-			client.emitEvent(internalid, "event.device.state", "0", "")
+			client.emitEvent(internalid, "event.device.statechanged", "0", "")
 		if content['command'] == 'setlevel':
 			if 'level' in content:
 				print "device level changed", content["level"]
-				client.emitEvent(internalid, "event.device.state", level, "")
+				client.emitEvent(internalid, "event.device.statechanged", level, "")
 
 client.addHandler(messageHandler)
 

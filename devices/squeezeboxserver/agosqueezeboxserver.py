@@ -30,14 +30,14 @@ def messageHandler(internalid, content):
 
 			squeezebox.power(internalid, content["command"])
 
-			client.emitEvent(internalid, "event.device.state", "255", "")
+			client.emitEvent(internalid, "event.device.statechanged", "255", "")
 
 		if content["command"] == "off":
 			print "switching off: " + internalid
 
 			squeezebox.power(internalid, content["command"])
 			
-			client.emitEvent(internalid, "event.device.state", "0", "")
+			client.emitEvent(internalid, "event.device.statechanged", "0", "")
 			
 		if content["command"] == "play":
 			print "Play: " + internalid
