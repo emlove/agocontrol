@@ -37,6 +37,7 @@ using namespace tinyxml2;
 using namespace std;
 using namespace agocontrol;
 
+int polldelay = 0;
 
 Sender sender;
 Receiver receiver;
@@ -161,7 +162,7 @@ void *listener(void *param) {
 				break;
 				;;
 			case(0)	:
-				usleep(50);
+				usleep(polldelay);
 				break;
 				;;
 			default:
@@ -242,6 +243,7 @@ int main(int argc, char **argv) {
 	connectionOptions["username"]=getConfigOption("system", "username", "agocontrol");
 	connectionOptions["password"]=getConfigOption("system", "password", "letmein");
 	eibdurl=getConfigOption("knx", "url", "ip:127.0.0.1");
+	polldelay=atoi(getConfigOption("knx", "polldelay", "50").c_str());
 	devicesFile=getConfigOption("knx", "devicesfile", "/etc/opt/agocontrol/knx/devices.xml");
 
 	// load xml file into map
