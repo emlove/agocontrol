@@ -1,0 +1,41 @@
+{{#if isFirst }}
+<div class="four columns grid-item" style="margin-left:0">
+{{ else }}
+<div class="four columns grid-item" >
+{{/if}}
+	<!-- devicetype dimmerrgb - begin-->
+	<div class="row">
+		<div class="three columns">
+			<div class="pretty large primary btn grid-item-icon">
+				<i class="icon-adjust"></i>
+			</div>
+		</div>
+		<div class="nine columns">
+			<div class="grid-item-header">
+				<h3>Blink M RGB LED</h3>
+				<span class="room"><i class="icon-location"></i>Living room</span>
+			</div>
+		</div>
+	</div>
+	<div class="row grid-item-controls">
+		<div class="row">
+			<div class="six columns">
+				<div class="cmd-btn pretty small primary btn btn-full grid-command" data-uuid="{{uuid}}" data-value="ON">ON</div>
+			</div>
+			<div class="six columns">
+				<div class="cmd-btn pretty small secondary btn btn-full grid-command" data-uuid="{{uuid}}" data-value="OFF">OFF</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="six columns">
+				<div class="pretty small primary btn btn btn-full grid-command">
+					<a href="#">SETCOLOR</a>
+				</div>
+			</div>
+			<div class="six columns">
+				<div class="slider" data-uuid="{{uuid}}" data-value="{{state}}"></div>
+			</div>
+		</div>
+	</div>
+	<!-- devicetype dimmerrgb - end-->
+</div>

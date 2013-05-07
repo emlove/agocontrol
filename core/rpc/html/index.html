@@ -19,24 +19,21 @@
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.2/themes/cupertino/jquery-ui.min.css" />
 
-  <script src="js/libs/modernizr-2.0.6.min.js"></script>
-  <script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+ <!--  <script src="js/libs/modernizr-2.0.6.min.js"></script>-->
+  <script src="js/libs/jquery-1.9.1.js"></script>
   <script src="http://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
+  <script src="js/libs/handlebars-1.0.0-rc.3.js"></script>
+  <script src="js/libs/ember-1.0.0-rc.3.js"></script>
+  <script src="js/app.js"></script>
   <script>
-  	$(function() {
-    	$( ".slider" ).slider();
-    	
-		// 100% hight col-right
-    	$(window).resize(function() {
-        	$('div#col-right').height($(window).height() - $('div#col-right').offset().top);
-    	});
-    	$(window).resize();
-  	});
+
   </script>
 </head>
-
 <body>
-  <div class="container">
+
+ 
+  <script type="text/x-handlebars">
+	<div class="container">
   	<div class="row">
   		<div class="two columns" id="col-left">
 			<div class="pretty medium success btn btn-full icon-left icon-heart"><a href="#">System Status</a></div>
@@ -56,9 +53,8 @@
   			<div class="pretty medium default btn btn-full icon-left icon-tools"><a href="configuration.html">Configuration</a></div>
   			<li class="default label">ago control GPL - build 1.0-342</li>
   		</div>
-  	
-  		<div class="ten columns" id="col-right">
-  			<div class="row" id="header">
+	    <div class="ten columns" id="col-right">
+		  	<div class="row" id="header">
   				<div class="nine columns" id="info">
   					<a href="www.agocontrol.com" target="_blank">www.agocontrol.com</a>
   				</div>
@@ -66,252 +62,12 @@
   					<a href="www.agocontrol.com" target="_blank"><img src="img/agocontrol_logo.png"/></a>
   				</div>  		
   			</div>
-  			<div class="container" id="grid">
-  				<div class="row grid">
-  					<div class="four columns grid-item" id="grid-a1">
-  					<!-- devicetype dimmer - begin-->
-  						<div class="row">
-  							<div class="three columns">
-  							<div class="pretty large primary btn grid-item-icon"><i class="icon-lamp"></i></div>
-  						</div>
-  						<div class="nine columns">
-  							<div class="grid-item-header">
-  								<h3>Lamp Dimmer</h3>
-  								<span class="room"><i class="icon-location"></i>Living room</span>
-  							</div>
-  						</div>  						
-  					</div>
-  					<div class="row grid-item-controls">
-  						<div class="six columns">
-  							<div class="pretty medium primary btn btn-full grid-command">ON</div>
-  						</div>
-  						<div class="six columns">
-  							<div class="pretty medium primary btn btn-full grid-command">OFF</div>
-  						</div>
-  						<div class="twelve columns">
-  							<div class="slider"></div>
-  						</div>
-  					</div>
-  				<!-- devicetype dimmer - end-->
-  				</div>
-  				<div class="four columns grid-item" id="grid-a2">
-  				<!-- devicetype switch - begin-->
-  					<div class="row">
-  						<div class="three columns">
-  							<div class="pretty large primary btn grid-item-icon"><i class="icon-lamp"></i></div>
-  						</div>
-  						<div class="nine columns">
-  							<div class="grid-item-header">
-  								<h3>Bedlamp</h3>
-  								<span class="room"><i class="icon-location"></i>Sleeping room</span>
-  							</div>
-  						</div>  						
-  					</div>
-  					<div class="row grid-item-controls">
-  						<div class="six columns">
-  							<div class="pretty medium primary btn btn-full grid-command">ON</div>
-  						</div>
-  						<div class="six columns">
-  							<div class="pretty medium primary btn btn-full grid-command">OFF</div>
-  						</div>
-  					</div>
-  				<!-- devicetype switch - end-->  				
-  				</div>  		
-  				<div class="four columns grid-item" id="grid-a3">
-  				<!-- devicetype camera - begin-->
-  					<div class="row">
-  						<div class="three columns">
-  							<div class="pretty large primary btn grid-item-icon"><i class="icon-camera"></i></div>
-  						</div>
-  						<div class="nine columns">
-  							<div class="grid-item-header">
-  								<h3>Webcam</h3>
-  								<span class="room"><i class="icon-location"></i>Living room</span>
-  							</div>
-  						</div>  						
-  					</div>
-  					<div class="row grid-item-controls">
-  						<div class="six columns">
-  							<div class="pretty medium primary btn btn-full grid-command">PICTURE</div>
-  						</div>
-  						<div class="six columns">
-  							<div class="pretty medium primary btn btn-full grid-command">ARCHIV</div>
-  						</div>
-  					</div>
-  				<!-- devicetype camera - end--> 
-  				</div>
-  			</div>
-  			
-  			<div class="row grid">
-  				<div class="four columns grid-item" id="grid-b1">
-  				<!-- devicetype binarysensor - begin-->
-  					<div class="row">
-  						<div class="three columns">
-  							<div class="pretty large primary btn grid-item-icon"><i class="icon-gauge"></i></div>
-  						</div>
-  						<div class="nine columns">
-  							<div class="grid-item-header">
-  								<h3>Temperaturee</h3>
-  								<span class="room"><i class="icon-location"></i>Living room</span>
-  							</div>
-  						</div>  						
-  					</div>
-  					<div class="row grid-item-controls">
-  						<div class="twelve columns">
-  							 <li class="prepend append field">
-                				<span class="adjoined wide">Temperature</span>
-                				<input class="xnarrow text input" type="text" value="23" />
-                				<span class="adjoined xnarrow">°C</span>
-                				<div class="small pretty primary btn icon-left entypo icon-chart-area grid-command"><a href="#">GRAPH</a></div>
-              				</li>
-  						</div>
-  					</div>
-  				<!-- devicetype binarysensor - end-->
-  				</div>
-  				<div class="four columns grid-item" id="grid-b2">
-  				<!-- devicetype multilevelsensor - begin-->
-  					<div class="row">
-  						<div class="three columns">
-  							<div class="pretty large primary btn grid-item-icon"><i class="icon-gauge"></i></div>
-  						</div>
-  						<div class="nine columns">
-  							<div class="grid-item-header">
-  								<h3>Mushroom Box</h3>
-  								<span class="room"><i class="icon-location"></i>Living room</span>
-  							</div>
-  						</div>  						
-  					</div>
-  					<div class="row grid-item-controls">
-  						<div class="twelve columns">
-  							 <li class="prepend append field">
-                				<span class="adjoined wide">Temperature</span>
-                				<input class="xnarrow text input" type="text" value="23" />
-                				<span class="adjoined xnarrow">°C</span>
-                				<div class="small pretty primary btn icon-left entypo icon-chart-area grid-command"><a href="#">GRAPH</a></div>
-              				</li>
-  							 <li class="prepend append field">
-                				<span class="adjoined wide">Humidity</span>
-                				<input class="xnarrow text input" type="text" value="87" />
-                				<span class="adjoined xnarrow">%</span>
-                				<div class="small pretty primary btn icon-left entypo icon-chart-area grid-command"><a href="#">GRAPH</a></div>
-              				</li>
-  						</div>
-  					</div>
-  				<!-- devicetype multilevelsensor - end-->
-  				</div>  		
-  				<div class="four columns grid-item" id="grid-b3">
-  				<!-- devicetype drapes - begin-->
-  					<div class="row">
-  						<div class="three columns">
-  							<div class="pretty large primary btn grid-item-icon"><i class="icon-menu"></i></div>
-  						</div>
-  						<div class="nine columns">
-  							<div class="grid-item-header">
-  								<h3>Drape Left</h3>
-  								<span class="room"><i class="icon-location"></i>Living room</span>
-  							</div>
-  						</div>  						
-  					</div>
-  					<div class="row grid-item-controls">
-  						<div class="six columns">
-  							<div class="pretty medium primary btn btn-full grid-command"><i class="icon-up-open-big"></i></div>
-  						</div>
-  						<div class="six columns">
-  							<div class="pretty medium primary btn btn-full grid-command"><i class="icon-down-open-big"></i></div>
-  						</div>
-  						<div class="twelve columns">
-  							<div class="slider"></div>
-  						</div>
-  					</div>
-  				<!-- devicetype drapes - end-->  				
-  				</div>
-  			</div> 
-	
-  			<div class="row grid">
-  				<div class="four columns grid-item" id="grid-c1">
-  				<!-- devicetype phone - begin-->
-  					<div class="row">
-  						<div class="three columns">
-  							<div class="pretty large primary btn grid-item-icon"><i class="icon-phone"></i></div>
-  						</div>
-  						<div class="nine columns">
-  							<div class="grid-item-header">
-  								<h3>SIP Phone #0815</h3>
-  								<span class="room"><i class="icon-location"></i>Living room</span>
-  							</div>
-  						</div>  						
-  					</div>
-  					<div class="row grid-item-controls">
-  						<div class="twelve columns">
-  							<li class="prepend append field">
-                				<span class="normal adjoined">Number</span>
-                				<input class="wide text input" type="text" value="500" />
-                				<div class="small pretty primary btn grid-command"><a href="#">DIAL</a></div>
-              				</li>
-  						</div>
-  					</div>
-  				<!-- devicetype phone - end-->  				
-  				</div>
-  				<div class="four columns grid-item" id="grid-c2">
-  				<!-- devicetype dimmerrgb - begin-->
-  					<div class="row">
-  						<div class="three columns">
-  							<div class="pretty large primary btn grid-item-icon"><i class="icon-adjust"></i></div>
-  						</div>
-  						<div class="nine columns">
-  							<div class="grid-item-header">
-  								<h3>Blink M RGB LED</h3>
-  								<span class="room"><i class="icon-location"></i>Living room</span>
-  							</div>
-  						</div>  						
-  					</div>
-  					<div class="row grid-item-controls">
-  					  <div class="row">
-  						<div class="six columns">
-  							<div class="pretty small primary btn btn-full grid-command">ON</div>
-  						</div>
-  						<div class="six columns">
-  							<div class="pretty small primary btn btn-full grid-command">OFF</div>
-  						</div>
-					  </div>	
-  					  <div class="row">
-  						<div class="six columns">
-                			<div class="pretty small primary btn btn btn-full grid-command"><a href="#">SETCOLOR</a></div>
-  						</div>
-  						<div class="six columns">
-  							<div class="slider"></div>
-  						</div>
-					  </div>
-  					</div>
-  				<!-- devicetype dimmerrgb - end-->   				
-  				</div>  		
-  				<div class="four columns grid-item grid-item-empty" id="grid-c3"></div>
-  			</div> 	  				 			
-  		</div>  <!-- col-right END -->
-  		
-  		<div class="row" id="pagination">
-  			<div class="small oval btn info"><a href="#">1</a></div>
-  			<div class="small oval btn info"><a href="#">2</a></div>
-  			<div class="small oval btn info"><a href="#">3</a></div>
-  		</div>
-  		
-  	</div>
+     		{{outlet}}
+        </div>
+  </script>
 
-	</div> <!-- row end -->
-  </div> <!-- container end -->
-  
-  <script src="js/libs/gumby.min.js"></script>
-  <script src="js/plugins.js"></script>
-  <script src="js/main.js"></script>
 
-  <!-- Prompt IE 6 users to install Chrome Frame. Remove this if you want to support IE 6.
-       chromium.org/developers/how-tos/chrome-frame-getting-started -->
-  <!--[if lt IE 7 ]>
-    <script src="//ajax.googleapis.com/ajax/libs/chrome-frame/1.0.3/CFInstall.min.js"></script>
-    <script>window.attachEvent('onload',function(){CFInstall.check({mode:'overlay'})})</script>
-  <![endif]-->
 
-  </body>
+
+</body>
 </html>
-
-

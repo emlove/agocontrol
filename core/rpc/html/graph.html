@@ -19,6 +19,8 @@ var options = {
 };
 var inventory = null;
 
+var inventory = null;
+
 function displayGraph(response) {
  
     if (response.result) { 
@@ -63,8 +65,12 @@ function displayDeviceEnvironments(response) {
 
 	var select_devices = document.getElementById('devices');
 	var select_environments = document.getElementById('environments');
-	
+	console.log(response.result);
+	return;
 	for(var id in response.result) {
+	    if (inventory.inventory[id] == undefined)
+	        continue;
+	
 		if (inventory.inventory[id] == undefined) continue; 
 		select_devices.innerHTML = select_devices.innerHTML + "<option value=\"" + id + "\">" + inventory.inventory[id].name + "</option>";
 		var envs = response.result[id].split(",");
@@ -96,10 +102,16 @@ function getdeviceenvironments() {
 	$.post(url, JSON.stringify(request), displayDeviceEnvironments, "json");
 }
  
+var inventory = null;
+ 
 function displayInventory(response) {
     // When we already have one do do nothing
     if (inventory != null)
 	return;
+ 
+    // When we already have one do do nothing
+    if (inventory != null)
+        return;
  
     if (response.result) { 
 	// store inventory global
@@ -124,6 +136,10 @@ function getinventory() {
 	// When we already have one do do nothing
 	if (inventory != null)
 		return;
+ 
+    // When we already have one do do nothing
+    if (inventory != null)
+        return;
  
 	var request = {};
 	request.method = "message";

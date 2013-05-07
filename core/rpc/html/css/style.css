@@ -35,6 +35,7 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
 .column, .columns { margin-left: 1.5625%; float: left; min-height: 1px; position: relative; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: border-box; }
 
 .column:first-child, .columns:first-child, .alpha { margin-left: 0px; }
+.column ~.four { margin-left: 0px; }
 
 .column.omega, .columns.omega { float: right; }
 

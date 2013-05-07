@@ -1,0 +1,33 @@
+{{#if isFirst }}
+<div class="four columns grid-item" style="margin-left:0">
+{{ else }}
+<div class="four columns grid-item" >
+{{/if}}
+	<!-- devicetype switch - begin-->
+	<div class="row">
+		<div class="three columns">
+			<div class="pretty large primary btn grid-item-icon">
+				<i class="icon-lamp"></i>
+			</div>
+		</div>
+		<div class="nine columns">
+			<div class="grid-item-header">
+				{{#if name}} 
+					<h3>{{name}}</h3>
+				{{else}}
+					<h3>{{devicetype}}</h3>
+				{{/if}}
+				<span class="room"><i class="icon-location"></i>{{room}} {{state}}</span>
+			</div>
+		</div>
+	</div>
+	<div class="row grid-item-controls">
+		<div class="six columns">
+			<div class="cmd-btn pretty medium primary btn btn-full grid-command" data-uuid="{{uuid}}" data-value="ON">ON</div>
+		</div>
+		<div class="six columns">
+			<div class="cmd-btn pretty medium secondary btn btn-full grid-command" data-uuid="{{uuid}}" data-value="OFF">OFF</div>
+		</div>
+	</div>
+	<!-- devicetype switch - end-->
+</div>
