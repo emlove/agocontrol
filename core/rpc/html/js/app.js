@@ -33,10 +33,14 @@ function getEvent() {
 }
 
 function handleInventory(response) {
+    var rooms = response.result.rooms;
     for ( var uuid in response.result.inventory) {
 	deviceMap[uuid] = Device.create(response.result.inventory[uuid]);
 	deviceMap[uuid].uuid = uuid;
 	deviceMap[uuid].state = parseInt(deviceMap[uuid].state);
+	if (deviceMap[uuid].room !== undefined && rooms[deviceMap[uuid].room] !== undefined) {
+	    deviceMap[uuid].room = rooms[deviceMap[uuid].room].name;
+	}
 	for ( var key in response.result.inventory[uuid]) {
 	    deviceMap[uuid].addObserver(key, deviceMap[uuid], function(k) {
 		return function() {
