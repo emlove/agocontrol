@@ -19,10 +19,18 @@
 </div>
 <div class="row grid-item-controls">
 	<div class="six columns">
-		<div class="cmd-btn pretty medium primary btn btn-full grid-command" data-uuid="{{uuid}}" data-value="on">ON</div>
+		{{#if state}}
+			<div class="cmd-btn pretty medium primary btn btn-full grid-command" data-uuid="{{uuid}}" data-value="on">ON</div>
+		{{else}}
+			<div class="cmd-btn pretty medium danger btn btn-full grid-command" data-uuid="{{uuid}}" data-value="on">ON</div>
+		{{/if}}
 	</div>
 	<div class="six columns">
-		<div class="cmd-btn pretty medium secondary btn btn-full grid-command" data-uuid="{{uuid}}" data-value="off">OFF</div>
+		{{#if state}}
+			<div class="cmd-btn pretty medium danger btn btn-full grid-command" data-uuid="{{uuid}}" data-value="off">OFF</div>
+		{{else}}
+			<div class="cmd-btn pretty medium primary btn btn-full grid-command" data-uuid="{{uuid}}" data-value="off">OFF</div>
+		{{/if}} 
 	</div>
 	<div class="twelve columns">
 		<div class="slider"></div>

@@ -20,10 +20,18 @@
 	<div class="row grid-item-controls">
 		<div class="row">
 			<div class="six columns">
+				{{#if state}}
 				<div class="cmd-btn pretty small primary btn btn-full grid-command" data-uuid="{{uuid}}" data-value="on">ON</div>
+				{{else}}
+				<div class="cmd-btn pretty small danger btn btn-full grid-command" data-uuid="{{uuid}}" data-value="on">ON</div>
+				{{/if}}
 			</div>
 			<div class="six columns">
-				<div class="cmd-btn pretty small secondary btn btn-full grid-command" data-uuid="{{uuid}}" data-value="off">OFF</div>
+				{{#if state}}
+				<div class="cmd-btn pretty small danger btn btn-full grid-command" data-uuid="{{uuid}}" data-value="off">OFF</div>
+			{{else}}
+				<div class="cmd-btn pretty small primary btn btn-full grid-command" data-uuid="{{uuid}}" data-value="off">OFF</div>
+			{{/if}} 
 			</div>
 		</div>
 		<div class="row">
