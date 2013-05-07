@@ -8,7 +8,7 @@ Array.prototype.chunk = function(chunkSize) {
 };
 
 var subscription = null;
-var url = "/jsonrpc";
+var url = "http://192.168.122.244:8008/jsonrpc";
 
 var deviceMap = {};
 Device = Ember.Object.extend({});
@@ -16,7 +16,7 @@ Device = Ember.Object.extend({});
 function handleEvent(response) {
     if (response.result) {
 	console.log(response.result);
-	deviceMap[response.result.uuid].set('state', response.result.level);
+	deviceMap[response.result.uuid].set('state', parseInt(response.result.level));
     }
     getEvent();
 }
@@ -33,7 +33,7 @@ function getEvent() {
 }
 
 function handleInventory(response) {
-    for (var uuid in response.result.inventory) {
+    for ( var uuid in response.result.inventory) {
 	deviceMap[uuid] = Device.create(response.result.inventory[uuid]);
 	for ( var key in response.result.inventory[uuid]) {
 	    deviceMap[uuid].uuid = uuid;
@@ -215,17 +215,14 @@ App.IndexController = Ember.ObjectController.extend({
 
     updateDeviceMap : function() {
 	var devs = [];
-
-	console.log("---");
-	for (var k in deviceMap) {
+	for ( var k in deviceMap) {
 	    if (deviceMap[k].devicetype == "scenario" || deviceMap[k].devicetype == "event" || deviceMap[k].devicetype == "zwavecontroller") {
-		    continue;
+		continue;
 	    }
 	    devs.push(deviceMap[k]);
 	}
-	console.log("---");
 	devs = devs.chunk(3);
-	for (var i = 0; i < devs.length; i++) {
+	for ( var i = 0; i < devs.length; i++) {
 	    devs[i][0].isFirst = true;
 	}
 	this.set("content", devs);
