@@ -35,8 +35,9 @@ function getEvent() {
 function handleInventory(response) {
     for ( var uuid in response.result.inventory) {
 	deviceMap[uuid] = Device.create(response.result.inventory[uuid]);
+	deviceMap[uuid].uuid = uuid;
+	deviceMap[uuid].state = parseInt(deviceMap[uuid].state);
 	for ( var key in response.result.inventory[uuid]) {
-	    deviceMap[uuid].uuid = uuid;
 	    deviceMap[uuid].addObserver(key, deviceMap[uuid], function(k) {
 		return function() {
 		    if (indexCtrl) {
