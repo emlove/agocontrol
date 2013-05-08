@@ -23,7 +23,12 @@ syslog.openlog(sys.argv[0], syslog.LOG_PID, syslog.LOG_DAEMON)
 sensors = {}
 
 syslog.syslog(syslog.LOG_NOTICE, "agoowfs.py startup")
-ow.init( device )
+try:
+	ow.init( device )
+except ow.exNoController:
+	syslog.syslog(syslog.LOG_ERROR, "can't open one wire device, aborting")
+	time.sleep(5)
+	exit(-1)
 
 syslog.syslog(syslog.LOG_NOTICE, "reading devices")
 root = ow.Sensor( '/' )
