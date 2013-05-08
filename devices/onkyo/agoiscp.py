@@ -35,7 +35,7 @@ discovery()
 
 def messageHandler(internalid, content):
 	if 'command' in content:
-		avr = eISCP(str.split(path,':',2)[0], int(str.split(path,':',2)[1]))
+		avr = eISCP(str.split(internalid,':',2)[0], int(str.split(internalid,':',2)[1]))
 		command = ''
 		try:
 			if content['command'] == 'on':
@@ -65,7 +65,7 @@ def messageHandler(internalid, content):
 					command = 'MVL%x' % level
 					# print "sending raw", command
 					avr.send_raw(command)
-			if message.content['command'] == 'setinput':
+			if content['command'] == 'setinput':
 				if 'input' in content:
 					command = 'input-selector:%s' % content['input']
 					avr.command(command)
