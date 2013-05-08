@@ -373,15 +373,17 @@ static void *event_handler(enum mg_event event,
 int main(int argc, char **argv) {
 	string broker;
 	string port; 
+	string htdocs;
 
 	Variant::Map connectionOptions;
 	broker=getConfigOption("system", "broker", "localhost:5672");
 	connectionOptions["username"]=getConfigOption("system", "username", "agocontrol");
 	connectionOptions["password"]=getConfigOption("system", "password", "letmein");
-	port=getConfigOption("system", "rpcport", "8008");
+	port=getConfigOption("rpc", "port", "8008");
+	htdocs=getConfigOption("rpc", "htdocs", "/opt/agocontrol/html");
 
 	static const char *options[] = {
-	  "document_root", "html",
+	  "document_root", htdocs.c_str(),
 	  "listening_ports", port.c_str(),
 	  "num_threads", "5",
 	  NULL
