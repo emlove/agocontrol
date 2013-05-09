@@ -1877,6 +1877,10 @@ ago control Styles
 	overflow: hidden;
 }
 
+#grid .grid-item .room {
+	white-space: nowrap;
+	overflow: hidden;
+}
 
 #grid .grid-item-icon i {
 	color: #FFFFFF;
@@ -1888,6 +1892,8 @@ ago control Styles
 	padding-bottom: 0px;
 	font-size: 26px; 
 	font-size: 1.625rem;
+	white-space: nowrap;
+	overflow: hidden;
 }
 
 #grid .grid-item-header {
