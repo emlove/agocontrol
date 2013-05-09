@@ -313,9 +313,14 @@ void handleEvent(Variant::Map *device, string subject, Variant::Map *content) {
 		(*device)["state"]  = (*content)["level"];
 		(*device)["state"].setEncoding("utf8");
 		// (*device)["state"]  = valuesToString(values);
-	} else if (subject == "event.environment.temperaturechanged") {
-		(*values)["temperature"] = (*content)["level"];
-	} else if (subject == "event.environment.humiditychanged") {
-		(*values)["humidity"] = (*content)["level"];
+	} else if ((subject.find("event.environment.") != std::string::npos) && (subject.find("changed")!= std::string::npos)) {
+		Variant::Map value;
+		string quantity = subject;
+		quantity.erase(quantity.begin(),quantity.begin()+18);
+		quantity.erase(quantity.end()-7,quantity.end());
+
+		value["unit"] = (*content)["unit"];
+		value["level"] = (*content)["level"];
+		(*values)[quantity] = value;
 	}
 }
