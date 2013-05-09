@@ -3,7 +3,7 @@
 {{ else }}
 <div class="four columns grid-item" >
 {{/if}}
-<!-- devicetype multilevelsensor - begin-->
+<!-- devicetype binarysensor - begin-->
 <div class="row">
 	<div class="three columns">
 		<div class="pretty large primary btn grid-item-icon">
@@ -23,8 +23,11 @@
 </div>
 <div class="row grid-item-controls">
 	<div class="twelve columns">
-		{{valueList}}
+	 	                <li class="prepend append double field">
+					<span class="adjoined wide ">Current value</span> 
+	 	                        <input class="text input" type="text" value="{{state}}" />
+				</li> 
 	</div>
 </div>
-<!-- devicetype multilevelsensor - end-->
+<!-- devicetype binarysensor - end-->
 </div>
