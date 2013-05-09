@@ -243,7 +243,7 @@ int main(int argc, char **argv) {
 	connectionOptions["username"]=getConfigOption("system", "username", "agocontrol");
 	connectionOptions["password"]=getConfigOption("system", "password", "letmein");
 	eibdurl=getConfigOption("knx", "url", "ip:127.0.0.1");
-	polldelay=atoi(getConfigOption("knx", "polldelay", "50").c_str());
+	polldelay=atoi(getConfigOption("knx", "polldelay", "5000").c_str());
 	devicesFile=getConfigOption("knx", "devicesfile", "/etc/opt/agocontrol/knx/devices.xml");
 
 	// load xml file into map
@@ -322,6 +322,10 @@ int main(int argc, char **argv) {
 							tg->setShortUserData(1);
 						} else if (content["command"] == "off") {
 							string destGA = device["onoff"];
+							dest = Telegram::stringtogaddr(destGA);
+							tg->setShortUserData(0);
+						} else if (content["command"] == "push") {
+							string destGA = device["push"];
 							dest = Telegram::stringtogaddr(destGA);
 							tg->setShortUserData(0);
 						} else if (content["command"] == "setlevel") {
