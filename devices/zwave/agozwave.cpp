@@ -521,7 +521,11 @@ std::string commandHandler(qpid::types::Variant::Map content) {
 					printf("Result: %d\n",result);
 				}
 			} else if (agoConnection->getDeviceType(internalid.c_str()) == "dimmer") {
-				tmpValueID = getValueID(nodeid,instance, "Level");
+				if (instance == 1) { 
+					tmpValueID = getValueID(nodeid,instance, "Basic");
+				} else {
+					tmpValueID = getValueID(nodeid,instance, "Level");
+				}
 				if (tmpValueID) {
 					printf("Type: %s\n",Value::GetTypeNameFromEnum(tmpValueID->GetType()));
 					if (debug) printf("on\n");
@@ -550,7 +554,11 @@ std::string commandHandler(qpid::types::Variant::Map content) {
 					printf("Result: %d\n",result);
 				}
 			} else if (agoConnection->getDeviceType(internalid.c_str()) == "dimmer") {
-				tmpValueID = getValueID(nodeid,instance, "Level");
+				if (instance == 1) { 
+					tmpValueID = getValueID(nodeid,instance, "Basic");
+				} else {
+					tmpValueID = getValueID(nodeid,instance, "Level");
+				}
 				if (tmpValueID) {
 					printf("Type: %s\n",Value::GetTypeNameFromEnum(tmpValueID->GetType()));
 					if (debug) printf("on\n");
