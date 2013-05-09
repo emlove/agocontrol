@@ -177,7 +177,8 @@ int main(int argc, char **argv) {
 				} else {
 					if (content["uuid"].asString() != "") {
 						string uuid = content["uuid"];
-						handleEvent(&inventory[uuid].asMap(), subject, &content);
+						// see if we have that device in the inventory already, if yes handle the event
+						if (inventory.find(uuid) != inventory.end()) handleEvent(&inventory[uuid].asMap(), subject, &content);
 					}
 
 				}
