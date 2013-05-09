@@ -332,10 +332,10 @@ void OnNotification
 						eventtype="event.environment.sensortriggered";
 					}
 					if (label == "Energy") {
-						eventtype="event.environment.energy";
+						eventtype="event.environment.energychanged";
 					}
 					if (label == "Power") {
-						eventtype="event.environment.energy";
+						eventtype="event.environment.powerchanged";
 					}
 					if (eventtype != "") {
 						if (debug) printf("Sending %s event from child %s\n",eventtype.c_str(), tempstream.str().c_str());
