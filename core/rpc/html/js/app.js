@@ -10,6 +10,7 @@ Array.prototype.chunk = function(chunkSize) {
 var subscription = null;
 var url = "/jsonrpc";
 
+var schema = {};
 var deviceMap = {};
 Device = Ember.Object.extend({});
 
@@ -17,6 +18,11 @@ function handleEvent(response) {
     if (response.result) {
 	console.log(response.result);
 	deviceMap[response.result.uuid].set('state', parseInt(response.result.level));
+	if (response.result.quantity) {
+	    var values = deviceMap[response.result.uuid].values;
+	    values[response.result.quantity].level = response.result.level;
+	    deviceMap[response.result.uuid].set('values', values);
+	}
     }
     getEvent();
 }
@@ -34,6 +40,8 @@ function getEvent() {
 
 function handleInventory(response) {
     var rooms = response.result.rooms;
+    schema = response.result.schema;
+    console.log(response.result);
     for ( var uuid in response.result.inventory) {
 	deviceMap[uuid] = Device.create(response.result.inventory[uuid]);
 	deviceMap[uuid].uuid = uuid;
@@ -120,7 +128,6 @@ function subscribe() {
 var App = Ember.Application.create({
     ApplicationController : Ember.Controller.extend(),
     ready : function() {
-	// console.log("START");
 	subscribe();
     },
 
@@ -176,6 +183,35 @@ Ember.Handlebars.registerBoundHelper('device', function(value, options) {
 	    App.helperTemplates["empty"] = App.getHelperTemplate("devices/empty");
 	}
 	tpl = App.helperTemplates["empty"];
+    }
+
+    // Build value list
+    if (value.values !== undefined) {
+	if (App.helperTemplates["value"] === undefined) {
+	    App.helperTemplates["value"] = App.getHelperTemplate("devices/value");
+	}
+	var subTpl = App.helperTemplates["value"];
+
+	value.valueList = "";
+	var i = 0;
+	for ( var k in value.values) {
+	    // We have no room for more then two
+	    if (i == 2) {
+		break;
+	    }
+
+	    var tmp = value.values[k];
+	    // Capitalize the first letter of the name
+	    tmp.name = k.charAt(0).toUpperCase() + k.slice(1);
+
+	    // Query the unit's label from the schema
+	    if (schema.units[tmp.unit] !== undefined) {
+		tmp.unit = schema.units[tmp.unit].label;
+	    }
+	    value.valueList += subTpl(tmp);
+	    i++;
+	}
+	value.valueList = new Handlebars.SafeString(value.valueList);
     }
 
     return new Handlebars.SafeString(tpl(value));
