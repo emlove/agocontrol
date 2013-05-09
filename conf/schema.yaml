@@ -10,6 +10,8 @@ commands:
     name: turn all off
   "run":
     name: run
+  push:
+    name: push button
   settemperature:
     name: set temperature
     parameters:
@@ -169,6 +171,10 @@ commands:
   getepg:
     name: get electronic program guide
 devicetypes:
+  pushbutton:
+    name: Pushbutton
+    description: momentary switch
+    commands: [push]
   hdmicec:
     name: HDMI CEC interface
     description: control devices on the HDMI bus
