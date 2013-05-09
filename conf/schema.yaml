@@ -352,3 +352,10 @@ events:
   event.environment.energy:
     description: announces a status change of a device
     parameters: [level, uuid]
+units:
+  degC:
+    label: "°C"
+    description: degree celcius
+  percent:
+    label: "%"
+    description: percent value
