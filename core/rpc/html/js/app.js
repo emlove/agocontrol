@@ -12,7 +12,10 @@ var url = "/jsonrpc";
 
 var schema = {};
 var deviceMap = {};
+var rooms = {};
 Device = Ember.Object.extend({});
+
+var activeController = null;
 
 function handleEvent(response) {
     if (response.result) {
@@ -39,7 +42,7 @@ function getEvent() {
 }
 
 function handleInventory(response) {
-    var rooms = response.result.rooms;
+    rooms = response.result.rooms;
     schema = response.result.schema;
     console.log(response.result);
     for ( var uuid in response.result.inventory) {
@@ -47,20 +50,21 @@ function handleInventory(response) {
 	deviceMap[uuid].uuid = uuid;
 	deviceMap[uuid].state = parseInt(deviceMap[uuid].state);
 	if (deviceMap[uuid].room !== undefined && rooms[deviceMap[uuid].room] !== undefined) {
+	    deviceMap[uuid].roomUid = deviceMap[uuid].room;
 	    deviceMap[uuid].room = rooms[deviceMap[uuid].room].name;
 	}
 	for ( var key in response.result.inventory[uuid]) {
 	    deviceMap[uuid].addObserver(key, deviceMap[uuid], function(k) {
 		return function() {
-		    if (indexCtrl && indexCtrl.updateDeviceMap) {
-			indexCtrl.updateDeviceMap();
+		    if (activeController && activeController.updateDeviceMap) {
+			activeController.updateDeviceMap();
 		    }
 		};
 	    }(key));
 	}
 
-	if (indexCtrl && indexCtrl.updateDeviceMap) {
-	    indexCtrl.updateDeviceMap();
+	if (activeController && activeController.updateDeviceMap) {
+	    activeController.updateDeviceMap();
 	}
 
     }
@@ -166,7 +170,9 @@ var App = Ember.Application.create({
 App.helperTemplates = {};
 
 App.Router.map(function() {
-    this.route("floorPlan", {path: "/floorPlan"});
+    this.route("floorPlan", {
+	path : "/floorPlan"
+    });
 });
 
 /* Template helpers */
@@ -247,6 +253,17 @@ Ember.Handlebars.registerBoundHelper('doSetup', function(value, options) {
     });
 });
 
+/* Used to setup dragables */
+
+Ember.Handlebars.registerBoundHelper('enableDnD', function(value, options) {
+    $('.dnd-device').each(function() {
+	$(this).draggable({
+	    cursor : "move",
+	    revert : true
+	});
+    });
+});
+
 /* Index - Devices View */
 
 var indexCtrl = null;
@@ -284,6 +301,7 @@ App.IndexRoute = Ember.Route.extend({
     setupController : function(controller, model) {
 	controller.set('content', model);
 	indexCtrl = controller;
+	activeController = indexCtrl;
     },
 
     renderTemplate : function() {
@@ -296,8 +314,37 @@ App.IndexRoute = Ember.Route.extend({
 
 var floorCtrl = null;
 
-App.FloorPlan = Ember.ObjectController.extend({
-    content : [],
+App.FloorPlanController = Ember.ObjectController.extend({
+    content : {},
+
+    updateDeviceMap : function() {
+	var roomMap = [];
+	for ( var room in rooms) {
+	    roomMap[room] = rooms[room];
+	    roomMap[room].devices = [];
+	}
+	roomMap['none'] = {
+	    name : "No Room",
+	    devices : []
+	};
+	for ( var k in deviceMap) {
+	    if (deviceMap[k].devicetype == "zwavecontroller") {
+		continue;
+	    }
+	    var rid = deviceMap[k].roomUid === undefined ? "none" : deviceMap[k].roomUid;
+	    roomMap[rid].devices.push(deviceMap[k]);
+	}
+
+	var finalMap = [];
+	for ( var room in rooms) {
+	    finalMap.push(roomMap[room]);
+	}
+	finalMap.push(roomMap["none"]);
+	var _content = Ember.Object.create();
+	_content.set("rooms", finalMap);
+	this.set("content", _content);
+    }
+
 });
 
 App.FloorPlanView = Ember.View.extend({
@@ -307,18 +354,21 @@ App.FloorPlanView = Ember.View.extend({
 
 App.FloorPlanRoute = Ember.Route.extend({
     model : function() {
-	return [];
+	return {};
     },
- 
+
     setupController : function(controller, model) {
 	controller.set('content', model);
-	indexCtrl = controller;
+	floorCtrl = controller;
+	activeController = floorCtrl;
     },
 
     renderTemplate : function() {
 	Ember.TEMPLATES['floorplan'] = App.getTemplate("floorplan");
 	Ember.TEMPLATES['navigation_floorplan'] = App.getTemplate("navigation/floorplan");
-	this.render('navigation_floorplan', {outlet: 'navigation'});
+	this.render('navigation_floorplan', {
+	    outlet : 'navigation'
+	});
 	this.render();
     }
 });
