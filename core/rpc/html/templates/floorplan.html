@@ -1,3 +1,17 @@
-<div class="container" id="grid">
-<b>{{content.main}}</b>
-</div>
+{{#each content in model}}
+	<div class="container" id="grid">
+	{{#each row in content.devices}}
+		<div class="row grid">
+		{{#each item in row}}
+			{{#if item.isDev}}
+				{{device item.node}}
+			{{else}}
+	   			{{placeholder item}}
+	   		{{/if}}
+	   	{{/each}}
+	   	</div>
+	{{/each}}
+	</div>
+{{/each}}
+{{doSetup model}}
+{{enableDrop model}}

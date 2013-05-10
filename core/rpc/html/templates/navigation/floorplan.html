@@ -1,13 +1,15 @@
-{{#each room in content.rooms}}
-<div class="row" style="color:#FFF; font-weight: 700">{{room.name}}</div>
-<ul style="text-indent: 15px;">
-{{#each device in room.devices}}
-	{{#if device.name }}
-		<li class="dnd-device">{{device.name}}</li>
-	{{else}}
-		<li class="dnd-device">{{device.devicetype}}</li>
-	{{/if}}
+{{#each content in model}}
+	{{#each room in content.rooms}}
+	<div class="row" style="color:#FFF; font-weight: 700">{{room.name}}</div>
+	<ul style="text-indent: 15px;">
+	{{#each device in room.devices}}
+		{{#if device.name }}
+			<li class="dnd-device" {{bindAttr data-uuid="device.uuid"}} >{{device.name}}</li>
+		{{else}}
+			<li class="dnd-device" {{bindAttr data-uuid="device.uuid"}} >{{device.devicetype}}</li>
+		{{/if}}
+	{{/each}}
+	</ul>
+	{{/each}}
 {{/each}}
-</ul>
-{{/each}}
-{{enableDnD content}}
+{{enableDnD model}}

@@ -19,7 +19,7 @@ var activeController = null;
 
 function handleEvent(response) {
     if (response.result) {
-	console.log(response.result);
+	// console.log(response.result);
 	deviceMap[response.result.uuid].set('state', parseInt(response.result.level));
 	if (response.result.quantity) {
 	    var values = deviceMap[response.result.uuid].values;
@@ -223,6 +223,17 @@ Ember.Handlebars.registerBoundHelper('device', function(value, options) {
     return new Handlebars.SafeString(tpl(value));
 });
 
+Ember.Handlebars.registerBoundHelper('placeholder', function(value, options) {
+    var tpl = App.helperTemplates["placeholder"];
+    if (!tpl) {
+	if (App.helperTemplates["placeholder"] === undefined) {
+	    App.helperTemplates["placeholder"] = App.getHelperTemplate("devices/placeholder");
+	}
+	tpl = App.helperTemplates["placeholder"];
+    }
+    return new Handlebars.SafeString(tpl(value));
+});
+
 /* Used to setUp buttons and sliders */
 Ember.Handlebars.registerBoundHelper('doSetup', function(value, options) {
 
@@ -263,6 +274,27 @@ Ember.Handlebars.registerBoundHelper('enableDnD', function(value, options) {
 	});
     });
 });
+
+Ember.Handlebars.registerBoundHelper('enableDrop', function(value, options) {
+    $('.drop-target').each(function() {
+	$(this).droppable({
+	    accept : ".dnd-device",
+	    drop : function(event, ui) {
+		if (floorCtrl) {
+		    var x = $(this).data("x");
+		    var y = $(this).data("y");
+		    var uuid = ui.draggable.data("uuid");
+		    // alert("dropped:" + ui.draggable.data("uuid") + " on " + x
+		    // + " / " + y);
+		    floorCtrl.addDevice(x, y, uuid);
+		    console.log("dropped:" + ui.draggable.data("uuid") + " on " + x + " / " + y);
+		}
+	    }
+	});
+    });
+});
+
+// 
 
 /* Index - Devices View */
 
@@ -314,14 +346,14 @@ App.IndexRoute = Ember.Route.extend({
 
 var floorCtrl = null;
 
-App.FloorPlanController = Ember.ObjectController.extend({
-    content : {},
+App.FloorPlanController = Ember.ArrayController.extend({
+    content : [],
 
     updateDeviceMap : function() {
 	var roomMap = [];
 	for ( var room in rooms) {
-	    roomMap[room] = rooms[room];
-	    roomMap[room].devices = [];
+	    roomMap[room] = Ember.Object.create(rooms[room]);
+	    roomMap[room].set("devices", []);
 	}
 	roomMap['none'] = {
 	    name : "No Room",
@@ -335,14 +367,72 @@ App.FloorPlanController = Ember.ObjectController.extend({
 	    roomMap[rid].devices.push(deviceMap[k]);
 	}
 
+	var _content = Ember.Object.create();
+
+	if (this.content.objectAt === undefined || this.content.objectAt(0) === undefined || this.content.objectAt(0).devices === undefined) {
+	    var devices = [];
+	    for ( var i = 0; i < 3; i++) {
+		var sub = [];
+		for ( var j = 0; j < 3; j++) {
+		    if (j == 0) {
+			sub.push(Ember.Object.create({
+			    isFirst : true,
+			    x : i,
+			    y : j,
+			    node : {},
+			    isDev : false,
+			}));
+		    } else {
+			sub.push(Ember.Object.create({
+			    x : i,
+			    y : j,
+			    node : {},
+			    isDev : false,
+			}));
+		    }
+		}
+		devices.push(sub);
+	    }
+	    _content.set("devices", devices);
+	} else {
+	    var devices = this.content.objectAt(0).devices;
+	    for ( var i = 0; i < 3; i++) {
+		for ( var j = 0; j < 3; j++) {
+		    if (devices[i][j].isDev) {
+			var uuid = devices[i][j].get("node").get("uuid");
+			devices[i][j].set("node", deviceMap[uuid]);
+			devices[i][j].get("node").set("isFirst", j == 0);
+			devices[i][j].get("node").set("isDev", true);
+			_content.set("devices", devices);
+		    }
+		}
+	    }
+	    _content.set("devices", this.content.objectAt(0).devices);
+	}
+
 	var finalMap = [];
 	for ( var room in rooms) {
 	    finalMap.push(roomMap[room]);
 	}
 	finalMap.push(roomMap["none"]);
-	var _content = Ember.Object.create();
+
 	_content.set("rooms", finalMap);
-	this.set("content", _content);
+	this.set("content", [ _content ]);
+    },
+
+    addDevice : function(x, y, uuid) {
+	if (this.content.objectAt(0).devices === undefined) {
+	    return;
+	}
+	var devices = this.content.objectAt(0).get("devices");
+	devices[x][y].set("node", deviceMap[uuid]);
+	devices[x][y].set("isDev", true);
+	devices[x][y].get("node").set("isFirst", devices[x][y].get("isFirst"));
+
+	var _content = Ember.Object.create();
+	_content.set("rooms", this.content.objectAt(0).get("rooms"));
+	_content.set("devices", devices);
+	this.set("content", [ _content ]);
     }
 
 });
@@ -354,7 +444,7 @@ App.FloorPlanView = Ember.View.extend({
 
 App.FloorPlanRoute = Ember.Route.extend({
     model : function() {
-	return {};
+	return [];
     },
 
     setupController : function(controller, model) {
