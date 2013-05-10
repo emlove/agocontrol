@@ -52,14 +52,14 @@ function handleInventory(response) {
 	for ( var key in response.result.inventory[uuid]) {
 	    deviceMap[uuid].addObserver(key, deviceMap[uuid], function(k) {
 		return function() {
-		    if (indexCtrl) {
+		    if (indexCtrl && indexCtrl.updateDeviceMap) {
 			indexCtrl.updateDeviceMap();
 		    }
 		};
 	    }(key));
 	}
 
-	if (indexCtrl) {
+	if (indexCtrl && indexCtrl.updateDeviceMap) {
 	    indexCtrl.updateDeviceMap();
 	}
 
@@ -166,7 +166,7 @@ var App = Ember.Application.create({
 App.helperTemplates = {};
 
 App.Router.map(function() {
-    // put your routes here
+    this.route("floorPlan", {path: "/floorPlan"});
 });
 
 /* Template helpers */
@@ -289,5 +289,36 @@ App.IndexRoute = Ember.Route.extend({
     renderTemplate : function() {
 	Ember.TEMPLATES['index'] = App.getTemplate("devices");
 	this.render();
+    }
+});
+
+/* FloorPlan -View */
+
+var floorCtrl = null;
+
+App.FloorPlan = Ember.ObjectController.extend({
+    content : [],
+});
+
+App.FloorPlanView = Ember.View.extend({
+    templateName : "floorplan",
+    name : "FloorPlan"
+});
+
+App.FloorPlanRoute = Ember.Route.extend({
+    model : function() {
+	return [];
     },
+ 
+    setupController : function(controller, model) {
+	controller.set('content', model);
+	indexCtrl = controller;
+    },
+
+    renderTemplate : function() {
+	Ember.TEMPLATES['floorplan'] = App.getTemplate("floorplan");
+	Ember.TEMPLATES['navigation_floorplan'] = App.getTemplate("navigation/floorplan");
+	this.render('navigation_floorplan', {outlet: 'navigation'});
+	this.render();
+    }
 });

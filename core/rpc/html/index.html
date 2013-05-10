@@ -38,25 +38,21 @@
   		<div class="two columns" id="col-left">
 			<div class="pretty medium success btn btn-full icon-left icon-heart"><a href="#">System Status</a></div>
 			<hr />
-  			<div class="pretty medium primary btn btn-full icon-left icon-home"><a href="#">Dashboard</a></div>
-  			<div class="pretty medium primary btn btn-full icon-left icon-list"><a href="#">Devices</a></div>
-  			<div class="pretty medium primary btn btn-full icon-left icon-share"><a href="#">Scenarios</a></div>
-  			<div class="pretty medium primary btn btn-full icon-left icon-bell"><a href="#">Events</a></div>
-
+			<div class="pretty medium primary btn btn-full icon-left icon-home">
+				{{#linkTo "index"}}Dashboard{{/linkTo}}
+			</div>
+			<div class="pretty medium primary btn btn-full icon-left icon-list">
+				{{#linkTo "floorPlan"}}FloorPlan{{/linkTo}}
+			</div>
 			<hr />
-		
-			<div class="pretty medium primary btn btn-full icon-left icon-layout"><a href="#">1st Floor</a></div>
-			<div class="pretty medium primary btn btn-full icon-left icon-layout"><a href="#">2nd Floor</a></div>
-
-			<hr />
-
+  			{{outlet navigation}}
   			<div class="pretty medium default btn btn-full icon-left icon-tools"><a href="configuration.html">Configuration</a></div>
-  			<li class="default label">ago control GPL - build v342</li>
+  			<li class="default label">ago control GPL - build 1.0-342</li>
   		</div>
 	    <div class="ten columns" id="col-right">
 		  	<div class="row" id="header">
   				<div class="nine columns" id="info">
-  					<a href="http://www.agocontrol.com" target="_blank">www.agocontrol.com</a>
+  					<a href="www.agocontrol.com" target="_blank">www.agocontrol.com</a>
   				</div>
   				<div class="three columns" id="logo">
   					<a href="www.agocontrol.com" target="_blank"><img src="img/agocontrol_logo.png"/></a>
