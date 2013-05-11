@@ -19,7 +19,8 @@ var activeController = null;
 
 function handleEvent(response) {
     if (response.result) {
-	// console.log(response.result);
+	console.debug("Event:");
+	console.debug(response.result);
 	deviceMap[response.result.uuid].set('state', parseInt(response.result.level));
 	if (response.result.quantity) {
 	    var values = deviceMap[response.result.uuid].values;
@@ -44,7 +45,8 @@ function getEvent() {
 function handleInventory(response) {
     rooms = response.result.rooms;
     schema = response.result.schema;
-    console.log(response.result);
+    console.debug("Inventory:");
+    console.debug(response.result);
     for ( var uuid in response.result.inventory) {
 	deviceMap[uuid] = Device.create(response.result.inventory[uuid]);
 	deviceMap[uuid].uuid = uuid;
@@ -284,10 +286,8 @@ Ember.Handlebars.registerBoundHelper('enableDrop', function(value, options) {
 		    var x = $(this).data("x");
 		    var y = $(this).data("y");
 		    var uuid = ui.draggable.data("uuid");
-		    // alert("dropped:" + ui.draggable.data("uuid") + " on " + x
-		    // + " / " + y);
 		    floorCtrl.addDevice(x, y, uuid);
-		    console.log("dropped:" + ui.draggable.data("uuid") + " on " + x + " / " + y);
+		    console.debug("dropped:" + uuid + " on " + x + " / " + y);
 		}
 	    }
 	});
