@@ -334,6 +334,9 @@ App.IndexRoute = Ember.Route.extend({
 	controller.set('content', model);
 	indexCtrl = controller;
 	activeController = indexCtrl;
+	if (schema != {}) {
+	    controller.updateDeviceMap();
+	}
     },
 
     renderTemplate : function() {
@@ -451,6 +454,9 @@ App.FloorPlanRoute = Ember.Route.extend({
 	controller.set('content', model);
 	floorCtrl = controller;
 	activeController = floorCtrl;
+	if (schema != {}) {
+	    controller.updateDeviceMap();
+	}
     },
 
     renderTemplate : function() {
