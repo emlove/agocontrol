@@ -1,0 +1,2 @@
+lib/systemd/system/agoi2c.service
+opt/agocontrol/bin/agoi2c

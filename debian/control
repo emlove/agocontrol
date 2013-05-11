@@ -97,6 +97,11 @@ Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, libagoclient1.0, i2c-tools
 Description: blinkm interface driver
 
+Package: agocontrol-i2c
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, libagoclient1.0, i2c-tools
+Description: i2c interface driver
+
 Package: agocontrol-raspigpio
 Architecture: armhf
 Depends: ${shlibs:Depends}, ${misc:Depends}, python-qpid
