@@ -278,6 +278,16 @@ Ember.Handlebars.registerBoundHelper('enableDnD', function(value, options) {
 	    }
 	});
     });
+
+    $('.device_tree').droppable({
+	drop : function(event, ui) {
+	    if (floorCtrl) {
+		var uuid = ui.draggable.data("uuid");
+		floorCtrl.removeDevice(uuid);
+	    }
+	}
+    });
+
 });
 
 Ember.Handlebars.registerBoundHelper('enableDrop', function(value, options) {
@@ -440,8 +450,23 @@ App.FloorPlanController = Ember.ArrayController.extend({
 	if (this.content.objectAt(0).devices === undefined) {
 	    return;
 	}
+	
+	this.removeDevice(uuid);
+	
 	var devices = this.content.objectAt(0).get("devices");
 
+	devices[x][y].set("node", deviceMap[uuid]);
+	devices[x][y].set("isDev", true);
+	devices[x][y].get("node").set("isFirst", devices[x][y].get("isFirst"));
+
+	var _content = Ember.Object.create();
+	_content.set("rooms", this.content.objectAt(0).get("rooms"));
+	_content.set("devices", devices);
+	this.set("content", [ _content ]);
+    },
+    
+    removeDevice: function(uuid) {
+	var devices = this.content.objectAt(0).get("devices");
 	for ( var i = 0; i < 3; i++) {
 	    for ( var j = 0; j < 3; j++) {
 		if (devices[i][j].isDev) {
@@ -454,10 +479,6 @@ App.FloorPlanController = Ember.ArrayController.extend({
 		}
 	    }
 	}
-
-	devices[x][y].set("node", deviceMap[uuid]);
-	devices[x][y].set("isDev", true);
-	devices[x][y].get("node").set("isFirst", devices[x][y].get("isFirst"));
 
 	var _content = Ember.Object.create();
 	_content.set("rooms", this.content.objectAt(0).get("rooms"));
