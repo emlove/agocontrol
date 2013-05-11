@@ -266,13 +266,16 @@ Ember.Handlebars.registerBoundHelper('doSetup', function(value, options) {
     });
 });
 
-/* Used to setup dragables */
+/* Drag and Drop Javascript helpers */
 
 Ember.Handlebars.registerBoundHelper('enableDnD', function(value, options) {
     $('.dnd-device').each(function() {
 	$(this).draggable({
 	    cursor : "move",
-	    revert : true
+	    revert : true,
+	    helper : function(event) {
+		return $('<div style="z-Index: 999; text-align:center; color:#FFF; width: 58px; height: 58px;" class="pretty large primary btn grid-item-icon"></div>');
+	    }
 	});
     });
 });
@@ -294,7 +297,6 @@ Ember.Handlebars.registerBoundHelper('enableDrop', function(value, options) {
     });
 });
 
-// 
 
 /* Index - Devices View */
 
@@ -372,6 +374,7 @@ App.FloorPlanController = Ember.ArrayController.extend({
 
 	var _content = Ember.Object.create();
 
+	/* Build the target grid */
 	if (this.content.objectAt === undefined || this.content.objectAt(0) === undefined || this.content.objectAt(0).devices === undefined) {
 	    var devices = [];
 	    for ( var i = 0; i < 3; i++) {
