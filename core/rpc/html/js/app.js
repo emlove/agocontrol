@@ -131,6 +131,7 @@ function subscribe() {
 var App = Ember.Application.create({
     ApplicationController : Ember.Controller.extend(),
     ready : function() {
+	Ember.TEMPLATES['none'] = Ember.Handlebars.compile(" ");
 	subscribe();
     },
 
@@ -362,6 +363,9 @@ App.IndexRoute = Ember.Route.extend({
 
     renderTemplate : function() {
 	Ember.TEMPLATES['index'] = App.getTemplate("devices");
+	this.render('none', {
+	    outlet : 'navigation'
+	});
 	this.render();
     }
 });
