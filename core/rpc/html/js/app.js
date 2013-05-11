@@ -13,21 +13,30 @@ var url = "/jsonrpc";
 var schema = {};
 var deviceMap = {};
 var rooms = {};
-Device = Ember.Object.extend({});
 
 var activeController = null;
 
+function updateMapping() {
+    if (activeController && activeController.updateDeviceMap) {
+	activeController.updateDeviceMap();
+    }
+}
+
 function handleEvent(response) {
-    if (response.result) {
+    if (response.result && deviceMap[response.result.uuid] !== undefined) {
 	console.debug("Event:");
 	console.debug(response.result);
 	deviceMap[response.result.uuid].set('state', parseInt(response.result.level));
+
 	if (response.result.quantity) {
 	    var values = deviceMap[response.result.uuid].values;
 	    values[response.result.quantity].level = response.result.level;
 	    deviceMap[response.result.uuid].set('values', values);
 	}
+
+	updateMapping();
     }
+
     getEvent();
 }
 
@@ -48,28 +57,16 @@ function handleInventory(response) {
     console.debug("Inventory:");
     console.debug(response.result);
     for ( var uuid in response.result.inventory) {
-	deviceMap[uuid] = Device.create(response.result.inventory[uuid]);
+	deviceMap[uuid] = Ember.Object.create(response.result.inventory[uuid]);
 	deviceMap[uuid].uuid = uuid;
 	deviceMap[uuid].state = parseInt(deviceMap[uuid].state);
 	if (deviceMap[uuid].room !== undefined && rooms[deviceMap[uuid].room] !== undefined) {
 	    deviceMap[uuid].roomUid = deviceMap[uuid].room;
 	    deviceMap[uuid].room = rooms[deviceMap[uuid].room].name;
 	}
-	for ( var key in response.result.inventory[uuid]) {
-	    deviceMap[uuid].addObserver(key, deviceMap[uuid], function(k) {
-		return function() {
-		    if (activeController && activeController.updateDeviceMap) {
-			activeController.updateDeviceMap();
-		    }
-		};
-	    }(key));
-	}
-
-	if (activeController && activeController.updateDeviceMap) {
-	    activeController.updateDeviceMap();
-	}
-
     }
+
+    updateMapping();
 }
 
 function getInventory() {
@@ -269,53 +266,55 @@ Ember.Handlebars.registerBoundHelper('doSetup', function(value, options) {
 /* Drag and Drop Javascript helpers */
 
 Ember.Handlebars.registerBoundHelper('enableDnD', function(value, options) {
-    $('.dnd-device').each(function() {
-	$(this).draggable({
-	    cursor : "move",
-	    revert : true,
-	    helper : function(event) {
-		return $('<div style="z-Index: 999; text-align:center; color:#FFF; width: 58px; height: 58px;" class="pretty large primary btn grid-item-icon"></div>');
-	    }
+    Ember.run.next(function() {
+	$('.dnd-device').each(function() {
+	    $(this).draggable({
+		cursor : "move",
+		revert : true,
+		helper : function(event) {
+		    return $('<div style="z-Index: 999; text-align:center; color:#FFF; width: 58px; height: 58px;" class="pretty large primary btn grid-item-icon"></div>');
+		}
+	    });
 	});
-    });
 
-    $('.device_tree').droppable({
-	drop : function(event, ui) {
-	    if (floorCtrl) {
-		var uuid = ui.draggable.data("uuid");
-		floorCtrl.removeDevice(uuid);
-	    }
-	}
-    });
-
-});
-
-Ember.Handlebars.registerBoundHelper('enableDrop', function(value, options) {
-    $('.drop-target').each(function() {
-	$(this).droppable({
+	$('.device_tree').droppable({
 	    drop : function(event, ui) {
 		if (floorCtrl) {
-		    var x = $(this).data("x");
-		    var y = $(this).data("y");
 		    var uuid = ui.draggable.data("uuid");
-		    floorCtrl.addDevice(x, y, uuid);
-		    console.debug("dropped:" + uuid + " on " + x + " / " + y);
+		    floorCtrl.removeDevice(uuid);
 		}
 	    }
 	});
     });
+});
 
-    $('.device').each(function() {
-	$(this).draggable({
-	    cursor : "move",
-	    handle : ".handle",
-	    revert : true,
-	    helper : function(event) {
-		return $('<div style="z-Index: 999; text-align:center; color:#FFF; width: 58px; height: 58px;" class="pretty large primary btn grid-item-icon"></div>');
-	    }
+Ember.Handlebars.registerBoundHelper('enableDrop', function(value, options) {
+    Ember.run.next(function() {
+	$('.drop-target').each(function() {
+	    $(this).droppable({
+		drop : function(event, ui) {
+		    if (floorCtrl) {
+			var x = $(this).data("x");
+			var y = $(this).data("y");
+			var uuid = ui.draggable.data("uuid");
+			floorCtrl.addDevice(x, y, uuid);
+			console.debug("dropped:" + uuid + " on " + x + " / " + y);
+		    }
+		}
+	    });
+	});
+
+	$('.device').each(function() {
+	    $(this).draggable({
+		cursor : "move",
+		handle : ".handle",
+		revert : true,
+		helper : function(event) {
+		    return $('<div style="z-Index: 999; text-align:center; color:#FFF; width: 58px; height: 58px;" class="pretty large primary btn grid-item-icon"></div>');
+		}
+	    });
 	});
     });
-
 });
 
 /* Index - Devices View */
@@ -450,9 +449,9 @@ App.FloorPlanController = Ember.ArrayController.extend({
 	if (this.content.objectAt(0).devices === undefined) {
 	    return;
 	}
-	
+
 	this.removeDevice(uuid);
-	
+
 	var devices = this.content.objectAt(0).get("devices");
 
 	devices[x][y].set("node", deviceMap[uuid]);
@@ -464,8 +463,8 @@ App.FloorPlanController = Ember.ArrayController.extend({
 	_content.set("devices", devices);
 	this.set("content", [ _content ]);
     },
-    
-    removeDevice: function(uuid) {
+
+    removeDevice : function(uuid) {
 	var devices = this.content.objectAt(0).get("devices");
 	for ( var i = 0; i < 3; i++) {
 	    for ( var j = 0; j < 3; j++) {
