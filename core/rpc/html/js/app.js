@@ -283,7 +283,6 @@ Ember.Handlebars.registerBoundHelper('enableDnD', function(value, options) {
 Ember.Handlebars.registerBoundHelper('enableDrop', function(value, options) {
     $('.drop-target').each(function() {
 	$(this).droppable({
-	    accept : ".dnd-device",
 	    drop : function(event, ui) {
 		if (floorCtrl) {
 		    var x = $(this).data("x");
@@ -295,8 +294,19 @@ Ember.Handlebars.registerBoundHelper('enableDrop', function(value, options) {
 	    }
 	});
     });
-});
 
+    $('.device').each(function() {
+	$(this).draggable({
+	    cursor : "move",
+	    handle : ".handle",
+	    revert : true,
+	    helper : function(event) {
+		return $('<div style="z-Index: 999; text-align:center; color:#FFF; width: 58px; height: 58px;" class="pretty large primary btn grid-item-icon"></div>');
+	    }
+	});
+    });
+
+});
 
 /* Index - Devices View */
 
@@ -408,7 +418,7 @@ App.FloorPlanController = Ember.ArrayController.extend({
 			var uuid = devices[i][j].get("node").get("uuid");
 			devices[i][j].set("node", deviceMap[uuid]);
 			devices[i][j].get("node").set("isFirst", j == 0);
-			devices[i][j].get("node").set("isDev", true);
+			devices[i][j].set("isDev", true);
 			_content.set("devices", devices);
 		    }
 		}
@@ -431,6 +441,20 @@ App.FloorPlanController = Ember.ArrayController.extend({
 	    return;
 	}
 	var devices = this.content.objectAt(0).get("devices");
+
+	for ( var i = 0; i < 3; i++) {
+	    for ( var j = 0; j < 3; j++) {
+		if (devices[i][j].isDev) {
+		    var _uuid = devices[i][j].get("node").get("uuid");
+		    if (_uuid == uuid) {
+			devices[i][j].set("node", Ember.Object.create());
+			devices[i][j].get("node").set("isFirst", j == 0);
+			devices[i][j].set("isDev", false);
+		    }
+		}
+	    }
+	}
+
 	devices[x][y].set("node", deviceMap[uuid]);
 	devices[x][y].set("isDev", true);
 	devices[x][y].get("node").set("isFirst", devices[x][y].get("isFirst"));
