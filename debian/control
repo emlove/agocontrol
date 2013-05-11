@@ -101,3 +101,13 @@ Package: agocontrol-raspigpio
 Architecture: armhf
 Depends: ${shlibs:Depends}, ${misc:Depends}, python-qpid
 Description: raspberry pi GPIO driver
+
+Package: agocontrol-raspi1w
+Architecture: armhf
+Depends: ${shlibs:Depends}, ${misc:Depends}, python-qpid
+Description: raspberry pi 1-wire GPIO driver
+
+Package: agocontrol-raspimcp
+Architecture: armhf
+Depends: ${shlibs:Depends}, ${misc:Depends}, python-qpid
+Description: raspberry pi MCP3xxx ADC GPIO driver

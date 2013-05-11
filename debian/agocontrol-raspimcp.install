@@ -1,0 +1,2 @@
+lib/systemd/system/raspiMCP3xxxGPIO.service
+opt/agocontrol/bin/raspiMCP3xxxGPIO.py

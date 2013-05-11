@@ -1,0 +1,2 @@
+lib/systemd/system/raspi1wGPIO.service
+opt/agocontrol/bin/raspi1wGPIO.py
