@@ -113,12 +113,12 @@ class readMCP300xGPIO(threading.Thread):
                 #print "Battery Voltage:", adcCh, volts
                 if abs(deviceconfig[(adcCh, 'value')] - volts) > change:
                     #print 'level change:', deviceconfig[(adcCh, 'value')]
-                    client.emitEvent(adcCh , "event.environment.energy", volts, "V") 
+                    client.emitEvent(adcCh , "event.environment.energychanged", volts, "V") 
                     deviceconfig[(adcCh, 'value')] = volts
                     deviceconfig[(adcCh, 'lastreporttime')] = time.time()
                 if time.time() > deviceconfig[(adcCh, 'lastreporttime')] + interval:
                     #print 'interval:', deviceconfig[(adcCh, 'value')]
-                    client.emitEvent(adcCh , "event.environment.energy", volts, "V") 
+                    client.emitEvent(adcCh , "event.environment.energychanged", volts, "V") 
                     deviceconfig[(adcCh, 'temp')] = volts
                     deviceconfig[(adcCh, 'lastreporttime')] = time.time()
             time.sleep(3)

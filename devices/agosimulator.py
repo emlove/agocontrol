@@ -19,6 +19,8 @@ def messageHandler(internalid, content):
 		if content["command"] == "off":
 			print "switching off: " + internalid
 			client.emitEvent(internalid, "event.device.statechanged", "0", "")
+		if content["command"] == "push":
+			print "push button: " + internalid
 		if content['command'] == 'setlevel':
 			if 'level' in content:
 				print "device level changed", content["level"]
@@ -30,6 +32,7 @@ client.addDevice("123", "dimmer")
 client.addDevice("124", "switch")
 client.addDevice("125", "binarysensor")
 client.addDevice("126", "multilevelsensor")
+client.addDevice("127", "pushbutton")
 
 class testEvent(threading.Thread):
     def __init__(self,):
