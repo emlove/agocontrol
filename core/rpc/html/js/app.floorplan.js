@@ -98,6 +98,7 @@ App.FloorPlanController = Ember.ArrayController.extend({
 
     removeDevice : function(uuid) {
 	var devices = this.content.objectAt(0).get("devices");
+	var didRemove = false;
 	for ( var i = 0; i < 3; i++) {
 	    for ( var j = 0; j < 3; j++) {
 		if (devices[i][j].isDev) {
@@ -106,15 +107,19 @@ App.FloorPlanController = Ember.ArrayController.extend({
 			devices[i][j].set("node", Ember.Object.create());
 			devices[i][j].get("node").set("isFirst", j == 0);
 			devices[i][j].set("isDev", false);
+			didRemove = true;
+			break;
 		    }
 		}
 	    }
 	}
 
-	var _content = Ember.Object.create();
-	_content.set("rooms", this.content.objectAt(0).get("rooms"));
-	_content.set("devices", devices);
-	this.set("content", [ _content ]);
+	if (didRemove) {
+	    var _content = Ember.Object.create();
+	    _content.set("rooms", this.content.objectAt(0).get("rooms"));
+	    _content.set("devices", devices);
+	    this.set("content", [ _content ]);
+	}
     }
 
 });
@@ -208,8 +213,7 @@ Ember.Handlebars.registerBoundHelper('enableDrop', function(value, options) {
 		handle : ".handle",
 		revert : true,
 		helper : function(event) {
-		    return $('<div style="z-Index: 999; text-align:center; color:#FFF;' +
-			     'width: 58px; height: 58px;" class="pretty large primary btn grid-item-icon"></div>');
+		    return $('<div style="z-Index: 999; text-align:center; color:#FFF;' + 'width: 58px; height: 58px;" class="pretty large primary btn grid-item-icon"></div>');
 		}
 	    });
 	});
