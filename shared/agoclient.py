@@ -65,6 +65,14 @@ class AgoConnection:
 		except:
 			pass
 
+	def emitDeviceAnnounce(self, uuid, device):
+		content = {}
+		content["devicetype"]  = device["devicetype"]
+		content["uuid"]  = uuid
+		content["internalid"]  = device["internalid"]
+		content["handled-by"]  = self.instance
+		self.sendMessage("event.device.announce", content)			
+
 	def addDevice(self, internalid, devicetype):
 		if (self.internalIdToUuid(internalid) == None):
 			self.uuids[str(uuid4())]=internalid
@@ -73,6 +81,7 @@ class AgoConnection:
 		device["devicetype"] = devicetype
 		device["internalid"] = internalid
 		self.devices[self.internalIdToUuid(internalid)] = device
+		self.emitDeviceAnnounce(self.internalIdToUuid(internalid), device)
 
 	def sendMessage(self, content):
 		return self.sendmessage(None, content)
@@ -96,15 +105,10 @@ class AgoConnection:
 	def reportDevices(self):
 		syslog.syslog(syslog.LOG_NOTICE, "reporting child devices")
 		for device in self.devices:
-			content = {}
-			content["devicetype"]  = self.devices[device]["devicetype"]
-			content["uuid"]  = device
-			content["internalid"]  = self.devices[device]["internalid"]
-			content["handled-by"]  = self.instance
-			self.sendMessage("event.device.announce", content)			
+			self.emitDeviceAnnounce(device, self.devices[device])
 
 	def run(self):
-		self.reportDevices()
+		# self.reportDevices() # - this is now handled by the addDevice
 		syslog.syslog(syslog.LOG_NOTICE, "startup complete, waiting for messages")
 		while (True):
 			try:
