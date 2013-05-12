@@ -114,7 +114,7 @@ class EnergyUsage(threading.Thread):
 				currentPowerA = get_current_power()
 				currentPower = int(float(currentPowerA * apcvoltage))
 				if currentPower != old_currentPower:
-					client.emitEvent("powerusage", "event.environment.powerusage", currentPower, unit)
+					client.emitEvent("powerusage", "event.environment.powerchanged", currentPower, unit)
 					old_currentPower = currentPower
 			except:
 				time.sleep(1)
