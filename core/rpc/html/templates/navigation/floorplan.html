@@ -1,17 +1,27 @@
-<div class="device_tree">
-{{#each content in model}}
-	{{#each room in content.rooms}}
-	<div class="row" style="color:#FFF; font-weight: 700">{{room.name}}</div>
-	<ul style="text-indent: 15px;">
-	{{#each device in room.devices}}
-		{{#if device.name }}
-			<li class="dnd-device" {{bindAttr data-uuid="device.uuid"}} >{{device.name}}</li>
-		{{else}}
-			<li class="dnd-device" {{bindAttr data-uuid="device.uuid"}} >{{device.devicetype}}</li>
-		{{/if}}
+<div class="device_tree tree">
+	<ul>
+                <li><a>First Level</a>
+                        <ul>
+                                <li><a>Second Level</a></li>
+                                <li><a>Second Level</a></li>
+                                <li><a>Second Level</a></li>
+                        </ul>
+                </li>
+	{{#each content in model}}
+		{{#each room in content.rooms}}
+		<li><a>{{room.name}}</a>
+			<ul>
+			{{#each device in room.devices}}
+				{{#if device.name }}
+					<li class="dnd-device" {{bindAttr data-uuid="device.uuid"}} ><a>{{device.name}}</a></li>
+				{{else}}
+					<li class="dnd-device" {{bindAttr data-uuid="device.uuid"}} ><a>{{device.devicetype}}</a></li>
+				{{/if}}
+			{{/each}}
+			</ul>
+		{{/each}}
+		</li>
 	{{/each}}
 	</ul>
-	{{/each}}
-{{/each}}
 </div>
 {{enableDnD model}}
