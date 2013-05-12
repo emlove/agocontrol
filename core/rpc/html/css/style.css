@@ -1986,7 +1986,6 @@ ago control Styles
 /* =Treeview Floorplan
 -----------------------------------------------------------------------------*/
 .tree {
-    background: -moz-linear-gradient(center top , #E3E3E3, #FFFFFF 85px) repeat scroll 0 0 transparent;
     display: inline-block;
     margin: 0 0 50px;
     padding: 10px 15px 15px 0px;
