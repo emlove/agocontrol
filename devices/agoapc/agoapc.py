@@ -132,8 +132,19 @@ def print_time( threadName, delay):
 #except:
 #	print "Error: unable to start thread"
 
+outletCount = varBinds[0][1]
 
-syslog.syslog(syslog.LOG_NOTICE, "agoapc.py startup")
+for outlet in range(1,outletCount+1):
+	client.addDevice(outlet, "switch")
+        result = get_outlet_status(outlet)
+	print "outlet"
+	print outlet
+	if "on" in result:
+		client.emitEvent(outlet, "event.device.statechanged", "255", "")
+		print "state on"
+	if "off" in result:
+		client.emitEvent(outlet, "event.device.statechanged", "0", "")
+		print "state off"
 
 def messageHandler(internalid, content):
 	if "command" in content:
