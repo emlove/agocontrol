@@ -1986,21 +1986,10 @@ ago control Styles
 /* =Treeview Floorplan
 -----------------------------------------------------------------------------*/
 .tree {
-    -moz-border-bottom-colors: none;
-    -moz-border-image: none;
-    -moz-border-left-colors: none;
-    -moz-border-right-colors: none;
-    -moz-border-top-colors: none;
     background: -moz-linear-gradient(center top , #E3E3E3, #FFFFFF 85px) repeat scroll 0 0 transparent;
-    border-color: #BFC0C2 #BFC0C2 #B6B7BA;
-    border-radius: 3px 3px 3px 3px;
-    border-style: solid;
-    border-width: 1px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.17), 0 -2px 0 rgba(0, 0, 0, 0.08) inset;
     display: inline-block;
     margin: 0 0 50px;
-    min-width: 300px;
-    padding: 10px 15px 15px;
+    padding: 10px 15px 15px 0px;
 }
 .tree ul {
     list-style: none outside none;
