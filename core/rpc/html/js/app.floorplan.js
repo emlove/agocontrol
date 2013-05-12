@@ -1,6 +1,21 @@
 /* FloorPlan */
 
 var floorCtrl = null;
+var devTreeCtrl = null;
+
+App.DeviceTreeController = Ember.ArrayController.extend({
+    content : [],
+
+    setRooms : function(rooms, roomMap) {
+	var finalMap = [];
+	for ( var room in rooms) {
+	    finalMap.push(roomMap[room]);
+	}
+	finalMap.push(roomMap["none"]);
+	this.set("content", finalMap);
+    }
+
+});
 
 App.FloorPlanController = Ember.ArrayController.extend({
     content : [],
@@ -50,6 +65,9 @@ App.FloorPlanController = Ember.ArrayController.extend({
 		}
 		devices.push(sub);
 	    }
+	    if (devTreeCtrl) {
+		devTreeCtrl.setRooms(rooms, roomMap);
+	    }
 	    _content.set("devices", devices);
 	} else {
 	    var devices = this.content.objectAt(0).devices;
@@ -67,13 +85,6 @@ App.FloorPlanController = Ember.ArrayController.extend({
 	    _content.set("devices", this.content.objectAt(0).devices);
 	}
 
-	var finalMap = [];
-	for ( var room in rooms) {
-	    finalMap.push(roomMap[room]);
-	}
-	finalMap.push(roomMap["none"]);
-
-	_content.set("rooms", finalMap);
 	this.set("content", [ _content ]);
     },
 
@@ -91,7 +102,6 @@ App.FloorPlanController = Ember.ArrayController.extend({
 	devices[x][y].get("node").set("isFirst", devices[x][y].get("isFirst"));
 
 	var _content = Ember.Object.create();
-	_content.set("rooms", this.content.objectAt(0).get("rooms"));
 	_content.set("devices", devices);
 	this.set("content", [ _content ]);
     },
@@ -116,7 +126,6 @@ App.FloorPlanController = Ember.ArrayController.extend({
 
 	if (didRemove) {
 	    var _content = Ember.Object.create();
-	    _content.set("rooms", this.content.objectAt(0).get("rooms"));
 	    _content.set("devices", devices);
 	    this.set("content", [ _content ]);
 	}
@@ -138,6 +147,7 @@ App.FloorPlanRoute = Ember.Route.extend({
 	controller.set('content', model);
 	floorCtrl = controller;
 	activeController = floorCtrl;
+	devTreeCtrl = this.controllerFor("DeviceTree");
 	if (schema != {}) {
 	    controller.updateDeviceMap();
 	}
@@ -146,8 +156,10 @@ App.FloorPlanRoute = Ember.Route.extend({
     renderTemplate : function() {
 	Ember.TEMPLATES['floorplan'] = App.getTemplate("floorplan");
 	Ember.TEMPLATES['navigation_floorplan'] = App.getTemplate("navigation/floorplan");
+
 	this.render('navigation_floorplan', {
-	    outlet : 'navigation'
+	    outlet : 'navigation',
+	    controller : devTreeCtrl,
 	});
 	this.render();
     }
@@ -179,7 +191,7 @@ Ember.Handlebars.registerBoundHelper('enableTreeNav', function(value, options) {
 	$('.tree li.parent > a').click(function() {
 	    $(this).parent().toggleClass('active');
 	    $(this).parent().children('ul').slideToggle('fast');
-	});	
+	});
     });
 });
 

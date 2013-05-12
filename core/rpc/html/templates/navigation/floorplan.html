@@ -1,7 +1,6 @@
 <div class="device_tree tree">
 	<ul>
-	{{#each content in model}}
-		{{#each room in content.rooms}}
+		{{#each room in content}}
 		<li><a>{{room.name}}</a>
 			<ul>
 			{{#each device in room.devices}}
@@ -14,8 +13,7 @@
 			</ul>
 		{{/each}}
 		</li>
-	{{/each}}
 	</ul>
 </div>
-{{enableDnD model}}
-{{enableTreeNav model}}
+{{enableDnD content}}
+{{enableTreeNav content}}
