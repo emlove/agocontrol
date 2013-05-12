@@ -1,12 +1,5 @@
 <div class="device_tree tree">
 	<ul>
-                <li><a>First Level</a>
-                        <ul>
-                                <li><a>Second Level</a></li>
-                                <li><a>Second Level</a></li>
-                                <li><a>Second Level</a></li>
-                        </ul>
-                </li>
 	{{#each content in model}}
 		{{#each room in content.rooms}}
 		<li><a>{{room.name}}</a>
@@ -25,3 +18,4 @@
 	</ul>
 </div>
 {{enableDnD model}}
+{{enableTreeNav model}}

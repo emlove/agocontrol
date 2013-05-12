@@ -166,6 +166,23 @@ Ember.Handlebars.registerBoundHelper('placeholder', function(value, options) {
     return new Handlebars.SafeString(tpl(value));
 });
 
+/* Tree nav helper */
+
+Ember.Handlebars.registerBoundHelper('enableTreeNav', function(value, options) {
+    Ember.run.next(function() {
+	$('.tree li').each(function() {
+	    if ($(this).children('ul').length > 0) {
+		$(this).addClass('parent');
+	    }
+	});
+
+	$('.tree li.parent > a').click(function() {
+	    $(this).parent().toggleClass('active');
+	    $(this).parent().children('ul').slideToggle('fast');
+	});	
+    });
+});
+
 /* Drag and Drop Javascript helpers */
 
 Ember.Handlebars.registerBoundHelper('enableDnD', function(value, options) {

@@ -27,23 +27,9 @@
   <script src="js/app.js"></script>
   <script src="js/app.index.js"></script>
   <script src="js/app.floorplan.js"></script>
-  <script type="text/javascript">
+  <script>
 
-  $(document).ready(function(){
-        $('.tree li').each(function(){
-                if($(this).children('ul').length > 0){
-                        $(this).addClass('parent');     
-                }
-        });
-        
-        $('.tree li.parent > a').click(function(){
-                $(this).parent().toggleClass('active');
-                $(this).parent().children('ul').slideToggle('fast');
-        });
-  });
-        
   </script>
-
 </head>
 <body>
 
