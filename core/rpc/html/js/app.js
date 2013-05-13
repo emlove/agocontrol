@@ -96,6 +96,11 @@ function handleSubscribe(response) {
     }
 }
 
+function handleUnsubscribe(response) {
+    subscription=null;
+}
+
+
 function sendCommand(content) {
     var request = {};
     request.method = "message";
@@ -124,6 +129,21 @@ function subscribe() {
     request.jsonrpc = "2.0";
 
     $.post(url, JSON.stringify(request), handleSubscribe, "json");
+}
+
+function unsubscribe() {
+    var request = {};
+    request.method = "unsubscribe";
+    request.id = 1;
+    request.jsonrpc = "2.0";
+    request.params = {};
+    request.params.uuid = subscription;
+
+    $.post(url, JSON.stringify(request), handleUnsubscribe, "json");
+}
+
+window.onbeforeunload = function(event) {
+    unsubscribe();
 }
 
 /* EmberJS Application */
