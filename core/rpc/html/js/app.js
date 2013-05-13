@@ -97,9 +97,8 @@ function handleSubscribe(response) {
 }
 
 function handleUnsubscribe(response) {
-    subscription=null;
+    subscription = null;
 }
-
 
 function sendCommand(content) {
     var request = {};
@@ -192,6 +191,9 @@ App.helperTemplates = {};
 App.Router.map(function() {
     this.route("floorPlan", {
 	path : "/floorPlan"
+    });
+    this.route("skel", {
+	path : "/skel"
     });
 });
 
