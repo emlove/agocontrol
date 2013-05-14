@@ -125,7 +125,7 @@ int main(int argc, char** argv) {
 	while (getline(devices, device, ',')) {
 		stringstream tmpdevice(device);
 		string type;
-		getline(tmpdevice, type, '=');
+		getline(tmpdevice, type, ':');
 		if (type == "pcf8574") {
 			for (int i=0;i<7;i++) {
 				stringstream id;
