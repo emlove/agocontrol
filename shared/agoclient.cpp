@@ -173,7 +173,7 @@ agocontrol::AgoConnection::~AgoConnection() {
 
 
 void agocontrol::AgoConnection::run() {
-	reportDevices();
+	// reportDevices(); // this is obsolete as it is handled by addDevice 
 	while( true ) {
 		try{
 			Variant::Map content;
@@ -241,7 +241,25 @@ void agocontrol::AgoConnection::run() {
 		}
 	}
 }
+bool agocontrol::AgoConnection::emitDeviceAnnounce(const char *internalId, const char *deviceType) {
+	Variant::Map content;
+	Message event;
 
+	content["devicetype"] = deviceType;
+	content["internalid"] = internalId;
+	content["handled-by"] = instance;
+	content["uuid"] = internalIdToUuid(internalId);
+	encode(content, event);
+	event.setSubject("event.device.announce");
+	try {
+		sender.send(event);
+	} catch(const std::exception& error) {
+		std::cerr << error.what() << std::endl;
+		return false;
+	} 
+	return true;
+
+} 
 bool agocontrol::AgoConnection::addDevice(const char *internalId, const char *deviceType) {
 	if (internalIdToUuid(internalId).size()==0) {
 		// need to generate new uuid
@@ -252,6 +270,7 @@ bool agocontrol::AgoConnection::addDevice(const char *internalId, const char *de
 	device["devicetype"] = deviceType;
 	device["internalid"] = internalId;
 	deviceMap[internalIdToUuid(internalId)] = device;
+	emitDeviceAnnounce(internalId, deviceType);
 	return true;
 }
 
@@ -276,13 +295,7 @@ void agocontrol::AgoConnection::reportDevices() {
 		// printf("uuid: %s\n", it->first.c_str());
 		device = it->second.asMap();
 		// printf("devicetype: %s\n", device["devicetype"].asString().c_str());
-		content["devicetype"] = device["devicetype"].asString();
-		content["internalid"] = device["internalid"].asString();
-		content["handled-by"] = instance;
-		content["uuid"] = it->first;
-		encode(content, event);
-		event.setSubject("event.device.announce");
-		sender.send(event);
+		emitDeviceAnnounce(device["internalid"].asString().c_str(), device["devicetype"].asString().c_str());
 	}
 }
 

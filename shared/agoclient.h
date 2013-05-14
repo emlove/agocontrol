@@ -54,6 +54,7 @@ namespace agocontrol {
 			std::string (*commandHandler)(qpid::types::Variant::Map);
 			bool filterCommands;
 			void (*eventHandler)(std::string, qpid::types::Variant::Map);
+			bool emitDeviceAnnounce(const char *internalId, const char *deviceType);
 		public:
 			AgoConnection(const char *interfacename);
 			~AgoConnection();
