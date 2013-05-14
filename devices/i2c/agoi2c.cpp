@@ -92,6 +92,32 @@ bool set_pcf8574_output(const char *device, int i2caddr, int output, bool state)
 	
 	return true;
 }
+
+bool get_pcf8574_state(const char *device, int i2caddr, uint8_t &state) {
+        unsigned char buf[10];
+        int file = open(device, O_RDWR);
+        if (file < 0) {
+                printf("open %s: error = %d\n", device, file);
+                return false;
+        }
+        else
+                printf("open %s: succeeded.\n", device);
+
+        if (ioctl(file, I2C_SLAVE, i2caddr) < 0) {
+                printf("open i2c slave 0x%02x: error = %s\n\n", i2caddr, "dunno");
+                return false;
+        }
+        else
+                printf("open i2c slave 0x%02x: succeeded.\n\n", i2caddr);
+
+        if (read(file, buf, 1)!= 1) {
+                printf("Unable to read from slave\n");
+                return false;
+        }
+	state = buf[0];
+	return true;
+}
+
 std::string commandHandler(qpid::types::Variant::Map content) {
 	string internalid = content["internalid"].asString();
 	if (internalid.find("pcf8574:") != std::string::npos) {
@@ -131,10 +157,21 @@ int main(int argc, char** argv) {
 		string type;
 		getline(tmpdevice, type, ':');
 		if (type == "pcf8574") {
+			string addr;
+			getline(tmpdevice, addr, ':');
+			uint8_t state;
+			if (get_pcf8574_state(devicefile.c_str(), atoi(addr.c_str()), state)!= true) {
+				cout << "Error, can't read state on startup" << endl;
+			}
 			for (int i=0;i<8;i++) {
 				stringstream id;
 				id << device << "/" << i;
 				agoConnection.addDevice(id.str().c_str(), "switch");
+				if (state & (1 << i)) {	
+					agoConnection.emitEvent(id.str().c_str(), "event.device.statechanged", "255", "");
+				} else {
+					agoConnection.emitEvent(id.str().c_str(), "event.device.statechanged", "0", "");
+				}
 			}
 		}
 	} 
