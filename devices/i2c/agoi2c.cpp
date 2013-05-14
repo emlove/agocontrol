@@ -68,8 +68,7 @@ bool set_pcf8574_output(const char *device, int i2caddr, int output, bool state)
         else
                 printf("open %s: succeeded.\n", device);
 
-	// add 1 to addr to read
-        if (ioctl(file, I2C_SLAVE, i2caddr+1) < 0) {
+        if (ioctl(file, I2C_SLAVE, i2caddr) < 0) {
                 printf("open i2c slave 0x%02x: error = %s\n\n", i2caddr+1, "dunno");
                 return false;
         }
@@ -80,13 +79,6 @@ bool set_pcf8574_output(const char *device, int i2caddr, int output, bool state)
 		printf("Unable to read from slave\n");
 		return false;
 	}
-
-        if (ioctl(file, I2C_SLAVE, i2caddr) < 0) {
-                printf("open i2c slave 0x%02x: error = %s\n\n", i2caddr, "dunno");
-                return false;
-        }
-        else
-                printf("open i2c slave 0x%02x: succeeded.\n\n", i2caddr);
 
 	if (state) {
 		buf[0] |= (1 << output);
@@ -102,8 +94,8 @@ bool set_pcf8574_output(const char *device, int i2caddr, int output, bool state)
 }
 std::string commandHandler(qpid::types::Variant::Map content) {
 	string internalid = content["internalid"].asString();
-	if (internalid.find("pcf8574=") != std::string::npos) {
-		unsigned found = internalid.find("=");
+	if (internalid.find("pcf8574:") != std::string::npos) {
+		unsigned found = internalid.find(":");
 		string tmpid = internalid.substr(found+1);
 		bool state;
 		if (content["command"] == "on") state = true; else state=false;
@@ -123,7 +115,7 @@ std::string commandHandler(qpid::types::Variant::Map content) {
 
 int main(int argc, char** argv) {
 	devicefile=getConfigOption("i2c", "bus", "/dev/i2c-0");
-	stringstream devices(getConfigOption("i2c", "devices", "pcf8574=32")); 
+	stringstream devices(getConfigOption("i2c", "devices", "pcf8574:32")); 
 
 
 	AgoConnection agoConnection = AgoConnection("i2c");		
