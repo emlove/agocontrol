@@ -102,7 +102,7 @@ std::string commandHandler(qpid::types::Variant::Map content) {
 		unsigned sep = tmpid.find("/");
 		if (sep != std::string::npos) {
 			int output = atoi(tmpid.substr(sep+1).c_str());
-			int i2caddr = atoi(tmpid.substr(0, sep).c_str());
+			int i2caddr = strtol(tmpid.substr(0, sep).c_str(), NULL, 16);
 			printf("setting i2caddr: 0x%x, output: %i, state: %i\n", i2caddr, output, state); 
 			if (set_pcf8574_output(devicefile.c_str(),i2caddr, output, state)) {
 				return "255";
