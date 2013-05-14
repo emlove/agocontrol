@@ -69,11 +69,11 @@ bool set_pcf8574_output(const char *device, int i2caddr, int output, bool state)
                 printf("open %s: succeeded.\n", device);
 
         if (ioctl(file, I2C_SLAVE, i2caddr) < 0) {
-                printf("open i2c slave 0x%02x: error = %s\n\n", i2caddr+1, "dunno");
+                printf("open i2c slave 0x%02x: error = %s\n\n", i2caddr, "dunno");
                 return false;
         }
         else
-                printf("open i2c slave 0x%02x: succeeded.\n\n", i2caddr+1);
+                printf("open i2c slave 0x%02x: succeeded.\n\n", i2caddr);
 
 	if (read(file, buf, 1)!= 1) {
 		printf("Unable to read from slave\n");
@@ -105,8 +105,12 @@ std::string commandHandler(qpid::types::Variant::Map content) {
 			int i2caddr = strtol(tmpid.substr(0, sep).c_str(), NULL, 16);
 			printf("setting i2caddr: 0x%x, output: %i, state: %i\n", i2caddr, output, state); 
 			if (set_pcf8574_output(devicefile.c_str(),i2caddr, output, state)) {
-				return "255";
-			} else return "0";
+				if (state) { 
+					return "255";
+				} else {
+					return "0";
+				}
+			} else return "";
 		}
 	}
 	return "";
@@ -127,7 +131,7 @@ int main(int argc, char** argv) {
 		string type;
 		getline(tmpdevice, type, ':');
 		if (type == "pcf8574") {
-			for (int i=0;i<7;i++) {
+			for (int i=0;i<8;i++) {
 				stringstream id;
 				id << device << "/" << i;
 				agoConnection.addDevice(id.str().c_str(), "switch");
