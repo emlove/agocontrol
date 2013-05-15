@@ -1,1 +1,2 @@
 usr/lib/libagoclient.so.1
+opt/agocontrol/bin/agoclient.py

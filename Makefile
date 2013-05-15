@@ -128,3 +128,4 @@ install:
 	install devices/raspiGPIO/raspiGPIO.py $(DESTDIR)/opt/agocontrol/bin
 	install devices/raspi1wGPIO/raspi1wGPIO.py $(DESTDIR)/opt/agocontrol/bin
 	install devices/raspiMCP3xxxGPIO/raspiMCP3xxxGPIO.py $(DESTDIR)/opt/agocontrol/bin
+	install devices/gc100/agogc100.py $(DESTDIR)/opt/agocontrol/bin

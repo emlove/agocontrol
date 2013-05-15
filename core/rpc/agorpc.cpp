@@ -266,6 +266,7 @@ bool jsonrpcRequestHandler(struct mg_connection *conn, Json::Value request, bool
 			if (params.isObject()) {
 				Json::Value content = params["uuid"];
 				if (content.isString()) {
+					cout << "removing subscription: " << content.asString() << endl;
 					pthread_mutex_lock(&mutexSubscriptions);	
 					subscriptions.erase(content.asString());
 					pthread_mutex_unlock(&mutexSubscriptions);	
