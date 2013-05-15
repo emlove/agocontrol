@@ -80,7 +80,7 @@ bool set_pcf8574_output(const char *device, int i2caddr, int output, bool state)
 		return false;
 	}
 
-	if (state) {
+	if (!state) {
 		buf[0] |= (1 << output);
 	} else {
 		buf[0] &= ~(1 << output);
