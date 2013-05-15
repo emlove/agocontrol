@@ -43,7 +43,8 @@ App.IndexRoute = Ember.Route.extend({
 
     renderTemplate : function() {
 	Ember.TEMPLATES['index'] = App.getTemplate("devices");
-	this.render('none', {
+	Ember.TEMPLATES['navigation_default'] = App.getTemplate("navigation/default");
+	this.render('navigation_default', {
 	    outlet : 'navigation'
 	});
 	this.render();
