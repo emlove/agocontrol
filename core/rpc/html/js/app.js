@@ -192,6 +192,9 @@ App.Router.map(function() {
     this.route("floorPlan", {
 	path : "/floorPlan"
     });
+    this.route("configuration", {
+	path : "/configuration"
+    });
     this.route("skel", {
 	path : "/skel"
     });
