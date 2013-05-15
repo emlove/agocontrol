@@ -1,0 +1,9 @@
+<ul style="margin-left: 20px; list-indent: 15px">
+{{#each dev in model}}
+	{{#if dev.name}}
+		<li style="color: #FFF">{{dev.name}} - {{dev.uuid}}</li>
+	{{else}}
+		<li style="color: #FFF">{{dev.devicetype}} - {{dev.uuid}}</li>
+	{{/if}}
+{{/each}}
+</ul>
