@@ -1972,7 +1972,7 @@ ago control Styles
 /* =Content Area
 -----------------------------------------------------------------------------*/
 #col-right #contentarea {
-    margin: 0 20px;
+    margin: 0 20px 20px 20px;
     -moz-border-radius: 10px;
     -webkit-border-radius: 10px;
     -khtml-border-radius: 10px;
