@@ -8,7 +8,7 @@ Array.prototype.chunk = function(chunkSize) {
 };
 
 var subscription = null;
-var url = "/jsonrpc";
+var url = "http://192.168.122.244:8008/jsonrpc";
 
 var schema = {};
 var deviceMap = {};

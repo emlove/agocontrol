@@ -1,41 +1,41 @@
 <div class="container" id="contentarea">
-
-<table id="donfigurationdevice" class="tablesorter">
-<thead>
-    <tr>
-        <th>Device Name</th>
-        <th>Room Name</th>
-        <th>Device Type</th>
-        <th>Handler</th>
-        <th>IntID</th>
-        <th>Value &nbsp;&nbsp;</th>
-    </tr>
-</thead>
-<tbody>
-{{#each dev in model}}
-    <tr id="{{dev.uuid}}">
-	{{#if dev.name}}
-        	<td class="edit_device">{{dev.name}}</td>
-	{{else}}
-        	<td class="edit_device">unset</td>
-	{{/if}}
-
-	{{#if dev.room}}
-        	<td class="select_device_room">{{dev.room}}</td>
-	{{else}}
-        	<td class="select_device_room">unset</td>
-	{{/if}}
-        <td>{{dev.devicetype}}</td>
-        <td>{{dev.handled-by}}</td>
-        <td>{{dev.internalid}}</td>
-	{{#if dev.room}}
-        	<td class="state">{{dev.state}}</td>
-	{{else}}
-        	<td class="state">unset</td>
-	{{/if}}
-    </tr>
-{{/each}}
-</tbody>
-</table>
+	<table id="configTable">
+	<thead>
+	    <tr>
+	        <th>Device Name</th>
+	        <th>Room Name</th>
+	        <th>Device Type</th>
+	        <th>Handler</th>
+	        <th>IntID</th>
+	        <th>Value &nbsp;&nbsp;</th>
+	    </tr>
+	</thead>
+	<tbody>
+	{{#each dev in model}}
+	    <tr id="row-{{dev.uuid}}">
+		{{#if dev.name}}
+	        	<td class="edit_device" data-uuid="{{uuid}}">{{dev.name}}</td>
+		{{else}}
+	        	<td class="edit_device" data-uuid="{{uuid}}">unset</td>
+		{{/if}}
+	
+		{{#if dev.room}}
+	        	<td class="select_device_room" data-uuid="{{uuid}}">{{dev.room}}</td>
+		{{else}}
+	        	<td class="select_device_room" data-uuid="{{uuid}}" >unset</td>
+		{{/if}}
+	        <td>{{dev.devicetype}}</td>
+	        <td>{{dev.handled-by}}</td>
+	        <td>{{dev.internalid}}</td>
+		{{#if dev.room}}
+	        	<td class="state">{{dev.state}}</td>
+		{{else}}
+	        	<td class="state">unset</td>
+		{{/if}}
+	    </tr>
+	{{/each}}
+	</tbody>
+	</table>
 </div>
+{{makeTableEditable model}}
 
