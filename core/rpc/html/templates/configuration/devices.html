@@ -10,33 +10,32 @@
         <th>IntID</th>
         <th>Value &nbsp;&nbsp;</th>
     </tr>
+</thead>
 <tbody>
 {{#each dev in model}}
-    <tr>
+    <tr id="{{dev.uuid}}">
 	{{#if dev.name}}
-        	<td class="edit_device" rel="{{dev.uuid}}">{{dev.name}}</td>
+        	<td class="edit_device">{{dev.name}}</td>
 	{{else}}
-        	<td class="edit_device" rel="{{dev.uuid}}">unset</td>
+        	<td class="edit_device">unset</td>
 	{{/if}}
 
 	{{#if dev.room}}
-        	<td class="select_device_room" rel="{{dev.uuid}}">{{dev.room}}</td>
+        	<td class="select_device_room">{{dev.room}}</td>
 	{{else}}
-        	<td class="select_device_room" rel="{{dev.uuid}}">unset</td>
+        	<td class="select_device_room">unset</td>
 	{{/if}}
         <td>{{dev.devicetype}}</td>
         <td>{{dev.handled-by}}</td>
         <td>{{dev.internalid}}</td>
 	{{#if dev.room}}
-        	<td class="state" rel="{{dev.uuid}}">{{dev.state}}</td>
+        	<td class="state">{{dev.state}}</td>
 	{{else}}
-        	<td class="state" rel="{{dev.uuid}}">unset</td>
+        	<td class="state">unset</td>
 	{{/if}}
     </tr>
 {{/each}}
 </tbody>
 </table>
-
 </div>
-{{view Ember.Table.TablesContainer controllerBinding="tableConfigurationDevicesController"}}
 

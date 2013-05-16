@@ -1,37 +1,3 @@
-/* This is an app in the app  of the MVC model */
-App.TableConfigurationDevices = Ember.Namespace.create();
-App.TableConfigurationDevices = Ember.Table.TableController.extend({
-    hasHeader: true,
-    hasFooter: false,
-    numFixedColumns: 0,
-    numRows: 500000,
-    rowHeight: 30,
-    columns: Ember.computed(function() {
-      var columnNames, columns, dateColumn, entryColumn;
-      columnNames = ['name', 'devicetype', 'handled-by', 'internalid', 'room'];
-      entryColumn = Ember.Table.ColumnDefinition.create({
-        columnWidth: 100,
-        headerCellName: 'Entry',
-        getCellContent: function(row) {
-          return deviceMap['uuid'];
-        }
-      });
-      columns = columnNames.map(function(key, index) {
-        var name;
-        name = key.charAt(0).toUpperCase() + key.slice(1);
-        return Ember.Table.ColumnDefinition.create({
-          columnWidth: 100,
-          headerCellName: name,
-          getCellContent: function(row) {
-            return deviceMap[key].toFixed(2);
-          }
-        });
-      });
-      columns.unshift(entryColumn);
-      return columns;
-    }).property(),
-});
-
 /* Maintains data gets events from the outside */
 App.ConfigurationDevicesController = Ember.ObjectController.extend({
     content : [],
