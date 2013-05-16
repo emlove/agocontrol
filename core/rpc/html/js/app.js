@@ -195,6 +195,9 @@ App.Router.map(function() {
     this.route("configuration", {
 	path : "/configuration"
     });
+    this.route("configurationDevices", {
+	path : "/configuration/devices"
+    });
     this.route("skel", {
 	path : "/skel"
     });

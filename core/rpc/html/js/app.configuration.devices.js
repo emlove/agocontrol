@@ -1,4 +1,36 @@
-/* This is an example of the MVC model */
+/* This is an app in the app  of the MVC model */
+App.TableConfigurationDevices = Ember.Namespace.create();
+App.TableConfigurationDevices = Ember.Table.TableController.extend({
+    hasHeader: true,
+    hasFooter: false,
+    numFixedColumns: 0,
+    numRows: 500000,
+    rowHeight: 30,
+    columns: Ember.computed(function() {
+      var columnNames, columns, dateColumn, entryColumn;
+      columnNames = ['name', 'devicetype', 'handled-by', 'internalid', 'room'];
+      entryColumn = Ember.Table.ColumnDefinition.create({
+        columnWidth: 100,
+        headerCellName: 'Entry',
+        getCellContent: function(row) {
+          return deviceMap['uuid'];
+        }
+      });
+      columns = columnNames.map(function(key, index) {
+        var name;
+        name = key.charAt(0).toUpperCase() + key.slice(1);
+        return Ember.Table.ColumnDefinition.create({
+          columnWidth: 100,
+          headerCellName: name,
+          getCellContent: function(row) {
+            return deviceMap[key].toFixed(2);
+          }
+        });
+      });
+      columns.unshift(entryColumn);
+      return columns;
+    }).property(),
+});
 
 /* Maintains data gets events from the outside */
 App.ConfigurationDevicesController = Ember.ObjectController.extend({
@@ -14,6 +46,11 @@ App.ConfigurationDevicesController = Ember.ObjectController.extend({
 	}
 	this.set("content", devs);
     },
+
+    tableConfigurationDevicesController: Ember.computed(function() {
+      return Ember.get('App.TableConfigurationDevices').create();
+    }).property(),
+
 
 });
 
@@ -46,3 +83,11 @@ App.ConfigurationDevicesRoute = Ember.Route.extend({
 	this.render();
     }
 });
+
+
+Ember.Handlebars.registerBoundHelper('enableDSTableSorter', function(value, options) {
+    Ember.run.next(function() {
+	$("#donfigurationdevice").tablesorter(); 
+    });
+});
+
