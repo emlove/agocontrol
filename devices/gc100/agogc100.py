@@ -59,7 +59,7 @@ stop = threading.Event()
 t = threading.Thread(target=discover,args=(1,stop))
 t.daemon = True
 t.start()
-time.sleep(60)
+time.sleep(63)
 stop.set()
 t.join()
 print "finished discovery"
