@@ -11,9 +11,14 @@ Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, libqpidmessaging2, libqpidtypes1, libqpidclient2, libqpidcommon2, libuuid1, libjsoncpp0
 Description: client routines and utility functions for ago control device interfaces
 
+Package: python-agoclient
+Section: libs
+Architecture: all
+Depends: ${shlibs:Depends}, ${misc:Depends}, python, python-qpid
+
 Package: agocontrol
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, python, uuid-runtime, sqlite3, python-pysqlite2, python-qpid, libqpidmessaging2, libqpidtypes1, sasl2-bin, libsasl2-2, libsasl2-modules, qpidd, python-yaml, python-pandas, libjsoncpp0, libyaml-cpp0.3, libsqlite3-0, libagoclient1.0
+Depends: ${shlibs:Depends}, ${misc:Depends}, python, uuid-runtime, sqlite3, python-pysqlite2, python-qpid, libqpidmessaging2, libqpidtypes1, sasl2-bin, libsasl2-2, libsasl2-modules, qpidd, python-yaml, python-pandas, libjsoncpp0, libyaml-cpp0.3, libsqlite3-0, libagoclient1.0, python-agoclient
 Description: automation system
 
 Package: libagoclient1.0-dev
@@ -29,17 +34,17 @@ Description: administration interface NG
 
 Package: agocontrol-owfs
 Architecture: all
-Depends: ${shlibs:Depends}, ${misc:Depends}, python-ow, python-qpid
+Depends: ${shlibs:Depends}, ${misc:Depends}, python-ow, python-agoclient
 Description: 1wire device
 
 Package: agocontrol-meloware
 Architecture: all
-Depends: ${shlibs:Depends}, ${misc:Depends}, python-qpid
+Depends: ${shlibs:Depends}, ${misc:Depends}, python-agoclient
 Description: meloware lightswitch app gateway
 
 Package: agocontrol-zwave
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, libqpidmessaging2, libqpidclient2, libqpidcommon2, libqpidtypes1, libudev0, libuuid1, agocontrol, libopenzwave1.0, libagoclient1.0
+Depends: ${shlibs:Depends}, ${misc:Depends}, libudev0, libopenzwave1.0, libagoclient1.0
 Description: ZWave interface driver
 
 Package: agocontrol-knx
@@ -49,12 +54,12 @@ Description: KNX interface driver
 
 Package: agocontrol-iscp
 Architecture: all
-Depends: ${shlibs:Depends}, ${misc:Depends}, libagoclient1.0
+Depends: ${shlibs:Depends}, ${misc:Depends}, python-agoclient
 Description: Onkyo EISCP protocol support
 
 Package: agocontrol-enigma2
 Architecture: all
-Depends: ${shlibs:Depends}, ${misc:Depends}, python-qpid, python-avahi, python-gobject, python-dbus
+Depends: ${shlibs:Depends}, ${misc:Depends}, python-agoclient, python-avahi, python-gobject, python-dbus
 Description: Enigma2/Dreambox interface
 
 Package: agocontrol-asterisk
@@ -64,7 +69,7 @@ Description: Asterisk PBX interface
 
 Package: agocontrol-apc
 Architecture: all
-Depends: ${shlibs:Depends}, ${misc:Depends}, python-qpid, python-pysnmp4
+Depends: ${shlibs:Depends}, ${misc:Depends}, python-agoclient, python-pysnmp4
 Description: APC Switched Rack PDU interface
 
 Package: agocontrol-jointspace
@@ -104,17 +109,17 @@ Description: i2c interface driver
 
 Package: agocontrol-raspigpio
 Architecture: armhf
-Depends: ${shlibs:Depends}, ${misc:Depends}, libagoclient1.0
+Depends: ${shlibs:Depends}, ${misc:Depends}, python-agoclient
 Description: raspberry pi GPIO driver
 
 Package: agocontrol-raspi1w
 Architecture: armhf
-Depends: ${shlibs:Depends}, ${misc:Depends}, libagoclient1.0
+Depends: ${shlibs:Depends}, ${misc:Depends}, python-agoclient
 Description: raspberry pi 1-wire GPIO driver
 
 Package: agocontrol-raspimcp
 Architecture: armhf
-Depends: ${shlibs:Depends}, ${misc:Depends}, libagoclient1.0
+Depends: ${shlibs:Depends}, ${misc:Depends}, python-agoclient
 Description: raspberry pi MCP3xxx ADC GPIO driver
 
 Package: agocontrol-gc100
