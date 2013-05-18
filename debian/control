@@ -15,6 +15,7 @@ Package: python-agoclient
 Section: libs
 Architecture: all
 Depends: ${shlibs:Depends}, ${misc:Depends}, python, python-qpid
+Description: python client routines and utility functions for ago control device interfaces
 
 Package: agocontrol
 Architecture: any
