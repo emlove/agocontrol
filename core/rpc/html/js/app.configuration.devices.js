@@ -1,9 +1,14 @@
 /* Maintains data gets events from the outside */
 App.ConfigurationDevicesController = Ember.ArrayController.extend({
     content : [],
+    needsUpdate: true,
 
+    triggerUpdate: function() {
+	this.set("needsUpdate", true);
+    },
+    
     updateDeviceMap : function() {
-	if (this.content.length > 0) {
+	if (!this.needsUpdate) {
 	    return;
 	}
 
@@ -14,6 +19,7 @@ App.ConfigurationDevicesController = Ember.ArrayController.extend({
 	    }
 	    devs.push(deviceMap[k]);
 	}
+	this.set("needsUpdate", false);
 	this.set("content", devs);
     }
 });
@@ -54,7 +60,13 @@ Ember.Handlebars.registerBoundHelper('makeTableEditable', function(value, option
     Ember.run.next(function() {
 	var eTable = $("#configTable").dataTable();
 	eTable.$('td.edit_device').editable(function(value, settings) {
-	    alert("TODO: DO UPDATE!");
+	    var content = {};
+	    content.uuid = $(this).data('uuid');
+	    content.command = "setdevicename";
+	    content.name = value;
+	    sendCommand(content);
+	    activeController.triggerUpdate();
+	    return value;
 	}, {
 	    data : function(value, settings) {
 		return $(value).text();
@@ -63,7 +75,13 @@ Ember.Handlebars.registerBoundHelper('makeTableEditable', function(value, option
 	});
 
 	eTable.$('td.select_device_room').editable(function(value, settings) {
-	    alert("TODO: DO UPDATE!");
+	    var content = {};
+	    content.uuid = $(this).parent().data('uuid');
+	    content.command = "setdeviceroom";
+	    content.room = value;
+	    sendCommand(content);
+	    activeController.triggerUpdate();
+	    return rooms[value].name;
 	}, {
 	    data : function(value, settings) {
 		var list = {};
@@ -74,7 +92,7 @@ Ember.Handlebars.registerBoundHelper('makeTableEditable', function(value, option
 		return JSON.stringify(list);
 	    },
 	    type : "select",
-	    onblur : "cancel"
+	    onblur : "submit"
 	});
     });
 });

@@ -12,17 +12,17 @@
 	</thead>
 	<tbody>
 	{{#each dev in model}}
-	    <tr id="row-{{dev.uuid}}">
+	    <tr {{bindAttr data-uuid="dev.uuid"}}>
 		{{#if dev.name}}
-	        	<td class="edit_device" data-uuid="{{uuid}}">{{dev.name}}</td>
+	        	<td class="edit_device" {{bindAttr data-uuid="dev.uuid"}}>{{dev.name}}</td>
 		{{else}}
-	        	<td class="edit_device" data-uuid="{{uuid}}">unset</td>
+	        	<td class="edit_device" {{bindAttr data-uuid="dev.uuid"}}>unset</td>
 		{{/if}}
 	
 		{{#if dev.room}}
-	        	<td class="select_device_room" data-uuid="{{uuid}}">{{dev.room}}</td>
+	        	<td class="select_device_room" {{bindAttr data-uuid="uuid"}}>{{dev.room}}</td>
 		{{else}}
-	        	<td class="select_device_room" data-uuid="{{uuid}}" >unset</td>
+	        	<td class="select_device_room" {{bindAttr data-uuid="uuid"}} >unset</td>
 		{{/if}}
 	        <td>{{dev.devicetype}}</td>
 	        <td>{{dev.handled-by}}</td>
