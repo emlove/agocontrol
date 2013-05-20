@@ -143,7 +143,7 @@ function unsubscribe() {
 
 window.onbeforeunload = function(event) {
     unsubscribe();
-}
+};
 
 /* EmberJS Application */
 
@@ -253,30 +253,31 @@ Ember.Handlebars.registerBoundHelper('device', function(value, options) {
 
 /* Used to setUp buttons and sliders */
 Ember.Handlebars.registerBoundHelper('setupControls', function(value, options) {
+    Ember.run.next(function() {
+	$(".slider").each(function() {
+	    $(this).empty().slider({
+		value : $(this).data('value'),
+		min : 0,
+		max : 100,
+		step : 5,
+		disabled : $(this).data('value') == "-",
+		stop : function(event, ui) {
+		    var content = {};
+		    content.uuid = $(this).data('uuid');
+		    content.command = "setlevel";
+		    content.level = ui.value;
+		    sendCommand(content);
+		}
+	    });
+	});
 
-    $(".slider").each(function() {
-	$(this).empty().slider({
-	    value : $(this).data('value'),
-	    min : 0,
-	    max : 100,
-	    step : 5,
-	    disabled : $(this).data('value') == "-",
-	    stop : function(event, ui) {
+	$('.cmd-btn').each(function() {
+	    $(this).click(function() {
 		var content = {};
 		content.uuid = $(this).data('uuid');
-		content.command = "setlevel";
-		content.level = ui.value;
+		content.command = $(this).data('value');
 		sendCommand(content);
-	    }
-	});
-    });
-
-    $('.cmd-btn').each(function() {
-	$(this).click(function() {
-	    var content = {};
-	    content.uuid = $(this).data('uuid');
-	    content.command = $(this).data('value');
-	    sendCommand(content);
+	    });
 	});
     });
 });

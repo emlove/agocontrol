@@ -1,17 +1,8 @@
 /* Maintains data gets events from the outside */
-App.ConfigurationDevicesController = Ember.ArrayController.extend({
+App.ConfigurationDevicesController = Ember.ObjectController.extend({
     content : [],
-    needsUpdate: true,
-
-    triggerUpdate: function() {
-	this.set("needsUpdate", true);
-    },
-    
+  
     updateDeviceMap : function() {
-	if (!this.needsUpdate) {
-	    return;
-	}
-
 	var devs = [];
 	for ( var k in deviceMap) {
 	    if (deviceMap[k].devicetype == "scenario" || deviceMap[k].devicetype == "event" || deviceMap[k].devicetype == "zwavecontroller") {
@@ -19,7 +10,6 @@ App.ConfigurationDevicesController = Ember.ArrayController.extend({
 	    }
 	    devs.push(deviceMap[k]);
 	}
-	this.set("needsUpdate", false);
 	this.set("content", devs);
     }
 });
@@ -58,6 +48,9 @@ App.ConfigurationDevicesRoute = Ember.Route.extend({
 
 Ember.Handlebars.registerBoundHelper('makeTableEditable', function(value, options) {
     Ember.run.next(function() {
+	if (value.length == 0) {
+	    return;
+	}
 	var eTable = $("#configTable").dataTable();
 	eTable.$('td.edit_device').editable(function(value, settings) {
 	    var content = {};
@@ -65,7 +58,6 @@ Ember.Handlebars.registerBoundHelper('makeTableEditable', function(value, option
 	    content.command = "setdevicename";
 	    content.name = value;
 	    sendCommand(content);
-	    activeController.triggerUpdate();
 	    return value;
 	}, {
 	    data : function(value, settings) {
@@ -80,7 +72,6 @@ Ember.Handlebars.registerBoundHelper('makeTableEditable', function(value, option
 	    content.command = "setdeviceroom";
 	    content.room = value;
 	    sendCommand(content);
-	    activeController.triggerUpdate();
 	    return rooms[value].name;
 	}, {
 	    data : function(value, settings) {
