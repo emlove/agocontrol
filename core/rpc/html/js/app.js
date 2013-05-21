@@ -48,7 +48,7 @@ function getEvent() {
     request.id = 1;
     request.jsonrpc = "2.0";
 
-    $.post(url, JSON.stringify(request), handleEvent, "json");
+    $.ajax(type: "POST", url: url, data: JSON.stringify(request), success: handleEvent, dataType: "json");
 }
 
 function handleInventory(response) {
