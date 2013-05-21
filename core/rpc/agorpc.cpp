@@ -386,7 +386,7 @@ int main(int argc, char **argv) {
 	static const char *options[] = {
 	  "document_root", htdocs.c_str(),
 	  "listening_ports", port.c_str(),
-	  "num_threads", "5",
+	  "num_threads", "10",
 	  NULL
 	};
 	connectionOptions["reconnect"] = "true";
