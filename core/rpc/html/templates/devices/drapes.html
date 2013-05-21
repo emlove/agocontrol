@@ -22,18 +22,26 @@
 	</div>
 </div>
 <div class="row grid-item-controls">
-	<div class="six columns">
+	<div class="four columns">
 		{{#if state}}
-			<div class="cmd-btn pretty medium default btn btn-full grid-command" data-uuid="{{uuid}}" data-value="on">ON</div>
+			<div class="cmd-btn pretty medium default btn btn-full grid-command" data-uuid="{{uuid}}"
+			data-value="on">Close</div>
 		{{else}}
-			<div class="cmd-btn pretty medium primary btn btn-full grid-command" data-uuid="{{uuid}}" data-value="on">ON</div>
+			<div class="cmd-btn pretty medium primary btn btn-full grid-command" data-uuid="{{uuid}}"
+			data-value="on">Close</div>
 		{{/if}}
 	</div>
-	<div class="six columns">
+	<div class="four columns">
+		<div class="cmd-btn pretty medium default btn btn-full grid-command" data-uuid="{{uuid}}"
+		data-value="stop">Stop</div>
+	</div>
+	<div class="four columns">
 		{{#if state}}
-			<div class="cmd-btn pretty medium primary btn btn-full grid-command" data-uuid="{{uuid}}" data-value="off">OFF</div>
+			<div class="cmd-btn pretty medium primary btn btn-full grid-command" data-uuid="{{uuid}}"
+			data-value="off">Open</div>
 		{{else}}
-			<div class="cmd-btn pretty medium default btn btn-full grid-command" data-uuid="{{uuid}}" data-value="off">OFF</div>
+			<div class="cmd-btn pretty medium default btn btn-full grid-command" data-uuid="{{uuid}}"
+			data-value="off">Open</div>
 		{{/if}} 
 	</div>
 	<div class="twelve columns">
