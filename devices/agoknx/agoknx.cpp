@@ -324,6 +324,10 @@ int main(int argc, char **argv) {
 							string destGA = device["onoff"];
 							dest = Telegram::stringtogaddr(destGA);
 							tg->setShortUserData(0);
+						} else if (content["command"] == "stop") {
+							string destGA = device["stop"];
+							dest = Telegram::stringtogaddr(destGA);
+							tg->setShortUserData(1);
 						} else if (content["command"] == "push") {
 							string destGA = device["push"];
 							dest = Telegram::stringtogaddr(destGA);
