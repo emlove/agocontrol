@@ -68,6 +68,28 @@ bool replyMessage(const Address& replyaddress, Message response) {
 	return false;
 }
 
+bool sendMessage(const char *subject, qpid::types::Variant::Map content) {
+        Message message;
+
+        try {
+                encode(content, message);
+                message.setSubject(subject);
+                sender.send(message);
+        } catch(const std::exception& error) {
+                std::cerr << error.what() << std::endl;
+                return false;
+        }
+
+        return true;
+}
+
+bool emitNameEvent(const char *uuid, const char *eventType, const char *name) {
+        Variant::Map content;
+        content["name"] = name;
+        content["uuid"] = uuid;
+        return sendMessage(eventType, content);
+}
+
 void handleEvent(Variant::Map *device, string subject, Variant::Map *content);
 
 int main(int argc, char **argv) {
@@ -205,6 +227,7 @@ int main(int argc, char **argv) {
 					inv.setroomname(uuid, content["name"]);
 					Message response(uuid);
 					replyMessage(message.getReplyTo(), response);
+					emitNameEvent(uuid.c_str(), "event.system.roomnamechanged", content["name"].asString().c_str());
 				} else if (content["command"] == "setdeviceroom") {
 					string result;
 					if ((content["uuid"].asString() != "") && (inv.setdeviceroom(content["uuid"], content["room"]) == 0)) {
@@ -235,6 +258,7 @@ int main(int argc, char **argv) {
                                         }
 					Message response(result);
 					replyMessage(message.getReplyTo(), response);
+					emitNameEvent(content["uuid"].asString().c_str(), "event.system.devicenamechanged", content["name"].asString().c_str());
 
 				} else if (content["command"] == "deleteroom") {
 					string result;
