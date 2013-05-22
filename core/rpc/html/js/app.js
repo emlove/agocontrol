@@ -156,6 +156,8 @@ var App = Ember.Application.create({
 	    $("#colorPickerDialog").dialog({
 		autoOpen : false,
 		modal : true,
+		minHeight: 300,
+		minWidth: 300,
 		buttons : {
 		    Cancel : function() {
 			$(this).dialog("close");
