@@ -24,6 +24,7 @@
   <script src="js/libs/jquery-ui.js"></script>
   <script src="js/libs/jquery.jeditable.js"></script>
   <script src="js/libs/jquery.dataTables.js"></script>
+  <script src="js/libs/jscolor.js"></script>
   <script src="js/libs/handlebars-1.0.0-rc.3.js"></script>
   <script src="js/libs/ember-1.0.0-rc.3.js"></script>
   <script src="js/app.js"></script>
@@ -34,6 +35,13 @@
   <script src="js/app.skel.js"></script>
 </head>
 <body> 
+
+  <div id="colorPickerDialog" title="Please select a color" data-uuid="">
+  		<form>
+  			<input id="colorValue" class="color" />
+  		</form>
+  </div>
+
   <script type="text/x-handlebars">
 	<div class="container">
   	<div class="row">

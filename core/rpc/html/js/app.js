@@ -152,6 +152,28 @@ var App = Ember.Application.create({
     ready : function() {
 	Ember.TEMPLATES['none'] = Ember.Handlebars.compile(" ");
 	subscribe();
+	$(function() {
+	    $("#colorPickerDialog").dialog({
+		autoOpen : false,
+		modal : true,
+		buttons : {
+		    Cancel : function() {
+			$(this).dialog("close");
+		    },
+		    OK : function() {
+			var content = {};
+			content.uuid = $("#colorPickerDialog").data('uuid');
+			content.command = "setcolor";
+			var color = $('#colorValue').val();
+			content.red =  parseInt(color.substring(0, 2), 16);
+			content.green = parseInt(color.substring(2, 4), 16);
+			content.blue = parseInt(color.substring(4, 6), 16);
+			sendCommand(content);
+			$(this).dialog("close");
+		    }
+		}
+	    });
+	});
     },
 
     getTemplate : function(name) {
@@ -281,3 +303,9 @@ Ember.Handlebars.registerBoundHelper('setupControls', function(value, options) {
 	});
     });
 });
+
+/* Opens color picker */
+function openColorPicker(uuid) {
+    $("#colorPickerDialog").data('uuid', uuid);
+    $("#colorPickerDialog").dialog("open");
+}
