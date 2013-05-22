@@ -82,6 +82,7 @@ install:
 	install -d $(DESTDIR)/lib/systemd/system
 	install conf/config.ini.tpl $(DESTDIR)/etc/opt/agocontrol
 	install conf/schema.yaml $(DESTDIR)/etc/opt/agocontrol
+	install conf/rpc_cert.pem $(DESTDIR)/etc/opt/agocontrol
 	install conf/*.service $(DESTDIR)/lib/systemd/system
 	install data/inventory.sql $(DESTDIR)/etc/opt/agocontrol
 	install data/datalogger.sql $(DESTDIR)/etc/opt/agocontrol
