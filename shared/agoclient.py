@@ -73,6 +73,11 @@ class AgoConnection:
 		content["handled-by"]  = self.instance
 		self.sendMessage("event.device.announce", content)			
 
+	def emitDeviceRemove(self, uuid):
+		content = {}
+		content["uuid"]  = uuid
+		self.sendMessage("event.device.remove", content)			
+
 	def addDevice(self, internalid, devicetype):
 		if (self.internalIdToUuid(internalid) == None):
 			self.uuids[str(uuid4())]=internalid
@@ -82,6 +87,12 @@ class AgoConnection:
 		device["internalid"] = internalid
 		self.devices[self.internalIdToUuid(internalid)] = device
 		self.emitDeviceAnnounce(self.internalIdToUuid(internalid), device)
+
+	def removeDevice(self, internalid):
+		if (self.internalIdToUuid(internalid) != None):	
+			self.emitDeviceRemove(self.internalIdToUuid(internalid))
+			del self.devices[self.internalIdToUuid(internalid)]
+			del self.uuids[self.internalIdToUuid(internalid)]
 
 	def sendMessage(self, content):
 		return self.sendmessage(None, content)
