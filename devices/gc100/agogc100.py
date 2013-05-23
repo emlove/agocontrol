@@ -74,12 +74,16 @@ class WatchInputs(threading.Thread):
 		s.connect((self.addr, GC100_COMM_PORT))
 		while(True):
 			data = s.recv(BUFFER_SIZE)
-			event, module, state = str(data).split(',')
-			if 'statechange' in event:
-				if '1' in state:
-					client.emitEvent("%s/%s" % (self.addr, module), "event.security.sensortriggered", 255, "")
-				else:
-					client.emitEvent("%s/%s" % (self.addr, module), "event.security.sensortriggered", 0, "")
+			print data
+			try:
+				event, module, state = str(data).split(',')
+				if 'statechange' in event:
+					if '0' in state:
+						client.emitEvent("%s/%s" % (self.addr, module), "event.device.statechanged", 255, "")
+					else:
+						client.emitEvent("%s/%s" % (self.addr, module), "event.device.statechanged", 0, "")
+			except ValueError, e:
+				print "value error", e, data
 		s.close()
 		
 for addr in devices:
@@ -89,14 +93,18 @@ for addr in devices:
 		if 'endlistdevices' in device:
 			break;
 		print device
-		dev, module, type = device.split(',')
-		if '3 RELAY' in type:
-			for x in range(1, 4):
-				client.addDevice("%s/%s:%i" % (addr, module, x), "switch")
-		if '3 IR' in type:
-			for x in range(1, 4):
-				if 'SENSOR_NOTIFY' in getir(addr, GC100_COMM_PORT, "%s:%i" % (module, x)):
-					client.addDevice("%s/%s:%i" % (addr, module, x), "binarysensor")
+		try:
+			dev, module, type = device.split(',')
+			if '3 RELAY' in type:
+				for x in range(1, 4):
+					client.addDevice("%s/%s:%i" % (addr, module, x), "switch")
+			if '3 IR' in type:
+				for x in range(1, 4):
+					if 'SENSOR_NOTIFY' in getir(addr, GC100_COMM_PORT, "%s:%i" % (module, x)):
+						client.addDevice("%s/%s:%i" % (addr, module, x), "binarysensor")
+		except ValueError, e:
+			print "value error", e, data
+
 	notificationThread = WatchInputs(addr)
 	notificationThread.setDaemon(True)
 	notificationThread.start()
