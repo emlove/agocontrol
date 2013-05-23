@@ -195,7 +195,13 @@ void agocontrol::AgoConnection::run() {
 					// no subject, this is a command
 					// lets see if this is for one of our devices or if we shall pass everything unfiltered
 					string internalid = uuidToInternalId(content["uuid"].asString());
-					if ((internalid.size() > 0 || (!(filterCommands))) && commandHandler != NULL) {
+					if (
+						(
+							((internalid.size() > 0) && (deviceMap.find(internalid) != deviceMap.end()))
+							|| (!(filterCommands))
+						) 
+						&& commandHandler != NULL
+					) {
 						// found a match, reply to sender and pass the command to the assigned handler method
 						const Address& replyaddress = message.getReplyTo();
 						if (replyaddress) {
@@ -258,7 +264,22 @@ bool agocontrol::AgoConnection::emitDeviceAnnounce(const char *internalId, const
 		return false;
 	} 
 	return true;
+} 
 
+bool agocontrol::AgoConnection::emitDeviceRemove(const char *internalId) {
+	Variant::Map content;
+	Message event;
+
+	content["uuid"] = internalIdToUuid(internalId);
+	encode(content, event);
+	event.setSubject("event.device.remove");
+	try {
+		sender.send(event);
+	} catch(const std::exception& error) {
+		std::cerr << error.what() << std::endl;
+		return false;
+	} 
+	return true;
 } 
 bool agocontrol::AgoConnection::addDevice(const char *internalId, const char *deviceType) {
 	if (internalIdToUuid(internalId).size()==0) {
@@ -272,6 +293,16 @@ bool agocontrol::AgoConnection::addDevice(const char *internalId, const char *de
 	deviceMap[internalIdToUuid(internalId)] = device;
 	emitDeviceAnnounce(internalId, deviceType);
 	return true;
+}
+
+bool agocontrol::AgoConnection::removeDevice(const char *internalId) {
+	if (internalIdToUuid(internalId).size()!=0) {
+		emitDeviceRemove(internalId);
+		Variant::Map::const_iterator it = deviceMap.find(internalId);
+		if (it != deviceMap.end()) deviceMap.erase(it->first);
+		// deviceMap[internalIdToUuid(internalId)] = device;
+		return true;
+	} else return false;
 }
 
 std::string agocontrol::AgoConnection::uuidToInternalId(std::string uuid) {

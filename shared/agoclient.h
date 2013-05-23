@@ -55,11 +55,13 @@ namespace agocontrol {
 			bool filterCommands;
 			void (*eventHandler)(std::string, qpid::types::Variant::Map);
 			bool emitDeviceAnnounce(const char *internalId, const char *deviceType);
+			bool emitDeviceRemove(const char *internalId);
 		public:
 			AgoConnection(const char *interfacename);
 			~AgoConnection();
 			void run();
 			bool addDevice(const char *internalId, const char *deviceType);
+			bool removeDevice(const char *internalId);
 			string getDeviceType(const char *internalId);
 			bool addHandler(std::string (*handler)(qpid::types::Variant::Map));
 			bool addEventHandler(void (*eventHandler)(std::string, qpid::types::Variant::Map));

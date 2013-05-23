@@ -92,7 +92,6 @@ class AgoConnection:
 		if (self.internalIdToUuid(internalid) != None):	
 			self.emitDeviceRemove(self.internalIdToUuid(internalid))
 			del self.devices[self.internalIdToUuid(internalid)]
-			del self.uuids[self.internalIdToUuid(internalid)]
 
 	def sendMessage(self, content):
 		return self.sendmessage(None, content)
@@ -130,20 +129,21 @@ class AgoConnection:
 							self.reportDevices()
 						else:
 							if 'uuid' in message.content:
-								myid = self.uuidToInternalId(message.content["uuid"])
-								if myid != None:
+								if message.content['uuid'] in self.devices:
 									#this is for one of our children
-									if self.handler:
-										self.handler(myid, message.content)
-									if message.reply_to:
-										replysession = self.connection.session()
-										replysender = replysession.sender(message.reply_to)
-										response = Message("ACK")
-										try:
-											replysender.send(response)
-										except SendError, e:
-											syslog.syslog(syslog.LOG_ERR, "can't send reply: " + e)
-										replysession.close()
+									myid = self.uuidToInternalId(message.content["uuid"])
+									if myid != None:
+										if self.handler:
+											self.handler(myid, message.content)
+										if message.reply_to:
+											replysession = self.connection.session()
+											replysender = replysession.sender(message.reply_to)
+											response = Message("ACK")
+											try:
+												replysender.send(response)
+											except SendError, e:
+												syslog.syslog(syslog.LOG_ERR, "can't send reply: " + e)
+											replysession.close()
 				if message.subject:
 					if 'event' in message.subject:
 						if self.eventhandler:
