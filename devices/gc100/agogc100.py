@@ -64,6 +64,24 @@ stop.set()
 t.join()
 print "finished discovery"
 
+class WatchInputs(threading.Thread):
+	def __init__(self, addr):
+		threading.Thread.__init__(self)
+		self.addr = addr
+	def run(self):
+		print "Watching inputs on", self.addr
+		s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		s.connect((self.addr, GC100_COMM_PORT))
+		while(True):
+			data = s.recv(BUFFER_SIZE)
+			event, module, state = str(data).split(',')
+			if 'statechange' in event:
+				if '1' in state:
+					client.emitEvent("%s/%s" % (self.addr, module), "event.security.sensortriggered", 255, "")
+				else:
+					client.emitEvent("%s/%s" % (self.addr, module), "event.security.sensortriggered", 0, "")
+		s.close()
+		
 for addr in devices:
 	print "Scanning", devices[addr], "on", addr
 	devicestr= str(getdevices(addr, GC100_COMM_PORT))
@@ -79,6 +97,9 @@ for addr in devices:
 			for x in range(1, 4):
 				if 'SENSOR_NOTIFY' in getir(addr, GC100_COMM_PORT, "%s:%i" % (module, x)):
 					client.addDevice("%s/%s:%i" % (addr, module, x), "binarysensor")
+	notificationThread = WatchInputs(addr)
+	notificationThread.setDaemon(True)
+	notificationThread.start()
 
 def messageHandler(internalid, content):
 	addr, connector = internalid.split('/')
@@ -99,5 +120,6 @@ def messageHandler(internalid, content):
 
 client.addHandler(messageHandler)
 
+print "Waiting for messages"
 client.run()
 
