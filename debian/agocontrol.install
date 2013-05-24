@@ -10,6 +10,9 @@ etc/opt/agocontrol/inventory.sql
 etc/opt/agocontrol/datalogger.sql
 etc/opt/agocontrol/rpc_cert.pem
 etc/opt/agocontrol/uuidmap
+etc/sysctl.d/agocontrol.conf
+var/crash
+etc/security/limits.d/agocontrol.conf
 opt/agocontrol/bin/agologger.py
 opt/agocontrol/bin/agoresolver.py
 opt/agocontrol/bin/agoresolver

@@ -80,6 +80,11 @@ install:
 	install -d $(DESTDIR)/usr/include/agocontrol
 	install -d $(DESTDIR)/usr/lib
 	install -d $(DESTDIR)/lib/systemd/system
+	install -d $(DESTDIR)/etc/sysctl.d
+	install -d $(DESTDIR)/etc/security/limits.d
+	install -d $(DESTDIR)/var/crash
+	install conf/security-limits.conf $(DESTDIR)/etc/security/limits.d/agocontrol.conf
+	install conf/sysctl.conf $(DESTDIR)/etc/sysctl.d/agocontrol.conf
 	install conf/config.ini.tpl $(DESTDIR)/etc/opt/agocontrol
 	install conf/schema.yaml $(DESTDIR)/etc/opt/agocontrol
 	install conf/rpc_cert.pem $(DESTDIR)/etc/opt/agocontrol
