@@ -1880,6 +1880,15 @@ ago control Styles
 #grid .grid-item .room {
 	white-space: nowrap;
 	overflow: hidden;
+	font-size: 0.8em;
+	line-height: 0.8em; 
+	margin: 3px 0px 0px 0px;
+}
+#grid .grid-item .info {
+	white-space: nowrap;
+	overflow: hidden;
+	font-size: 0.8em;
+	margin: 0px;
 }
 
 #grid .grid-item-icon i {
