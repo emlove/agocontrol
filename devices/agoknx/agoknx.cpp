@@ -189,7 +189,7 @@ void *listener(void *param) {
 							encode(content, event);
 							event.setSubject("event.device.statechanged");
 						} else if (type == "setlevel" || type == "levelstatus") {
-							int data = tl.getIntData(); 
+							int data = tl.getUIntData(); 
 							printf("levelstatus/setlevel: %i %u\n", data, (unsigned int) data);
 							content["level"] = data;
 							encode(content, event);

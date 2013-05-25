@@ -82,6 +82,18 @@ int Telegram::getUserData(unsigned char *buffer, int maxsize) const
 	return leng;
 }
 
+unsigned int Telegram::getUIntData() const
+{
+
+	switch(_length)
+	{
+		case(0): return _shortdata; break;
+		case(1): return (int)*(unsigned char*)_data;break;
+		case(2): return ( (int)(unsigned char)_data[0] <<8 )  + (int)(unsigned char)_data[1];
+		default: return 0;
+	}
+
+}
 int Telegram::getIntData() const
 {
 	switch(_length)

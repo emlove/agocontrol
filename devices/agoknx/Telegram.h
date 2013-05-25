@@ -100,6 +100,7 @@ using namespace std;
 			//Acces to the data values.
 			int getUserData(unsigned char *buffer, int maxsize) const;//return the sizeof data copied in buffer
 			int getIntData() const;
+			unsigned int getUIntData() const;
 			float getFloatData() const;
 
 			inline int getType() const{return _type;};
