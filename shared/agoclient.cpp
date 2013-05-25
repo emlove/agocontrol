@@ -197,7 +197,7 @@ void agocontrol::AgoConnection::run() {
 					string internalid = uuidToInternalId(content["uuid"].asString());
 					if (
 						(
-							((internalid.size() > 0) && (deviceMap.find(internalid) != deviceMap.end()))
+							((internalid.size() > 0) && (deviceMap.find(internalIdToUuid(internalid)) != deviceMap.end()))
 							|| (!(filterCommands))
 						) 
 						&& commandHandler != NULL
@@ -298,7 +298,7 @@ bool agocontrol::AgoConnection::addDevice(const char *internalId, const char *de
 bool agocontrol::AgoConnection::removeDevice(const char *internalId) {
 	if (internalIdToUuid(internalId).size()!=0) {
 		emitDeviceRemove(internalId);
-		Variant::Map::const_iterator it = deviceMap.find(internalId);
+		Variant::Map::const_iterator it = deviceMap.find(internalIdToUuid(internalId));
 		if (it != deviceMap.end()) deviceMap.erase(it->first);
 		// deviceMap[internalIdToUuid(internalId)] = device;
 		return true;
