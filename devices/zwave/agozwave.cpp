@@ -329,7 +329,7 @@ void OnNotification
 						eventtype="event.security.alarmtypechanged";
 					}
 					if (label == "Sensor") {
-						eventtype="event.environment.sensortriggered";
+						eventtype="event.security.sensortriggered";
 					}
 					if (label == "Energy") {
 						eventtype="event.environment.energychanged";
