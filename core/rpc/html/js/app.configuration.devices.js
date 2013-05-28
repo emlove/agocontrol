@@ -30,7 +30,9 @@ App.ConfigurationDevicesRoute = Ember.Route.extend({
 	controller.set('content', model);
 	activeController = controller;
 	if (schema != {}) {
-	    controller.updateDeviceMap();
+	    Ember.run.next(function() {
+		controller.updateDeviceMap();
+	    });
 	}
     },
 

@@ -30,6 +30,7 @@ App.FloorPlanController = Ember.ArrayController.extend({
 	    name : "No Room",
 	    devices : []
 	};
+	console.log(deviceMap);
 	for ( var k in deviceMap) {
 	    if (deviceMap[k].devicetype == "zwavecontroller") {
 		continue;
@@ -148,8 +149,11 @@ App.FloorPlanRoute = Ember.Route.extend({
 	floorCtrl = controller;
 	activeController = floorCtrl;
 	devTreeCtrl = this.controllerFor("DeviceTree");
+
 	if (schema != {}) {
-	    controller.updateDeviceMap();
+	    Ember.run.next(function() {
+		controller.updateDeviceMap();
+	    });
 	}
     },
 

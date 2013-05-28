@@ -48,7 +48,7 @@ function getEvent() {
     request.id = 1;
     request.jsonrpc = "2.0";
 
-    $.post(url, JSON.stringify(request), handleEvent, "json"); 
+    $.post(url, JSON.stringify(request), handleEvent, "json");
 }
 
 function handleInventory(response) {
@@ -156,8 +156,8 @@ var App = Ember.Application.create({
 	    $("#colorPickerDialog").dialog({
 		autoOpen : false,
 		modal : true,
-		minHeight: 300,
-		minWidth: 300,
+		minHeight : 300,
+		minWidth : 300,
 		buttons : {
 		    Cancel : function() {
 			$(this).dialog("close");
@@ -167,7 +167,7 @@ var App = Ember.Application.create({
 			content.uuid = $("#colorPickerDialog").data('uuid');
 			content.command = "setcolor";
 			var color = $('#colorValue').val();
-			content.red =  parseInt(color.substring(0, 2), 16);
+			content.red = parseInt(color.substring(0, 2), 16);
 			content.green = parseInt(color.substring(2, 4), 16);
 			content.blue = parseInt(color.substring(4, 6), 16);
 			sendCommand(content);
