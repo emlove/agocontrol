@@ -1,8 +1,14 @@
 /* Maintains data gets events from the outside */
-App.ConfigurationDevicesController = Ember.ObjectController.extend({
+App.ConfigurationDevicesController = Ember.ArrayController.extend({
     content : [],
-  
+    allowUpdate : true,
+
     updateDeviceMap : function() {
+	if (this.get("allowUpdate")) {
+	    this.set("allowUpdate", false);
+	} else {
+	    return;
+	}
 	var devs = [];
 	for ( var k in deviceMap) {
 	    if (deviceMap[k].devicetype == "scenario" || deviceMap[k].devicetype == "event" || deviceMap[k].devicetype == "zwavecontroller") {
@@ -54,11 +60,26 @@ Ember.Handlebars.registerBoundHelper('makeTableEditable', function(value, option
 	    return;
 	}
 	var eTable = $("#configTable").dataTable();
+	eTable.fnClearTable(false);
+
+	if (App.helperTemplates["deviceConfigRow"] == undefined) {
+	    App.helperTemplates["deviceConfigRow"] = App.getHelperTemplate("configuration/device");
+	}
+
+	var tpl = App.helperTemplates["deviceConfigRow"];
+
+	value.forEach(function(dev) {
+	    var parsedTpl = new Handlebars.SafeString(tpl(dev));
+	    var row = $.trim(parsedTpl.toString());
+	    eTable.fnAddTr($(row).get(0), true);
+	});
+
 	eTable.$('td.edit_device').editable(function(value, settings) {
 	    var content = {};
 	    content.uuid = $(this).data('uuid');
 	    content.command = "setdevicename";
 	    content.name = value;
+	    activeController.set("allowUpdate", true);
 	    sendCommand(content);
 	    return value;
 	}, {
@@ -73,6 +94,7 @@ Ember.Handlebars.registerBoundHelper('makeTableEditable', function(value, option
 	    content.uuid = $(this).parent().data('uuid');
 	    content.command = "setdeviceroom";
 	    content.room = value;
+	    activeController.set("allowUpdate", true);
 	    sendCommand(content);
 	    return rooms[value].name;
 	}, {
@@ -81,7 +103,6 @@ Ember.Handlebars.registerBoundHelper('makeTableEditable', function(value, option
 		for ( var uuid in rooms) {
 		    list[uuid] = rooms[uuid].name;
 		}
-		;
 		return JSON.stringify(list);
 	    },
 	    type : "select",

@@ -1,40 +1,16 @@
 <div class="container" id="contentarea">
-	<table id="configTable">
+	<table id="configTable" style="width:100%;">
 	<thead>
-	    <tr>
-	        <th>Device Name</th>
-	        <th>Room Name</th>
-	        <th>Device Type</th>
-	        <th>Handler</th>
-	        <th>IntID</th>
-	        <th>Value &nbsp;&nbsp;</th>
+	    <tr >
+	        <th style="font-weight: 700">Device Name</th>
+	        <th style="font-weight: 700">Room Name</th>
+	        <th style="font-weight: 700">Device Type</th>
+	        <th style="font-weight: 700">Handler</th>
+	        <th style="font-weight: 700">IntID</th>
+	        <th style="font-weight: 700">Value &nbsp;&nbsp;</th>
 	    </tr>
 	</thead>
-	<tbody>
-	{{#each dev in model}}
-	    <tr {{bindAttr data-uuid="dev.uuid"}}>
-		{{#if dev.name}}
-	        	<td class="edit_device" {{bindAttr data-uuid="dev.uuid"}}>{{dev.name}}</td>
-		{{else}}
-	        	<td class="edit_device" {{bindAttr data-uuid="dev.uuid"}}>unset</td>
-		{{/if}}
 	
-		{{#if dev.room}}
-	        	<td class="select_device_room" {{bindAttr data-uuid="uuid"}}>{{dev.room}}</td>
-		{{else}}
-	        	<td class="select_device_room" {{bindAttr data-uuid="uuid"}} >unset</td>
-		{{/if}}
-	        <td>{{dev.devicetype}}</td>
-	        <td>{{dev.handled-by}}</td>
-	        <td>{{dev.internalid}}</td>
-		{{#if dev.room}}
-	        	<td class="state">{{dev.state}}</td>
-		{{else}}
-	        	<td class="state">unset</td>
-		{{/if}}
-	    </tr>
-	{{/each}}
-	</tbody>
 	</table>
 </div>
 {{makeTableEditable model}}
