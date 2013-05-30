@@ -303,6 +303,8 @@ void OnNotification
 					tempstream << (int) _notification->GetNodeId();
 					tempstream << "/";
 					tempstream << (int) id.GetInstance();
+					tempstream << "-";
+					tempstream << label;
 
 					string level = str;
 					string eventtype = "";
@@ -395,11 +397,14 @@ void OnNotification
 				// We have received an event from the node, caused by a
 				// basic_set or hail message.
 				ValueID id = _notification->GetValueID();
+				string label = Manager::Get()->GetValueLabel(id);
 
 				stringstream tempstream;
 				tempstream << (int) _notification->GetNodeId();
 				tempstream << "/";
 				tempstream << (int) id.GetInstance();
+				tempstream << "-";
+				tempstream << label;
 				stringstream level;
 				level << (int) _notification->GetByte();
 				string eventtype = "event.device.statechanged";
