@@ -243,10 +243,25 @@ void OnNotification
 					break;
 					case COMMAND_CLASS_SENSOR_MULTILEVEL:
 						if (label == "Luminance") {
-							printf("adding ago device multilevelsensor for value id: %s\n", tempstring.c_str());
-							agoConnection->addDevice(tempstring.c_str(), "multilevelsensor");
+							printf("adding ago device brightnesssensor for value id: %s\n", tempstring.c_str());
+							agoConnection->addDevice(tempstring.c_str(), "brightnesssensor");
+						} else if (label == "Temperature") {
+							printf("adding ago device temperaturesensor for value id: %s\n", tempstring.c_str());
+							agoConnection->addDevice(tempstring.c_str(), "temperaturesensor");
 						} else {
 							printf("WARNING: unhandled label for SENSOR_MULTILEVEL: %s - adding generic multilevelsensor\n",label.c_str());
+							agoConnection->addDevice(tempstring.c_str(), "multilevelsensor");
+						}
+					break;
+					case COMMAND_CLASS_METER:
+						if (label == "Power") {
+							printf("adding ago device powermeter for value id: %s\n", tempstring.c_str());
+							agoConnection->addDevice(tempstring.c_str(), "powermeter");
+						} else if (label == "Energy") {
+							printf("adding ago device energymeter for value id: %s\n", tempstring.c_str());
+							agoConnection->addDevice(tempstring.c_str(), "energymeter");
+						} else {
+							printf("WARNING: unhandled label for CLASS_METER: %s - adding generic multilevelsensor\n",label.c_str());
 							agoConnection->addDevice(tempstring.c_str(), "multilevelsensor");
 						}
 					break;
@@ -398,7 +413,7 @@ void OnNotification
 				// basic_set or hail message.
 				ValueID id = _notification->GetValueID();
 				string label = Manager::Get()->GetValueLabel(id);
-
+				if (label == "") label= "Basic";
 				stringstream tempstream;
 				tempstream << (int) _notification->GetNodeId();
 				tempstream << "/";
