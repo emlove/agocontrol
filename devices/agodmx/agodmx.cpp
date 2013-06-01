@@ -61,6 +61,7 @@ bool loadChannels(string filename, Variant::Map& _channelMap) {
 
 			content["internalid"] = nextdevice->Attribute("internalid");
 			content["devicetype"] = nextdevice->Attribute("type");
+			content["onlevel"] = 100;
 			XMLElement *channel = nextdevice->FirstChildElement( "channel" );
 			if (channel) {
 				XMLElement *nextchannel = channel;
@@ -189,17 +190,23 @@ std::string commandHandler(qpid::types::Variant::Map command) {
 
         const char *internalid = command["internalid"].asString().c_str();
 
+        Variant::Map device = channelMap[internalid].asMap();
 
         if (command["command"] == "on") {
-                if (setDevice_level(channelMap[internalid].asMap(), 100)) {
-                        agoConnection->emitEvent(internalid, "event.device.statechanged", "255", "");
+                if (setDevice_level(device, device["onlevel"])) {
+                        agoConnection->emitEvent(internalid, "event.device.statechanged", device["onlevel"].asString().c_str(), "");
                 }
         } else if (command["command"] == "off") {
-                if (setDevice_level(channelMap[internalid].asMap(), 0)) {
+                if (setDevice_level(device, 0)) {
                         agoConnection->emitEvent(internalid, "event.device.statechanged", "0", "");
                 }
         } else if (command["command"] == "setlevel") {
-                if (setDevice_level(channelMap[internalid].asMap(), command["level"])) {
+                if (setDevice_level(device, command["level"])) {
+
+                        Variant::Map content = device;
+                        content["onlevel"] = command["level"].asString().c_str();
+                        channelMap[internalid] = content;
+
                         agoConnection->emitEvent(internalid, "event.device.statechanged", command["level"].asString().c_str(), "");
                 }
         } else if (command["command"] == "setcolor") {
