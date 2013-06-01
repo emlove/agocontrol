@@ -10,78 +10,56 @@
 */
 
 #include <iostream>
-#include <uuid/uuid.h>
 #include <stdlib.h>
 
 #include <unistd.h>
-#include <pthread.h>
 #include <stdio.h>
 
-#include <qpid/messaging/Connection.h>
-#include <qpid/messaging/Message.h>
-#include <qpid/messaging/Receiver.h>
-#include <qpid/messaging/Sender.h>
-#include <qpid/messaging/Session.h>
-#include <qpid/messaging/Address.h>
-
 #include <tinyxml2.h>
-
-#include "../agozwave/CDataFile.h"
 
 #include <ola/DmxBuffer.h>
 #include <ola/Logging.h>
 #include <ola/StreamingClient.h>
 
-using namespace qpid::messaging;
+#include "agoclient.h"
+
 using namespace qpid::types;
 using namespace tinyxml2;
 using namespace std;
+using namespace agocontrol;
 
 
-Sender sender;
-Receiver receiver;
-Session session;
-
-Variant::Map deviceMap;
-
-pthread_mutex_t mutexCon;
-pthread_t listenerThread;
-
-
-  // Create a new DmxBuffer to hold the data
-  ola::DmxBuffer buffer;
-  // set all channels to 0
-//  buffer.Blackout();
-
-  // create a new client and set the Error Closure
-  ola::StreamingClient ola_client;
-
+Variant::Map channelMap;
+ola::DmxBuffer buffer;
+ola::StreamingClient ola_client;
+AgoConnection *agoConnection;
 
 /**
  * parses the device XML file and creates a qpid::types::Variant::Map with the data
  */
-bool loadDevices(string filename, Variant::Map& _deviceMap) {
-	XMLDocument devicesFile;
+bool loadChannels(string filename, Variant::Map& _channelMap) {
+	XMLDocument channelsFile;
 	int returncode;
 
-	printf("trying to open device file: %s\n", filename.c_str());
-	returncode = devicesFile.LoadFile(filename.c_str());
+	printf("trying to open channel file: %s\n", filename.c_str());
+	returncode = channelsFile.LoadFile(filename.c_str());
 	if (returncode != XML_NO_ERROR) {
 		printf("error loading XML file, code: %i\n", returncode);
 		return false;
 	}
 
 	printf("parsing file\n");
-	XMLHandle docHandle(&devicesFile);
+	XMLHandle docHandle(&channelsFile);
 	XMLElement* device = docHandle.FirstChildElement( "devices" ).FirstChild().ToElement();
 	if (device) {
 		XMLElement *nextdevice = device;
 		while (nextdevice != NULL) {
 			Variant::Map content;
 
-			printf("node: %s - ",nextdevice->Attribute("uuid"));
+			printf("node: %s - ",nextdevice->Attribute("internalid"));
 			printf("type: %s\n",nextdevice->Attribute("type"));
 
+			content["internalid"] = nextdevice->Attribute("internalid");
 			content["devicetype"] = nextdevice->Attribute("type");
 			XMLElement *channel = nextdevice->FirstChildElement( "channel" );
 			if (channel) {
@@ -94,7 +72,7 @@ bool loadDevices(string filename, Variant::Map& _deviceMap) {
 					nextchannel = nextchannel->NextSiblingElement();
 				}
 			}
-			_deviceMap[nextdevice->Attribute("uuid")] = content;
+			_channelMap[nextdevice->Attribute("internalid")] = content;
 			nextdevice = nextdevice->NextSiblingElement();
 		}
 	}
@@ -144,31 +122,30 @@ bool ola_send(int universe = 0) {
 		printf("Send to dmx failed for universe %i\n", universe);
 		return false;
 	}
-	printf("Send to dmx succesful for universe %i\n", universe);
 	return true;
 }
 
 /**
  * set a device to a color
  */
-void setDevice_color(Variant::Map device, int red=0, int green=0, int blue=0) {
+bool setDevice_color(Variant::Map device, int red=0, int green=0, int blue=0) {
 	string channel_red = device["red"];
 	string channel_green = device["green"];
 	string channel_blue = device["blue"];
 	ola_setChannel(atoi(channel_red.c_str()), red);
 	ola_setChannel(atoi(channel_green.c_str()), green);
 	ola_setChannel(atoi(channel_blue.c_str()), blue);
-	ola_send();
+	return ola_send();
 }
 
 /**
  * set device level 
  */
-void setDevice_level(Variant::Map device, int level=0) {
+bool setDevice_level(Variant::Map device, int level=0) {
 	if (device["level"]) {
 		string channel = device["level"];
 		ola_setChannel(atoi(channel.c_str()), (int) ( 255.0 * level / 100 ));
-		ola_send();
+		return ola_send();
 	} else {
 	        string channel_red = device["red"];
         	string channel_green = device["green"];
@@ -177,85 +154,81 @@ void setDevice_level(Variant::Map device, int level=0) {
 		int green = (int) ( buffer.Get(atoi(channel_green.c_str())) * level / 100);
 		int blue = (int) ( buffer.Get(atoi(channel_blue.c_str())) * level / 100);
 		printf("calculated RGB values for level %i are: red %i, green %i, blue %i\n");
-		setDevice_color(device, red, green, blue);
+		return setDevice_color(device, red, green, blue);
 	}
 }
 
 /**
  * set device strobe
  */
-void setDevice_strobe(Variant::Map device, int strobe=0) {
+bool setDevice_strobe(Variant::Map device, int strobe=0) {
 	if (device["strobe"]) {
 		string channel = device["strobe"];
 		ola_setChannel(atoi(channel.c_str()), (int) ( 255.0 * strobe / 100 ));
-		ola_send();
+		return ola_send();
 	} else {
 		printf("Strobe command not supported on device\n");
+                return false;
 	}
 }
 
 /**
- * announces our devices in the devicemap to the resolver
+ * announces our devices in the channelmap to the resolver
  */
-void reportDevices(Variant::Map devicemap) {
-	for (Variant::Map::const_iterator it = devicemap.begin(); it != devicemap.end(); ++it) {
+void reportDevices(Variant::Map channelmap) {
+	for (Variant::Map::const_iterator it = channelmap.begin(); it != channelmap.end(); ++it) {
 		Variant::Map device;
-		Variant::Map content;
-		Message event;
 
-		// printf("uuid: %s\n", it->first.c_str());
 		device = it->second.asMap();
-		// printf("devicetype: %s\n", device["devicetype"].asString().c_str());
-		content["devicetype"] = device["devicetype"].asString();
-		content["uuid"] = it->first;
-		encode(content, event);
-		event.setSubject("event.device.announce");
-		sender.send(event);
+                agoConnection->addDevice(device["internalid"].asString().c_str(), device["devicetype"].asString().c_str());
 	}
 }
 
+std::string commandHandler(qpid::types::Variant::Map command) {
+        bool handled = true;
+
+        const char *internalid = command["internalid"].asString().c_str();
+
+
+        if (command["command"] == "on") {
+                if (setDevice_level(channelMap[internalid].asMap(), 100)) {
+                        agoConnection->emitEvent(internalid, "event.device.statechanged", "255", "");
+                }
+        } else if (command["command"] == "off") {
+                if (setDevice_level(channelMap[internalid].asMap(), 0)) {
+                        agoConnection->emitEvent(internalid, "event.device.statechanged", "0", "");
+                }
+        } else if (command["command"] == "setlevel") {
+                if (setDevice_level(channelMap[internalid].asMap(), command["level"])) {
+                        agoConnection->emitEvent(internalid, "event.device.statechanged", command["level"].asString().c_str(), "");
+                }
+        } else if (command["command"] == "setcolor") {
+                if (!setDevice_color(channelMap[internalid].asMap(), command["red"], command["green"], command["blue"])) {
+                        handled = false;
+                }
+        } else if (command["command"] == "setstrobe") {
+                if (setDevice_strobe(channelMap[internalid].asMap(), command["strobe"])) {
+                        handled = false;
+                }
+        } else {
+                handled = false;
+        }
+        if (!handled) {
+                printf("ERROR, received undhandled command %s for node %s\n", command["command"].asString().c_str(), internalid); 
+        }
+        return "";
+}
+
+
 int main(int argc, char **argv) {
+        std::string channelsFile, ola_server;
 
-	std::string broker;
-	std::string eibdurl;
-	std::string devicesFile;
-
-	Variant::Map connectionOptions;
-
-	// parse config
-	CDataFile ExistingDF("/etc/opt/agocontrol/config.ini");
-
-	t_Str szBroker  = t_Str("");
-	szBroker = ExistingDF.GetString("broker", "system");
-	if ( szBroker.size() == 0 )
-		broker="localhost:5672";
-	else		
-		broker= szBroker;
-
-	t_Str szUsername  = t_Str("");
-	szUsername = ExistingDF.GetString("username", "system");
-	if ( szUsername.size() == 0 )
-		connectionOptions["username"]="agocontrol";
-	else		
-		connectionOptions["username"] = szUsername;
-
-	t_Str szPassword  = t_Str("");
-	szPassword = ExistingDF.GetString("password", "system");
-	if ( szPassword.size() == 0 )
-		connectionOptions["password"]="letmein";
-	else		
-		connectionOptions["password"]=szPassword;
-
-	t_Str szDevicesFile  = t_Str("");
-	szDevicesFile = ExistingDF.GetString("devicesfile", "dmx");
-	if ( szDevicesFile.size() == 0 )
-		devicesFile="/etc/opt/agocontrol/dmx/channels.xml";
-	else		
-		devicesFile=szDevicesFile;
+        channelsFile=getConfigOption("dmx", "channelsfile", "/etc/opt/agocontrol/dmx/channels.xml");
+        ola_server=getConfigOption("dmx", "url", "ip:127.0.0.1");
 
 	// load xml file into map
-	if (!loadDevices(devicesFile, deviceMap)) {
-		printf("ERROR, can't load device xml\n");
+	if (!loadChannels(channelsFile, channelMap)) {
+		printf("ERROR, can't load channel xml\n");
 		exit(-1);
 	}
 
@@ -265,91 +238,17 @@ int main(int argc, char **argv) {
 		exit(-1);
 	}
 
+        AgoConnection _agoConnection = AgoConnection("dmx");         
+        agoConnection = &_agoConnection;
 
-	connectionOptions["reconnect"] = "true";
+        printf("connection to agocontrol established\n");
 
-	Connection connection(broker, connectionOptions);
-	try {
-		connection.open(); 
-		session = connection.createSession(); 
-		receiver = session.createReceiver("agocontrol; {create: always, node: {type: topic}}"); 
-		sender = session.createSender("agocontrol; {create: always, node: {type: topic}}"); 
-	} catch(const std::exception& error) {
-		std::cerr << error.what() << std::endl;
-		connection.close();
-		printf("could not startup\n");
-		return 1;
-	}
+        reportDevices(channelMap);
 
-	pthread_mutex_init(&mutexCon,NULL);
+        agoConnection->addHandler(commandHandler);
 
-	// announce devices to resolver
-	reportDevices(deviceMap);
-
-
-
-	while( true )
-	{
-
-		// Do stuff
-		try{
-			Variant::Map content;
-			Message message = receiver.fetch(Duration::SECOND * 3);
-
-			// workaround for bug qpid-3445
-			if (message.getContent().size() < 4) {
-				throw qpid::messaging::EncodingException("message too small");
-			}
-
-			decode(message, content);
-			// std::cout << content << std::endl;
-				session.acknowledge();
-			if (content["command"] == "discover") {
-				reportDevices(deviceMap);
-			} else if (message.getSubject()=="") { // no subject, this should be a command
-				// let's see if the command is for one of our devices
-				for (Variant::Map::const_iterator it = deviceMap.begin(); it != deviceMap.end(); ++it) {
-					if (content["uuid"] == it->first) {
-						printf("received command  %s for device %s\n", content["command"].asString().c_str(), it->first.c_str());
-						bool handled=true;
-						if (content["command"] == "on") {
-							setDevice_level(it->second.asMap(), 100);
-						} else if (content["command"] == "off") {
-							setDevice_level(it->second.asMap(), 0);
-						} else if (content["command"] == "setlevel") {
-							setDevice_level(it->second.asMap(), content["level"]);
-						} else if (content["command"] == "setcolor") {
-							setDevice_color(it->second.asMap(), content["red"], content["green"], content["blue"]);
-						} else if (content["command"] == "setstrobe") {
-							setDevice_strobe(it->second.asMap(), content["strobe"]);
-						} else {
-							handled=false;
-						}
-						if (handled) {	
-							printf("Command handled ... \n");
-						} else {
-							printf("ERROR, received undhandled command\n");
-						}
-					}
-				}
-			}
-
-		} catch(const NoMessageAvailable& error) {
-			
-		} catch(const std::exception& error) {
-			std::cerr << error.what() << std::endl;
-		}
-
-	}
+        printf("waiting for messages\n");
+        agoConnection->run();
 
 	ola_disconnect();
-
-	try {
-		connection.close();
-	} catch(const std::exception& error) {
-		std::cerr << error.what() << std::endl;
-		connection.close();
-		return 1;
-	}
-	
 }

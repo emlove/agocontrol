@@ -1,0 +1,30 @@
+<devices>
+    <device internalid="1" type="dimmerrgb">
+      <channel type="red">0</channel>
+      <channel type="green">1</channel>
+      <channel type="blue">2</channel>
+      <channel type="level">3</channel>
+      <channel type="strobe">4</channel>
+    </device>
+    <device internalid="2" type="dimmerrgb">
+      <channel type="red">5</channel>
+      <channel type="green">6</channel>
+      <channel type="blue">7</channel>
+      <channel type="level">8</channel>
+      <channel type="strobe">9</channel>
+    </device>
+    <device internalid="3" type="dimmerrgb">
+      <channel type="red">10</channel>
+      <channel type="green">11</channel>
+      <channel type="blue">12</channel>
+      <channel type="level">13</channel>
+      <channel type="strobe">14</channel>
+    </device>
+    <device internalid="4" type="dimmerrgb">
+      <channel type="red">15</channel>
+      <channel type="green">16</channel>
+      <channel type="blue">17</channel>
+      <channel type="level">18</channel>
+      <channel type="strobe">19</channel>
+    </device>
+</devices>
