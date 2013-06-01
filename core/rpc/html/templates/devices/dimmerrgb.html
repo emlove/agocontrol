@@ -12,7 +12,11 @@
 		</div>
 		<div class="nine columns">
 			<div class="grid-item-header">
-				<h3>Blink M RGB LED</h3>
+                                {{#if name}}
+                                        <h3>{{name}}</h3>
+                                {{else}}
+                                        <h3>{{devicetype}}</h3>
+                                {{/if}}
 				<span class="room"><i class="icon-location"></i>{{room}}</span>
 			</div>
 		</div>
