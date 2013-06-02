@@ -355,8 +355,8 @@ events:
   event.security.intruderalert:
     description: intruder alarm
     parameters: [uuid]
-  event.environment.energy:
-    description: announces a status change of a device
+  event.environment.energychanged:
+    description: energy has changed
     parameters: [level, uuid]
 units:
   degC:
