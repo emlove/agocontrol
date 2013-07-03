@@ -219,6 +219,7 @@ void OnNotification
 				tempstream << (int) _notification->GetNodeId();
 				tempstream << "/";
 				tempstream << (int) id.GetInstance();
+				string nodeinstance = tempstream.str();
 				tempstream << "-";
 				tempstream << label;
 				string tempstring = tempstream.str();
@@ -266,10 +267,10 @@ void OnNotification
 						}
 					break;
 					case COMMAND_CLASS_BASIC_WINDOW_COVERING:
-						if (label == "Open") {
+						// if (label == "Open") {
 							printf("adding ago device drapes for value id: %s\n", tempstring.c_str());
 							agoConnection->addDevice(tempstring.c_str(), "drapes");
-						}
+					//	}
 					break;
 					case COMMAND_CLASS_THERMOSTAT_SETPOINT:
 						printf("adding ago device thermostat for value id: %s\n", tempstring.c_str());
