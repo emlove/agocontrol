@@ -489,11 +489,13 @@ def parseProbeMatchMessage(dom):
     env.setRelatesTo(dom.getElementsByTagNameNS(NS_A, "RelatesTo")[0].firstChild.data.strip())
     env.setTo(dom.getElementsByTagNameNS(NS_A, "To")[0].firstChild.data.strip())
 
-    appSeqNode = dom.getElementsByTagNameNS(NS_D, "AppSequence")[0]
-    env.setInstanceId(appSeqNode.getAttribute("InstanceId"))
-    env.setSequenceId(appSeqNode.getAttribute("SequenceId"))
-    env.setMessageNumber(appSeqNode.getAttribute("MessageNumber"))
-
+    try:
+	    appSeqNode = dom.getElementsByTagNameNS(NS_D, "AppSequence")[0]
+	    env.setInstanceId(appSeqNode.getAttribute("InstanceId"))
+	    env.setSequenceId(appSeqNode.getAttribute("SequenceId"))
+	    env.setMessageNumber(appSeqNode.getAttribute("MessageNumber"))
+    except:
+    	appSeqNode = None
     pmNodes = dom.getElementsByTagNameNS(NS_D, "ProbeMatch")
     for node in pmNodes:
         epr = node.getElementsByTagNameNS(NS_A, "Address")[0].firstChild.data.strip()
