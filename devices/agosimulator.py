@@ -24,7 +24,7 @@ def messageHandler(internalid, content):
 		if content['command'] == 'setlevel':
 			if 'level' in content:
 				print "device level changed", content["level"]
-				client.emitEvent(internalid, "event.device.statechanged", level, "")
+				client.emitEvent(internalid, "event.device.statechanged", content["level"], "")
 
 client.addHandler(messageHandler)
 
