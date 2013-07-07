@@ -55,6 +55,8 @@ function device(obj, uuid) {
 
     this.uuid = uuid;
 
+    this.handledBy = this['handled-by'];
+
     var currentState = parseInt(this.state);
     this.state = ko.observable(currentState);
 
