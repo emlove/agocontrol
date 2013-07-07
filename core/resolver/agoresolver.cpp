@@ -282,7 +282,10 @@ int main(int argc, char **argv) {
 					// if no uuid is provided, we need to generate one for a new floorplan
 					if (uuid == "") uuid = generateUuid();
 					inv.setfloorplanname(uuid, content["name"]);
-					Message response(uuid);
+					Variant::Map replyMap;
+					replyMap["uuid"] = uuid;
+					Message response;
+					encode(replyMap, response);
 					replyMessage(message.getReplyTo(), response);
 					emitNameEvent(content["uuid"].asString().c_str(), "event.system.floorplannamechanged", content["name"].asString().c_str());
 				} else if (content["command"] == "setdevicefloorplan") {
