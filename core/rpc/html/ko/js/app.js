@@ -39,13 +39,9 @@ var schema = {};
 var deviceMap = [];
 var rooms = {};
 var floorPlans = {};
+var currentFloorPlan = ko.observable({});
 
-var supported_devices =  ["switch",
-                          "dimmer",
-                          "binarysensor",
-                          "dimmerrgb",
-                          "multilevelsensor",
-                          "placeholder"];
+var supported_devices = [ "switch", "dimmer", "binarysensor", "dimmerrgb", "multilevelsensor", "placeholder" ];
 
 function device(obj, uuid) {
     var self = this;
@@ -118,17 +114,18 @@ function device(obj, uuid) {
 
 }
 
-var page = getQueryVariable("page");
-if (page == "dashboard") {
-    init_dashBoard();
-} else if (page == "floorPlan") {
-    init_floorPlan();
-} else if (page == "configuration") {
-    init_configuration();
-} else if (page == "deviceConfig") {
-    init_deviceConfig();
+function initGUI() {
+    var page = getQueryVariable("page");
+    if (page == "dashboard") {
+	init_dashBoard();
+    } else if (page == "floorPlan") {
+	init_floorPlan();
+    } else if (page == "configuration") {
+	init_configuration();
+    } else if (page == "deviceConfig") {
+	init_deviceConfig();
+    }
 }
-
 // --- AGO --- //
 
 function handleEvent(response) {
@@ -166,7 +163,24 @@ function handleInventory(response) {
     schema = response.result.schema;
     floorPlans = response.result.floorplans;
 
-    console.debug($.isEmptyObject(response.result.floorplans));
+    if ($.isEmptyObject(response.result.floorplans)) {
+	var content = {};
+	content.command = "setfloorplanname";
+	content.name = "FloorPlan";
+	sendCommand(content, getInventory);
+	return;
+    }
+
+    for ( var k in floorPlans) {
+	if (floorPlans[k].name == "FloorPlan") {
+	    var tmp;
+	    tmp = floorPlans[k];
+	    tmp.uuid = k;
+	    currentFloorPlan(tmp);
+	    console.log(currentFloorPlan());
+	}
+    }
+
     console.debug("Inventory:");
     console.debug(response.result);
 
@@ -181,6 +195,8 @@ function handleInventory(response) {
 	}
 	deviceMap.push(new device(inventory[uuid], uuid));
     }
+
+    initGUI();
 
     if (model.devices !== undefined) {
 	model.devices(deviceMap);
@@ -214,7 +230,8 @@ function unsubscribe() {
     request.params = {};
     request.params.uuid = subscription;
 
-    $.post(url, JSON.stringify(request), function() { }, "json");
+    $.post(url, JSON.stringify(request), function() {
+    }, "json");
 }
 
 function handleSubscribe(response) {

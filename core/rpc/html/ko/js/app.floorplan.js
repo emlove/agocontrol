@@ -40,6 +40,43 @@ function floorPlan() {
 	return result;
     });
 
+    self.findDevice = function(uuid) {
+	for ( var i = 0; i < self.devices().length; i++) {
+	    if (self.devices()[i].uuid == uuid) {
+		return self.devices()[i];
+	    }
+	}
+    };
+
+    /* Load the floorplan data into the grid */
+    this.devSubscription = 0;
+    this.devSubscription = this.devices.subscribe(function() {
+	if (self.devices().length == 0) {
+	    return;
+	}
+	var list = currentFloorPlan();
+	var result = self.placedDevices();
+	for ( var k in list) {
+	    if (k == "name" || k == "uuid") {
+		continue;
+	    }
+	    var x = list[k].x;
+	    var y = list[k].y;
+	    if (x < 0 || y < 0) {
+		continue;
+	    }
+	    if (result[x] === undefined) {
+		result[x] = [];
+	    }
+	    result[x][y] = self.findDevice(k);
+	}
+	self.placedDevices([]);
+	self.placedDevices(result);
+	console.log(result);
+	self.devSubscription.dispose();
+	self.devSubscription = 0;
+    });
+
     this.placedDevices = ko.observable([]);
 
     this.firstRow = ko.computed(function() {
@@ -96,6 +133,16 @@ function floorPlan() {
 	return result;
     });
 
+    this.saveDevicePos = function(uuid, x, y) {
+	var content = {};
+	content.command = "setdevicefloorplan";
+	content.floorplan = currentFloorPlan().uuid;
+	content.uuid = uuid;
+	content.x = x;
+	content.y = y;
+	sendCommand(content);
+    };
+
     this.postRender = function() {
 	$('.dnd-device').each(function() {
 	    $(this).draggable({
@@ -126,6 +173,7 @@ function floorPlan() {
 		    var uuid = ui.draggable.data("uuid");
 		    console.debug("dropped:" + uuid + " on " + x + " / " + y);
 		    var tmp = self.placedDevices();
+		    /* Remove old entry if any */
 		    for ( var i = 0; i < tmp.length; i++) {
 			if (tmp[i] === undefined) {
 			    continue;
@@ -136,12 +184,14 @@ function floorPlan() {
 			    }
 			}
 		    }
+		    /* Add the new one */
 		    for ( var i = 0; i < self.devices().length; i++) {
 			if (self.devices()[i].uuid == uuid) {
 			    if (tmp[x] === undefined) {
 				tmp[x] = [];
 			    }
 			    tmp[x][y] = self.devices()[i];
+			    self.saveDevicePos(uuid, x, y);
 			    self.placedDevices([]);
 			    self.placedDevices(tmp);
 			}
@@ -180,6 +230,7 @@ function floorPlan() {
 		    for ( var j = 0; j < tmp[i].length; j++) {
 			if (tmp[i][j] !== undefined && tmp[i][j].uuid == uuid) {
 			    tmp[i][j] = undefined;
+			    self.saveDevicePos(uuid, -1, -1);
 			}
 		    }
 		}
