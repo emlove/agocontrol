@@ -1,0 +1,6 @@
+<div class="row grid" data-bind="template: {name: deviceTemplate, foreach: firstRow}"></div>
+<div class="row grid" data-bind="template: {name: deviceTemplate, foreach: secondRow}"></div>
+<div class="row grid" data-bind="template: {name: deviceTemplate, foreach: thirdRow}"></div>
+<div id="pagination" class="row" data-bind="foreach: pages">
+	<div class="small oval btn info"><a href="#" data-bind="text: idx, click: $root.switchPage"></a></div>
+</div>
