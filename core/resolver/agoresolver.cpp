@@ -90,6 +90,14 @@ bool emitNameEvent(const char *uuid, const char *eventType, const char *name) {
         return sendMessage(eventType, content);
 }
 
+bool emitFloorplanEvent(const char *uuid, const char *eventType, const char *floorplan, int x, int y) {
+        Variant::Map content;
+        content["uuid"] = uuid;
+        content["floorplan"] = floorplan;
+        content["x"] = x;
+        content["y"] = y;
+        return sendMessage(eventType, content);
+}
 void handleEvent(Variant::Map *device, string subject, Variant::Map *content);
 
 int main(int argc, char **argv) {
@@ -276,6 +284,7 @@ int main(int argc, char **argv) {
 					inv.setfloorplanname(uuid, content["name"]);
 					Message response(uuid);
 					replyMessage(message.getReplyTo(), response);
+					emitNameEvent(content["uuid"].asString().c_str(), "event.system.floorplannamechanged", content["name"].asString().c_str());
 				} else if (content["command"] == "setdevicefloorplan") {
 					string result;
 					if ((content["uuid"].asString() != "") && (inv.setdevicefloorplan(content["uuid"], content["floorplan"], content["x"], content["y"]) == 0)) {
@@ -285,6 +294,7 @@ int main(int argc, char **argv) {
 					}
 					Message response(result);
 					replyMessage(message.getReplyTo(), response);
+					emitFloorplanEvent(content["uuid"].asString().c_str(), "event.system.floorplandevicechanged", content["floorplan"].asString().c_str(), content["x"], content["y"]);
 
 				} else if (content["command"] == "deletefloorplan") {
 					string result;
