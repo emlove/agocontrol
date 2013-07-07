@@ -223,7 +223,7 @@ int main(int argc, char **argv) {
 					reply["schema"] = schema;	
 					reply["rooms"] = inv.getrooms();
 					reply["floorplans"] = inv.getfloorplans();
-					reply["result"] = 0;
+					reply["returncode"] = 0;
 
 					// cout << agocontrol::kLogDebug << "inv: " << inventory << std::endl;
 				} else if (content["command"] == "setroomname") {
@@ -232,11 +232,11 @@ int main(int argc, char **argv) {
 					if (uuid == "") uuid = generateUuid();
 					inv.setroomname(uuid, content["name"]);
 					reply["uuid"] = uuid;
-					reply["result"] = 0;
+					reply["returncode"] = 0;
 					emitNameEvent(uuid.c_str(), "event.system.roomnamechanged", content["name"].asString().c_str());
 				} else if (content["command"] == "setdeviceroom") {
 					if ((content["uuid"].asString() != "") && (inv.setdeviceroom(content["uuid"], content["room"]) == 0)) {
-						reply["result"] = 0;
+						reply["returncode"] = 0;
 						// update room in local device map
 						Variant::Map *device;
 						string room = inv.getdeviceroom(content["uuid"]);
@@ -244,11 +244,11 @@ int main(int argc, char **argv) {
 						device = &inventory[uuid].asMap();
 						(*device)["room"]= room;
 					} else {
-						reply["result"] = -1;
+						reply["returncode"] = -1;
 					}
 				} else if (content["command"] == "setdevicename") {
 					if ((content["uuid"].asString() != "") && (inv.setdevicename(content["uuid"], content["name"]) == 0)) {
-						reply["result"] = 0;
+						reply["returncode"] = 0;
                                                 // update name in local device map
                                                 Variant::Map *device;
                                                 string name = inv.getdevicename(content["uuid"]);
@@ -256,36 +256,40 @@ int main(int argc, char **argv) {
                                                 device = &inventory[uuid].asMap();
                                                 (*device)["name"]= name;
                                         } else {
-						reply["result"] = -1;
+						reply["returncode"] = -1;
                                         }
 					emitNameEvent(content["uuid"].asString().c_str(), "event.system.devicenamechanged", content["name"].asString().c_str());
 
 				} else if (content["command"] == "deleteroom") {
 					if (inv.deleteroom(content["uuid"]) == 0) {
-						reply["result"] = 0;
+						reply["returncode"] = 0;
 					} else {
-						reply["result"] = -1;
+						reply["returncode"] = -1;
 					}
 				} else if (content["command"] == "setfloorplanname") {
 					string uuid = content["uuid"];
 					// if no uuid is provided, we need to generate one for a new floorplan
 					if (uuid == "") uuid = generateUuid();
-					inv.setfloorplanname(uuid, content["name"]);
-					reply["uuid"] = uuid;
-					emitNameEvent(content["uuid"].asString().c_str(), "event.system.floorplannamechanged", content["name"].asString().c_str());
+					if (inv.setfloorplanname(uuid, content["name"]) == 0) {
+						reply["uuid"] = uuid;
+						reply["returncode"] = 0;
+						emitNameEvent(content["uuid"].asString().c_str(), "event.system.floorplannamechanged", content["name"].asString().c_str());
+					} else {
+						reply["returncode"] = -1;
+					}
 				} else if (content["command"] == "setdevicefloorplan") {
 					if ((content["uuid"].asString() != "") && (inv.setdevicefloorplan(content["uuid"], content["floorplan"], content["x"], content["y"]) == 0)) {
-						reply["result"] = 0;
+						reply["returncode"] = 0;
 					} else {
-						reply["result"] = -1;
+						reply["returncode"] = -1;
 					}
 					emitFloorplanEvent(content["uuid"].asString().c_str(), "event.system.floorplandevicechanged", content["floorplan"].asString().c_str(), content["x"], content["y"]);
 
 				} else if (content["command"] == "deletefloorplan") {
 					if (inv.deletefloorplan(content["uuid"]) == 0) {
-						reply["result"] = 0;
+						reply["returncode"] = 0;
 					} else {
-						reply["result"] = -1;
+						reply["returncode"] = -1;
 					}
 				}
 				Message response;
