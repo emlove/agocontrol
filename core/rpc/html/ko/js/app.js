@@ -214,7 +214,7 @@ function unsubscribe() {
     request.params = {};
     request.params.uuid = subscription;
 
-    $.post(url, JSON.stringify(request), handleUnsubscribe, "json");
+    $.post(url, JSON.stringify(request), function() { }, "json");
 }
 
 function handleSubscribe(response) {
