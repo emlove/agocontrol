@@ -114,18 +114,28 @@ function device(obj, uuid) {
 
 }
 
+
+/**
+ * This gets set when the GUI needs to be initalized
+ * after loading the inventory.
+ */
+var deferredInit = null;
+
 function initGUI() {
     var page = getQueryVariable("page");
     if (page == "dashboard") {
-	init_dashBoard();
+	deferredInit = init_dashBoard;
     } else if (page == "floorPlan") {
-	init_floorPlan();
+	deferredInit = init_floorPlan;
     } else if (page == "configuration") {
 	init_configuration();
     } else if (page == "deviceConfig") {
 	init_deviceConfig();
     }
 }
+
+initGUI();
+
 // --- AGO --- //
 
 function handleEvent(response) {
@@ -196,7 +206,9 @@ function handleInventory(response) {
 	deviceMap.push(new device(inventory[uuid], uuid));
     }
 
-    initGUI();
+    if (deferredInit) {
+	deferredInit();
+    }
 
     if (model.devices !== undefined) {
 	model.devices(deviceMap);
