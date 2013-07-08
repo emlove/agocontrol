@@ -29,12 +29,13 @@ function deviceConfig() {
 	    var content = {};
 	    content.uuid = $(this).parent().data('uuid');
 	    content.command = "setdeviceroom";
-	    content.room = value;
+	    content.room = value == "unset" ? "" : value;
 	    sendCommand(content);
-	    return rooms[value].name;
+	    return value == "unset" ? "unset" : rooms[value].name;
 	}, {
 	    data : function(value, settings) {
 		var list = {};
+		list["unset"] = "--";
 		for ( var uuid in rooms) {
 		    list[uuid] = rooms[uuid].name;
 		}
