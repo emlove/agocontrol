@@ -20,7 +20,7 @@ function deviceConfig() {
 	    return value;
 	}, {
 	    data : function(value, settings) {
-		return $(value).text();
+		return value;
 	    },
 	    onblur : "cancel"
 	});
