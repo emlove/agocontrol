@@ -133,6 +133,8 @@ int main(int argc, char **argv) {
 
 	Variant::Map inventory; // used to hold device registrations
 	Variant::Map schema;  
+	Variant::Map system; // holds system information
+	system["uuid"] = getConfigOption("system", "uuid", "00000000-0000-0000-000000000000");
 
 	clog << agocontrol::kLogDebug << "parsing schema file" << std::endl;
 	schema = parseSchema(schemafile.c_str());
@@ -223,6 +225,7 @@ int main(int argc, char **argv) {
 					reply["schema"] = schema;	
 					reply["rooms"] = inv.getrooms();
 					reply["floorplans"] = inv.getfloorplans();
+					reply["system"] = system;
 					reply["returncode"] = 0;
 
 					// cout << agocontrol::kLogDebug << "inv: " << inventory << std::endl;
