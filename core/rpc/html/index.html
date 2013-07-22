@@ -43,8 +43,13 @@
 			<div class="pretty medium primary btn btn-full icon-left icon-home">
 				<a href="?dashboard">Dashboard</a>
 			</div>
-			<div class="pretty medium primary btn btn-full icon-left icon-list">
-	    		<a href="?floorPlan">Floorplan</a>
+			<!-- ko foreach: floorPlans -->
+				<div class="pretty medium primary btn btn-full icon-left icon-list">
+	    			<a href="?floorPlan" data-bind="text: name, attr: {href: '?floorplan&fp=' + uuid}"></a>
+				</div>
+			<!-- /ko -->
+			<div class="pretty medium secondary btn btn-full icon-left icon-list">
+	    			<a href="#" onclick="createFloorPlan(); return false;" >New FLoorplan</a>
 			</div>
 			<hr />
 			<!-- ko if: hasNavigation -->

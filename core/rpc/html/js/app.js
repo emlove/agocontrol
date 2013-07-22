@@ -27,8 +27,9 @@ ko.bindingHandlers.slider = {
     }
 };
 
-function getQueryVariable(variable) {
+function getPage() {
     var query = window.location.search.substring(1);
+    query = query.split("&")[0];
     return query ? query : "dashboard";
 }
 
@@ -114,18 +115,27 @@ function device(obj, uuid) {
 
 }
 
+function buildfloorPlanList(model) {
+    model.floorPlans = ko.observableArray([]);
+    for ( var k in floorPlans) {
+	model.floorPlans.push({
+	    uuid : k,
+	    name : floorPlans[k].name
+	});
+    }
+}
 
 /**
- * This gets set when the GUI needs to be initalized
- * after loading the inventory.
+ * This gets set when the GUI needs to be initalized after loading the
+ * inventory.
  */
 var deferredInit = null;
 
 function initGUI() {
-    var page = getQueryVariable("page");
+    var page = getPage();
     if (page == "dashboard") {
 	deferredInit = init_dashBoard;
-    } else if (page == "floorPlan") {
+    } else if (page == "floorplan") {
 	deferredInit = init_floorPlan;
     } else if (page == "configuration") {
 	init_configuration();
@@ -139,7 +149,6 @@ initGUI();
 // --- AGO --- //
 
 function handleEvent(response) {
-    // console.log(response);
     for ( var i = 0; i < deviceMap.length; i++) {
 	if (deviceMap[i].uuid == response.result.uuid) {
 	    deviceMap[i].state(parseInt(response.result.level));
@@ -173,21 +182,21 @@ function handleInventory(response) {
     schema = response.result.schema;
     floorPlans = response.result.floorplans;
 
-    if ($.isEmptyObject(response.result.floorplans)) {
-	var content = {};
-	content.command = "setfloorplanname";
-	content.name = "FloorPlan";
-	sendCommand(content, getInventory);
-	return;
+    /* Parse floorplan uuid */
+    var fp = window.location.search.substring(1);
+    var tmp = fp.split("&");
+    for ( var i = 0; i < tmp.length; i++) {
+	if (tmp[i].indexOf("fp=") == 0) {
+	    fp = tmp[i].split("=")[1];
+	}
     }
 
     for ( var k in floorPlans) {
-	if (floorPlans[k].name == "FloorPlan") {
+	if (k == fp) {
 	    var tmp;
 	    tmp = floorPlans[k];
 	    tmp.uuid = k;
 	    currentFloorPlan(tmp);
-	    console.log(currentFloorPlan());
 	}
     }
 
@@ -265,14 +274,11 @@ function sendCommand(content, callback) {
     request.id = 1;
     request.jsonrpc = "2.0";
 
-    console.log(request);
-
     $.ajax({
 	type : 'POST',
 	url : url,
 	data : JSON.stringify(request),
 	success : function(r) {
-	    console.log(r);
 	    if (callback !== undefined) {
 		callback(r);
 	    }

@@ -58,6 +58,8 @@ function dashBoard() {
     this.switchPage = function(item) {
 	self.page(item.idx);
     };
+
+    buildfloorPlanList(this);
 }
 
 /**
@@ -70,7 +72,7 @@ function init_dashBoard() {
 	if (supported_devices.indexOf(item.devicetype) != -1) {
 	    return 'devices/' + item.devicetype;
 	}
-	
+
 	return 'devices/empty';
     }.bind(model);
 

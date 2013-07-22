@@ -241,6 +241,8 @@ function floorPlan() {
 
 	self.postRender();
     };
+
+    buildfloorPlanList(this);
 }
 
 /**
@@ -265,4 +267,16 @@ function init_floorPlan() {
     }.bind(model);
 
     ko.applyBindings(model);
+}
+
+function createFloorPlan() {
+    var content = {};
+    content.command = "setfloorplanname";
+    content.name = window.prompt("Please enter a name for the floorplan", "FloorPlan Name");
+    if (!content.name) {
+	return;
+    }
+    sendCommand(content, function(r) {
+	document.location.href = "?floorplan&fp=" + r.result.uuid;
+    });
 }
