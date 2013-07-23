@@ -1825,6 +1825,12 @@ ago control Styles
   margin: 1px 0 20px;
 }
 
+#col-left .btn-full a {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 #col-right {
 	-moz-border-radius: 0 0 5px 5px;
     -webkit-border-radius: 0 0 5px 5px;
