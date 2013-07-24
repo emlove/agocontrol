@@ -378,6 +378,7 @@ int main(int argc, char **argv) {
 	string port; 
 	string htdocs;
 	string certificate;
+	string numthreads;
 
 	Variant::Map connectionOptions;
 	broker=getConfigOption("system", "broker", "localhost:5672");
@@ -386,11 +387,12 @@ int main(int argc, char **argv) {
 	port=getConfigOption("rpc", "ports", "8008,8009s");
 	htdocs=getConfigOption("rpc", "htdocs", "/opt/agocontrol/html");
 	certificate=getConfigOption("rpc", "certificate", "/etc/opt/agocontrol/rpc_cert.pem");
+	numthreads=getConfigOption("rpc", "numthreads", "10");
 
 	static const char *options[] = {
 		"document_root", htdocs.c_str(),
 		"listening_ports", port.c_str(),
-		"num_threads", "10",
+		"num_threads", numthreads.c_str(),
 		"ssl_certificate", certificate.c_str(),
 		NULL
 	};
