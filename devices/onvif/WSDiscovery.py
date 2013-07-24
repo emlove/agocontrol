@@ -357,18 +357,18 @@ def getXAddrs(xAddrsNode):
 def createSkelSoapMessage(soapAction):
     doc = minidom.Document()
 
-    envEl = doc.createElementNS(NS_S, "s:Envelope")
-    envEl.setAttribute("xmlns:s", NS_S)
-    envEl.setAttribute("xmlns:a", NS_A)
-    envEl.setAttribute("xmlns:d", NS_D)
+    envEl = doc.createElementNS(NS_S, "SOAP-ENV:Envelope")
+    envEl.setAttribute("xmlns:SOAP-ENV", NS_S)
+    envEl.setAttribute("xmlns:wsa", NS_A)
+    envEl.setAttribute("xmlns:wsdd", NS_D)
     doc.appendChild(envEl)
 
-    headerEl = doc.createElementNS(NS_S, "s:Header")
+    headerEl = doc.createElementNS(NS_S, "SOAP-ENV:Header")
     envEl.appendChild(headerEl)
 
-    addElementWithText(doc, headerEl, "a:Action", NS_A, soapAction)
+    addElementWithText(doc, headerEl, "wsa:Action", NS_A, soapAction)
 
-    bodyEl = doc.createElementNS(NS_S, "s:Body")
+    bodyEl = doc.createElementNS(NS_S, "SOAP-ENV:Body")
     envEl.appendChild(bodyEl)
 
     return doc
@@ -415,21 +415,21 @@ def addTypes(doc, node, types):
                 prefix = prefixMap.get(ns)
             addNSAttrToEl(envEl, ns, prefix)
             typeList.append(prefix + ":" + localname)
-        addElementWithText(doc, node, "d:Types", NS_D, " ".join(typeList))
+        addElementWithText(doc, node, "wsdd:Types", NS_D, " ".join(typeList))
 
 def addScopes(doc, node, scopes):
     if scopes is not None and len(scopes) > 0:
-        addElementWithText(doc, node, "d:Scopes", NS_D, " ".join([x.getValue() for x in scopes]))
+        addElementWithText(doc, node, "wsdd:Scopes", NS_D, " ".join([x.getValue() for x in scopes]))
         if scopes[0].getMatchBy() is not None and len(scopes[0].getMatchBy()) > 0:
             node.getElementsByTagNameNS(NS_D, "Scopes")[0].setAttribute("MatchBy", scopes[0].getMatchBy())
 
 def addXAddrs(doc, node, xAddrs):
     if xAddrs is not len(xAddrs) > 0:
-        addElementWithText(doc, node, "d:XAddrs", NS_D, " ".join([x for x in xAddrs]))
+        addElementWithText(doc, node, "wsdd:XAddrs", NS_D, " ".join([x for x in xAddrs]))
 
 def addEPR(doc, node, epr):
-    eprEl = doc.createElementNS(NS_A, "a:EndpointReference")
-    addElementWithText(doc, eprEl, "a:Address", NS_A, epr)
+    eprEl = doc.createElementNS(NS_A, "wsa:EndpointReference")
+    addElementWithText(doc, eprEl, "wsa:Address", NS_A, epr)
     node.appendChild(eprEl)
 
 def createMulticastOutSocket():
@@ -622,7 +622,10 @@ def parseByeMessage(dom):
     return env
 
 def parseEnvelope(data):
-    dom = minidom.parseString(data)    
+    try:
+	    dom = minidom.parseString(data)    
+    except:
+    	print data
     soapAction = dom.getElementsByTagNameNS(NS_A, "Action")[0].firstChild.data.strip()
     if soapAction == ACTION_PROBE:
         return parseProbeMessage(dom)
@@ -660,13 +663,13 @@ def createProbeMessage(env):
     bodyEl = getBodyEl(doc)
     headerEl = getHeaderEl(doc)
 
-    addElementWithText(doc, headerEl, "a:MessageID", NS_A, env.getMessageId())
-    addElementWithText(doc, headerEl, "a:To", NS_A, env.getTo())
+    addElementWithText(doc, headerEl, "wsa:MessageID", NS_A, env.getMessageId())
+    addElementWithText(doc, headerEl, "wsa:To", NS_A, env.getTo())
 
     if len(env.getReplyTo()) > 0:
-        addElementWithText(doc, headerEl, "a:ReplyTo", NS_A, env.getReplyTo())
+        addElementWithText(doc, headerEl, "wsa:ReplyTo", NS_A, env.getReplyTo())
 
-    probeEl = doc.createElementNS(NS_D, "d:Probe")
+    probeEl = doc.createElementNS(NS_D, "wsdd:Probe")
     bodyEl.appendChild(probeEl)
 
     addTypes(doc, probeEl, env.getTypes())
@@ -680,24 +683,24 @@ def createProbeMatchMessage(env):
     bodyEl = getBodyEl(doc)
     headerEl = getHeaderEl(doc)
 
-    addElementWithText(doc, headerEl, "a:MessageID", NS_A, env.getMessageId())
-    addElementWithText(doc, headerEl, "a:RelatesTo", NS_A, env.getRelatesTo())
-    addElementWithText(doc, headerEl, "a:To", NS_A, env.getTo())
+    addElementWithText(doc, headerEl, "wsa:MessageID", NS_A, env.getMessageId())
+    addElementWithText(doc, headerEl, "wsa:RelatesTo", NS_A, env.getRelatesTo())
+    addElementWithText(doc, headerEl, "wsa:To", NS_A, env.getTo())
 
-    appSeqEl = doc.createElementNS(NS_D, "d:AppSequence")
+    appSeqEl = doc.createElementNS(NS_D, "wsdd:AppSequence")
     appSeqEl.setAttribute("InstanceId", env.getInstanceId())
     appSeqEl.setAttribute("MessageNumber", env.getMessageNumber())
     headerEl.appendChild(appSeqEl)
 
-    probeMatchesEl = doc.createElementNS(NS_D, "d:ProbeMatches")
+    probeMatchesEl = doc.createElementNS(NS_D, "wsdd:ProbeMatches")
     probeMatches = env.getProbeResolveMatches()
     for probeMatch in probeMatches:
-        probeMatchEl = doc.createElementNS(NS_D, "d:ProbeMatch")
+        probeMatchEl = doc.createElementNS(NS_D, "wsdd:ProbeMatch")
         addEPR(doc, probeMatchEl, probeMatch.getEPR())
         addTypes(doc, probeMatchEl, probeMatch.getTypes())
         addScopes(doc, probeMatchEl, probeMatch.getScopes())
         addXAddrs(doc, probeMatchEl, probeMatch.getXAddrs())
-        addElementWithText(doc, probeMatchEl, "d:MetadataVersion", NS_D, probeMatch.getMetadataVersion())
+        addElementWithText(doc, probeMatchEl, "wsdd:MetadataVersion", NS_D, probeMatch.getMetadataVersion())
         probeMatchesEl.appendChild(probeMatchEl)
     
     
@@ -711,13 +714,13 @@ def createResolveMessage(env):
     bodyEl = getBodyEl(doc)
     headerEl = getHeaderEl(doc)
 
-    addElementWithText(doc, headerEl, "a:MessageID", NS_A, env.getMessageId())
-    addElementWithText(doc, headerEl, "a:To", NS_A, env.getTo())
+    addElementWithText(doc, headerEl, "wsa:MessageID", NS_A, env.getMessageId())
+    addElementWithText(doc, headerEl, "wsa:To", NS_A, env.getTo())
 
     if len(env.getReplyTo()) > 0:
-        addElementWithText(doc, headerEl, "a:ReplyTo", NS_A, env.getReplyTo())
+        addElementWithText(doc, headerEl, "wsa:ReplyTo", NS_A, env.getReplyTo())
 
-    resolveEl = doc.createElementNS(NS_D, "d:Resolve")
+    resolveEl = doc.createElementNS(NS_D, "wsdd:Resolve")
     addEPR(doc, resolveEl, env.getEPR())
     bodyEl.appendChild(resolveEl)
 
@@ -729,24 +732,24 @@ def createResolveMatchMessage(env):
     bodyEl = getBodyEl(doc)
     headerEl = getHeaderEl(doc)
 
-    addElementWithText(doc, headerEl, "a:MessageID", NS_A, env.getMessageId())
-    addElementWithText(doc, headerEl, "a:RelatesTo", NS_A, env.getRelatesTo())
-    addElementWithText(doc, headerEl, "a:To", NS_A, env.getTo())
+    addElementWithText(doc, headerEl, "wsa:MessageID", NS_A, env.getMessageId())
+    addElementWithText(doc, headerEl, "wsa:RelatesTo", NS_A, env.getRelatesTo())
+    addElementWithText(doc, headerEl, "wsa:To", NS_A, env.getTo())
 
-    appSeqEl = doc.createElementNS(NS_D, "d:AppSequence")
+    appSeqEl = doc.createElementNS(NS_D, "wsdd:AppSequence")
     appSeqEl.setAttribute("InstanceId", env.getInstanceId())
     appSeqEl.setAttribute("MessageNumber", env.getMessageNumber())
     headerEl.appendChild(appSeqEl)
 
-    resolveMatchesEl = doc.createElementNS(NS_D, "d:ResolveMatches")
+    resolveMatchesEl = doc.createElementNS(NS_D, "wsdd:ResolveMatches")
     if len(env.getProbeResolveMatches()) > 0:
         resolveMatch = env.getProbeResolveMatches()[0]
-        resolveMatchEl = doc.createElementNS(NS_D, "d:ResolveMatch")
+        resolveMatchEl = doc.createElementNS(NS_D, "wsdd:ResolveMatch")
         addEPR(doc, resolveMatchEl, resolveMatch.getEPR())
         addTypes(doc, resolveMatchEl, resolveMatch.getTypes())
         addScopes(doc, resolveMatchEl, resolveMatch.getScopes())
         addXAddrs(doc, resolveMatchEl, resolveMatch.getXAddrs())
-        addElementWithText(doc, resolveMatchEl, "d:MetadataVersion", NS_D, resolveMatch.getMetadataVersion())
+        addElementWithText(doc, resolveMatchEl, "wsdd:MetadataVersion", NS_D, resolveMatch.getMetadataVersion())
         
         resolveMatchesEl.appendChild(resolveMatchEl)
 
@@ -760,26 +763,26 @@ def createHelloMessage(env):
     bodyEl = getBodyEl(doc)
     headerEl = getHeaderEl(doc)
 
-    addElementWithText(doc, headerEl, "a:MessageID", NS_A, env.getMessageId())
+    addElementWithText(doc, headerEl, "wsa:MessageID", NS_A, env.getMessageId())
 
     if len(env.getRelatesTo()) > 0:
-        addElementWithText(doc, headerEl, "a:RelatesTo", NS_A, env.getRelatesTo())
+        addElementWithText(doc, headerEl, "wsa:RelatesTo", NS_A, env.getRelatesTo())
         relatesToEl = headerEl.getElementsByTagNameNS(NS_A, "RelatesTo")[0]
-        relatesToEl.setAttribute("RelationshipType", "d:Suppression")
+        relatesToEl.setAttribute("RelationshipType", "wsdd:Suppression")
 
-    addElementWithText(doc, headerEl, "a:To", NS_A, env.getTo())
+    addElementWithText(doc, headerEl, "wsa:To", NS_A, env.getTo())
 
-    appSeqEl = doc.createElementNS(NS_D, "d:AppSequence")
+    appSeqEl = doc.createElementNS(NS_D, "wsdd:AppSequence")
     appSeqEl.setAttribute("InstanceId", env.getInstanceId())
     appSeqEl.setAttribute("MessageNumber", env.getMessageNumber())
     headerEl.appendChild(appSeqEl)
 
-    helloEl = doc.createElementNS(NS_D, "d:Hello")
+    helloEl = doc.createElementNS(NS_D, "wsdd:Hello")
     addEPR(doc, helloEl, env.getEPR())
     addTypes(doc, helloEl, env.getTypes())
     addScopes(doc, helloEl, env.getScopes())
     addXAddrs(doc, helloEl, env.getXAddrs())
-    addElementWithText(doc, helloEl, "d:MetadataVersion", NS_D, env.getMetadataVersion())
+    addElementWithText(doc, helloEl, "wsdd:MetadataVersion", NS_D, env.getMetadataVersion())
 
     bodyEl.appendChild(helloEl)
     
@@ -791,15 +794,15 @@ def createByeMessage(env):
     bodyEl = getBodyEl(doc)
     headerEl = getHeaderEl(doc)
 
-    addElementWithText(doc, headerEl, "a:MessageID", NS_A, env.getMessageId())
-    addElementWithText(doc, headerEl, "a:To", NS_A, env.getTo())
+    addElementWithText(doc, headerEl, "wsa:MessageID", NS_A, env.getMessageId())
+    addElementWithText(doc, headerEl, "wsa:To", NS_A, env.getTo())
 
-    appSeqEl = doc.createElementNS(NS_D, "d:AppSequence")
+    appSeqEl = doc.createElementNS(NS_D, "wsdd:AppSequence")
     appSeqEl.setAttribute("InstanceId", env.getInstanceId())
     appSeqEl.setAttribute("MessageNumber", env.getMessageNumber())
     headerEl.appendChild(appSeqEl)
 
-    byeEl = doc.createElementNS(NS_D, "d:Bye")
+    byeEl = doc.createElementNS(NS_D, "wsdd:Bye")
     addEPR(doc, byeEl, env.getEPR())
     bodyEl.appendChild(byeEl)
 
