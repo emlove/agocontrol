@@ -147,6 +147,8 @@ std::string commandHandler(qpid::types::Variant::Map content) {
 int main (int argc, char ** argv)  
 {  
 	std::map<std::string, std::string> networkvideotransmitters; // this holds the probe results
+	std::string m_username = getConfigOption("onvif", "username", "onvif");
+	std::string m_password = getConfigOption("onvif", "password", "onvif");
 
 	struct wsdd__ProbeType probe;
 	struct __wsdd__ProbeMatches matches;
@@ -180,8 +182,6 @@ int main (int argc, char ** argv)
 		printf("Found: %s - \n", it->first.c_str(), it->second.c_str());
 
 		std::string deviceService = it->first;
-		std::string m_username = "onvif";
-		std::string m_password = "onvif";
 		std::string mediaService;
 
 		getDeviceInformation(deviceService, m_username, m_password);
