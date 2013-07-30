@@ -14,4 +14,4 @@ agoonvif: $(SOAPOBJ) onvif.o
 	g++ -g  onvif.o $(SOAPOBJ) $(LIBS) -o agoonvif 
 
 clean:
-	rm agoonvif *.o
+	rm -f agoonvif *.o | tee
