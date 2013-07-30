@@ -9,7 +9,7 @@ DEFINES=-DWITH_DOM -DWITH_OPENSSL # -DDEBUG
 	gcc -g -c $< $(INCLUDES) $(DEFINES)
 
 onvif: $(SOAPOBJ) onvif.o
-	g++ -g  onvif.o $(SOAPOBJ) $(LIBS) -o onvif 
+	g++ -g  onvif.o $(SOAPOBJ) $(LIBS) -o agoonvif 
 
 clean:
-	rm onvif *.o
+	rm agoonvif *.o
