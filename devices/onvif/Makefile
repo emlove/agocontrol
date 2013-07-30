@@ -1,5 +1,5 @@
 SOAPOBJ=soapC.o stdsoap2.o soapMediaBindingProxy.o wsseapi.o mecevp.o smdevp.o threads.o dom.o wsaapi.o soapDeviceBindingProxy.o duration.o soapwsddProxy.o
-LIBS=-luuid -lssl -lagoclient 
+LIBS=-L../../shared -luuid -lssl -lagoclient 
 INCLUDES=-I../gsoap-2.8/gsoap/plugin/ -I. -I/usr/include -I../../shared 
 DEFINES=-DWITH_DOM -DWITH_OPENSSL # -DDEBUG
 
