@@ -1,6 +1,6 @@
 LD     := g++
 
-all: common manager messagesend resolver agotimer zwave agochromoflex agoknx agorpc rain8net kwikwai irtransethernet firmata blinkm i2c
+all: common manager messagesend resolver agotimer zwave agochromoflex agoknx agorpc rain8net kwikwai irtransethernet firmata blinkm i2c onvif
 
 common:
 	$(MAKE) -C shared
@@ -22,6 +22,9 @@ blinkm:
 
 i2c:
 	$(MAKE) -C devices/i2c
+
+onvif:
+	$(MAKE) -C devices/onvif
 
 zwave:
 	$(MAKE) -C devices/zwave
@@ -59,6 +62,7 @@ clean:
 	$(MAKE) -C devices/firmata clean
 	$(MAKE) -C devices/blinkm clean
 	$(MAKE) -C devices/i2c clean
+	$(MAKE) -C devices/onvif clean
 	$(MAKE) -C devices/irtrans_ethernet clean
 	$(MAKE) -C devices/rain8net clean
 	$(MAKE) -C core/agotimer clean
@@ -115,6 +119,7 @@ install:
 	install devices/kwikwai/agokwikwai $(DESTDIR)/opt/agocontrol/bin
 	install devices/blinkm/agoblinkm $(DESTDIR)/opt/agocontrol/bin
 	install devices/i2c/agoi2c $(DESTDIR)/opt/agocontrol/bin
+	install devices/onvif/agoonvif $(DESTDIR)/opt/agocontrol/bin
 	install devices/chromoflex/agochromoflex $(DESTDIR)/opt/agocontrol/bin
 	install devices/agoapc/agoapc.py $(DESTDIR)/opt/agocontrol/bin
 	install devices/agojointspace/agojointspace.py $(DESTDIR)/opt/agocontrol/bin
