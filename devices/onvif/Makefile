@@ -8,7 +8,9 @@ DEFINES=-DWITH_DOM -DWITH_OPENSSL # -DDEBUG
 %.o:%.c
 	gcc -g -c $< $(INCLUDES) $(DEFINES)
 
-onvif: $(SOAPOBJ) onvif.o
+all:	agoonvif
+
+agoonvif: $(SOAPOBJ) onvif.o
 	g++ -g  onvif.o $(SOAPOBJ) $(LIBS) -o agoonvif 
 
 clean:
