@@ -139,6 +139,11 @@ void getDeviceInformation(std::string deviceXaddr, std::string username, std::st
 	deviceProxy.destroy();
 }
 
+std::string commandHandler(qpid::types::Variant::Map content) {
+	string internalid = content["internalid"].asString();
+	return "";
+}
+
 int main (int argc, char ** argv)  
 {  
 	std::map<std::string, std::string> networkvideotransmitters; // this holds the probe results
@@ -168,6 +173,9 @@ int main (int argc, char ** argv)
 		discoverProxy->destroy();
 	}
 
+	AgoConnection agoConnection = AgoConnection("onvif");		
+	printf("connection to agocontrol established\n");
+
 	for (std::map<std::string, std::string>::const_iterator it = networkvideotransmitters.begin(); it != networkvideotransmitters.end(); ++it) {
 		printf("Found: %s - \n", it->first.c_str(), it->second.c_str());
 
@@ -187,7 +195,13 @@ int main (int argc, char ** argv)
 			std::map <std::string, std::string>::const_iterator it = profiles.find("balanced_h264");
 			if (it != profiles.end()) { // cam supports balanced_h264 profile, get the URI
 				printf("URI: %s\n", getRTSPUri(mediaService, m_username, m_password, "balanced_h264").c_str());
+				agoConnection.addDevice(getRTSPUri(mediaService, m_username, m_password, "balanced_h264").c_str(), "onvifnvt");
 			}
 		}
 	}
+
+	agoConnection.addHandler(commandHandler);
+
+	printf("waiting for messages\n");
+	agoConnection.run();
 } 
