@@ -14,20 +14,10 @@
 #include "wsseapi.h"
 #include "wsaapi.h"
 
-std::string generateUuid() {
-	std::string strUuid;
-	char *name;
-	if ((name=(char*)malloc(37)) != NULL) {
-		uuid_t tmpuuid;
-		name[0]=0;
-		name[36]=0;
-		uuid_generate(tmpuuid);
-		uuid_unparse(tmpuuid,name);
-		strUuid = std::string(name);
-		free(name);
-	}
-	return strUuid;
-}
+#include "agoclient.h"
+
+using namespace std;
+using namespace agocontrol;
 
 std::string getRTSPUri(std::string mediaXaddr, std::string username, std::string password, std::string profile) {
 	std::string uri;
@@ -151,50 +141,35 @@ void getDeviceInformation(std::string deviceXaddr, std::string username, std::st
 
 int main (int argc, char ** argv)  
 {  
-
-
-/*
-	struct wsdd__ProbeType probeType;
-	struct __wsdd__ProbeMatches matches;
-	struct wsdd__ScopesType scopesType;
-	struct SOAP_ENV__Header header;
-
-	scopesType.__item = (char *)"onvif://www.onvif.org";
-	probeType.Scopes = &scopesType;
-
-	probeType.Types = (char *)"tdn:NetworkVideoTransmitter";
-*/
+	std::map<std::string, std::string> networkvideotransmitters; // this holds the probe results
 
 	struct wsdd__ProbeType probe;
 	struct __wsdd__ProbeMatches matches;
 	probe.Scopes = new struct wsdd__ScopesType();
 	probe.Types = (char*)"tdn:NetworkVideoTransmitter";
 
-	std::string tmpuuid = "urn:uuid:" +  generateUuid();
-	printf("tmpuuid: %s\n", tmpuuid.c_str());
+	for (int i=0;i<3;i++) {
+		std::string tmpuuid = "urn:uuid:" +  generateUuid();
 
-	wsddProxy *discoverProxy = new wsddProxy("soap.udp://239.255.255.250:3702/");
-	discoverProxy->soap_header((char*)tmpuuid.c_str(), NULL, NULL, NULL, NULL, "urn:schemas-xmlsoap-org:ws:2005:04:discovery", "http://schemas.xmlsoap.org/ws/2005/04/discovery/Probe", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
-	discoverProxy->recv_timeout=5;
+		wsddProxy *discoverProxy = new wsddProxy("soap.udp://239.255.255.250:3702/");
+		discoverProxy->soap_header((char*)tmpuuid.c_str(), NULL, NULL, NULL, NULL, "urn:schemas-xmlsoap-org:ws:2005:04:discovery", "http://schemas.xmlsoap.org/ws/2005/04/discovery/Probe", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+		discoverProxy->recv_timeout=3;
 
-	printf("Sending probe\n");
-	discoverProxy->send_Probe(&probe);
-	printf("waiting for matches\n");
-	std::map<std::string, std::string> networkvideotransmitters;
-	while ( discoverProxy->recv_ProbeMatches(matches) == SOAP_OK) {
+		printf("Sending probe\n");
+		discoverProxy->send_Probe(&probe);
 		printf("waiting for matches\n");
-//		printf("match size: %d\n",matches.wsdd__ProbeMatches->__sizeProbeMatch);
-//		printf("Endpoint Addr: %s\n",matches.wsdd__ProbeMatches->ProbeMatch->wsa__EndpointReference.Address);
-		printf("Service Addr: %s\n", matches.wsdd__ProbeMatches->ProbeMatch->XAddrs);
-		printf("Type: %s\n", matches.wsdd__ProbeMatches->ProbeMatch->Types);
-		printf("Metadata Ver: %d\n",matches.wsdd__ProbeMatches->ProbeMatch->MetadataVersion);
-		printf("Scopes Addr: %s\n", matches.wsdd__ProbeMatches->ProbeMatch->Scopes->__item);
-		networkvideotransmitters[matches.wsdd__ProbeMatches->ProbeMatch->XAddrs] = matches.wsdd__ProbeMatches->ProbeMatch->Scopes->__item;
+		while ( discoverProxy->recv_ProbeMatches(matches) == SOAP_OK) {
+			printf("Service Addr: %s\n", matches.wsdd__ProbeMatches->ProbeMatch->XAddrs);
+			//printf("Type: %s\n", matches.wsdd__ProbeMatches->ProbeMatch->Types);
+			//printf("Metadata Ver: %d\n",matches.wsdd__ProbeMatches->ProbeMatch->MetadataVersion);
+			networkvideotransmitters[matches.wsdd__ProbeMatches->ProbeMatch->XAddrs] = matches.wsdd__ProbeMatches->ProbeMatch->Scopes->__item;
 
+		}
+		discoverProxy->destroy();
 	}
-	discoverProxy->destroy();
+
 	for (std::map<std::string, std::string>::const_iterator it = networkvideotransmitters.begin(); it != networkvideotransmitters.end(); ++it) {
-		printf("Found: %s\n", it->first.c_str());
+		printf("Found: %s - \n", it->first.c_str(), it->second.c_str());
 
 		std::string deviceService = it->first;
 		std::string m_username = "onvif";
