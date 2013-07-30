@@ -164,9 +164,9 @@ int main (int argc, char ** argv)
 
 		printf("Sending probe\n");
 		discoverProxy->send_Probe(&probe);
-		printf("waiting for matches\n");
+//		printf("waiting for matches\n");
 		while ( discoverProxy->recv_ProbeMatches(matches) == SOAP_OK) {
-			printf("Service Addr: %s\n", matches.wsdd__ProbeMatches->ProbeMatch->XAddrs);
+//			printf("Service Addr: %s\n", matches.wsdd__ProbeMatches->ProbeMatch->XAddrs);
 			//printf("Type: %s\n", matches.wsdd__ProbeMatches->ProbeMatch->Types);
 			//printf("Metadata Ver: %d\n",matches.wsdd__ProbeMatches->ProbeMatch->MetadataVersion);
 			networkvideotransmitters[matches.wsdd__ProbeMatches->ProbeMatch->XAddrs] = matches.wsdd__ProbeMatches->ProbeMatch->Scopes->__item;
