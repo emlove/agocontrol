@@ -113,6 +113,11 @@ Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, libagoclient1.0, libssl1.0.0, libuuid1
 Description: ONVIF interface driver
 
+Package: agocontrol-mediaproxy
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, libagoclient1.0
+Description: media streaming proxy
+
 Package: agocontrol-raspigpio
 Architecture: armhf
 Depends: ${shlibs:Depends}, ${misc:Depends}, python-agoclient
