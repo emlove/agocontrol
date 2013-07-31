@@ -8,7 +8,7 @@ CPLUSPLUS_COMPILER =	c++
 CPLUSPLUS_FLAGS =	$(COMPILE_OPTS) -Wall -DBSD=1 $(CPPFLAGS) $(CXXFLAGS)
 OBJ =			o
 LINK =			c++ -o
-LINK_OPTS =		-L. $(LDFLAGS)
+LINK_OPTS =		-L. -L../../shared -lagoclient $(LDFLAGS)
 CONSOLE_LINK_OPTS =	$(LINK_OPTS)
 LIBRARY_LINK =		ar cr 
 LIBRARY_LINK_OPTS =	
@@ -16,7 +16,7 @@ LIB_SUFFIX =			a
 LIBS_FOR_CONSOLE_APPLICATION =
 LIBS_FOR_GUI_APPLICATION =
 EXE =
-INCLUDES = -I./UsageEnvironment/include -I./groupsock/include -I./liveMedia/include -I./BasicUsageEnvironment/include
+INCLUDES = -I./UsageEnvironment/include -I./groupsock/include -I./liveMedia/include -I./BasicUsageEnvironment/include -I../../shared
 # Default library filename suffixes for each library that we link with.  The "config.*" file might redefine these later.
 libliveMedia_LIB_SUFFIX = $(LIB_SUFFIX)
 libBasicUsageEnvironment_LIB_SUFFIX = $(LIB_SUFFIX)

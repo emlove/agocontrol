@@ -2,8 +2,14 @@
 // Copyright (c) 1996-2013, Live Networks, Inc.  All rights reserved
 
 #include <string>
+#include <pthread.h>
+
 #include "liveMedia.hh"
 #include "BasicUsageEnvironment.hh"
+#include "agoclient.h"
+
+using namespace std;
+using namespace agocontrol;
 
 char const* progName;
 UsageEnvironment* env;
@@ -21,7 +27,13 @@ static RTSPServer* createRTSPServer(Port port) {
 	return RTSPServer::createNew(*env, port, authDB);
 }
 
-int main(int argc, char** argv) {
+std::string commandHandler(qpid::types::Variant::Map content) {
+	string internalid = content["internalid"].asString();
+
+}
+typedef struct { std::string username; std::string password; std::map<std::string, std::string> streams;} proxyparams;
+
+void *startProxy(void *params) {
 	// Increase the maximum size of video frames that we can 'proxy' without truncation.
 	// (Such frames are unreasonably large; the back-end servers should really not be sending frames this large!)
 	OutPacketBuffer::maxSize = 100000; // bytes
@@ -39,9 +51,6 @@ int main(int argc, char** argv) {
 
 	streamRTPOverTCP = True;
 
-	username = "onvif";
-	password = "onvif";
-
 	authDB = NULL;
 #ifdef ACCESS_CONTROL
 	// To implement client access control to the RTSP server, do the following:
@@ -50,7 +59,6 @@ int main(int argc, char** argv) {
 	// Repeat the above with each <username>, <password> that you wish to allow
 	// access to the server.
 #endif
-
 	// Create the RTSP server.  Try first with the default port number (554),
 	// and then with the alternative port number (8554):
 	RTSPServer* rtspServer;
@@ -77,9 +85,6 @@ int main(int argc, char** argv) {
 	delete[] proxyStreamURL;
 
 	// Also, attempt to create a HTTP server for RTSP-over-HTTP tunneling.
-	// Try first with the default HTTP port (80), and then with the alternative HTTP
-	// port numbers (8000 and 8080).
-
 	if (rtspServer->setUpTunnelingOverHTTP(8888)) {
 		*env << "\n(We use port " << rtspServer->httpServerPortNum() << " for optional RTSP-over-HTTP tunneling.)\n";
 	} else {
@@ -88,6 +93,26 @@ int main(int argc, char** argv) {
 
 	// Now, enter the event loop:
 	env->taskScheduler().doEventLoop(); // does not return
+
+}
+
+int main(int argc, char** argv) {
+	username = "onvif";
+	password = "onvif";
+
+	AgoConnection agoConnection = AgoConnection("mediaproxy");		
+	printf("connection to agocontrol established\n");
+
+	agoConnection.addDevice("controller", "mediaproxycontroller");
+
+	agoConnection.addHandler(commandHandler);
+
+	proxyparams params;
+	static pthread_t proxyThread;
+	pthread_create(&proxyThread,NULL,startProxy,&params);
+
+	printf("waiting for messages\n");
+	agoConnection.run();
 
 	return 0; // only to prevent compiler warning
 }
