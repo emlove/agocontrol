@@ -22,6 +22,9 @@ portNumBits tunnelOverHTTPPortNum = 0;
 char* username = NULL;
 char* password = NULL;
 Boolean proxyREGISTERRequests = False;
+char stopLoop = 0;
+
+AgoConnection *agoConnection;
 
 static RTSPServer* createRTSPServer(Port port) {
 	return RTSPServer::createNew(*env, port, authDB);
@@ -29,9 +32,17 @@ static RTSPServer* createRTSPServer(Port port) {
 
 std::string commandHandler(qpid::types::Variant::Map content) {
 	string internalid = content["internalid"].asString();
-
+	if (internalid == "controller" && content["command"].asString() == "restart") {
+		printf("restarting proxy\n");
+		stopLoop = 1;
+	}
+	return "";
 }
 typedef struct { std::string username; std::string password; std::map<std::string, std::string> streams;} proxyparams;
+
+proxyparams params;
+
+
 
 void *startProxy(void *params) {
 	// Increase the maximum size of video frames that we can 'proxy' without truncation.
@@ -69,21 +80,6 @@ void *startProxy(void *params) {
 		exit(1);
 	}
 
-	std::string streamname;
-	std::string url;
-	streamname= "1234";
-	url="rtsp://192.168.80.65/axis/media.amp";
-
-	ServerMediaSession* sms = ProxyServerMediaSession::createNew(*env, rtspServer,
-					   url.c_str(), streamname.c_str(),
-					   username, password, tunnelOverHTTPPortNum, verbosityLevel);
-	rtspServer->addServerMediaSession(sms);
-
-	char* proxyStreamURL = rtspServer->rtspURL(sms);
-	*env << "RTSP stream, proxying the stream \"" << url.c_str() << "\"\n";
-	*env << "\tPlay this stream using the URL: " << proxyStreamURL << "\n";
-	delete[] proxyStreamURL;
-
 	// Also, attempt to create a HTTP server for RTSP-over-HTTP tunneling.
 	if (rtspServer->setUpTunnelingOverHTTP(8888)) {
 		*env << "\n(We use port " << rtspServer->httpServerPortNum() << " for optional RTSP-over-HTTP tunneling.)\n";
@@ -92,27 +88,51 @@ void *startProxy(void *params) {
 	}
 
 	// Now, enter the event loop:
-	env->taskScheduler().doEventLoop(); // does not return
+	while (true) {
+		qpid::types::Variant::Map inventory = agoConnection->getInventory();
+		qpid::types::Variant::Map devices = inventory["inventory"].asMap();
 
+		for (qpid::types::Variant::Map::const_iterator it = devices.begin(); it != devices.end(); it++) {
+			qpid::types::Variant::Map device = it->second.asMap();
+			if (device["devicetype"] == "onvifnvt") {
+				printf("found ONVIF NVT: %s\n", device["internalid"].asString().c_str());
+				std::string streamname = it->first;
+				std::string url = device["internalid"].asString();
+				ServerMediaSession* sms = ProxyServerMediaSession::createNew(*env, rtspServer,
+								   url.c_str(), streamname.c_str(),
+								   username, password, tunnelOverHTTPPortNum, verbosityLevel);
+				rtspServer->addServerMediaSession(sms);
+
+				char* proxyStreamURL = rtspServer->rtspURL(sms);
+				*env << "RTSP stream, proxying the stream \"" << url.c_str() << "\"\n";
+				*env << "\tPlay this stream using the URL: " << proxyStreamURL << "\n";
+				delete[] proxyStreamURL;
+			}
+		}	
+		env->taskScheduler().doEventLoop(&stopLoop); // does not return
+		printf("Exited event loop\n");
+		stopLoop=0;
+	}
+
+	return NULL;
 }
 
 int main(int argc, char** argv) {
 	username = "onvif";
 	password = "onvif";
 
-	AgoConnection agoConnection = AgoConnection("mediaproxy");		
+	agoConnection = new AgoConnection("mediaproxy");		
 	printf("connection to agocontrol established\n");
 
-	agoConnection.addDevice("controller", "mediaproxycontroller");
+	agoConnection->addDevice("controller", "mediaproxycontroller");
 
-	agoConnection.addHandler(commandHandler);
+	agoConnection->addHandler(commandHandler);
 
-	proxyparams params;
 	static pthread_t proxyThread;
 	pthread_create(&proxyThread,NULL,startProxy,&params);
 
 	printf("waiting for messages\n");
-	agoConnection.run();
+	agoConnection->run();
 
 	return 0; // only to prevent compiler warning
 }
