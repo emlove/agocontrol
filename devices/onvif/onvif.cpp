@@ -192,6 +192,9 @@ int main (int argc, char ** argv)
 
 			std::map <std::string, std::string> profiles;
 			profiles = getProfiles(mediaService, m_username, m_password);
+			for (std::map <std::string, std::string>::const_iterator it = profiles.begin(); it != profiles.end(); it++) {
+				printf("Profile: %s\n", it->first.c_str());
+			}
 			std::map <std::string, std::string>::const_iterator it = profiles.find("balanced_h264");
 			if (it != profiles.end()) { // cam supports balanced_h264 profile, get the URI
 				printf("URI: %s\n", getRTSPUri(mediaService, m_username, m_password, "balanced_h264").c_str());
