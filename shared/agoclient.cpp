@@ -404,6 +404,27 @@ bool agocontrol::AgoConnection::addEventHandler(void (*handler)(std::string, qpi
 	return true;
 }
 
+qpid::types::Variant::Map agocontrol::AgoConnection::getInventory() {
+	Variant::Map content;
+	Variant::Map responseMap;
+	content["command"] = "inventory";
+	Message message;
+	encode(content, message);
+	Address responseQueue("#response-queue; {create:always, delete:always}");
+	Receiver responseReceiver = session.createReceiver(responseQueue);
+	message.setReplyTo(responseQueue);
+	sender.send(message);
+	try {
+		Message response = responseReceiver.fetch(Duration::SECOND * 3);
+		if (response.getContentSize() > 3) {	
+			decode(response,responseMap);
+		}
+	} catch (qpid::messaging::NoMessageAvailable) {
+		printf("WARNING, no reply message to fetch\n");
+	}
+	return responseMap;
+}
+
 agocontrol::Log::Log(std::string ident, int facility) {
     facility_ = facility;
     priority_ = LOG_DEBUG;
