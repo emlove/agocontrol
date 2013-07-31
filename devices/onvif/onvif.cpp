@@ -199,6 +199,12 @@ int main (int argc, char ** argv)
 			if (it != profiles.end()) { // cam supports balanced_h264 profile, get the URI
 				printf("URI: %s\n", getRTSPUri(mediaService, m_username, m_password, "balanced_h264").c_str());
 				agoConnection.addDevice(getRTSPUri(mediaService, m_username, m_password, "balanced_h264").c_str(), "onvifnvt");
+			} else { // take the first profile otherwise
+				it = profiles.begin();
+				if (it != profiles.end()) {
+					printf("URI: %s\n", getRTSPUri(mediaService, m_username, m_password, it->first).c_str());
+					agoConnection.addDevice(getRTSPUri(mediaService, m_username, m_password, it->first).c_str(), "onvifnvt");
+				}
 			}
 		}
 	}
