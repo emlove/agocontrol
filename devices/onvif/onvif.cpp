@@ -3,7 +3,7 @@
 #include <sstream>
 #include <vector>
 #include <map>
-
+#include <time.h>
 #include <uuid/uuid.h>
 
 #include "soapMediaBindingProxy.h"
@@ -49,16 +49,10 @@ std::string getRTSPUri(std::string mediaXaddr, std::string username, std::string
 	soap_wsse_add_UsernameTokenDigest(&mediaProxy, NULL, username.c_str(), password.c_str());
 
 	int result = mediaProxy.GetStreamUri(&trt__GetStreamUri, &trt__GetStreamUriResponse);
-#ifdef DEBUG
-	printf("SOAP Result: %d\n", result);
-#endif
 	if (result == SOAP_OK) {
-#ifdef DEBUG
-		printf("Stream: %s\n", trt__GetStreamUriResponse.MediaUri->Uri.c_str());
-#endif
 		uri = trt__GetStreamUriResponse.MediaUri->Uri;
 	} else {
-		printf("ERROR: GetStreamUri: %s\n", mediaProxy.soap_fault_detail());
+		printf("ERROR: %d - GetStreamUri: %s\n", result, mediaProxy.soap_fault_detail());
 		uri = "";
 	}
 	mediaProxy.destroy();
@@ -77,19 +71,16 @@ std::map <std::string, std::string> getProfiles(std::string mediaXaddr, std::str
 	soap_wsse_add_UsernameTokenDigest(&mediaProxy, NULL, username.c_str(), password.c_str());
 
 	int result = mediaProxy.GetProfiles (&trt__GetProfiles, &trt__GetProfilesResponse);
-#ifdef DEBUG
-        printf("SOAP Result: %d\n", result);
-#endif
 	if (result == SOAP_OK) {
 		for(std::vector<tt__Profile * >::const_iterator it = trt__GetProfilesResponse.Profiles.begin(); it != trt__GetProfilesResponse.Profiles.end(); ++it) {
 			tt__Profile* profile = *it;
 			profiles[profile->token]=profile->Name;
-#ifdef DEBUG
-			printf("Profile: %s: %s\n", profile->token.c_str(), profile->Name.c_str());
-#endif
+/* #ifdef DEBUG
+			printf("Profile: %s: %s - fixed: %d\n", profile->token.c_str(), profile->Name.c_str(), *(profile->fixed));
+#endif */
 		}
 	} else {
-		printf("ERROR: GetProfiles: %s\n", mediaProxy.soap_fault_detail());
+		printf("ERROR: %d - GetProfiles: %s\n", result, mediaProxy.soap_fault_detail());
 	}
 	mediaProxy.destroy();
 	return profiles;
@@ -104,14 +95,9 @@ int getCapabilities(std::string deviceXaddr, std::string username, std::string p
 	soap_wsse_add_UsernameTokenDigest(&deviceProxy, NULL, username.c_str(), password.c_str());
 
 	int result =deviceProxy.GetCapabilities(&tds__GetCapabilities, &response);
-#ifdef DEBUG
-        printf("SOAP Result: %d\n", result);
-#endif
-	/* if (result == SOAP_OK) {
-		printf("Media Service: %s\n",tds__GetCapabilitiesResponse.Capabilities->Media->XAddr.c_str());
-	} else {
-		printf("ERROR: GetCapabilities: %s\n", deviceProxy.soap_fault_detail());
-	} */
+	if (result != SOAP_OK) {
+		printf("ERROR: %d - GetCapabilities: %s\n", result, deviceProxy.soap_fault_detail());
+	} 
 	deviceProxy.destroy();
 	return result;
 }
@@ -126,22 +112,47 @@ void getDeviceInformation(std::string deviceXaddr, std::string username, std::st
 	soap_wsse_add_UsernameTokenDigest(&deviceProxy, NULL, username.c_str(), password.c_str());
 
 	int result = deviceProxy.GetDeviceInformation(&tds__GetDeviceInformation, &tds__GetDeviceInformationResponse);
-#ifdef DEBUG
-        printf("SOAP Result: %d\n", result);
-#endif
 	if (result == SOAP_OK) {
-			printf("Manufacturer: %s ",tds__GetDeviceInformationResponse.Manufacturer.c_str());
+			printf("DEVICE INFORMATION: Manufacturer: %s ",tds__GetDeviceInformationResponse.Manufacturer.c_str());
 			printf("Model: %s ",tds__GetDeviceInformationResponse.Model.c_str());
 			printf("FirmwareVersion: %s ",tds__GetDeviceInformationResponse.FirmwareVersion.c_str());
 			printf("Serial Number: %s ",tds__GetDeviceInformationResponse.SerialNumber.c_str());
 			printf("HardwareId: %s\n",tds__GetDeviceInformationResponse.HardwareId.c_str());
 	} else {
-		printf("ERROR: GetDeviceInformation: %s\n", deviceProxy.soap_fault_detail());
+		printf("ERROR: %d - GetDeviceInformation: %s\n", result, deviceProxy.soap_fault_detail());
 	}
 	deviceProxy.destroy();
 }
 
-bool checkDateTime(std::string deviceXaddr) {
+bool setSystemDateAndTime(std::string deviceXaddr, std::string username, std::string password, long offset, const char *timezone, bool dst) {
+        DeviceBindingProxy deviceProxy(deviceXaddr.c_str());
+        _tds__SetSystemDateAndTime request;
+        _tds__SetSystemDateAndTimeResponse response;
+
+	soap_wsse_add_Security(&deviceProxy);
+	soap_wsse_add_UsernameTokenDigestOffset(&deviceProxy, NULL, username.c_str(), password.c_str(), offset);
+
+	request.DateTimeType = tt__SetDateTimeType__NTP;
+	request.DaylightSavings = dst;
+	tt__TimeZone tz;
+	tz.TZ = std::string(timezone);
+	request.TimeZone = &tz;
+
+	int result = deviceProxy.SetSystemDateAndTime(&request, &response);
+	if (result == SOAP_OK) {
+		printf("System Date and Time set successfully\n");
+		deviceProxy.destroy();
+		return true;
+	} else {
+                printf("ERROR: %d - SetSystemDateAndTime: %s\n", result, deviceProxy.soap_fault_detail());
+		deviceProxy.destroy();
+		return false;
+	}
+	return false;
+}
+
+
+bool checkDateTime(std::string deviceXaddr, long *offset) {
 	DeviceBindingProxy deviceProxy(deviceXaddr.c_str());
 	deviceProxy.recv_timeout=3;
 
@@ -149,18 +160,47 @@ bool checkDateTime(std::string deviceXaddr) {
 	_tds__GetSystemDateAndTimeResponse response;
 	int result = deviceProxy.GetSystemDateAndTime(&request, &response);
 	if (result == SOAP_OK) {
-		printf("Daylight savings: %d\n", response.SystemDateAndTime->DaylightSavings);
-		printf("Timezone: %s\n", response.SystemDateAndTime->TimeZone->TZ.c_str());
-		printf("Time: %d:%d:%d\n", response.SystemDateAndTime->LocalDateTime->Time->Hour, 
-						response.SystemDateAndTime->LocalDateTime->Time->Minute,
-						response.SystemDateAndTime->LocalDateTime->Time->Second);
-		printf("Date: %d-%d-%d\n", response.SystemDateAndTime->LocalDateTime->Date->Year, 
+		printf("DST: %d ", response.SystemDateAndTime->DaylightSavings);
+		printf("TZ: %s ", response.SystemDateAndTime->TimeZone->TZ.c_str());
+		printf("NTP: %s ", response.SystemDateAndTime->DateTimeType == 0 ? "yes" : "no");
+		printf("Date: %4d-%2d-%2d - ", response.SystemDateAndTime->LocalDateTime->Date->Year, 
 						response.SystemDateAndTime->LocalDateTime->Date->Month,
 						response.SystemDateAndTime->LocalDateTime->Date->Day);
+		printf("Time: %2d:%2d:%2d ", response.SystemDateAndTime->LocalDateTime->Time->Hour, 
+						response.SystemDateAndTime->LocalDateTime->Time->Minute,
+						response.SystemDateAndTime->LocalDateTime->Time->Second);
+		struct tm camtimestruct;
+		camtimestruct.tm_sec = response.SystemDateAndTime->LocalDateTime->Time->Second;
+		camtimestruct.tm_min = response.SystemDateAndTime->LocalDateTime->Time->Minute;
+		camtimestruct.tm_hour = response.SystemDateAndTime->LocalDateTime->Time->Hour;
+		camtimestruct.tm_mday = response.SystemDateAndTime->LocalDateTime->Date->Day;
+		camtimestruct.tm_mon = response.SystemDateAndTime->LocalDateTime->Date->Month -1;
+		camtimestruct.tm_year = response.SystemDateAndTime->LocalDateTime->Date->Year - 1900;
+		camtimestruct.tm_isdst = response.SystemDateAndTime->DaylightSavings;
+
+		char *tz;
+		tz = getenv("TZ");
+		setenv("TZ", response.SystemDateAndTime->TimeZone->TZ.c_str(), 1);
+		tzset();
+
+		time_t camtime = mktime(&camtimestruct);
+
+		if (tz)
+			setenv("TZ", tz, 1);
+		else
+			unsetenv("TZ");
+		tzset();
+#ifdef DEBUG
+		// printf("Cam Time: %d\n", camtime);
+		// printf("local Time: %d\n", time(NULL));
+		printf("Offset: %d\n", camtime - time(NULL));
+#endif
+		if (offset != NULL) *offset=(long)(camtime - time(NULL));
+		// if (response.SystemDateAndTime->DaylightSavings == 0) *offset+=3600;
 		deviceProxy.destroy();
 		return true;
 	} else {
-                printf("ERROR: %d GetSystemDateAndTime: %s\n", result, deviceProxy.soap_fault_detail());
+                printf("ERROR: %d - GetSystemDateAndTime: %s\n", result, deviceProxy.soap_fault_detail());
 		deviceProxy.destroy();
 		return false;
 	}
@@ -171,21 +211,23 @@ bool getUsers(std::string deviceXaddr) {
 	_tds__GetUsers request;
 	_tds__GetUsersResponse response;
 
+	bool hasUsers = false;
 	int result = deviceProxy.GetUsers(&request, &response);
 	if (result == SOAP_OK) {
 		for(std::vector<tt__User * >::const_iterator it = response.User.begin(); it != response.User.end(); it++) {
 			printf("Username found: %s\n", (*it)->Username.c_str());
+			hasUsers = true;
 		}
 	} else {
-                printf("ERROR: %d GetUsers: %s\n", result, deviceProxy.soap_fault_detail());
+               // printf("ERROR: %d GetUsers: %s\n", result, deviceProxy.soap_fault_detail());
                 deviceProxy.destroy();
-                return false;
+                return true;
         }
 
 
-	return true;
+	return hasUsers;
 }
-bool createUser(std::string deviceXaddr, std::string username, std::string password, int level) {
+bool createUser(std::string deviceXaddr, std::string username, std::string password, tt__UserLevel level) {
 	DeviceBindingProxy deviceProxy(deviceXaddr.c_str());
 	tt__User user;
 	std::string m_username = username;
@@ -193,7 +235,7 @@ bool createUser(std::string deviceXaddr, std::string username, std::string passw
 	user.Username = m_username;
 	user.Password = &m_password;
 	// enum tt__UserLevel { tt__UserLevel__Administrator = 0, tt__UserLevel__Operator = 1, tt__UserLevel__User = 2, tt__UserLevel__Anonymous = 3, tt__UserLevel__Extended = 4 };
-	user.UserLevel = tt__UserLevel__Administrator;
+	user.UserLevel = level;
 
 	std::vector<tt__User *> users;
 	users.push_back(&user);
@@ -204,7 +246,7 @@ bool createUser(std::string deviceXaddr, std::string username, std::string passw
 	if (result == SOAP_OK) {
 		printf("USER CREATED\n");
 	} else {
-                printf("ERROR: %d CreateUsers: %s\n", result, deviceProxy.soap_fault_detail());
+                printf("ERROR: %d - CreateUsers: %s\n", result, deviceProxy.soap_fault_detail());
                 deviceProxy.destroy();
                 return false;
         }
@@ -215,6 +257,63 @@ bool createUser(std::string deviceXaddr, std::string username, std::string passw
 	return true;
 
 }
+
+bool getNTP(std::string deviceXaddr, std::string username, std::string password, long offset) {
+	DeviceBindingProxy deviceProxy(deviceXaddr.c_str());
+
+        _tds__GetNTP request;
+        _tds__GetNTPResponse response;
+
+	soap_wsse_add_Security(&deviceProxy);
+        soap_wsse_add_UsernameTokenDigestOffset(&deviceProxy, NULL, username.c_str(), password.c_str(), offset);
+
+        int result = deviceProxy.GetNTP(&request, &response);
+	if (result == SOAP_OK) {
+                printf("NTP Get successful\n");
+		for (std::vector< tt__NetworkHost * >::const_iterator it = response.NTPInformation->NTPManual.begin(); it!=response.NTPInformation->NTPManual.end(); it++) {
+			if ((*it)->DNSname != NULL) printf("DNS NAme: %s\n", (*it)->DNSname->c_str());
+		}
+        } else {
+                printf("ERROR: %d - GetNTP: %s\n", result, deviceProxy.soap_fault_detail());
+                deviceProxy.destroy();
+                return false;
+        }
+        deviceProxy.destroy();
+        return true;
+}
+
+bool setNTP(std::string deviceXaddr, std::string username, std::string password, long offset, const char *server) {
+        DeviceBindingProxy deviceProxy(deviceXaddr.c_str());
+
+	_tds__SetNTP request;
+	_tds__SetNTPResponse response;
+
+	std::vector<tt__NetworkHost * > hosts;
+	tt__NetworkHost host;
+	std::string hostname = server;
+	host.IPv4Address = &hostname;
+	// host.DNSname = &hostname;
+	host.Type = tt__NetworkHostType__IPv4;
+	// host.Type = tt__NetworkHostType__DNS;
+	hosts.push_back(&host);
+	request.NTPManual = hosts;
+	request.FromDHCP = false;
+	printf("setting NTP host to %s\n", hostname.c_str());
+	soap_wsse_add_Security(&deviceProxy);
+	soap_wsse_add_UsernameTokenDigestOffset(&deviceProxy, NULL, username.c_str(), password.c_str(), offset);
+
+	int result = deviceProxy.SetNTP(&request, &response);
+	if (result == SOAP_OK) {
+		printf("NTP Set successful\n");
+	} else {
+                printf("ERROR: %d - SetNTP: %s\n", result, deviceProxy.soap_fault_detail());
+                deviceProxy.destroy();
+                return false;
+        }
+	deviceProxy.destroy();
+	return true;
+}
+
 std::string commandHandler(qpid::types::Variant::Map content) {
 	string internalid = content["internalid"].asString();
 	return "";
@@ -232,6 +331,7 @@ int main (int argc, char ** argv)
 	probe.Scopes = new struct wsdd__ScopesType();
 	probe.Types = (char*)"tdn:NetworkVideoTransmitter";
 
+	printf("Sending probes\n");
 	for (int i=0;i<2;i++) {
 		std::string tmpuuid = "urn:uuid:" +  generateUuid();
 
@@ -239,7 +339,6 @@ int main (int argc, char ** argv)
 		discoverProxy->soap_header((char*)tmpuuid.c_str(), NULL, NULL, NULL, NULL, (char*)"urn:schemas-xmlsoap-org:ws:2005:04:discovery", (char*)"http://schemas.xmlsoap.org/ws/2005/04/discovery/Probe", NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 		discoverProxy->recv_timeout=2;
 
-		printf("Sending probe\n");
 		discoverProxy->send_Probe(&probe);
 //		printf("waiting for matches\n");
 		while ( discoverProxy->recv_ProbeMatches(matches) == SOAP_OK) {
@@ -251,9 +350,9 @@ int main (int argc, char ** argv)
 			while (getline(addrs, addr, ' ')) {
 				if (addr.find("169.254.") == std::string::npos) { // ignore ipv4 link local XAddrs
 					networkvideotransmitters[addr] = matches.wsdd__ProbeMatches->ProbeMatch->Scopes->__item;
-				} else {
+				} /* else {
 					printf("ignoring link local addr %s\n", addr.c_str());
-				}
+				}*/
 			}
 		}
 		discoverProxy->destroy();
@@ -263,15 +362,31 @@ int main (int argc, char ** argv)
 	printf("connection to agocontrol established\n");
 
 	for (std::map<std::string, std::string>::const_iterator it = networkvideotransmitters.begin(); it != networkvideotransmitters.end(); ++it) {
-		printf("Found: %s - \n", it->first.c_str(), it->second.c_str());
-
 		std::string deviceService = it->first;
 		std::string mediaService;
 
-		printf("sending ONVIF GetSystemDateTime request to %s\n", deviceService.c_str());
-		if (checkDateTime(deviceService)) {
-			getUsers(deviceService);
-			createUser(deviceService, m_username, m_password, 0);
+		printf("sending ONVIF GetSystemDateTime request to %s: ", deviceService.c_str());
+		long offset;
+		if (checkDateTime(deviceService, &offset)) {
+			if (getUsers(deviceService) == false) {
+				printf("No users on device, starting initial configuration\n");
+				createUser(deviceService, m_username, m_password, tt__UserLevel__Administrator);
+				getNTP(deviceService, m_username, m_password, offset);
+				setNTP(deviceService, m_username, m_password, offset, "86.59.80.170");
+				sleep(3);
+				checkDateTime(deviceService, &offset);
+				setSystemDateAndTime(deviceService, m_username, m_password, offset, "CET-1CEST,M3.5.0,M10.5.0/3", 1);
+				sleep(3);
+				checkDateTime(deviceService, &offset);
+			}
+			if (abs(offset) > 10) {
+				printf("WARNING -- TIME OFFSET DETECTED!!! Seconds: %d - trying to set NTP server\n", offset);
+				setNTP(deviceService, m_username, m_password, offset, "86.59.80.170");
+				sleep(3);
+				checkDateTime(deviceService, &offset);
+				setSystemDateAndTime(deviceService, m_username, m_password, offset, "CET-1CEST,M3.5.0,M10.5.0/3", 1);
+				sleep(3);
+			}
 			getDeviceInformation(deviceService, m_username, m_password);
 			_tds__GetCapabilitiesResponse response;
 			if ( getCapabilities(deviceService, m_username, m_password, response) == SOAP_OK) {
