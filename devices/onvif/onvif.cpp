@@ -544,15 +544,15 @@ int main (int argc, char ** argv)
 				if (it != profiles.end()) { // cam supports wanted profile, get the URI
 					printf("URI: %s\n", getRTSPUri(mediaService, m_username, m_password, targetprofile).c_str());
 					agoConnection.addDevice(getRTSPUri(mediaService, m_username, m_password, targetprofile).c_str(), "onvifnvt");
-					deleteProfile(mediaService, m_username, m_password, targetprofile);
+					// deleteProfile(mediaService, m_username, m_password, targetprofile);
 				} else { // create profile otherwise
 					/* it = profiles.begin();
 					if (it != profiles.end()) {
-						printf("URI: %s\n", getRTSPUri(mediaService, m_username, m_password, it->first).c_str());
-						agoConnection.addDevice(getRTSPUri(mediaService, m_username, m_password, it->first).c_str(), "onvifnvt");
 					} */
 					printf("Profile not found, creating..\n");
 					createProfile(mediaService, m_username, m_password);
+					printf("URI: %s\n", getRTSPUri(mediaService, m_username, m_password, targetprofile).c_str());
+					agoConnection.addDevice(getRTSPUri(mediaService, m_username, m_password, targetprofile).c_str(), "onvifnvt");
 				}
 			}
 		} else {
