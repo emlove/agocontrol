@@ -18,9 +18,11 @@ UserAuthenticationDatabase* authDB;
 // Default values of command-line parameters:
 int verbosityLevel = 0;
 Boolean streamRTPOverTCP = False;
+int http_port = 0;
+int rtsp_port = 0;
 portNumBits tunnelOverHTTPPortNum = 0;
-char* username = NULL;
-char* password = NULL;
+std::string username;
+std::string password;
 Boolean proxyREGISTERRequests = False;
 char stopLoop = 0;
 
@@ -57,8 +59,6 @@ void *startProxy(void *params) {
 	<< "(LIVE555 Streaming Media library version "
 	<< LIVEMEDIA_LIBRARY_VERSION_STRING << ")\n\n";
 
-	verbosityLevel = 1;
-	verbosityLevel = 2;
 
 	streamRTPOverTCP = True;
 
@@ -70,10 +70,9 @@ void *startProxy(void *params) {
 	// Repeat the above with each <username>, <password> that you wish to allow
 	// access to the server.
 #endif
-	// Create the RTSP server.  Try first with the default port number (554),
-	// and then with the alternative port number (8554):
+	// Create the RTSP server.
 	RTSPServer* rtspServer;
-	portNumBits rtspServerPortNum = 554;
+	portNumBits rtspServerPortNum = rtsp_port;
 	rtspServer = createRTSPServer(rtspServerPortNum);
 	if (rtspServer == NULL) {
 		*env << "Failed to create RTSP server: " << env->getResultMsg() << "\n";
@@ -81,10 +80,11 @@ void *startProxy(void *params) {
 	}
 
 	// Also, attempt to create a HTTP server for RTSP-over-HTTP tunneling.
-	if (rtspServer->setUpTunnelingOverHTTP(8888)) {
+	if (rtspServer->setUpTunnelingOverHTTP(http_port)) {
 		*env << "\n(We use port " << rtspServer->httpServerPortNum() << " for optional RTSP-over-HTTP tunneling.)\n";
 	} else {
-		*env << "\n(RTSP-over-HTTP tunneling is not available.)\n";
+		*env << "Failed to enable RTSP-over-HTTP tunneling\n";
+		exit(1);
 	}
 
 	// Now, enter the event loop:
@@ -100,7 +100,7 @@ void *startProxy(void *params) {
 				std::string url = device["internalid"].asString();
 				ServerMediaSession* sms = ProxyServerMediaSession::createNew(*env, rtspServer,
 								   url.c_str(), streamname.c_str(),
-								   username, password, tunnelOverHTTPPortNum, verbosityLevel);
+								   username.c_str(), password.c_str(), tunnelOverHTTPPortNum, verbosityLevel);
 				rtspServer->addServerMediaSession(sms);
 
 				char* proxyStreamURL = rtspServer->rtspURL(sms);
@@ -118,8 +118,11 @@ void *startProxy(void *params) {
 }
 
 int main(int argc, char** argv) {
-	username = "onvif";
-	password = "onvif";
+	username = getConfigOption("onvif", "username", "onvif");
+	password = getConfigOption("onvif", "password", "onvif");
+	verbosityLevel = atoi(getConfigOption("mediaproxy", "verbosity", "1").c_str());
+	http_port = atoi(getConfigOption("mediaproxy", "http_port", "8888").c_str());
+	rtsp_port = atoi(getConfigOption("mediaproxy", "rtsp_port", "554").c_str());
 
 	agoConnection = new AgoConnection("mediaproxy");		
 	printf("connection to agocontrol established\n");
