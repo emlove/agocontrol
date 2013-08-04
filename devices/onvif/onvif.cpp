@@ -59,6 +59,131 @@ std::string getRTSPUri(std::string mediaXaddr, std::string username, std::string
 	return uri;
 }
 
+bool deleteProfile(std::string mediaXaddr, std::string username, std::string password, std::string token) {
+        MediaBindingProxy mediaProxy(mediaXaddr.c_str());
+
+        soap_wsse_add_Security(&mediaProxy);
+        soap_wsse_add_UsernameTokenDigest(&mediaProxy, NULL, username.c_str(), password.c_str());
+
+        _trt__DeleteProfile request;
+        _trt__DeleteProfileResponse response;
+
+	request.ProfileToken = token;
+
+        int result = mediaProxy.DeleteProfile(&request, &response);
+        if (result == SOAP_OK) {
+                printf("profile deleted\n");
+        } else {
+                printf("ERROR: %d - DeleteProfile: %s\n", result, mediaProxy.soap_fault_detail());
+                mediaProxy.destroy();
+                return false;
+        }
+        mediaProxy.destroy();
+        return true;
+}
+
+
+bool createProfile(std::string mediaXaddr, std::string username, std::string password) {
+        MediaBindingProxy mediaProxy(mediaXaddr.c_str());
+
+        soap_wsse_add_Security(&mediaProxy);
+        soap_wsse_add_UsernameTokenDigest(&mediaProxy, NULL, username.c_str(), password.c_str());
+
+	_trt__CreateProfile request;
+	_trt__CreateProfileResponse response;
+
+	request.Name = "AgoVIEW profile";
+	tt__ReferenceToken token;
+	token = "p-agoview";
+	request.Token = &token;
+
+	int result = mediaProxy.CreateProfile(&request, &response);
+	if (result == SOAP_OK) {
+		printf("profile created\n");
+		_trt__GetVideoSourceConfigurations request;
+		_trt__GetVideoSourceConfigurationsResponse response;
+		soap_wsse_add_Security(&mediaProxy);
+		soap_wsse_add_UsernameTokenDigest(&mediaProxy, NULL, username.c_str(), password.c_str());
+		int result2 = mediaProxy.GetVideoSourceConfigurations(&request, &response);
+		if (result2 == SOAP_OK) {
+			for (std::vector < tt__VideoSourceConfiguration * >::const_iterator it = response.Configurations.begin(); it!=response.Configurations.end(); it++) {
+				printf("Source Token: %s ", (*it)->SourceToken.c_str());
+				printf("Bounds: x:%d y:%d w: %d h: %d ", (*it)->Bounds->x, (*it)->Bounds->y, (*it)->Bounds->width, (*it)->Bounds->height);
+				if ((*it)->Extension != NULL)  { // enum tt__RotateMode { tt__RotateMode__OFF = 0, tt__RotateMode__ON = 1, tt__RotateMode__AUTO = 2 };
+					printf("Rotate: %ddeg mode: %d\n", (*it)->Extension->Rotate->Degree, (*it)->Extension->Rotate->Mode);
+				}
+				printf("\n");
+				if (it==response.Configurations.begin()) {
+					// use first source for our profile
+					_trt__AddVideoSourceConfiguration addSourceRequest;
+					_trt__AddVideoSourceConfigurationResponse addSourceResponse;
+					addSourceRequest.ProfileToken = token;
+					addSourceRequest.ConfigurationToken = (*it)->SourceToken;
+					soap_wsse_add_Security(&mediaProxy);
+					soap_wsse_add_UsernameTokenDigest(&mediaProxy, NULL, username.c_str(), password.c_str());
+					int result3 = mediaProxy.AddVideoSourceConfiguration(&addSourceRequest, &addSourceResponse);
+					if (result3 == SOAP_OK) {
+						printf("Source Configuration added to Profile\n");
+					} else {
+						printf("ERROR: %d - AddVideoSourceConfiguration: %s\n", result3, mediaProxy.soap_fault_detail());
+					}
+				}
+			}
+		} else {
+			printf("ERROR: %d - GetVideoSourceConfigurations: %s\n", result2, mediaProxy.soap_fault_detail());
+			return false;
+		}
+		_trt__GetVideoEncoderConfigurations encoderRequest;
+		_trt__GetVideoEncoderConfigurationsResponse encoderResponse;
+		soap_wsse_add_Security(&mediaProxy);
+                soap_wsse_add_UsernameTokenDigest(&mediaProxy, NULL, username.c_str(), password.c_str());
+                result2 = mediaProxy.GetVideoEncoderConfigurations(&encoderRequest, &encoderResponse);
+                if (result2 == SOAP_OK) {
+                        for (std::vector < tt__VideoEncoderConfiguration *>::const_iterator it = encoderResponse.Configurations.begin(); it!=encoderResponse.Configurations.end(); it++) {
+				if ((*it)->Encoding != tt__VideoEncoding__H264) continue; // skip all non-h264 for now
+				std::string encoding;
+				switch((*it)->Encoding) {
+					case tt__VideoEncoding__JPEG: encoding = "JPEG"; break;
+					case tt__VideoEncoding__MPEG4: encoding = "MPEG4"; break;
+					case tt__VideoEncoding__H264: encoding = "H264"; break;
+					default: break;
+				}
+				printf("Token: %s\n", (*it)->token.c_str());
+				printf("Encoding: %s ", encoding.c_str());
+				printf("Resolution: %dx%d ", (*it)->Resolution->Width, (*it)->Resolution->Height);
+				printf("Quality: %f\n", (*it)->Quality);
+			}
+			for (std::vector < tt__VideoEncoderConfiguration *>::const_iterator it = encoderResponse.Configurations.begin(); it!=encoderResponse.Configurations.end(); it++) {
+				if ((*it)->Encoding == tt__VideoEncoding__H264) {
+					_trt__AddVideoEncoderConfiguration videoEncoderRequest;
+					_trt__AddVideoEncoderConfigurationResponse videoEncoderResponse;
+					videoEncoderRequest.ProfileToken = token;
+					videoEncoderRequest.ConfigurationToken = (*it)->token;
+
+					soap_wsse_add_Security(&mediaProxy);
+                                        soap_wsse_add_UsernameTokenDigest(&mediaProxy, NULL, username.c_str(), password.c_str());
+					int result3 = mediaProxy.AddVideoEncoderConfiguration(&videoEncoderRequest, &videoEncoderResponse);
+                         	        if (result3 == SOAP_OK) {
+                                                printf("Encoder Configuration added to Profile\n");
+                                        } else {
+                                                printf("ERROR: %d - AddVideoEncoderConfiguration: %s\n", result3, mediaProxy.soap_fault_detail());
+                                        }
+					break;
+				}
+			}
+		} else {
+			printf("ERROR: %d - GetVideoEncoderConfigurations: %s\n", result2, mediaProxy.soap_fault_detail());
+			return false;
+		}
+	} else {
+		printf("ERROR: %d - CreateProfile: %s\n", result, mediaProxy.soap_fault_detail());
+		mediaProxy.destroy();
+		return false;
+	}
+	mediaProxy.destroy();
+	return true;
+} 
+
 std::map <std::string, std::string> getProfiles(std::string mediaXaddr, std::string username, std::string password) {
 	std::map<std::string, std::string> profiles;
 
@@ -75,9 +200,26 @@ std::map <std::string, std::string> getProfiles(std::string mediaXaddr, std::str
 		for(std::vector<tt__Profile * >::const_iterator it = trt__GetProfilesResponse.Profiles.begin(); it != trt__GetProfilesResponse.Profiles.end(); ++it) {
 			tt__Profile* profile = *it;
 			profiles[profile->token]=profile->Name;
-/* #ifdef DEBUG
-			printf("Profile: %s: %s - fixed: %d\n", profile->token.c_str(), profile->Name.c_str(), *(profile->fixed));
-#endif */
+			printf("Profile: %s: %s - fixed: %d ", profile->token.c_str(), profile->Name.c_str(), *(profile->fixed));
+			if (profile->VideoEncoderConfiguration!=NULL) {
+				// enum tt__VideoEncoding { tt__VideoEncoding__JPEG = 0, tt__VideoEncoding__MPEG4 = 1, tt__VideoEncoding__H264 = 2 };
+				std::string encoding;
+				switch(profile->VideoEncoderConfiguration->Encoding) {
+					case tt__VideoEncoding__JPEG: encoding = "JPEG"; break;
+					case tt__VideoEncoding__MPEG4: encoding = "MPEG4"; break;
+					case tt__VideoEncoding__H264: encoding = "H264"; break;
+					default: break;
+				}
+
+				int x,y;
+				x=profile->VideoEncoderConfiguration->Resolution->Width;
+				y=profile->VideoEncoderConfiguration->Resolution->Height;
+				printf("Codec: %s Resolution: %dx%d ",encoding.c_str(),x,y); 
+				if (profile->VideoEncoderConfiguration->RateControl != NULL) {
+					printf("FPS Limit: %d EncInt: %d BitrateLimit: %d ", profile->VideoEncoderConfiguration->RateControl->FrameRateLimit, profile->VideoEncoderConfiguration->RateControl->EncodingInterval, profile->VideoEncoderConfiguration->RateControl->BitrateLimit); 
+				}
+			}
+			printf("\n");
 		}
 	} else {
 		printf("ERROR: %d - GetProfiles: %s\n", result, mediaProxy.soap_fault_detail());
@@ -324,7 +466,7 @@ int main (int argc, char ** argv)
 	std::map<std::string, std::string> networkvideotransmitters; // this holds the probe results
 	std::string m_username = getConfigOption("onvif", "username", "onvif");
 	std::string m_password = getConfigOption("onvif", "password", "onvif");
-	std::string targetprofile = getConfigOption("onvif", "profile", "balanced_h264");
+	std::string targetprofile = getConfigOption("onvif", "profile", "p-agoview");
 
 	struct wsdd__ProbeType probe;
 	struct __wsdd__ProbeMatches matches;
@@ -395,19 +537,22 @@ int main (int argc, char ** argv)
 
 				std::map <std::string, std::string> profiles;
 				profiles = getProfiles(mediaService, m_username, m_password);
-				for (std::map <std::string, std::string>::const_iterator it = profiles.begin(); it != profiles.end(); it++) {
+				/* for (std::map <std::string, std::string>::const_iterator it = profiles.begin(); it != profiles.end(); it++) {
 					printf("Profile: %s\n", it->first.c_str());
-				}
+				} */
 				std::map <std::string, std::string>::const_iterator it = profiles.find(targetprofile);
 				if (it != profiles.end()) { // cam supports wanted profile, get the URI
 					printf("URI: %s\n", getRTSPUri(mediaService, m_username, m_password, targetprofile).c_str());
 					agoConnection.addDevice(getRTSPUri(mediaService, m_username, m_password, targetprofile).c_str(), "onvifnvt");
-				} else { // take the first profile otherwise
-					it = profiles.begin();
+					deleteProfile(mediaService, m_username, m_password, targetprofile);
+				} else { // create profile otherwise
+					/* it = profiles.begin();
 					if (it != profiles.end()) {
 						printf("URI: %s\n", getRTSPUri(mediaService, m_username, m_password, it->first).c_str());
 						agoConnection.addDevice(getRTSPUri(mediaService, m_username, m_password, it->first).c_str(), "onvifnvt");
-					}
+					} */
+					printf("Profile not found, creating..\n");
+					createProfile(mediaService, m_username, m_password);
 				}
 			}
 		} else {
