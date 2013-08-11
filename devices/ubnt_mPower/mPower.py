@@ -19,12 +19,12 @@ def messageHandler(internalid, content):
 		if content["command"] == "on":
 			print "switching on port" + internalid
 			mPowerDevice.SetDevice(internalid, 1)
-			client.emitEvent(internalid, "event.device.statechanged", "255", "")
+			#client.emitEvent(internalid, "event.device.statechanged", "255", "")
 
 		if content["command"] == "off":
 			print "switching off port: " + internalid
 			mPowerDevice.SetDevice(internalid, 0)
-			client.emitEvent(internalid, "event.device.statechanged", "0", "")
+			#client.emitEvent(internalid, "event.device.statechanged", "0", "")
 
 # specify our message handler method
 client.addHandler(messageHandler)
@@ -51,7 +51,29 @@ class mPowerEvent(threading.Thread):
         threading.Thread.__init__(self)    
     def run(self):
     	level = 0
+	deviceState = dict()
         while (True):
+			content = mPowerDevice.GetDevices()
+			x = 1
+			for item in content["value"]:
+				if "relay" in item:
+						relayState = int(item["relay"])
+						try:
+							value = deviceState[x]
+							if relayState != value:
+								deviceState[x] = relayState
+								print "state changed port %s to %s" % (x, relayState)
+								if relayState == 1:
+									relayState = 255
+								stringRelayChanged = str(relayState)
+								client.emitEvent(x, "event.device.statechanged", stringRelayChanged, "")
+
+								
+						except KeyError:
+							deviceState[x] = relayState
+							
+						x = x + 1
+
 			time.sleep (5)
       
 background = mPowerEvent()
