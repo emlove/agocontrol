@@ -11,22 +11,26 @@ import pyubnt
 
 from urllib2 import URLError
 
-
-
 client = agoclient.AgoConnection("mPower")
 
+needs_connection = False
 
 def messageHandler(internalid, content):
 	if "command" in content:
-		if content["command"] == "on":
-			print "switching on port" + internalid
-			mPowerDevice.SetDevice(internalid, 1)
-			#client.emitEvent(internalid, "event.device.statechanged", "255", "")
+		try:
+		    if content["command"] == "on":
+			    print "switching on port" + internalid
+			    mPowerDevice.SetDevice(internalid, 1)
+			    #client.emitEvent(internalid, "event.device.statechanged", "255", "")
 
-		if content["command"] == "off":
-			print "switching off port: " + internalid
-			mPowerDevice.SetDevice(internalid, 0)
-			#client.emitEvent(internalid, "event.device.statechanged", "0", "")
+		    if content["command"] == "off":
+			    print "switching off port: " + internalid
+			    mPowerDevice.SetDevice(internalid, 0)
+			    #client.emitEvent(internalid, "event.device.statechanged", "0", "")
+		except URLError as e:
+				print "Device could not be reached due to %s" % (e.reason)
+				print "Needs reconnect ..."
+				needs_connection = True
 
 # specify our message handler method
 client.addHandler(messageHandler)
@@ -52,11 +56,25 @@ class mPowerEvent(threading.Thread):
     def __init__(self,):
         threading.Thread.__init__(self)    
     def run(self):
+	global needs_connection
+	global content
+	global mPowerDevice
+	global host
+	global username
+	global password
     	level = 0
 	deviceState = dict()
         while (True):
 			try:
-				content = mPowerDevice.GetDevices()
+				if needs_connection:
+					mPowerDevice = pyubnt.Device(host, username, password)
+					needs_connection = False
+				try:
+					content = mPowerDevice.GetDevices()
+				except ValueError as e:
+					needs_connection = True
+					print "needs reconnect line 76"
+					continue
 				x = 1
 				for item in content["value"]:
 					if "relay" in item:
@@ -79,11 +97,10 @@ class mPowerEvent(threading.Thread):
 				time.sleep (5)
 
 			except URLError as e:
-				print "Website (%s) could not be reached due to %s" % (e.url, e.reason)
+				print "Device could not be reached due to %s" % (e.reason)
       
 background = mPowerEvent()
 background.setDaemon(True)
 background.start()
 
 client.run()
-
