@@ -9,6 +9,8 @@ import threading
 import time
 import pyubnt
 
+from urllib2 import URLError
+
 
 
 client = agoclient.AgoConnection("mPower")
@@ -53,28 +55,31 @@ class mPowerEvent(threading.Thread):
     	level = 0
 	deviceState = dict()
         while (True):
-			content = mPowerDevice.GetDevices()
-			x = 1
-			for item in content["value"]:
-				if "relay" in item:
-						relayState = int(item["relay"])
-						try:
-							value = deviceState[x]
-							if relayState != value:
-								deviceState[x] = relayState
-								print "state changed port %s to %s" % (x, relayState)
-								if relayState == 1:
-									relayState = 255
-								stringRelayChanged = str(relayState)
-								client.emitEvent(x, "event.device.statechanged", stringRelayChanged, "")
+			try:
+				content = mPowerDevice.GetDevices()
+				x = 1
+				for item in content["value"]:
+					if "relay" in item:
+							relayState = int(item["relay"])
+							try:
+								value = deviceState[x]
+								if relayState != value:
+									deviceState[x] = relayState
+									print "state changed port %s to %s" % (x, relayState)
+									if relayState == 1:
+										relayState = 255
+									stringRelayChanged = str(relayState)
+									client.emitEvent(x, "event.device.statechanged", stringRelayChanged, "")
 
 								
-						except KeyError:
-							deviceState[x] = relayState
+							except KeyError:
+								deviceState[x] = relayState
 							
-						x = x + 1
+							x = x + 1
+				time.sleep (5)
 
-			time.sleep (5)
+			except URLError as e:
+				print "Website (%s) could not be reached due to %s" % (e.url, e.reason)
       
 background = mPowerEvent()
 background.setDaemon(True)
