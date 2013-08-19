@@ -38,6 +38,7 @@
 #include <openzwave/value_classes/ValueBool.h>
 
 #include "ZWApi.h"
+#include "ZWaveNode.h"
 
 using namespace std;
 using namespace agocontrol;
@@ -62,6 +63,8 @@ static list<NodeInfo*> g_nodes;
 static pthread_mutex_t g_criticalSection;
 static pthread_cond_t  initCond  = PTHREAD_COND_INITIALIZER;
 static pthread_mutex_t initMutex = PTHREAD_MUTEX_INITIALIZER;
+
+ZWaveNodes devices;
 
 const char *controllerErrorStr (Driver::ControllerError err)
 {
@@ -223,58 +226,106 @@ void OnNotification
 				tempstream << "-";
 				tempstream << label;
 				string tempstring = tempstream.str();
+				ZWaveNode *device;
 				switch(id.GetCommandClassId()) {
 					case COMMAND_CLASS_SWITCH_MULTILEVEL:
 						if (label == "Level") {
-							printf("adding ago device dimmer for value id: %s - Label: %s\n", tempstring.c_str(),label.c_str());
-							agoConnection->addDevice(tempstring.c_str(), "dimmer");
+							if ((device = devices.findId(nodeinstance)) != NULL) {
+								device->addValue(label, id);
+								device->setDevicetype("dimmer");
+							} else {
+								device = new ZWaveNode(nodeinstance, "dimmer");	
+								device->addValue(label, id);
+								devices.add(device);
+							}
+						
 						}
 					break;
 					case COMMAND_CLASS_SWITCH_BINARY:
 						if (label == "Switch") {
-							printf("adding ago device switch for value id: %s\n", tempstring.c_str());
-							agoConnection->addDevice(tempstring.c_str(), "switch");
+							if ((device = devices.findId(nodeinstance)) != NULL) {
+								device->addValue(label, id);
+							} else {
+								device = new ZWaveNode(nodeinstance, "switch");	
+								device->addValue(label, id);
+								devices.add(device);
+							}
 						}
 					break;
 					case COMMAND_CLASS_SENSOR_BINARY:
 						if (label == "Sensor") {
-							printf("adding ago device binarysensor for value id: %s\n", tempstring.c_str());
-							agoConnection->addDevice(tempstring.c_str(), "binarysensor");
+							if ((device = devices.findId(tempstring)) != NULL) {
+								device->addValue(label, id);
+							} else {
+								device = new ZWaveNode(tempstring, "binarysensor");	
+								device->addValue(label, id);
+								devices.add(device);
+							}
 						}
 					break;
 					case COMMAND_CLASS_SENSOR_MULTILEVEL:
 						if (label == "Luminance") {
-							printf("adding ago device brightnesssensor for value id: %s\n", tempstring.c_str());
-							agoConnection->addDevice(tempstring.c_str(), "brightnesssensor");
+							device = new ZWaveNode(tempstring, "brightnesssensor");	
+							device->addValue(label, id);
+							devices.add(device);
 						} else if (label == "Temperature") {
-							printf("adding ago device temperaturesensor for value id: %s\n", tempstring.c_str());
-							agoConnection->addDevice(tempstring.c_str(), "temperaturesensor");
+							device = new ZWaveNode(tempstring, "temperaturesensor");	
+							device->addValue(label, id);
+							devices.add(device);
 						} else {
 							printf("WARNING: unhandled label for SENSOR_MULTILEVEL: %s - adding generic multilevelsensor\n",label.c_str());
-							agoConnection->addDevice(tempstring.c_str(), "multilevelsensor");
+							if ((device = devices.findId(nodeinstance)) != NULL) {
+								device->addValue(label, id);
+							} else {
+								device = new ZWaveNode(nodeinstance, "multilevelsensor");	
+								device->addValue(label, id);
+								devices.add(device);
+							}
 						}
 					break;
 					case COMMAND_CLASS_METER:
 						if (label == "Power") {
-							printf("adding ago device powermeter for value id: %s\n", tempstring.c_str());
-							agoConnection->addDevice(tempstring.c_str(), "powermeter");
+							device = new ZWaveNode(tempstring, "powermeter");	
+							device->addValue(label, id);
+							devices.add(device);
 						} else if (label == "Energy") {
-							printf("adding ago device energymeter for value id: %s\n", tempstring.c_str());
-							agoConnection->addDevice(tempstring.c_str(), "energymeter");
+							device = new ZWaveNode(tempstring, "energymeter");	
+							device->addValue(label, id);
+							devices.add(device);
 						} else {
 							printf("WARNING: unhandled label for CLASS_METER: %s - adding generic multilevelsensor\n",label.c_str());
-							agoConnection->addDevice(tempstring.c_str(), "multilevelsensor");
+							if ((device = devices.findId(nodeinstance)) != NULL) {
+								device->addValue(label, id);
+							} else {
+								device = new ZWaveNode(nodeinstance, "multilevelsensor");	
+								device->addValue(label, id);
+								devices.add(device);
+							}
 						}
 					break;
 					case COMMAND_CLASS_BASIC_WINDOW_COVERING:
 						// if (label == "Open") {
-							printf("adding ago device drapes for value id: %s\n", tempstring.c_str());
-							agoConnection->addDevice(tempstring.c_str(), "drapes");
+							if ((device = devices.findId(nodeinstance)) != NULL) {
+								device->addValue(label, id);
+								device->setDevicetype("drapes");
+							} else {
+								device = new ZWaveNode(nodeinstance, "drapes");	
+								device->addValue(label, id);
+								devices.add(device);
+							}
 					//	}
 					break;
 					case COMMAND_CLASS_THERMOSTAT_SETPOINT:
 						printf("adding ago device thermostat for value id: %s\n", tempstring.c_str());
 						agoConnection->addDevice(tempstring.c_str(), "thermostat");
+						if ((device = devices.findId(nodeinstance)) != NULL) {
+							device->addValue(label, id);
+							device->setDevicetype("thermostat");
+						} else {
+							device = new ZWaveNode(nodeinstance, "thermostat");	
+							device->addValue(label, id);
+							devices.add(device);
+						}
 					break;
 					default:
 						printf("Notification: Unassigned Value Added Home 0x%08x Node %d Genre %d Class %x Instance %d Index %d Type %d - Label: %s\n", _notification->GetHomeId(), _notification->GetNodeId(), id.GetGenre(), id.GetCommandClassId(), id.GetInstance(), id.GetIndex(), id.GetType(),label.c_str());
@@ -315,13 +366,6 @@ void OnNotification
 					string label = Manager::Get()->GetValueLabel(id);
 					string units = Manager::Get()->GetValueUnits(id);
 
-					stringstream tempstream;
-					tempstream << (int) _notification->GetNodeId();
-					tempstream << "/";
-					tempstream << (int) id.GetInstance();
-					tempstream << "-";
-					tempstream << label;
-
 					string level = str;
 					string eventtype = "";
 					if (str == "True") level="255";
@@ -357,9 +401,12 @@ void OnNotification
 					if (label == "Power") {
 						eventtype="event.environment.powerchanged";
 					}
-					if (eventtype != "") {
-						if (debug) printf("Sending %s event from child %s\n",eventtype.c_str(), tempstream.str().c_str());
-						agoConnection->emitEvent(tempstream.str().c_str(), eventtype.c_str(), level.c_str(), units.c_str());	
+					if (eventtype != "") {	
+						ZWaveNode *device = devices.findValue(id);
+						if (device != NULL) {
+							if (debug) printf("Sending %s event from child %s\n",eventtype.c_str(), device->getId().c_str());
+							agoConnection->emitEvent(device->getId().c_str(), eventtype.c_str(), level.c_str(), units.c_str());	
+						}
 					}
 				}
 			}
@@ -526,54 +573,62 @@ std::string commandHandler(qpid::types::Variant::Map content) {
 		}
 
 	} else {
-		unsigned pos = internalid.find("/");
-		int nodeid = atoi(internalid.substr(0,pos).c_str());
-		string instancelabel = internalid.substr(pos+1);
-		unsigned pos2 = instancelabel.find("-");
-		int instance = atoi(instancelabel.substr(0,pos2).c_str());
-		string label = instancelabel.substr(pos2+1);
+		ZWaveNode *device = devices.findId(internalid);
+		if (device != NULL) {
+			printf("command received for %s\n", internalid.c_str());
+			printf("device tpye: %s\n", device->getDevicetype().c_str()); 
 
-		printf("command received for node %d/%d-%s\n", nodeid, instance, label.c_str());
-		printf("device tpye: %s\n", agoConnection->getDeviceType(internalid.c_str()).c_str()); // Level , Switch
+			string devicetype = device->getDevicetype();
+			ValueID *tmpValueID;
+			bool result;
 
-		string devicetype = agoConnection->getDeviceType(internalid.c_str());
-		ValueID *tmpValueID;
-		tmpValueID = getValueID(nodeid,instance, label);
-		if (!tmpValueID) return "";
-		printf("Type: %i - %s\n",tmpValueID->GetType(), Value::GetTypeNameFromEnum(tmpValueID->GetType()));
-		// printf("Found ValueID: %d\n",tmpValueID->GetId());
-
-		if (content["command"] == "on" ) {
 			if (devicetype == "switch") {
-				bool result = Manager::Get()->SetValue(*tmpValueID , true);
-				printf("Result: %d\n",result);
-			} else if (devicetype == "dimmer") {
-				bool result = Manager::Get()->SetValue(*tmpValueID , (uint8) 255);
-				printf("Result: %d\n",result);
-			} else {
-				bool result = Manager::Get()->SetValue(*tmpValueID , (uint8) 255);
-				printf("Result: %d\n",result);
+				tmpValueID = device->getValueID("Switch");
+				if (tmpValueID == NULL) return "";
+				if (content["command"] == "on" ) {
+					result = Manager::Get()->SetValue(*tmpValueID , true);
+				} else {
+					result = Manager::Get()->SetValue(*tmpValueID , false);
+				}
+			} else if(devicetype == "dimmer") {
+				tmpValueID = device->getValueID("Level");
+				if (tmpValueID == NULL) return "";
+				if (content["command"] == "on" ) {
+					result = Manager::Get()->SetValue(*tmpValueID , (uint8) 255);
+				} else if (content["command"] == "setlevel") {
+					uint8 level = atoi(content["level"].asString().c_str());
+					result = Manager::Get()->SetValue(*tmpValueID, level);
+				} else {
+					result = Manager::Get()->SetValue(*tmpValueID , (uint8) 0);
+				}
+			} else if (devicetype == "drapes") {
+				if (content["command"] == "on") {
+					tmpValueID = device->getValueID("Level");
+					if (tmpValueID == NULL) return "";
+					result = Manager::Get()->SetValue(*tmpValueID , (uint8) 255);
+				} else if (content["command"] == "open" ) {
+					tmpValueID = device->getValueID("Open");
+					if (tmpValueID == NULL) return "";
+					result = Manager::Get()->SetValue(*tmpValueID , true);
+				} else if (content["command"] == "close" ) {
+					tmpValueID = device->getValueID("Close");
+					if (tmpValueID == NULL) return "";
+					result = Manager::Get()->SetValue(*tmpValueID , true);
+				} else if (content["command"] == "stop" ) {
+					tmpValueID = device->getValueID("Stop");
+					if (tmpValueID == NULL) return "";
+					result = Manager::Get()->SetValue(*tmpValueID , true);
+
+				} else {
+					tmpValueID = device->getValueID("Level");
+					if (tmpValueID == NULL) return "";
+					result = Manager::Get()->SetValue(*tmpValueID , (uint8) 0);
+				}
 			}
-			return "";
-		} else if (content["command"] == "off" ) {
-			if (devicetype == "switch") {
-				bool result = Manager::Get()->SetValue(*tmpValueID , false);
-				printf("Result: %d\n",result);
-			} else if (devicetype == "dimmer") {
-				bool result = Manager::Get()->SetValue(*tmpValueID , (uint8) 0);
-				printf("Result: %d\n",result);
-			} else {
-				bool result = Manager::Get()->SetValue(*tmpValueID , (uint8) 0);
-				printf("Result: %d\n",result);
-			}
-			return "";
-		} else if (content["command"] == "setlevel") {
-			uint8 level = atoi(content["level"].asString().c_str());
-			printf("Setting level: %d\n",level);
-			bool result = Manager::Get()->SetValue(*tmpValueID, level);
-			printf("Result: %d\n",result);
-			return "";
+
 		}
+			//printf("Type: %i - %s\n",tmpValueID->GetType(), Value::GetTypeNameFromEnum(tmpValueID->GetType()));
+
 	}
 	return "";
 }
@@ -628,6 +683,12 @@ int main(int argc, char **argv) {
 
 		agoConnection->addDevice("zwavecontroller", "zwavecontroller");
 		agoConnection->addHandler(commandHandler);
+		for (std::list<ZWaveNode*>::const_iterator it = devices.nodes.begin(); it != devices.nodes.end(); it++) {
+			ZWaveNode *node = *it;
+			printf("adding ago device for value id: %s - type: %s\n", node->getId().c_str(),node->getDevicetype().c_str());
+			agoConnection->addDevice(node->getId().c_str(), node->getDevicetype().c_str());
+
+		}
 
 		agoConnection->run();
 	} else {
