@@ -16,17 +16,23 @@ client = agoclient.AgoConnection("mPower")
 needs_connection = False
 
 def messageHandler(internalid, content):
+	global needs_connection
 	if "command" in content:
 		try:
 		    if content["command"] == "on":
 			    print "switching on port" + internalid
-			    mPowerDevice.SetDevice(internalid, 1)
-			    #client.emitEvent(internalid, "event.device.statechanged", "255", "")
+                            try:   
+				mPowerDevice.SetDevice(internalid, 1)
+			    except ValueError as e:
+				needs_connection = True
 
 		    if content["command"] == "off":
 			    print "switching off port: " + internalid
-			    mPowerDevice.SetDevice(internalid, 0)
-			    #client.emitEvent(internalid, "event.device.statechanged", "0", "")
+                            try:   
+				mPowerDevice.SetDevice(internalid, 0)
+			    except ValueError as e:
+				needs_connection = True
+
 		except URLError as e:
 				print "Device could not be reached due to %s" % (e.reason)
 				print "Needs reconnect ..."
@@ -73,7 +79,6 @@ class mPowerEvent(threading.Thread):
 					content = mPowerDevice.GetDevices()
 				except ValueError as e:
 					needs_connection = True
-					print "needs reconnect line 76"
 					continue
 				x = 1
 				for item in content["value"]:
