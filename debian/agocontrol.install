@@ -14,17 +14,14 @@ etc/sysctl.d/agocontrol.conf
 var/crash
 etc/security/limits.d/agocontrol.conf
 opt/agocontrol/bin/agologger.py
-opt/agocontrol/bin/agoresolver.py
 opt/agocontrol/bin/agoresolver
 opt/agocontrol/bin/agoscenario.py
 opt/agocontrol/bin/agoevent.py
-opt/agocontrol/bin/inventory.py
 opt/agocontrol/bin/boolParser.py
 opt/agocontrol/bin/myavahi.py
 opt/agocontrol/bin/agodrain.py
 opt/agocontrol/bin/messagesend.py
 opt/agocontrol/bin/messagesend
-opt/agocontrol/bin/agochromoflex
 opt/agocontrol/bin/agotimer
 opt/agocontrol/bin/agorpc
 opt/agocontrol/bin/agoctrl.sh
