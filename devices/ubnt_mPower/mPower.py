@@ -77,28 +77,28 @@ class mPowerEvent(threading.Thread):
 					needs_connection = False
 				try:
 					content = mPowerDevice.GetDevices()
+					x = 1
+					for item in content["value"]:
+						if "relay" in item:
+								relayState = int(item["relay"])
+								try:
+									value = deviceState[x]
+									if relayState != value:
+										deviceState[x] = relayState
+										print "state changed port %s to %s" % (x, relayState)
+										if relayState == 1:
+											relayState = 255
+										stringRelayChanged = str(relayState)
+										client.emitEvent(str(x), "event.device.statechanged", stringRelayChanged, "")
+								
+								except KeyError:
+									deviceState[x] = relayState
+							
+								x = x + 1
+
 				except ValueError as e:
 					needs_connection = True
 					continue
-				x = 1
-				for item in content["value"]:
-					if "relay" in item:
-							relayState = int(item["relay"])
-							try:
-								value = deviceState[x]
-								if relayState != value:
-									deviceState[x] = relayState
-									print "state changed port %s to %s" % (x, relayState)
-									if relayState == 1:
-										relayState = 255
-									stringRelayChanged = str(relayState)
-									client.emitEvent(x, "event.device.statechanged", stringRelayChanged, "")
-
-								
-							except KeyError:
-								deviceState[x] = relayState
-							
-							x = x + 1
 				time.sleep (5)
 
 			except URLError as e:
