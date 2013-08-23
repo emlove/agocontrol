@@ -141,6 +141,8 @@ function initGUI() {
 	init_configuration();
     } else if (page == "deviceConfig") {
 	init_deviceConfig();
+    } else if (page == "roomConfig") {
+	init_roomConfig();
     }
 }
 
@@ -222,6 +224,7 @@ function handleInventory(response) {
     if (model.devices !== undefined) {
 	model.devices(deviceMap);
     }
+
 }
 
 function getInventory() {
