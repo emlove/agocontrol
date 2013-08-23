@@ -61,6 +61,7 @@ namespace agocontrol {
 			~AgoConnection();
 			void run();
 			bool addDevice(const char *internalId, const char *deviceType);
+			bool addDevice(const char *internalId, const char *deviceType, bool passuuid);
 			bool removeDevice(const char *internalId);
 			string getDeviceType(const char *internalId);
 			bool addHandler(std::string (*handler)(qpid::types::Variant::Map));

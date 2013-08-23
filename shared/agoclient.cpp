@@ -281,6 +281,15 @@ bool agocontrol::AgoConnection::emitDeviceRemove(const char *internalId) {
 	} 
 	return true;
 } 
+
+bool agocontrol::AgoConnection::addDevice(const char *internalId, const char *deviceType, bool passuuid) {
+	if (!passuuid) return addDevice(internalId, deviceType);
+	uuidMap[internalId] = internalId;
+	storeUuidMap();
+	return addDevice(internalId, deviceType);
+
+}
+
 bool agocontrol::AgoConnection::addDevice(const char *internalId, const char *deviceType) {
 	if (internalIdToUuid(internalId).size()==0) {
 		// need to generate new uuid
