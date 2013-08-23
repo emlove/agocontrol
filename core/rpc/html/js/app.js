@@ -142,7 +142,7 @@ function initGUI() {
     } else if (page == "deviceConfig") {
 	init_deviceConfig();
     } else if (page == "roomConfig") {
-	init_roomConfig();
+        deferredInit = init_roomConfig;
     }
 }
 

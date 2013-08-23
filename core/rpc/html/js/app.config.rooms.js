@@ -6,7 +6,8 @@
 function roomConfig() {
     this.rooms = ko.observableArray([]);
     this.hasNavigation = ko.observable(true);
-
+    /* get uuid into rooms */
+    for (var uuid in rooms) { var tmp = rooms[uuid]; tmp.uuid = uuid; this.rooms.push(tmp); }
 }
 
 /**
