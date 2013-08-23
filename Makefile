@@ -99,11 +99,9 @@ install:
 	install conf/*.service $(DESTDIR)/lib/systemd/system
 	install data/inventory.sql $(DESTDIR)/etc/opt/agocontrol
 	install data/datalogger.sql $(DESTDIR)/etc/opt/agocontrol
-	install core/agoresolver.py $(DESTDIR)/opt/agocontrol/bin
 	install core/agodrain.py $(DESTDIR)/opt/agocontrol/bin
 	install core/agoscenario.py $(DESTDIR)/opt/agocontrol/bin
 	install core/agoevent.py $(DESTDIR)/opt/agocontrol/bin
-	install core/inventory.py $(DESTDIR)/opt/agocontrol/bin
 	install core/boolParser.py $(DESTDIR)/opt/agocontrol/bin
 	install core/myavahi.py $(DESTDIR)/opt/agocontrol/bin
 	install core/agoctrl.sh $(DESTDIR)/opt/agocontrol/bin
