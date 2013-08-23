@@ -82,6 +82,22 @@ bool deleteProfile(std::string mediaXaddr, std::string username, std::string pas
         return true;
 }
 
+std::vector < tt__AudioSourceConfiguration * > getAudioSourceConfigurations(std::string mediaXaddr, std::string username, std::string password) {
+        MediaBindingProxy mediaProxy(mediaXaddr.c_str());
+
+        soap_wsse_add_Security(&mediaProxy);
+        soap_wsse_add_UsernameTokenDigest(&mediaProxy, NULL, username.c_str(), password.c_str());
+
+	_trt__GetAudioSourceConfigurations request;
+	_trt__GetAudioSourceConfigurationsResponse response;
+	
+	int result = mediaProxy.GetAudioSourceConfigurations(&request, &response);
+        if (result != SOAP_OK) {
+                printf("ERROR: %d - DeleteProfile: %s\n", result, mediaProxy.soap_fault_detail());
+        }
+	mediaProxy.destroy();
+	return response.Configurations;
+}
 
 bool createProfile(std::string mediaXaddr, std::string username, std::string password) {
         MediaBindingProxy mediaProxy(mediaXaddr.c_str());
@@ -174,6 +190,10 @@ bool createProfile(std::string mediaXaddr, std::string username, std::string pas
 		} else {
 			printf("ERROR: %d - GetVideoEncoderConfigurations: %s\n", result2, mediaProxy.soap_fault_detail());
 			return false;
+		}
+		std::vector < tt__AudioSourceConfiguration * > audioConfigs = getAudioSourceConfigurations(mediaXaddr, username, password);
+		for (std::vector < tt__AudioSourceConfiguration * >::const_iterator it = audioConfigs.begin(); it!=audioConfigs.end(); it++) {
+			printf("AudioSourceConfiguration: %s\n", (*it)->SourceToken.c_str());
 		}
 	} else {
 		printf("ERROR: %d - CreateProfile: %s\n", result, mediaProxy.soap_fault_detail());
