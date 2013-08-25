@@ -37,6 +37,7 @@
 #include <qpid/messaging/Address.h>
 
 #include "../../shared/agoclient.h"
+#include "../../version.h"
 
 #include "schema.h"
 #include "inventory.h"
@@ -135,6 +136,7 @@ int main(int argc, char **argv) {
 	Variant::Map schema;  
 	Variant::Map system; // holds system information
 	system["uuid"] = getConfigOption("system", "uuid", "00000000-0000-0000-000000000000");
+	system["version"] = AGOCONTROL_VERSION;
 
 	clog << agocontrol::kLogDebug << "parsing schema file" << std::endl;
 	schema = parseSchema(schemafile.c_str());
