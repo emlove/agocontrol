@@ -40,6 +40,7 @@ var schema = {};
 var deviceMap = [];
 var rooms = {};
 var floorPlans = {};
+var systemvar = {};
 var currentFloorPlan = ko.observable({});
 
 var supported_devices = [ "switch", "dimmer", "binarysensor", "dimmerrgb", "multilevelsensor", "placeholder" ];
@@ -137,12 +138,12 @@ function initGUI() {
 	deferredInit = init_dashBoard;
     } else if (page == "floorplan") {
 	deferredInit = init_floorPlan;
-    } else if (page == "configuration") {
-	init_configuration();
-    } else if (page == "deviceConfig") {
-	init_deviceConfig();
     } else if (page == "roomConfig") {
         deferredInit = init_roomConfig;
+    } else if (page == "configuration") {
+	deferredInit = init_configuration;
+    } else if (page == "deviceConfig") {
+	init_deviceConfig();
     }
 }
 
@@ -181,6 +182,7 @@ function getEvent() {
 
 function handleInventory(response) {
     rooms = response.result.rooms;
+    systemvar = response.result.system;
     schema = response.result.schema;
     floorPlans = response.result.floorplans;
 
