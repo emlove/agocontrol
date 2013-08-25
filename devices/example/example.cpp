@@ -1,23 +1,29 @@
 #include "agoclient.h"
 
 using namespace agocontrol;
+AgoConnection *agoConnection;
 
-std::string commandHandler(qpid::types::Variant::Map command) {
+qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map command) {
+	qpid::types::Variant::Map returnval;
+	std::string internalid = command["internalid"].asString();
 	if (command["command"] == "on") {
-		printf("Switch %s ON\n", command["internalid"].asString().c_str());
-		return "255";
+		printf("Switch %s ON\n", internalid.c_str());
+		agoConnection->emitEvent(internalid.c_str(), "event.device.statechanged", "255", "");
+		returnval["result"] = 0;
+		
 	} else if (command["command"] == "off") {
-		printf("Switch %s OFF\n", command["internalid"].asString().c_str());
-		return "0";
+		printf("Switch %s OFF\n", internalid.c_str());
+		agoConnection->emitEvent(internalid.c_str(), "event.device.statechanged", "0", "");
+		returnval["result"] = 0;
 	}	
-	return "";
+	return returnval;
 }
 
 int main(int argc, char **argv) {
-	AgoConnection agoConnection = AgoConnection("example");
+	agoConnection = new AgoConnection("example");
 	printf("connection established\n");
-	agoConnection.addDevice("123", "dimmer");
-	agoConnection.addDevice("124", "switch");
-	agoConnection.addHandler(commandHandler);
-	agoConnection.run();
+	agoConnection->addDevice("123", "dimmer");
+	agoConnection->addDevice("124", "switch");
+	agoConnection->addHandler(commandHandler);
+	agoConnection->run();
 }
