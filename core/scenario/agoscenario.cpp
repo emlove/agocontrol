@@ -11,8 +11,8 @@
 
 #include "agoclient.h"
 
-#ifndef SCENARIOMAP
-#define SCENARIOMAP "/etc/opt/agocontrol/scenariomap.json"
+#ifndef SCENARIOMAPFILE
+#define SCENARIOMAPFILE "/etc/opt/agocontrol/scenariomap.json"
 #endif
 
 using namespace std;
@@ -61,8 +61,14 @@ std::string commandHandler(qpid::types::Variant::Map content) {
 
 
                 } else if (content["command"] == "delscenario") {
-
-
+			std::string scenario = content["scenario"].asString();
+			if (scenario != "") {
+				qpid::types::Variant::Map::iterator it = scenariomap.find(scenario);
+				if (it != scenariomap.end()) {
+					scenariomap.erase(it);
+					variantMapToJSONFile(scenariomap, SCENARIOMAPFILE);
+				}
+			}
                 } 
 
 	} else {
@@ -83,7 +89,7 @@ int main(int argc, char **argv) {
 	agoConnection->addDevice("scenariocontroller", "scenariocontroller");
 	agoConnection->addHandler(commandHandler);
 
-	scenariomap = jsonFileToVariantMap(SCENARIOMAP);
+	scenariomap = jsonFileToVariantMap(SCENARIOMAPFILE);
 	// cout  << scenariomap;
 	for (qpid::types::Variant::Map::const_iterator it = scenariomap.begin(); it!=scenariomap.end(); it++) {
 		cout << "adding scenario:" << it->first << ":" << it->second << endl;	
