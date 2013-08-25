@@ -51,7 +51,8 @@ void *runscenario(void * _scenario) {
 	return NULL;
 }
 
-std::string commandHandler(qpid::types::Variant::Map content) {
+qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
+	qpid::types::Variant::Map returnval;
 	std::string internalid = content["internalid"].asString();
 	if (internalid == "scenariocontroller") {
 		if (content["command"] == "setscenario") {
@@ -59,33 +60,43 @@ std::string commandHandler(qpid::types::Variant::Map content) {
 			std::string scenario = content["scenario"].asString();
 			if (scenario == "") scenario == generateUuid();
 			scenariomap[scenario] = newscenario;
-			variantMapToJSONFile(scenariomap, SCENARIOMAPFILE);
+			if (variantMapToJSONFile(scenariomap, SCENARIOMAPFILE)) {
+				returnval["result"] = 0;
+			} else {
+				returnval["result"] = -1;
+			}
 		} else if (content["command"] == "getscenario") {
 			std::string scenario = content["scenario"].asString();
-			qpid::types::Variant::Map result = scenariomap[scenario].asMap();
-			// todo: need to return the value somehow
+			returnval["result"] = 0;
+			returnval["scenariomap"] = scenariomap[scenario].asMap();
+			returnval["scenario"] = scenario;
                 } else if (content["command"] == "delscenario") {
 			std::string scenario = content["scenario"].asString();
 			if (scenario != "") {
 				qpid::types::Variant::Map::iterator it = scenariomap.find(scenario);
 				if (it != scenariomap.end()) {
 					scenariomap.erase(it);
-					variantMapToJSONFile(scenariomap, SCENARIOMAPFILE);
+					if (variantMapToJSONFile(scenariomap, SCENARIOMAPFILE)) {
+						returnval["result"] = 0;
+					} else {
+						returnval["result"] = -1;
+					}
 				}
 			}
                 } 
 
 	} else {
 
-		if (content["command"] == "on" ) {
+		if ((content["command"] == "on") || (content["command"] == "run")) {
 			cout << "spawning thread for scenario: " << internalid << endl;
 			// runscenario((void *)&scenario);
 			pthread_t execThread;
 			pthread_create(&execThread, NULL, runscenario, (void *)&scenariomap[internalid].asMap());
+			returnval["result"] = 0;
 		} 
 
 	}
-	return "";
+	return returnval;
 }
 
 int main(int argc, char **argv) {
