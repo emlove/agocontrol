@@ -10,7 +10,7 @@ $(BUILDDIRS):
 	$(MAKE) -C $(@:build-%=%)
 
 install: $(INSTALLDIRS) all
-        $(INSTALL_DIR) $(BINDIR)
+	$(INSTALL_DIR) $(BINDIR)
 	$(INSTALL) messagesend.py $(BINDIR)
 	$(INSTALL) agodrain.py $(BINDIR)
 	$(INSTALL) agoscenario.py $(BINDIR)
