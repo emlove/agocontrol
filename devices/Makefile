@@ -1,4 +1,4 @@
-DIRS = agoEnOcean agoknx blinkm chromoflex example firmata i2c irtrans_ethernet kwikwai mediaproxy rain8net zwave
+DIRS = agoEnOcean agoknx blinkm chromoflex example firmata i2c irtrans_ethernet kwikwai mediaproxy rain8net zwave 1wire syslog
 
 BUILDDIRS = $(DIRS:%=build-%)
 INSTALLDIRS = $(DIRS:%=install-%)
