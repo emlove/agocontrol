@@ -70,7 +70,8 @@ installobsolete: $(PROXY_SERVER)
 	install -m 755 $(PROXY_SERVER) $(DESTDIR)$(PREFIX)/bin
 
 install:
-	$(INSTALL) agomediaproxy $(BINDIR)
+	$(INSTALL_DIR) $(BINDIR)
+	$(INSTALL_PROGRAM) agomediaproxy $(BINDIR)
 
 clean:
 	cd $(LIVEMEDIA_DIR) ; $(MAKE) clean

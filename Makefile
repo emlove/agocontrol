@@ -4,6 +4,10 @@ export LD = g++
 export LDFLAGS = -L../../shared
 export CFLAGS = -c -Wall -Wno-format -g -DDEBUG
 export INSTALL = install
+export INSTALL_DIR = $(INSTALL) -p -d -o root -g root  -m  755
+export INSTALL_PROGRAM = $(INSTALL) -p    -o root -g root  -m  755
+export INSTALL_FILE    = $(INSTALL) -p    -o root -g root  -m  644
+
 export INCLUDES = -I../../shared
 
 export BINDIR = $(DESTDIR)/opt/agocontrol/bin

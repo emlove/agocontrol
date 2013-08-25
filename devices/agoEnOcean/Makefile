@@ -19,4 +19,5 @@ clean:
 	rm -f agoEnOcean agoEnOcean.o TCM120.o EnOceanPort.o cssl.o
 
 install:
-	$(INSTALL) agoEnOcean $(BINDIR)
+	$(INSTALL_DIR) $(BINDIR)
+	$(INSTALL_PROGRAM) agoEnOcean $(BINDIR)

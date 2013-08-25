@@ -14,4 +14,5 @@ clean:
 	rm -f agofirmata firmata.o arduino.o agofirmata.o 
 
 install:
-	$(INSTALL) agofirmata $(BINDIR)
+	$(INSTALL_DIR) $(BINDIR)
+	$(INSTALL_PROGRAM) agofirmata $(BINDIR)

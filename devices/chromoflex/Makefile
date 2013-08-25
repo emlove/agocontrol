@@ -13,4 +13,5 @@ clean:
 	rm -f agochromoflex Main.o chromoflex.o
 
 install:
-	$(INSTALL) agochromoflex $(BINDIR)
+	$(INSTALL_DIR) $(BINDIR)
+	$(INSTALL_PROGRAM) agochromoflex $(BINDIR)

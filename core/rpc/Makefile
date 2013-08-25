@@ -14,5 +14,6 @@ clean:
 	rm -f agorpc agorpc.o mongoose.o
 
 install:
-	$(INSTALL) agorpc $(BINDIR)
+	$(INSTALL_DIR) $(BINDIR)
+	$(INSTALL_PROGRAM) agorpc $(BINDIR)
 

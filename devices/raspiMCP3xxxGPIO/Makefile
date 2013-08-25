@@ -1,6 +1,7 @@
 all:
 
 install:
-	$(INSTALL) raspiMCP3xxxGPIO.py $(BINDIR)
+	$(INSTALL_DIR) $(BINDIR)
+	$(INSTALL_PROGRAM) raspiMCP3xxxGPIO.py $(BINDIR)
 
 clean:

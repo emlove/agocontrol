@@ -13,5 +13,6 @@ clean:
 	rm -f messagesend messagesend.o
 
 install:
-	$(INSTALL) messagesend $(BINDIR)
+	$(INSTALL_DIR) $(BINDIR)
+	$(INSTALL_PROGRAM) messagesend $(BINDIR)
 

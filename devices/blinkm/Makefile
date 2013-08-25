@@ -13,4 +13,5 @@ clean:
 	rm -f agoblinkm agoblinkm.o
 
 install:
-	$(INSTALL) agoblinkm $(BINDIR)
+	$(INSTALL_DIR) $(BINDIR)
+	$(INSTALL_PROGRAM) agoblinkm $(BINDIR)

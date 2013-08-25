@@ -13,4 +13,5 @@ clean:
 	rm -f agoscenario agoscenario.o
 
 install:
-	$(INSTALL) agoscenario $(BINDIR)
+	$(INSTALL_DIR) $(BINDIR)
+	$(INSTALL_PROGRAM) agoscenario $(BINDIR)

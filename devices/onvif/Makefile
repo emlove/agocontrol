@@ -15,3 +15,8 @@ agoonvif: $(SOAPOBJ) onvif.o
 
 clean:
 	rm -f agoonvif *.o | tee
+
+install:
+	$(INSTALL_DIR) $(BINDIR)
+	$(INSTALL_PROGRAM) agoonvif $(BINDIR)
+

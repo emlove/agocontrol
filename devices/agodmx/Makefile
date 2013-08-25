@@ -30,3 +30,8 @@ agodmx: agodmx.o
 
 clean:
 	rm -f agodmx agodmx.o 
+
+install:
+	$(INSTALL_DIR) $(BINDIR)
+	$(INSTALL_PROGRAM) agodmx $(BINDIR)
+

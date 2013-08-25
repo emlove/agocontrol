@@ -1,7 +1,9 @@
 all:
 
 install:
-	$(INSTALL) agoowfs.py $(BINDIR)
-	$(INSTALL) -d $(CONFDIR)/owfs
+	$(INSTALL_DIR) $(BINDIR)
+	$(INSTALL_PROGRAM) agoowfs.py $(BINDIR)
+	$(INSTALL_DIR) $(CONFDIR)
+	$(INSTALL_DIR) $(CONFDIR)/owfs
 
 clean:

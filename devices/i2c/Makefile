@@ -13,4 +13,5 @@ clean:
 	rm -f agoi2c  agoi2c.o
 
 install:
-	$(INSTALL) agoi2c $(BINDIR)
+	$(INSTALL_DIR) $(BINDIR)
+	$(INSTALL_PROGRAM) agoi2c $(BINDIR)

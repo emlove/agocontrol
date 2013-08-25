@@ -1,7 +1,8 @@
 all:
 
 install:
-	$(INSTALL) agologger.py $(BINDIR)
+	$(INSTALL_DIR) $(BINDIR)
+	$(INSTALL_PROGRAM) agologger.py $(BINDIR)
 
 clean:
 

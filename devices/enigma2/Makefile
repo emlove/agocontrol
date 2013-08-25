@@ -1,6 +1,7 @@
 all:
 
 install:
-	$(INSTALL) agoenigma2.py $(BINDIR)
+	$(INSTALL_DIR) $(BINDIR)
+	$(INSTALL_PROGRAM) agoenigma2.py $(BINDIR)
 
 clean:

@@ -1,6 +1,7 @@
 all:
 
 install:
-	$(INSTALL) agoasterisk.py $(BINDIR)
+	$(INSTALL_DIR) $(BINDIR)
+	$(INSTALL_PROGRAM) agoasterisk.py $(BINDIR)
 
 clean:

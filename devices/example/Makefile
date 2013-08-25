@@ -29,3 +29,8 @@ example: example.o
 
 clean:
 	rm -f example example.o
+
+install:
+	$(INSTALL_DIR) $(BINDIR)
+	$(INSTALL_PROGRAM) example $(BINDIR)
+

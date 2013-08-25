@@ -10,4 +10,5 @@ clean:
 	rm -f agoresolver agoresolver.o schema.o inventory.o
 
 install:
-	$(INSTALL) agoresolver $(BINDIR)
+	$(INSTALL_DIR) $(BINDIR)
+	$(INSTALL_PROGRAM) agoresolver $(BINDIR)

@@ -1,6 +1,7 @@
 all:
 
 install:
-	$(INSTALL) agogc100.py $(BINDIR)
+	$(INSTALL_DIR) $(BINDIR)
+	$(INSTALL_PROGRAM) agogc100.py $(BINDIR)
 
 clean:
