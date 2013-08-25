@@ -1,26 +1,10 @@
-#
-
-.SUFFIXES:	.cpp .o .a .s
-
-CC     := gcc
-CXX    := g++
-LD     := g++
-AR     := ar rc
-RANLIB := ranlib
-
-DEBUG_CFLAGS    := -Wall -Werror -Wno-format -g -DDEBUG -fpic
-RELEASE_CFLAGS  := -Wall -Wno-unknown-pragmas -Wno-format -O3
 LIB_VER         := .1
-DEBUG_LDFLAGS	:= -g -shared -Wl,-soname,libagoclient.so$(LIB_VER)
-
-# Change for DEBUG or RELEASE
-CFLAGS	:= -c $(DEBUG_CFLAGS)
-LDFLAGS	:= $(DEBUG_LDFLAGS)
-
-INCLUDES	:= 
+LD = $(CXX)
+CFLAGS	+= -fpic
+LDFLAGS += -shared -Wl,-soname,libagoclient.so$(LIB_VER)
 
 %.o : %.cpp
-	$(CXX) $(CFLAGS) $(INCLUDES) -o $@ $<
+	$(CXX) -c $(CFLAGS) -o $@ $<
 
 all: libagoclient.so
 
@@ -30,3 +14,11 @@ libagoclient.so: agoclient.o CDataFile.o
 
 clean:
 	rm -f agoclient.o CDataFile.o libagoclient.so*
+
+install:
+	$(INSTALL) -d $(LIBDIR)
+	$(INSTALL) -d $(BINDIR)
+	$(INSTALL) -d $(INCDIR)
+	$(INSTALL) libagoclient.so.1 $(LIBDIR)
+	$(INSTALL) agoclient.py $(BINDIR)
+	$(INSTALL) agoclient.h $(INCDIR)

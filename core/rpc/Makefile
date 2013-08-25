@@ -1,26 +1,9 @@
-#
-
-.SUFFIXES:	.cpp .o .a .s
-
-CC     := gcc
-CXX    := g++
-LD     := g++
-AR     := ar rc
-RANLIB := ranlib
-
-DEBUG_CFLAGS    := -Wall -Wno-format -g -DDEBUG
-RELEASE_CFLAGS  := -Wall -Wno-unknown-pragmas -Wno-format -O3
-
-DEBUG_LDFLAGS	:= -g
-
-# Change for DEBUG or RELEASE
-CFLAGS	:= -c $(DEBUG_CFLAGS)
-LDFLAGS	:= $(DEBUG_LDFLAGS) -L../../shared
-
-INCLUDES	:= -I/usr/include/jsoncpp -I../../shared
+INCLUDES ?= -I../../shared
+INCLUDES += -I/usr/include/jsoncpp
+LD = $(CXX)
 
 %.o : %.cpp
-	$(CXX) $(CFLAGS) $(INCLUDES) -o $@ $<
+	$(CXX) -c $(CFLAGS) $(INCLUDES) -o $@ $<
 
 all: agorpc
 
@@ -29,3 +12,7 @@ agorpc: agorpc.o mongoose.o
 
 clean:
 	rm -f agorpc agorpc.o mongoose.o
+
+install:
+	$(INSTALL) agorpc $(BINDIR)
+

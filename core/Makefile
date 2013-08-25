@@ -10,6 +10,15 @@ $(BUILDDIRS):
 	$(MAKE) -C $(@:build-%=%)
 
 install: $(INSTALLDIRS) all
+	$(INSTALL) messagesend.py $(BINDIR)
+	$(INSTALL) agodrain.py $(BINDIR)
+	$(INSTALL) agoscenario.py $(BINDIR)
+	$(INSTALL) agoevent.py $(BINDIR)
+	$(INSTALL) boolParser.py $(BINDIR)
+	$(INSTALL) myavahi.py $(BINDIR)
+	$(INSTALL) agodatalogger.py $(BINDIR)
+	$(INSTALL) agoctrl.sh $(BINDIR)
+
 $(INSTALLDIRS): 
 	$(MAKE) -C $(@:install-%=%) install
 

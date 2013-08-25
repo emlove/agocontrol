@@ -61,13 +61,16 @@ libs:
 	cd $(USAGE_ENVIRONMENT_DIR) ; $(MAKE)
 	cd $(BASIC_USAGE_ENVIRONMENT_DIR) ; $(MAKE)
 
-install: $(PROXY_SERVER)
+installobsolete: $(PROXY_SERVER)
 	cd $(LIVEMEDIA_DIR) ; $(MAKE) install
 	cd $(GROUPSOCK_DIR) ; $(MAKE) install
 	cd $(USAGE_ENVIRONMENT_DIR) ; $(MAKE) install
 	cd $(BASIC_USAGE_ENVIRONMENT_DIR) ; $(MAKE) install
 	install -d $(DESTDIR)$(PREFIX)/bin
 	install -m 755 $(PROXY_SERVER) $(DESTDIR)$(PREFIX)/bin
+
+install:
+	$(INSTALL) agomediaproxy $(BINDIR)
 
 clean:
 	cd $(LIVEMEDIA_DIR) ; $(MAKE) clean
