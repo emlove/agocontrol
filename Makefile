@@ -2,7 +2,7 @@ export CC = gcc
 export CXX = g++
 export LD = g++ 
 export LDFLAGS = -L../../shared
-export CFLAGS = -c -Wall -Wno-format -g -DDEBUG
+export CFLAGS = -Wall -Wno-format -g -DDEBUG
 export INSTALL = install
 export INSTALL_DIR = $(INSTALL) -p -d -o root -g root  -m  755
 export INSTALL_PROGRAM = $(INSTALL) -p    -o root -g root  -m  755
@@ -16,7 +16,12 @@ export LIBDIR = $(DESTDIR)/usr/lib
 export CONFDIR = $(ETCDIR)/opt/agocontrol
 export INCDIR = $(DESTDIR)/usr/include/agocontrol
 
+ifneq (,$(filter parallel=%,$(DEB_BUILD_OPTIONS)))
+NUMJOBS = $(patsubst parallel=%,%,$(filter parallel=%,$(DEB_BUILD_OPTIONS)))
+MAKEFLAGS += -j$(NUMJOBS)
+else
 MAKEFLAGS += -j4
+endif
 export MAKEFLAGS
 
 DIRS = shared core devices
@@ -60,6 +65,8 @@ install: $(INSTALLDIRS) all
 	install gateways/agomeloware.py $(BINDIR)
 	install scripts/agososreport.sh $(BINDIR)
 	install scripts/convert-zwave-uuid.py $(BINDIR)
+	install scripts/convert-scenario.py $(BINDIR)
+	install scripts/convert-event.py $(BINDIR)
 
 $(INSTALLDIRS):
 	$(MAKE) -C $(@:install-%=%) install

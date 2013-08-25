@@ -16,6 +16,7 @@ etc/security/limits.d/agocontrol.conf
 opt/agocontrol/bin/agologger.py
 opt/agocontrol/bin/agoresolver
 opt/agocontrol/bin/agoscenario.py
+opt/agocontrol/bin/agoscenario
 opt/agocontrol/bin/agoevent.py
 opt/agocontrol/bin/boolParser.py
 opt/agocontrol/bin/myavahi.py
@@ -29,3 +30,5 @@ opt/agocontrol/bin/agoman
 opt/agocontrol/bin/agodatalogger.py
 opt/agocontrol/bin/agososreport.sh
 core/rpc/html /opt/agocontrol
+opt/agocontrol/bin/convert-event.py
+opt/agocontrol/bin/convert-scenario.py
