@@ -55,11 +55,15 @@ std::string commandHandler(qpid::types::Variant::Map content) {
 	std::string internalid = content["internalid"].asString();
 	if (internalid == "scenariocontroller") {
 		if (content["command"] == "setscenario") {
-
-
+			qpid::types::Variant::Map newscenario = content["scenariomap"].asMap();
+			std::string scenario = content["scenario"].asString();
+			if (scenario == "") scenario == generateUuid();
+			scenariomap[scenario] = newscenario;
+			variantMapToJSONFile(scenariomap, SCENARIOMAPFILE);
 		} else if (content["command"] == "getscenario") {
-
-
+			std::string scenario = content["scenario"].asString();
+			qpid::types::Variant::Map result = scenariomap[scenario].asMap();
+			// todo: need to return the value somehow
                 } else if (content["command"] == "delscenario") {
 			std::string scenario = content["scenario"].asString();
 			if (scenario != "") {

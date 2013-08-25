@@ -14,6 +14,7 @@ using namespace std;
 using namespace agocontrol;
 
 string devicefile;
+AgoConnection *agoConnection;
 
 bool i2ccommand(const char *device, int i2caddr, int command, size_t size, __u8  *buf) {
 	int file = open(device, O_RDWR);
@@ -118,7 +119,9 @@ bool get_pcf8574_state(const char *device, int i2caddr, uint8_t &state) {
 	return true;
 }
 
-std::string commandHandler(qpid::types::Variant::Map content) {
+qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
+	qpid::types::Variant::Map returnval;
+	returnval["result"]=0;
 	string internalid = content["internalid"].asString();
 	if (internalid.find("pcf8574:") != std::string::npos) {
 		unsigned found = internalid.find(":");
@@ -132,14 +135,14 @@ std::string commandHandler(qpid::types::Variant::Map content) {
 			printf("setting i2caddr: 0x%x, output: %i, state: %i\n", i2caddr, output, state); 
 			if (set_pcf8574_output(devicefile.c_str(),i2caddr, output, state)) {
 				if (state) { 
-					return "255";
+					agoConnection->emitEvent(internalid.c_str(), "event.device.statechanged", "255", "");
 				} else {
-					return "0";
+					agoConnection->emitEvent(internalid.c_str(), "event.device.statechanged", "0", "");
 				}
-			} else return "";
+			} else returnval["result"] = -1;
 		}
 	}
-	return "";
+	return returnval;
 }
 
 
@@ -148,7 +151,7 @@ int main(int argc, char** argv) {
 	stringstream devices(getConfigOption("i2c", "devices", "pcf8574:32")); 
 
 
-	AgoConnection agoConnection = AgoConnection("i2c");		
+	agoConnection = new AgoConnection("i2c");		
 	printf("connection to agocontrol established\n");
 
 	string device;
@@ -166,19 +169,19 @@ int main(int argc, char** argv) {
 			for (int i=0;i<8;i++) {
 				stringstream id;
 				id << device << "/" << i;
-				agoConnection.addDevice(id.str().c_str(), "switch");
+				agoConnection->addDevice(id.str().c_str(), "switch");
 				if (state & (1 << i)) {	
-					agoConnection.emitEvent(id.str().c_str(), "event.device.statechanged", "255", "");
+					agoConnection->emitEvent(id.str().c_str(), "event.device.statechanged", "255", "");
 				} else {
-					agoConnection.emitEvent(id.str().c_str(), "event.device.statechanged", "0", "");
+					agoConnection->emitEvent(id.str().c_str(), "event.device.statechanged", "0", "");
 				}
 			}
 		}
 	} 
-	agoConnection.addHandler(commandHandler);
+	agoConnection->addHandler(commandHandler);
 
 	printf("waiting for messages\n");
-	agoConnection.run();
+	agoConnection->run();
 
 	return 0;
 }

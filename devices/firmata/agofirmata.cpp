@@ -10,16 +10,17 @@ using namespace agocontrol;
 
 Firmata* f;
 
-std::string commandHandler(qpid::types::Variant::Map content) {
+qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
+	qpid::types::Variant::Map returnval;
 	int pin = atoi(content["internalid"].asString().c_str());
 	if (content["command"] == "on" ) {
 		f->writeDigitalPin(pin,ARDUINO_HIGH);
-		return "255";
+		// TODO: send proper status events
 	} else if (content["command"] == "off") {
 		f->writeDigitalPin(pin,ARDUINO_LOW);
-		return "0";
 	}
-	return "";
+	returnval["result"] = 0; // TODO: determine proper result code
+	return returnval;
 }
 
 

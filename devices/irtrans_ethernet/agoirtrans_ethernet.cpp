@@ -36,7 +36,8 @@ struct hostent *host;
 using namespace std;
 using namespace agocontrol;
 
-std::string commandHandler(qpid::types::Variant::Map content) {
+qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
+	qpid::types::Variant::Map returnval;
 	int internalid = atoi(content["internalid"].asString().c_str());
 	printf("command: %s internal id: %i\n", content["command"].asString().c_str(), internalid);
 	if (content["command"] == "sendir" ) {
@@ -45,9 +46,10 @@ std::string commandHandler(qpid::types::Variant::Map content) {
 		udpcommand.assign("sndccf ");
 		udpcommand.append(content["ircode"].asString());
 		sendto(irtrans_socket, udpcommand.c_str(), udpcommand.length(), 0, (struct sockaddr *)&server_addr, sizeof(struct sockaddr));
-		return "";
 	}
-	return "";
+	// TODO: Determine sane result code
+	returnval["result"] = 0;
+	return returnval;
 }
 
 int main(int argc, char **argv) {

@@ -532,7 +532,9 @@ void OnNotification
 
 
 
-std::string commandHandler(qpid::types::Variant::Map content) {
+qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
+        qpid::types::Variant::Map returnval;
+	bool result;
 	std::string internalid = content["internalid"].asString();
 	// printf("command: %s internal id: %s\n", content["command"].asString().c_str(), internalid.c_str());
 
@@ -579,11 +581,10 @@ std::string commandHandler(qpid::types::Variant::Map content) {
 
 			string devicetype = device->getDevicetype();
 			ValueID *tmpValueID;
-			bool result;
 
 			if (devicetype == "switch") {
 				tmpValueID = device->getValueID("Switch");
-				if (tmpValueID == NULL) return "";
+				if (tmpValueID == NULL) { returnval["result"] = -1;  return returnval; }
 				if (content["command"] == "on" ) {
 					result = Manager::Get()->SetValue(*tmpValueID , true);
 				} else {
@@ -591,7 +592,7 @@ std::string commandHandler(qpid::types::Variant::Map content) {
 				}
 			} else if(devicetype == "dimmer") {
 				tmpValueID = device->getValueID("Level");
-				if (tmpValueID == NULL) return "";
+				if (tmpValueID == NULL) { returnval["result"] = -1;  return returnval; }
 				if (content["command"] == "on" ) {
 					result = Manager::Get()->SetValue(*tmpValueID , (uint8) 255);
 				} else if (content["command"] == "setlevel") {
@@ -603,24 +604,24 @@ std::string commandHandler(qpid::types::Variant::Map content) {
 			} else if (devicetype == "drapes") {
 				if (content["command"] == "on") {
 					tmpValueID = device->getValueID("Level");
-					if (tmpValueID == NULL) return "";
+					if (tmpValueID == NULL) { returnval["result"] = -1;  return returnval; }
 					result = Manager::Get()->SetValue(*tmpValueID , (uint8) 255);
 				} else if (content["command"] == "open" ) {
 					tmpValueID = device->getValueID("Open");
-					if (tmpValueID == NULL) return "";
+					if (tmpValueID == NULL) { returnval["result"] = -1;  return returnval; }
 					result = Manager::Get()->SetValue(*tmpValueID , true);
 				} else if (content["command"] == "close" ) {
 					tmpValueID = device->getValueID("Close");
-					if (tmpValueID == NULL) return "";
+					if (tmpValueID == NULL) { returnval["result"] = -1;  return returnval; }
 					result = Manager::Get()->SetValue(*tmpValueID , true);
 				} else if (content["command"] == "stop" ) {
 					tmpValueID = device->getValueID("Stop");
-					if (tmpValueID == NULL) return "";
+					if (tmpValueID == NULL) { returnval["result"] = -1;  return returnval; }
 					result = Manager::Get()->SetValue(*tmpValueID , true);
 
 				} else {
 					tmpValueID = device->getValueID("Level");
-					if (tmpValueID == NULL) return "";
+					if (tmpValueID == NULL) { returnval["result"] = -1;  return returnval; }
 					result = Manager::Get()->SetValue(*tmpValueID , (uint8) 0);
 				}
 			} else if (devicetype == "thermostat") {
@@ -629,13 +630,13 @@ std::string commandHandler(qpid::types::Variant::Map content) {
 					if  (mode == "") mode = "auto";
 					if ((mode == "auto") || (mode == "cool")) {
 						tmpValueID = device->getValueID("Cooling 1");
-						if (tmpValueID == NULL) return "";
+						if (tmpValueID == NULL) { returnval["result"] = -1;  return returnval; }
 						float temp = content["temperature"];
 						result = Manager::Get()->SetValue(*tmpValueID , temp);
 					}
 					if ((mode == "auto") || (mode == "heat")) {
 						tmpValueID = device->getValueID("Heating 1");
-						if (tmpValueID == NULL) return "";
+						if (tmpValueID == NULL) { returnval["result"] = -1;  return returnval; }
 						float temp = content["temperature"];
 						result = Manager::Get()->SetValue(*tmpValueID , temp);
 					}
@@ -647,7 +648,8 @@ std::string commandHandler(qpid::types::Variant::Map content) {
 			//printf("Type: %i - %s\n",tmpValueID->GetType(), Value::GetTypeNameFromEnum(tmpValueID->GetType()));
 
 	}
-	return "";
+	returnval["result"] = result ? 0 : -1;
+	return returnval;
 }
 
 int main(int argc, char **argv) {

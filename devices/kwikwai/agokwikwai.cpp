@@ -27,24 +27,25 @@ using namespace agocontrol;
 
 kwikwai::Kwikwai *myKwikwai;
 
-std::string commandHandler(qpid::types::Variant::Map content) {
+qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
+	qpid::types::Variant::Map returnval;
 	std::string internalid = content["internalid"].asString();
 	printf("command: %s internal id: %s\n", content["command"].asString().c_str(), internalid.c_str());
 	if (internalid == "hdmicec") {
 		if (content["command"] == "alloff" ) {
 			myKwikwai->cecSend("FF:36");
-			return "";
+			returnval["result"] = 0;
 		}
 	} else if (internalid == "tv") {
 		if (content["command"] == "on" ) {
 			myKwikwai->cecSend("F0:04");
-			return "255";
+			returnval["result"] = 0;
 		} else if (content["command"] == "off" ) {
 			myKwikwai->cecSend("F0:36");
-			return "0";
+			returnval["result"] = 0;
 		}
 	}
-	return "";
+	return returnval;
 }
 
 int main(int argc, char **argv) {

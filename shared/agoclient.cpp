@@ -232,13 +232,19 @@ void agocontrol::AgoConnection::run() {
 						) 
 						&& commandHandler != NULL
 					) {
+
+						// printf("command for id %s found, calling handler\n", internalid.c_str());
+						if (internalid.size() > 0) content["internalid"] = internalid;
+						qpid::types::Variant::Map responsemap = commandHandler(content);
+
 						// found a match, reply to sender and pass the command to the assigned handler method
 						const Address& replyaddress = message.getReplyTo();
 						if (replyaddress) {
 							Session replysession = connection.createSession();
 							try {
 								Sender replysender = replysession.createSender(replyaddress);
-								Message response("ACK");
+								Message response;
+								encode(responsemap, response);
 								replysender.send(response);
 								replysession.close();
 							} catch(const std::exception& error) {
@@ -246,16 +252,6 @@ void agocontrol::AgoConnection::run() {
 								replysession.close();
 							}
 						} 
-
-						// printf("command for id %s found, calling handler\n", internalid.c_str());
-						if (internalid.size() > 0) content["internalid"] = internalid;
-						string status = commandHandler(content);
-						if (status != "") {
-							Variant::Map state;
-							state["level"] = status;
-							state["uuid"] = content["uuid"];
-							sendMessage("event.device.statechanged", state);
-						}
 					}
 				} else if (eventHandler != NULL) {
 					eventHandler(message.getSubject(), content);
@@ -392,7 +388,7 @@ bool agocontrol::AgoConnection::loadUuidMap() {
 	return true;
 }
 
-bool agocontrol::AgoConnection::addHandler(std::string (*handler)(qpid::types::Variant::Map)) {
+bool agocontrol::AgoConnection::addHandler(qpid::types::Variant::Map (*handler)(qpid::types::Variant::Map)) {
 	commandHandler = handler;
 	return true;
 }

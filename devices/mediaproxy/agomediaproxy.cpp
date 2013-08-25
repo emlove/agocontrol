@@ -32,13 +32,15 @@ static RTSPServer* createRTSPServer(Port port) {
 	return RTSPServer::createNew(*env, port, authDB);
 }
 
-std::string commandHandler(qpid::types::Variant::Map content) {
+qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
+	qpid::types::Variant::Map returnval;
 	string internalid = content["internalid"].asString();
 	if (internalid == "controller" && content["command"].asString() == "restart") {
 		printf("restarting proxy\n");
 		stopLoop = 1;
 	}
-	return "";
+	returnval["result"]=0;
+	return returnval;
 }
 typedef struct { std::string username; std::string password; std::map<std::string, std::string> streams;} proxyparams;
 

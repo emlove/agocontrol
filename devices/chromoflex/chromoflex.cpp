@@ -43,7 +43,8 @@ void process_crc(unsigned char ucData) {
 
 }
 
-std::string commandHandler(qpid::types::Variant::Map content) {
+qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
+	qpid::types::Variant::Map returnval;
 	int red = 0;
 	int green = 0;
 	int blue = 0;
@@ -90,9 +91,11 @@ std::string commandHandler(qpid::types::Variant::Map content) {
 	printf("sending command...\n");
 	if (write (fd, buf, 17) != 17) {
 		printf ("Write error: %s", strerror(errno ));
+		returnval["result"] = -1;
 	} else {
+		returnval["result"] = 0;
 	}
-	return "";
+	return returnval;
 }
 
 

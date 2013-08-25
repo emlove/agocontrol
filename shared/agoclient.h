@@ -53,7 +53,7 @@ namespace agocontrol {
 			std::string uuidToInternalId(std::string uuid); // lookup in map
 			std::string internalIdToUuid(std::string internalId); // lookup in map
 			void reportDevices();
-			std::string (*commandHandler)(qpid::types::Variant::Map);
+			qpid::types::Variant::Map (*commandHandler)(qpid::types::Variant::Map);
 			bool filterCommands;
 			void (*eventHandler)(std::string, qpid::types::Variant::Map);
 			bool emitDeviceAnnounce(const char *internalId, const char *deviceType);
@@ -66,7 +66,7 @@ namespace agocontrol {
 			bool addDevice(const char *internalId, const char *deviceType, bool passuuid);
 			bool removeDevice(const char *internalId);
 			string getDeviceType(const char *internalId);
-			bool addHandler(std::string (*handler)(qpid::types::Variant::Map));
+			bool addHandler(qpid::types::Variant::Map (*handler)(qpid::types::Variant::Map));
 			bool addEventHandler(void (*eventHandler)(std::string, qpid::types::Variant::Map));
 			bool setFilter(bool filter);
 			bool sendMessage(const char *subject, qpid::types::Variant::Map content);

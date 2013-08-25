@@ -118,7 +118,8 @@ int spawnProcess(const char *path, int *mypipefd) {
 	return -1;
 }
 
-std::string commandHandler(qpid::types::Variant::Map content) {
+qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
+	qpid::types::Variant::Map result;
 	cout << "command handler" << endl;
 	if (content["command"] == "exit" ) {
 		exit(0);
@@ -129,7 +130,7 @@ std::string commandHandler(qpid::types::Variant::Map content) {
 		cout << "killing child pid: " << pid << endl;
 		kill(pid, SIGKILL);	
 	} 
-	return "";
+	return result;
 }
 
 int main(int argc, char **argv) {

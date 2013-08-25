@@ -32,28 +32,29 @@ int rc;
 using namespace std;
 using namespace agocontrol;
 
-std::string commandHandler(qpid::types::Variant::Map content) {
+qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
+	qpid::types::Variant::Map returnval;
 	int valve = 0;
 	valve = atoi(content["internalid"].asString().c_str());
 	printf("command: %s internal id: %i\n", content["command"].asString().c_str(), valve);
 	if (content["command"] == "on" ) {
 		if (rain8.zoneOn(1,valve) != 0) {
 			printf("can't switch on\n");
-			return "unknown";
+			returnval["result"] = -1;
 		} else {
 			printf("switched on\n");
-			return "255";
+			returnval["result"] = 0;
 		}
 	} else if (content["command"] == "off") {
 		if (rain8.zoneOff(1,valve) != 0) {
 			printf("can't switch off\n");
-			return "unknown";
+			returnval["result"] = -1;
 		} else {
 			printf("switched off\n");
-			return "0";
+			returnval["result"] = 0;
 		}
 	}
-	return "";
+	return returnval;
 }
 
 int main(int argc, char **argv) {
