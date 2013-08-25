@@ -31,7 +31,7 @@ bool agocontrol::variantMapToJSONFile(qpid::types::Variant::Map map, std::string
 	}
 }
 
-qpid::types::Variant::Map jsonFileToVariantMap(std::string filename) {
+qpid::types::Variant::Map agocontrol::jsonFileToVariantMap(std::string filename) {
 	string content;
 	ifstream mapfile (filename.c_str());
 	if (mapfile.is_open()) {
@@ -42,7 +42,7 @@ qpid::types::Variant::Map jsonFileToVariantMap(std::string filename) {
 		}
 		mapfile.close();
 	}
-	return agocontrol::jsonStringToVariantMap(content);
+	return jsonStringToVariantMap(content);
 }
 
 

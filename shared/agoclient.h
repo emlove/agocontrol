@@ -30,6 +30,7 @@ namespace agocontrol {
 	qpid::types::Variant::Map jsonStringToVariantMap(std::string jsonstring);
 	qpid::types::Variant::Map jsonFileToVariantMap(std::string filename);
 	bool variantMapToJSONFile(qpid::types::Variant::Map map, std::string filename);
+
 	// helper to generate a string containing a uuid
 	std::string generateUuid();
 
