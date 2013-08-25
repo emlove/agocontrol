@@ -1,79 +1,21 @@
 LD     := g++
 
-all: common manager messagesend resolver agotimer zwave agochromoflex agoknx agorpc rain8net kwikwai irtransethernet firmata blinkm i2c mediaproxy
+DIRS = shared core devices
+BUILDDIRS = $(DIRS:%=build-%)
+INSTALLDIRS = $(DIRS:%=install-%)
+CLEANDIRS = $(DIRS:%=clean-%)
 
-common:
-	$(MAKE) -C shared
+all: $(BUILDDIRS)
+$(DIRS): $(BUILDDIRS)
+$(BUILDDIRS):
+	$(MAKE) -C $(@:build-%=%)
 
-manager:
-	$(MAKE) -C core/manager
-	
-messagesend: 
-	$(MAKE) -C core/messagesend
+build-core: build-shared
+build-devices: build-shared
 
-resolver:
-	$(MAKE) -C core/resolver
-
-agotimer:
-	$(MAKE) -C core/agotimer
-
-blinkm:
-	$(MAKE) -C devices/blinkm
-
-i2c:
-	$(MAKE) -C devices/i2c
-
-onvif:
-	$(MAKE) -C devices/onvif
-
-mediaproxy:
-	$(MAKE) -C devices/mediaproxy
-
-zwave:
-	$(MAKE) -C devices/zwave
-
-agorpc:
-	$(MAKE) -C core/rpc
-
-agochromoflex:
-	$(MAKE) -C devices/chromoflex
-
-agoknx:
-	$(MAKE) -C devices/agoknx
-
-rain8net:
-	$(MAKE) -C devices/rain8net
-
-irtransethernet:
-	$(MAKE) -C devices/irtrans_ethernet
-
-kwikwai:
-	$(MAKE) -C devices/kwikwai
-
-firmata:
-	$(MAKE) -C devices/firmata
-
-agodmx:
-	$(MAKE) -C devices/agodmx
-
-clean:
-	$(MAKE) -C shared clean
-	$(MAKE) -C devices/chromoflex clean
-	$(MAKE) -C devices/zwave clean
-	$(MAKE) -C devices/agoknx clean
-	$(MAKE) -C devices/kwikwai clean
-	$(MAKE) -C devices/firmata clean
-	$(MAKE) -C devices/blinkm clean
-	$(MAKE) -C devices/i2c clean
-	$(MAKE) -C devices/onvif clean
-	$(MAKE) -C devices/mediaproxy clean
-	$(MAKE) -C devices/irtrans_ethernet clean
-	$(MAKE) -C devices/rain8net clean
-	$(MAKE) -C core/agotimer clean
-	$(MAKE) -C core/resolver clean
-	$(MAKE) -C core/manager clean
-	$(MAKE) -C core/messagesend clean
-	$(MAKE) -C devices/agodmx clean
+clean: $(CLEANDIRS)
+$(CLEANDIRS): 
+	$(MAKE) -C $(@:clean-%=%) clean
 
 install:
 	@echo Installing

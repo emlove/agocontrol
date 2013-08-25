@@ -1,7 +1,7 @@
 DIRS = agoEnOcean agoknx blinkm chromoflex example firmata i2c irtrans_ethernet kwikwai mediaproxy rain8net zwave
 
 BUILDDIRS = $(DIRS:%=build-%)
-INSTALLDIRS = $(SUBDIRS:%=install-%)
+INSTALLDIRS = $(DIRS:%=install-%)
 CLEANDIRS = $(DIRS:%=clean-%)
 
 all: $(BUILDDIRS)

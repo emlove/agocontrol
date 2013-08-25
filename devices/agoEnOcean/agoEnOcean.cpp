@@ -33,10 +33,11 @@ AgoConnection *agoConnection;
 
 void serialCallBack(enocean_data_structure in);
 
-std::string commandHandler(qpid::types::Variant::Map content) {
+qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
+	qpid::types::Variant::Map returnval;
 	std::string internalid = content["internalid"].asString();
-
-	return "";
+	returnval["result"] = 0;
+	return returnval;
 }
 
 int main(int argc, char **argv) {

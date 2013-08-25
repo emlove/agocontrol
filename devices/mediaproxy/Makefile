@@ -1,4 +1,5 @@
 ##### Change the following for your environment:
+MAKEOPTS = -j1 
 LDFLAGS =
 CFLAGS=
 CPPFLAGS=
@@ -52,7 +53,7 @@ LOCAL_LIBS =	$(LIVEMEDIA_LIB) $(GROUPSOCK_LIB) \
 LIBS =			$(LOCAL_LIBS) $(LIBS_FOR_CONSOLE_APPLICATION)
 
 
-all:	libs agomediaproxy
+all: agomediaproxy
 
 libs:
 	cd $(LIVEMEDIA_DIR) ; $(MAKE)
@@ -83,7 +84,7 @@ distclean: clean
 .$(CPP).$(OBJ):
 	$(CPLUSPLUS_COMPILER) -c $(CPLUSPLUS_FLAGS) $<
 
-agomediaproxy:	$(PROXY_SERVER_OBJS) $(LOCAL_LIBS)
+agomediaproxy: libs agomediaproxy.o
 	$(LINK)$@ $(CONSOLE_LINK_OPTS) $(PROXY_SERVER_OBJS) $(LIBS)
 
 
