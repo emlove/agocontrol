@@ -18,6 +18,34 @@ Iter next(Iter iter)
     return ++iter;
 }
 
+bool agocontrol::variantMapToJSONFile(qpid::types::Variant::Map map, std::string filename) {
+	ofstream mapfile;
+	try { 
+		mapfile.open(filename.c_str());
+		mapfile << variantMapToJSONString(map);
+		mapfile.close();
+		return true;
+	} catch (...) {
+		printf("ERROR: Can't write %s\n",filename.c_str());
+		return false;
+	}
+}
+
+qpid::types::Variant::Map jsonFileToVariantMap(std::string filename) {
+	string content;
+	ifstream mapfile (filename.c_str());
+	if (mapfile.is_open()) {
+		while (mapfile.good()) {
+			string line;
+			getline(mapfile, line);
+			content += line;
+		}
+		mapfile.close();
+	}
+	return agocontrol::jsonStringToVariantMap(content);
+}
+
+
 std::string agocontrol::variantMapToJSONString(qpid::types::Variant::Map map) {
 	string result;
 	result += "{";
