@@ -75,6 +75,7 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 			if (scenario != "") {
 				qpid::types::Variant::Map::iterator it = scenariomap.find(scenario);
 				if (it != scenariomap.end()) {
+					agoConnection->removeDevice(it->first.c_str());
 					scenariomap.erase(it);
 					if (variantMapToJSONFile(scenariomap, SCENARIOMAPFILE)) {
 						returnval["result"] = 0;
