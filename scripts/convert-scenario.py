@@ -15,5 +15,5 @@ except IOError, e:
 	print "error"
 
 with open('/etc/opt/agocontrol/scenariomap.json' , 'w') as outfile:
-	simplejson.dump(scenariomap, outfile)
+	simplejson.dump(scenariomap, outfile, indent='\t')
 outfile.close()
