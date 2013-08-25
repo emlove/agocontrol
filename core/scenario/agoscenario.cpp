@@ -21,10 +21,6 @@ using namespace agocontrol;
 qpid::types::Variant::Map scenariomap;
 AgoConnection *agoConnection;
 
-bool compare(int a, int b) {
-	return a < b ? false : true;
-}
-
 void *runscenario(void * _scenario) {
 	qpid::types::Variant::Map *scenariop = (qpid::types::Variant::Map *) _scenario;
 	qpid::types::Variant::Map scenario = *scenariop;
@@ -87,17 +83,7 @@ int main(int argc, char **argv) {
 	agoConnection->addDevice("scenariocontroller", "scenariocontroller");
 	agoConnection->addHandler(commandHandler);
 
-	string content;
-	ifstream mapfile (SCENARIOMAP);
-	if (mapfile.is_open()) {
-		while (mapfile.good()) {
-			string line;
-			getline(mapfile, line);
-			content += line;
-		}
-		mapfile.close();
-	}
-	scenariomap = jsonStringToVariantMap(content);
+	scenariomap = jsonFileToVariantMap(SCENARIOMAP);
 	// cout  << scenariomap;
 	for (qpid::types::Variant::Map::const_iterator it = scenariomap.begin(); it!=scenariomap.end(); it++) {
 		cout << "adding scenario:" << it->first << ":" << it->second << endl;	
