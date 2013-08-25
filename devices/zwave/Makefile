@@ -15,5 +15,5 @@ clean:
 
 install:
 	$(INSTALL) agozwave $(BINDIR)
-	$(INSTALL) -d $(CONFDIR)/owfs
+	$(INSTALL) -d $(CONFDIR)/ozw
 
