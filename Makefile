@@ -12,6 +12,9 @@ export LIBDIR = $(DESTDIR)/usr/lib
 export CONFDIR = $(ETCDIR)/opt/agocontrol
 export INCDIR = $(DESTDIR)/usr/include/agocontrol
 
+MAKEFLAGS += -j4
+export MAKEFLAGS
+
 DIRS = shared core devices
 
 BUILDDIRS = $(DIRS:%=build-%)
