@@ -73,7 +73,7 @@ clean:
 	cd $(GROUPSOCK_DIR) ; $(MAKE) clean
 	cd $(USAGE_ENVIRONMENT_DIR) ; $(MAKE) clean
 	cd $(BASIC_USAGE_ENVIRONMENT_DIR) ; $(MAKE) clean
-	-rm -rf *.$(OBJ) core *.core *~ include/*~
+	-rm -rf agomediaproxy  *.$(OBJ) core *.core *~ include/*~
 
 
 distclean: clean

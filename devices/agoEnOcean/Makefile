@@ -33,4 +33,4 @@ agoEnOcean: agoEnOcean.o
 	$(LD) -o $@ cssl.o EnOceanPort.o TCM120.o $(LDFLAGS) $^ -lagoclient
 
 clean:
-	rm -f agoEnOcean agoEnOcean.o
+	rm -f agoEnOcean agoEnOcean.o TCM120.o EnOceanPort.o cssl.o

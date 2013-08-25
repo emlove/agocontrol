@@ -28,4 +28,4 @@ agoi2c: agoi2c.o
 	$(LD) -o $@ $(LDFLAGS) $^ -lagoclient 
 
 clean:
-	rm -f agoi2c 
+	rm -f agoi2c  agoi2c.o

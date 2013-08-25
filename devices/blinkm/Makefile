@@ -28,4 +28,4 @@ agoblinkm: agoblinkm.o
 	$(LD) -o $@ $(LDFLAGS) $^ -lagoclient 
 
 clean:
-	rm -f agoblinkm 
+	rm -f agoblinkm agoblinkm.o

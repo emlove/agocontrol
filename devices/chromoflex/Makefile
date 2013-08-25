@@ -28,4 +28,4 @@ agochromoflex: chromoflex.o
 	$(LD) -o $@ $(LDFLAGS) $^ -lqpidmessaging -lqpidtypes -luuid -lagoclient
 
 clean:
-	rm -f agochromoflex Main.o
+	rm -f agochromoflex Main.o chromoflex.o

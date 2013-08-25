@@ -29,4 +29,4 @@ agozwave: agozwave.o ZWaveNode.o
 	$(LD) -o $@ $(LDFLAGS) $^ -lagoclient -lopenzwave -ludev
 
 clean:
-	rm -f agozwave agozwave.o
+	rm -f agozwave agozwave.o ZWaveNode.o
