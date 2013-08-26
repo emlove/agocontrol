@@ -208,6 +208,7 @@ void agocontrol::AgoConnection::run() {
 		try{
 			Variant::Map content;
 			Message message = receiver.fetch(Duration::SECOND * 3);
+			session.acknowledge();
 
 			// workaround for bug qpid-3445
 			if (message.getContent().size() < 4) {
@@ -216,7 +217,6 @@ void agocontrol::AgoConnection::run() {
 
 			decode(message, content);
 			// std::cout << content << std::endl;
-			session.acknowledge();
 
 			if (content["command"] == "discover") {
 				reportDevices(); // make resolver happy and announce devices on discover request
@@ -236,7 +236,6 @@ void agocontrol::AgoConnection::run() {
 						// printf("command for id %s found, calling handler\n", internalid.c_str());
 						if (internalid.size() > 0) content["internalid"] = internalid;
 						qpid::types::Variant::Map responsemap = commandHandler(content);
-
 						// found a match, reply to sender and pass the command to the assigned handler method
 						const Address& replyaddress = message.getReplyTo();
 						if (replyaddress) {
