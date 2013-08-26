@@ -139,7 +139,7 @@ function initGUI() {
     } else if (page == "floorplan") {
 	deferredInit = init_floorPlan;
     } else if (page == "roomConfig") {
-        deferredInit = init_roomConfig;
+        init_roomConfig();
     } else if (page == "configuration") {
 	deferredInit = init_configuration;
     } else if (page == "deviceConfig") {
@@ -226,6 +226,17 @@ function handleInventory(response) {
     if (model.devices !== undefined) {
 	model.devices(deviceMap);
     }
+
+    if (model.rooms !== undefined) {
+        /* get uuid into rooms */
+        model.rooms([]);
+        for (var uuid in rooms) { 
+            var tmp = rooms[uuid];
+            tmp.uuid = uuid;
+            model.rooms.push(tmp);
+        }
+        model.rooms(rooms);
+     }
 
 }
 

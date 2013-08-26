@@ -7,8 +7,7 @@ function roomConfig() {
     this.hasNavigation = ko.observable(true);
     this.rooms = ko.observableArray([]);
 
-    /* get uuid into rooms */
-    for (var uuid in rooms) { var tmp = rooms[uuid]; tmp.uuid = uuid; this.rooms.push(tmp); }
+    console.log(this.rooms());
 
     this.makeEditableRooms = function() {
         var eTable = $("#configRoomsTable").dataTable();
