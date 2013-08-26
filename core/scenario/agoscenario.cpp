@@ -61,27 +61,35 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 	std::string internalid = content["internalid"].asString();
 	if (internalid == "scenariocontroller") {
 		if (content["command"] == "setscenario") {
-			cout << "setscenario request" << endl;
-			qpid::types::Variant::Map newscenario = content["scenariomap"].asMap();
-			cout << "scnario content:" << newscenario << endl;
-			std::string scenariouuid = content["scenario"].asString();
-			if (scenariouuid == "") scenariouuid = generateUuid();
-			cout << "scenario uuid:" << scenariouuid << endl;
-			scenariomap[scenariouuid] = newscenario;
-			agoConnection->addDevice(scenariouuid.c_str(), "scenario", true);
-			if (variantMapToJSONFile(scenariomap, SCENARIOMAPFILE)) {
+			try {
+				cout << "setscenario request" << endl;
+				qpid::types::Variant::Map newscenario = content["scenariomap"].asMap();
+				cout << "scnario content:" << newscenario << endl;
+				std::string scenariouuid = content["scenario"].asString();
+				if (scenariouuid == "") scenariouuid = generateUuid();
+				cout << "scenario uuid:" << scenariouuid << endl;
+				scenariomap[scenariouuid] = newscenario;
+				agoConnection->addDevice(scenariouuid.c_str(), "scenario", true);
+				if (variantMapToJSONFile(scenariomap, SCENARIOMAPFILE)) {
+					returnval["result"] = 0;
+					returnval["scenario"] = scenariouuid;
+				} else {
+					returnval["result"] = -1;
+				}
+			} catch (qpid::types::InvalidConversion) {
+                                returnval["result"] = -1;
+                        }
+		} else if (content["command"] == "getscenario") {
+			try {
+				std::string scenario = content["scenario"].asString();
+				cout << "getscenario request:" << scenario << endl;
 				returnval["result"] = 0;
-				returnval["scenario"] = scenariouuid;
-			} else {
+				returnval["scenariomap"] = scenariomap[scenario].asMap();
+				returnval["scenario"] = scenario;
+				cout << "sending:" << returnval << endl;
+			} catch (qpid::types::InvalidConversion) {
 				returnval["result"] = -1;
 			}
-		} else if (content["command"] == "getscenario") {
-			std::string scenario = content["scenario"].asString();
-			cout << "getscenario request:" << scenario << endl;
-			returnval["result"] = 0;
-			returnval["scenariomap"] = scenariomap[scenario].asMap();
-			returnval["scenario"] = scenario;
-			cout << "sending:" << returnval << endl;
                 } else if (content["command"] == "delscenario") {
 			std::string scenario = content["scenario"].asString();
 			cout << "delscenario request:" << scenario << endl;
@@ -111,6 +119,7 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 		} 
 
 	}
+	cout << "scenariohandler done!" << endl;
 	return returnval;
 }
 
