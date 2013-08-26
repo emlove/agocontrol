@@ -4,11 +4,8 @@
  */
 function configuration() {
     this.hasNavigation = ko.observable(true);
-    this.systemvar = ko.observableArray([]);
-    var tmp = {};
-    tmp.uuid = systemvar[uuid];
-    this.systemvar.push(tmp);
-    console.debug(this.systemvar);
+    this.system = ko.observable(systemvar);
+    console.log(this.system());
 }
 
 /**
