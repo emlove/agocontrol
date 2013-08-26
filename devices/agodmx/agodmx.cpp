@@ -185,10 +185,13 @@ void reportDevices(Variant::Map channelmap) {
 	}
 }
 
-std::string commandHandler(qpid::types::Variant::Map command) {
+qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map command) {
         bool handled = true;
 
         const char *internalid = command["internalid"].asString().c_str();
+
+        qpid::types::Variant::Map returnval;
+        returnval["result"] = 0;
 
         Variant::Map device = channelMap[internalid].asMap();
 
@@ -214,16 +217,17 @@ std::string commandHandler(qpid::types::Variant::Map command) {
                         handled = false;
                 }
         } else if (command["command"] == "setstrobe") {
-                if (setDevice_strobe(channelMap[internalid].asMap(), command["strobe"])) {
+                if (!setDevice_strobe(channelMap[internalid].asMap(), command["strobe"])) {
                         handled = false;
                 }
         } else {
                 handled = false;
         }
         if (!handled) {
+                returnval["result"] = 1;
                 printf("ERROR, received undhandled command %s for node %s\n", command["command"].asString().c_str(), internalid); 
         }
-        return "";
+        return returnval;
 }
 
 
@@ -245,8 +249,7 @@ int main(int argc, char **argv) {
 		exit(-1);
 	}
 
-        AgoConnection _agoConnection = AgoConnection("dmx");         
-        agoConnection = &_agoConnection;
+        agoConnection = new AgoConnection("dmx");
 
         printf("connection to agocontrol established\n");
 
