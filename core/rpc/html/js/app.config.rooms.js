@@ -7,8 +7,6 @@ function roomConfig() {
     this.hasNavigation = ko.observable(true);
     this.rooms = ko.observableArray([]);
 
-    console.log(this.rooms());
-
     this.makeEditableRooms = function() {
         var eTable = $("#configRoomsTable").dataTable();
         eTable.fnDestroy();
@@ -26,8 +24,17 @@ function roomConfig() {
             },
             onblur : "cancel"
         });
-
     };
+
+    this.roomname = ko.observable("")
+    this.createRoom = function() {
+        var content = {};
+        content.name = this.roomname();
+        content.command = 'setroomname';
+        sendCommand(content);
+    };
+
+
 }
 
 /**
