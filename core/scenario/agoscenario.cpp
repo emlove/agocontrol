@@ -39,7 +39,7 @@ void *runscenario(void * _scenario) {
 		stringstream sseq;
 		sseq << seq;
 		qpid::types::Variant::Map element = scenario[sseq.str()].asMap();
-		cout << sseq.str() << ":" << scenario[sseq.str()] << endl;
+		cout << sseq.str() << ": " << scenario[sseq.str()] << endl;
 		if (element["command"] == "scenariosleep") {
 			try {
 				int delay = element["delay"];
@@ -78,7 +78,10 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 				}
 			} catch (qpid::types::InvalidConversion) {
                                 returnval["result"] = -1;
-                        }
+                        } catch (...) {
+                                returnval["result"] = -1;
+				returnval["error"] = "exception";
+			}
 		} else if (content["command"] == "getscenario") {
 			try {
 				std::string scenario = content["scenario"].asString();
@@ -86,7 +89,6 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 				returnval["result"] = 0;
 				returnval["scenariomap"] = scenariomap[scenario].asMap();
 				returnval["scenario"] = scenario;
-				cout << "sending:" << returnval << endl;
 			} catch (qpid::types::InvalidConversion) {
 				returnval["result"] = -1;
 			}
@@ -100,7 +102,6 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 					cout << "removing ago device" << scenario << endl;
 					agoConnection->removeDevice(it->first.c_str());
 					scenariomap.erase(it);
-					cout << "removing entry from json" << scenario << endl;
 					if (variantMapToJSONFile(scenariomap, SCENARIOMAPFILE)) {
 						returnval["result"] = 0;
 					}
@@ -119,7 +120,6 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 		} 
 
 	}
-	cout << "scenariohandler done!" << endl;
 	return returnval;
 }
 
