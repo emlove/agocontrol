@@ -218,6 +218,8 @@ bool jsonrpcRequestHandler(struct mg_connection *conn, Json::Value request, bool
 				sender.send(message);
 				try {
 					Message response = responseReceiver.fetch(Duration::SECOND * 3);
+					session.acknowledge();
+					responseReceiver.close();
 					if (!(id.isNull())) { // only send reply when id is not null
 						result = true;
 						if (!firstElem) mg_printf(conn, ",");
@@ -237,6 +239,8 @@ bool jsonrpcRequestHandler(struct mg_connection *conn, Json::Value request, bool
 
 				} catch (qpid::messaging::NoMessageAvailable) {
 					mg_printf(conn, "{\"jsonrpc\": \"2.0\", \"result\": \"no-reply\", \"id\": %s}",myId.c_str());
+				} catch (...) {
+					mg_printf(conn, "{\"jsonrpc\": \"2.0\", \"result\": \"exception\", \"id\": %s}",myId.c_str());
 				}
 				
 			} else {
