@@ -1,4 +1,4 @@
-DIRS = agoEnOcean agoknx blinkm chromoflex firmata i2c irtrans_ethernet kwikwai mediaproxy rain8net zwave 1wire syslog enigma2 asterisk agoapc agojointspace raspiGPIO raspi1wGPIO raspiMCP3xxxGPIO gc100 onkyo
+DIRS = agoEnOcean agoknx blinkm chromoflex firmata i2c irtrans_ethernet kwikwai mediaproxy rain8net zwave 1wire syslog enigma2 asterisk agoapc agojointspace raspiGPIO raspi1wGPIO raspiMCP3xxxGPIO gc100 onkyo agodmx
 
 BUILDDIRS = $(DIRS:%=build-%)
 INSTALLDIRS = $(DIRS:%=install-%)
