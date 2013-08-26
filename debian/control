@@ -113,6 +113,11 @@ Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, libagoclient1.0, libssl1.0.0, libuuid1
 Description: ONVIF interface driver
 
+Package: agocontrol-dmx
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, libagoclient1.0, ola
+Description: OLA DMX device
+
 Package: agocontrol-mediaproxy
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, libagoclient1.0

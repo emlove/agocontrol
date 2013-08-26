@@ -1,0 +1,2 @@
+lib/systemd/system/agodmx.service
+opt/agocontrol/bin/agodmx
