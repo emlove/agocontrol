@@ -211,7 +211,11 @@ function handleInventory(response) {
     for ( var uuid in inventory) {
 	if (inventory[uuid].room !== undefined && inventory[uuid].room) {
 	    inventory[uuid].roomUID = inventory[uuid].room;
-	    inventory[uuid].room = rooms[inventory[uuid].room].name;
+	      if (rooms[inventory[uuid].room] !== undefined) {
+	        inventory[uuid].room = rooms[inventory[uuid].room].name;
+	      } else {
+		inventory[uuid].room = "";
+	      }
 
 	} else {
 	    inventory[uuid].room = "";
