@@ -5,7 +5,6 @@
 function configuration() {
     this.hasNavigation = ko.observable(true);
     this.system = ko.observable(systemvar);
-    console.log(this.system());
 }
 
 /**

@@ -226,8 +226,7 @@ function handleInventory(response) {
     if (model.devices !== undefined) {
 	model.devices(deviceMap);
     }
-
-    if (model.rooms !== undefined) {
+     if (model.rooms !== undefined) {
         /* get uuid into rooms */
         model.rooms([]);
         for (var uuid in rooms) { 
@@ -235,9 +234,7 @@ function handleInventory(response) {
             tmp.uuid = uuid;
             model.rooms.push(tmp);
         }
-        model.rooms(rooms);
      }
-
 }
 
 function getInventory() {
