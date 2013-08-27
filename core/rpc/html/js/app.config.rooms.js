@@ -26,7 +26,7 @@ function roomConfig() {
         });
     };
 
-    this.roomname = ko.observable("")
+    this.roomname = ko.observable("");
     this.createRoom = function() {
         var content = {};
         content.name = this.roomname();
@@ -34,6 +34,12 @@ function roomConfig() {
         sendCommand(content);
     };
 
+    this.deleteRoom = function(item) {
+        var content = {};
+        content.uuid = item.uuid;
+        content.command = 'deleteroom';
+        sendCommand(content); 
+    };
 
 }
 
