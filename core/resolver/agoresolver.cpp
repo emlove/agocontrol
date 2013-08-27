@@ -267,6 +267,8 @@ int main(int argc, char **argv) {
 
 				} else if (content["command"] == "deleteroom") {
 					if (inv.deleteroom(content["uuid"]) == 0) {
+                                                string uuid = content["uuid"].asString();
+						emitNameEvent(uuid.c_str(), "event.system.roomdeleted", content["name"].asString().c_str());
 						reply["returncode"] = 0;
 					} else {
 						reply["returncode"] = -1;

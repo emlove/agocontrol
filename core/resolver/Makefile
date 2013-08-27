@@ -1,3 +1,5 @@
+LD = $(CXX)
+
 %.o : %.cpp
 	$(CXX) -c $(CFLAGS) $(INCLUDES) -o $@ $<
 
