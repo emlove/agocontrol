@@ -1,3 +1,13 @@
+# ago control - Ubiquiti Networks device discovery tool
+#
+# Copyright (C) 2013 Christoph Jaeger <office@diakonesis.at>
+#
+# This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License.
+# This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+# of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+#
+# See the GNU General Public License for more details.
+
 # test on target: tcpdump -i eth0 port 10001 -XX
 # send string to box: printf '\x01\x00\x00\x00' | nc -p 48000 -w1 -u 192.168.4.177 10001
 from socket import *
