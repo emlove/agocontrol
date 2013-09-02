@@ -139,7 +139,9 @@ function initGUI() {
     } else if (page == "floorplan") {
 	deferredInit = init_floorPlan;
     } else if (page == "roomConfig") {
-        init_roomConfig();
+	init_roomConfig();
+    } else if (page == "floorplanConfig") {
+	init_floorplanConfig();
     } else if (page == "configuration") {
 	deferredInit = init_configuration;
     } else if (page == "deviceConfig") {
@@ -211,11 +213,11 @@ function handleInventory(response) {
     for ( var uuid in inventory) {
 	if (inventory[uuid].room !== undefined && inventory[uuid].room) {
 	    inventory[uuid].roomUID = inventory[uuid].room;
-	      if (rooms[inventory[uuid].room] !== undefined) {
-	        inventory[uuid].room = rooms[inventory[uuid].room].name;
-	      } else {
+	    if (rooms[inventory[uuid].room] !== undefined) {
+		inventory[uuid].room = rooms[inventory[uuid].room].name;
+	    } else {
 		inventory[uuid].room = "";
-	      }
+	    }
 
 	} else {
 	    inventory[uuid].room = "";
@@ -230,15 +232,24 @@ function handleInventory(response) {
     if (model.devices !== undefined) {
 	model.devices(deviceMap);
     }
-     if (model.rooms !== undefined) {
-        /* get uuid into rooms */
-        model.rooms([]);
-        for (var uuid in rooms) { 
-            var tmp = rooms[uuid];
-            tmp.uuid = uuid;
-            model.rooms.push(tmp);
-        }
-     }
+    if (model.rooms !== undefined) {
+	/* get uuid into rooms */
+	model.rooms([]);
+	for ( var uuid in rooms) {
+	    var tmp = rooms[uuid];
+	    tmp.uuid = uuid;
+	    model.rooms.push(tmp);
+	}
+    }
+    if (model.floorplans !== undefined) {
+	/* get uuid into floorplans */
+	model.floorplans([]);
+	for ( var uuid in floorPlans) {
+	    var tmp = floorPlans[uuid];
+	    tmp.uuid = uuid;
+	    model.floorplans.push(tmp);
+	}
+    }
 }
 
 function getInventory() {

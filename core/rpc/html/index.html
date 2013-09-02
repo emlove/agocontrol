@@ -28,6 +28,7 @@
 <script type="text/javascript" src="js/app.configuration.js"></script>
 <script type="text/javascript" src="js/app.config.devices.js"></script>
 <script type="text/javascript" src="js/app.config.rooms.js"></script>
+<script type="text/javascript" src="js/app.config.floorplan.js"></script>
 </head>
 <body>
 
@@ -50,9 +51,6 @@
 	    			<a href="?floorPlan" data-bind="text: name, attr: {href: '?floorplan&fp=' + uuid}"></a>
 				</div>
 			<!-- /ko -->
-			<div class="pretty medium secondary btn btn-full icon-left icon-list">
-	    			<a href="#" onclick="createFloorPlan(); return false;" >New FLoorplan</a>
-			</div>
 			<hr />
 			<!-- ko if: hasNavigation -->
 				<div data-bind="template: {name: navigation}"></div>

@@ -1,0 +1,33 @@
+<div class="container" id="contentarea">
+        <table id="floorPlanTable" style="width:100%; margin-top: 15px; margin-bottom: 5px;">
+                <thead>
+                    <tr>
+                        <th style="font-weight: 700">Floorplan Name</th>
+                        <th style="font-weight: 700">Action</th>
+                    </tr>
+                </thead>
+                <tbody data-bind="foreach: { data: floorplans, afterRender: makeEditable }">
+                    <!-- ko if: uuid -->
+                    <tr data-bind="attr: {'data-uuid': uuid}">
+                        <!-- ko if: name -->
+                                <td class="edit_fp" data-bind="attr: {'data-uuid': uuid}, text: name"></td>
+                        <!-- /ko -->
+                        <!-- ko ifnot: name -->
+                                <td class="edit_fp" data-bind="attr: {'data-uuid': uuid}">unset</td>
+                        <!-- /ko -->
+                        <td class="delete_fp"><div class="cmd-btn pretty medium default btn btn-full grid-command" data-bind="click: $parent.deletePlan">delete</div></td>
+                    </tr>
+                    <!-- /ko -->
+                </tbody>
+        </table>
+        <br />
+<br />
+<div class="row">
+ <ul class="ten columns">
+  <li class="append field">
+   <div class="medium primary btn"><a href="#" onclick="createFloorPlan(); return false;">Create Floorplan</a></div>
+  </li>
+ </ul>
+</div>
+</div>
+
