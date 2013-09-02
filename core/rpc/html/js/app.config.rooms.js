@@ -7,7 +7,7 @@ function roomConfig() {
     this.hasNavigation = ko.observable(true);
     this.rooms = ko.observableArray([]);
 
-    this.makeEditableRooms = function() {
+    this.makeEditable = function() {
         var eTable = $("#configRoomsTable").dataTable();
         eTable.fnDestroy();
         eTable = $("#configRoomsTable").dataTable();
@@ -26,19 +26,24 @@ function roomConfig() {
         });
     };
 
-    this.roomname = ko.observable("");
-    this.createRoom = function() {
+    this.createRoom = function(data, event) {
         var content = {};
-        content.name = this.roomname();
+        content.name = $("#roomName").val();
         content.command = 'setroomname';
-        sendCommand(content);
+        sendCommand(content, function() {
+            unsubscribe();
+            document.location.reload();
+        });
     };
 
     this.deleteRoom = function(item) {
         var content = {};
         content.uuid = item.uuid;
         content.command = 'deleteroom';
-        sendCommand(content); 
+        sendCommand(content, function() {
+            unsubscribe();
+            document.location.reload();
+        }); 
     };
 
 }
