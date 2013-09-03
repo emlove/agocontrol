@@ -189,7 +189,7 @@ int Inventory::setdevicefloorplan(std::string deviceuuid, std::string floorplanu
 int Inventory::deletefloorplan(std::string uuid) {
 	string query = "delete from devicesfloorplan where floorplan = '" + uuid + "'";
 	getfirst(query.c_str());
-	query = "delete from floorplan where uuid = '" + uuid + "'";
+	query = "delete from floorplans where uuid = '" + uuid + "'";
 	getfirst(query.c_str());
 	if (getroomname(uuid) == "") {
 		return 0;
@@ -245,15 +245,18 @@ Variant::Map Inventory::getfloorplans() {
 	}
 	return result;
 } 
-/*
+
+#ifdef INVENTORY_TEST
 int main(int argc, char **argv){
 	Inventory inv("inventory.db");
 	cout << inv.setdevicename("1234", "1235") << endl;
 	cout << inv.deleteroom("1234") << endl;
-	cout << inv.getdevicename("1234");
-	cout << inv.getrooms();
-	cout << inv.setfloorplanname("2235", "floorplan2");
-	cout << inv.setdevicefloorplan("1234", "2235", 5, 2);
-	cout << inv.getfloorplans();
+	cout << inv.getdevicename("1234") << endl;
+	cout << inv.getrooms() << endl;
+	cout << inv.setfloorplanname("2235", "floorplan2") << endl;
+	cout << inv.setdevicefloorplan("1234", "2235", 5, 2) << endl;
+	cout << inv.getfloorplans() << endl;
+	cout << inv.deletefloorplan("2235");
+	cout << inv.getfloorplans() << endl;
 }
-*/
+#endif

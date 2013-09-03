@@ -260,15 +260,15 @@ int main(int argc, char **argv) {
                                                 string uuid = content["uuid"];
                                                 device = &inventory[uuid].asMap();
                                                 (*device)["name"]= name;
+						emitNameEvent(content["uuid"].asString().c_str(), "event.system.devicenamechanged", content["name"].asString().c_str());
                                         } else {
 						reply["returncode"] = -1;
                                         }
-					emitNameEvent(content["uuid"].asString().c_str(), "event.system.devicenamechanged", content["name"].asString().c_str());
 
 				} else if (content["command"] == "deleteroom") {
 					if (inv.deleteroom(content["uuid"]) == 0) {
                                                 string uuid = content["uuid"].asString();
-						emitNameEvent(uuid.c_str(), "event.system.roomdeleted", content["name"].asString().c_str());
+						emitNameEvent(uuid.c_str(), "event.system.roomdeleted", "");
 						reply["returncode"] = 0;
 					} else {
 						reply["returncode"] = -1;
@@ -287,14 +287,15 @@ int main(int argc, char **argv) {
 				} else if (content["command"] == "setdevicefloorplan") {
 					if ((content["uuid"].asString() != "") && (inv.setdevicefloorplan(content["uuid"], content["floorplan"], content["x"], content["y"]) == 0)) {
 						reply["returncode"] = 0;
+						emitFloorplanEvent(content["uuid"].asString().c_str(), "event.system.floorplandevicechanged", content["floorplan"].asString().c_str(), content["x"], content["y"]);
 					} else {
 						reply["returncode"] = -1;
 					}
-					emitFloorplanEvent(content["uuid"].asString().c_str(), "event.system.floorplandevicechanged", content["floorplan"].asString().c_str(), content["x"], content["y"]);
 
 				} else if (content["command"] == "deletefloorplan") {
 					if (inv.deletefloorplan(content["uuid"]) == 0) {
 						reply["returncode"] = 0;
+						emitNameEvent(content["uuid"].asString().c_str(), "event.system.floorplandeleted", "");
 					} else {
 						reply["returncode"] = -1;
 					}
