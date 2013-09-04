@@ -51,7 +51,8 @@ int main(int argc, char **argv) {
 		}
 	}
 	cout << "Sending message: " << content << endl;
-	agoConnection.sendMessage(content);
+	qpid::types::Variant::Map replyMap = agoConnection.sendMessageReply("", content);
+	cout << "Reply: " << replyMap << endl;
 }
 
 
