@@ -116,6 +116,8 @@ def eventHandler(subject, content):
 
 client.addEventHandler(eventHandler)
 
+client.addDevice("dataloggercontroller", "dataloggercontroller")
+
 # route stderr to syslog
 class LogErr:
 	def write(self, data):
