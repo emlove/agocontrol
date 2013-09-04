@@ -419,6 +419,7 @@ qpid::types::Variant::Map agocontrol::AgoConnection::sendMessageReply(const char
 		message.setReplyTo(responseQueue);
 		sender.send(message);
                 Message response = responseReceiver.fetch(Duration::SECOND * 3);
+		session.acknowledge();
                 if (response.getContentSize() > 3) {
                         decode(response,responseMap);
                 } else {
@@ -426,6 +427,11 @@ qpid::types::Variant::Map agocontrol::AgoConnection::sendMessageReply(const char
 		}
         } catch (qpid::messaging::NoMessageAvailable) {
                 printf("WARNING, no reply message to fetch\n");
+        } catch(const std::exception& error) {
+                std::cerr << error.what() << std::endl;
+        }
+	try {
+		responseReceiver.close();
         } catch(const std::exception& error) {
                 std::cerr << error.what() << std::endl;
         }
