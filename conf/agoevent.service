@@ -2,7 +2,7 @@
 Description=ago control Event Device
 
 [Service]
-ExecStart=/opt/agocontrol/bin/agoevent.py
+ExecStart=/opt/agocontrol/bin/agoevent
 WorkingDirectory=/opt/agocontrol/bin
 StandardOutput=syslog
 StandardError=syslog

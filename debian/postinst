@@ -36,6 +36,13 @@ test -e /etc/opt/agocontrol/scenariomap.json || (
 		mv /etc/opt/agocontrol/scenarios.pck /etc/opt/agocontrol/scenarios.pck.obsolete
 	)
 )
+test -e /etc/opt/agocontrol/eventmap.json || (
+	test -e /etc/opt/agocontrol/events.pck && (
+		echo converting eventmap
+		/opt/agocontrol/bin/convert-event.py
+		mv /etc/opt/agocontrol/eventss.pck /etc/opt/agocontrol/events.pck.obsolete
+	)
+)
 
 chown -R agocontrol:agocontrol /etc/opt/agocontrol
 
