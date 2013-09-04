@@ -139,11 +139,20 @@ class AgoConnection:
 												replydata["result"] = self.handler(myid, message.content)
 												replysession = self.connection.session()
 												replysender = replysession.sender(message.reply_to)
-												response = Message(replydata)
+												try:
+													response = Message(replydata)
+												except:
+													syslog.syslog(syslog.LOG_ERR, "can't encode reply")
+													response = Message({})
 												try:
 													replysender.send(response)
 												except SendError, e:
 													syslog.syslog(syslog.LOG_ERR, "can't send reply: " + e)
+												except AttributeError, e:
+													syslog.syslog(syslog.LOG_ERR, "can't send reply: " + e)
+												except:
+													syslog.syslog(syslog.LOG_ERR, "can't send reply")
+													
 												replysession.close()
 				if message.subject:
 					if 'event' in message.subject:

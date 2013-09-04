@@ -1,5 +1,6 @@
 import urllib
 import urllib2
+import json
 
 url = 'http://192.168.80.2:8008/jsonrpc'
 # values = '{"jsonrpc" : "2.0", "method" : "message", "params" : {"content":{"command":"inventory"}}, "id":1 }'
@@ -17,19 +18,23 @@ values = '{"method":"message","params":{"content":{"command":"inventory"}},"id":
 # controller = '51f9c2d8-d761-47db-894a-ba5905435142'; # 457991c4-4d3e-4533-82dc-2da65e4b6f27
 controller = '457991c4-4d3e-4533-82dc-2da65e4b6f27';
 
-#values = '{"method":"message","params":{"content":{"command":"getscenario","uuid":"' + controller + '","scenario":"aee6193d-e331-4c81-85fa-aefa28d78938"}},"id":1,"jsonrpc":"2.0"}'
-#print values
-#req = urllib2.Request(url, values)
-#response = urllib2.urlopen(req)
-#print response.read()
 values = '{"method":"message","params":{"content":{"command":"setscenario","uuid":"' + controller + '","scenariomap":{"1":{"command":"on","uuid":"c81a868e-e3da-418a-9f4e-fbfa30dfdcb9"},"2":{"command":"scenariosleep","delay":1},"3":{"command":"off","uuid":"c81a868e-e3da-418a-9f4e-fbfa30dfdcb9"}}}},"id":2,"jsonrpc":"2.0"}'
 # values = '{"method":"message","params":{"content":{"command":"setscenario","uuid":"' + controller + '","scenariomap":{"1":{"command":"on","uuid":"c81a868e-e3da-418a-9f4e-fbfa30dfdcb9"},"2":{"command":"scenariosleep","delay":1},"3":{"command":"off","uuid":"c81a868e-e3da-418a-9f4e-fbfa30dfdcb9"}}}},"id":2,"jsonrpc":"2.0"}'
 print values
 req = urllib2.Request(url, values)
 response = urllib2.urlopen(req)
+retval = json.loads(response.read())
+scenario = retval['result']['scenario']
+print "created scenario:", scenario
+print "running getscenario:"
+values = '{"method":"message","params":{"content":{"command":"getscenario","uuid":"' + controller + '","scenario":"' + scenario + '"}},"id":1,"jsonrpc":"2.0"}'
+print values
+req = urllib2.Request(url, values)
+response = urllib2.urlopen(req)
 print response.read()
-#values = '{"method":"message","params":{"content":{"command":"delscenario","uuid":"' + controller + '","scenario":"525f9432-2cf7-4482-a8a9-faa44d0cd117"}},"id":3,"jsonrpc":"2.0"}'
-#print values
-#req = urllib2.Request(url, values)
-#response = urllib2.urlopen(req)
-#print response.read()
+print "deleting scenario"
+values = '{"method":"message","params":{"content":{"command":"delscenario","uuid":"' + controller + '","scenario":"' + scenario +'"}},"id":3,"jsonrpc":"2.0"}'
+print values
+req = urllib2.Request(url, values)
+response = urllib2.urlopen(req)
+print response.read()

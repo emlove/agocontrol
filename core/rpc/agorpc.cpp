@@ -250,6 +250,7 @@ bool jsonrpcRequestHandler(struct mg_connection *conn, Json::Value request, bool
 				} catch ( const std::exception& error) {
 					stringstream errorstring;
 					errorstring << error.what();
+					cout << "EXCEPTION: " << errorstring.str() << endl;
 					mg_printf(conn, "{\"jsonrpc\": \"2.0\", \"result\": \"exception: %s\", \"id\": %s}",errorstring.str().c_str(),myId.c_str());
 				}
 				

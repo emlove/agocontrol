@@ -29,6 +29,14 @@ sasldblistusers2 -f /etc/qpid/qpidd.sasldb  | grep -q agocontrol || (
 grep -q agocontrol /etc/qpid/qpidd.acl || sed -i 's/admin@QPID/admin@QPID agocontrol@QPID/g' /etc/qpid/qpidd.acl
 chown .qpidd /etc/qpid/qpidd.acl
 
+test -e /etc/opt/agocontrol/scenariomap.json || (
+	test -e /etc/opt/agocontrol/scenarios.pck && (
+		echo converting scenariomap
+		/opt/agocontrol/bin/convert-scenario.py
+		mv /etc/opt/agocontrol/scenarios.pck /etc/opt/agocontrol/scenarios.pck.obsolete
+	)
+)
+
 chown -R agocontrol:agocontrol /etc/opt/agocontrol
 
 # install datalogger 
@@ -41,3 +49,5 @@ test -e /var/opt/agocontrol/datalogger.db || (
 )
 
 chown -R agocontrol:agocontrol /var/opt/agocontrol
+
+
