@@ -134,16 +134,17 @@ class AgoConnection:
 									myid = self.uuidToInternalId(message.content["uuid"])
 									if myid != None:
 										if message.reply_to:
-											replysession = self.connection.session()
-											replysender = replysession.sender(message.reply_to)
-											response = Message("ACK")
-											try:
-												replysender.send(response)
-											except SendError, e:
-												syslog.syslog(syslog.LOG_ERR, "can't send reply: " + e)
-											replysession.close()
-										if self.handler:
-											self.handler(myid, message.content)
+											if self.handler:
+												replydata = {}
+												replydata[result] = self.handler(myid, message.content)
+												replysession = self.connection.session()
+												replysender = replysession.sender(message.reply_to)
+												response = Message(replydata)
+												try:
+													replysender.send(response)
+												except SendError, e:
+													syslog.syslog(syslog.LOG_ERR, "can't send reply: " + e)
+												replysession.close()
 				if message.subject:
 					if 'event' in message.subject:
 						if self.eventhandler:
