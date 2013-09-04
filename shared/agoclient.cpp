@@ -407,6 +407,32 @@ bool agocontrol::AgoConnection::sendMessage(const char *subject, qpid::types::Va
 	return true;
 }
 
+qpid::types::Variant::Map agocontrol::AgoConnection::sendMessageReply(const char *subject, qpid::types::Variant::Map content) {
+        Message message;
+	qpid::types::Variant::Map responseMap;
+
+        try {
+                encode(content, message);
+                message.setSubject(subject);
+		Address responseQueue("#response-queue; {create:always, delete:always}");
+		Receiver responseReceiver = session.createReceiver(responseQueue);
+		message.setReplyTo(responseQueue);
+		sender.send(message);
+                Message response = responseReceiver.fetch(Duration::SECOND * 3);
+                if (response.getContentSize() > 3) {
+                        decode(response,responseMap);
+                } else {
+			responseMap["response"] = response.getContent();
+		}
+        } catch (qpid::messaging::NoMessageAvailable) {
+                printf("WARNING, no reply message to fetch\n");
+        } catch(const std::exception& error) {
+                std::cerr << error.what() << std::endl;
+        }
+        return responseMap;
+}
+
+
 bool agocontrol::AgoConnection::sendMessage(qpid::types::Variant::Map content) {
 	return sendMessage("",content);
 }
