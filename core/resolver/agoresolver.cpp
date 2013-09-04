@@ -219,6 +219,7 @@ int main(int argc, char **argv) {
 				//printf("received event: %s\n", subject.c_str());	
 
 			} else {
+				bool isHandled = false;
 				// this is a command
 				Variant::Map reply;
 				if (content["command"] == "inventory") {
@@ -229,6 +230,7 @@ int main(int argc, char **argv) {
 					reply["floorplans"] = inv.getfloorplans();
 					reply["system"] = system;
 					reply["returncode"] = 0;
+					isHandled = true;
 
 					// cout << agocontrol::kLogDebug << "inv: " << inventory << std::endl;
 				} else if (content["command"] == "setroomname") {
@@ -238,6 +240,7 @@ int main(int argc, char **argv) {
 					inv.setroomname(uuid, content["name"]);
 					reply["uuid"] = uuid;
 					reply["returncode"] = 0;
+					isHandled = true;
 					emitNameEvent(uuid.c_str(), "event.system.roomnamechanged", content["name"].asString().c_str());
 				} else if (content["command"] == "setdeviceroom") {
 					if ((content["uuid"].asString() != "") && (inv.setdeviceroom(content["uuid"], content["room"]) == 0)) {
@@ -251,6 +254,7 @@ int main(int argc, char **argv) {
 					} else {
 						reply["returncode"] = -1;
 					}
+					isHandled = true;
 				} else if (content["command"] == "setdevicename") {
 					if ((content["uuid"].asString() != "") && (inv.setdevicename(content["uuid"], content["name"]) == 0)) {
 						reply["returncode"] = 0;
@@ -264,6 +268,7 @@ int main(int argc, char **argv) {
                                         } else {
 						reply["returncode"] = -1;
                                         }
+					isHandled = true;
 
 				} else if (content["command"] == "deleteroom") {
 					if (inv.deleteroom(content["uuid"]) == 0) {
@@ -273,6 +278,7 @@ int main(int argc, char **argv) {
 					} else {
 						reply["returncode"] = -1;
 					}
+					isHandled = true;
 				} else if (content["command"] == "setfloorplanname") {
 					string uuid = content["uuid"];
 					// if no uuid is provided, we need to generate one for a new floorplan
@@ -284,6 +290,7 @@ int main(int argc, char **argv) {
 					} else {
 						reply["returncode"] = -1;
 					}
+					isHandled = true;
 				} else if (content["command"] == "setdevicefloorplan") {
 					if ((content["uuid"].asString() != "") && (inv.setdevicefloorplan(content["uuid"], content["floorplan"], content["x"], content["y"]) == 0)) {
 						reply["returncode"] = 0;
@@ -291,6 +298,7 @@ int main(int argc, char **argv) {
 					} else {
 						reply["returncode"] = -1;
 					}
+					isHandled = true;
 
 				} else if (content["command"] == "deletefloorplan") {
 					if (inv.deletefloorplan(content["uuid"]) == 0) {
@@ -299,10 +307,13 @@ int main(int argc, char **argv) {
 					} else {
 						reply["returncode"] = -1;
 					}
+					isHandled = true;
 				}
-				Message response;
-				encode(reply, response);
-				replyMessage(message.getReplyTo(), response);
+				if (isHandled) { 
+					Message response;
+					encode(reply, response);
+					replyMessage(message.getReplyTo(), response);
+				}
 			}
 
 		} catch(const NoMessageAvailable& error) {
