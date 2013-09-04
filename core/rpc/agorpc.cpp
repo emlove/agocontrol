@@ -247,8 +247,10 @@ bool jsonrpcRequestHandler(struct mg_connection *conn, Json::Value request, bool
 				} catch (qpid::messaging::NoMessageAvailable) {
 					printf("WARNING, no reply message to fetch\n");
 					mg_printf(conn, "{\"jsonrpc\": \"2.0\", \"result\": \"no-reply\", \"id\": %s}",myId.c_str());
-				} catch (...) {
-					mg_printf(conn, "{\"jsonrpc\": \"2.0\", \"result\": \"exception\", \"id\": %s}",myId.c_str());
+				} catch ( const std::exception& error) {
+					stringstream errorstring;
+					errorstring << error.what();
+					mg_printf(conn, "{\"jsonrpc\": \"2.0\", \"result\": \"exception: %s\", \"id\": %s}",errorstring.str().c_str(),myId.c_str());
 				}
 				
 			} else {
