@@ -218,26 +218,34 @@ bool jsonrpcRequestHandler(struct mg_connection *conn, Json::Value request, bool
 				sender.send(message);
 				try {
 					Message response = responseReceiver.fetch(Duration::SECOND * 3);
+					cout << "Response received" << endl;
 					session.acknowledge();
 					responseReceiver.close();
+					cout << "Response acknowledged, receiver closed" << endl;
 					if (!(id.isNull())) { // only send reply when id is not null
 						result = true;
+						cout << "sending json-rpc response" << endl;
 						if (!firstElem) mg_printf(conn, ",");
 						if (response.getContentSize() > 3) {	
+							cout << "decoding message into map" << endl;
 							decode(response,responseMap);
+							cout << "Response: " << responseMap << endl;
 							mg_printf(conn, "{\"jsonrpc\": \"2.0\", \"result\": ");
 							mg_printmap(conn, responseMap);
 							mg_printf(conn, ", \"id\": %s}",myId.c_str());
 						} else  {
+							cout << "Response: " << response.getContent() << endl;
 							mg_printf(conn, "{\"jsonrpc\": \"2.0\", \"result\": \"");
 							mg_printf(conn, "%s", response.getContent().c_str());
 							mg_printf(conn, "\", \"id\": %s}",myId.c_str());
 						}
 					} else {
+						cout << "No id given, not sending response" << endl;
 						result = false;
 					}
 
 				} catch (qpid::messaging::NoMessageAvailable) {
+					printf("WARNING, no reply message to fetch\n");
 					mg_printf(conn, "{\"jsonrpc\": \"2.0\", \"result\": \"no-reply\", \"id\": %s}",myId.c_str());
 				} catch (...) {
 					mg_printf(conn, "{\"jsonrpc\": \"2.0\", \"result\": \"exception\", \"id\": %s}",myId.c_str());
