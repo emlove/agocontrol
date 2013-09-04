@@ -16,6 +16,7 @@ using namespace qpid::types;
 class Inventory {
 	public:
 		Inventory(const char *dbfile);
+
 		string getdevicename (string uuid);
 		string getdeviceroom (string uuid);
 		int setdevicename (string uuid, string name);
@@ -31,6 +32,16 @@ class Inventory {
 		int setdevicefloorplan(string deviceuuid, string floorplanuuid, int x, int y);
 		int deletefloorplan(string uuid);
 		Variant::Map getfloorplans();
+
+		int createuser(string uuid, string password);
+		int deleteuser(string uuid);
+		int authuser(string uuid);
+		int setpassword(string uuid);
+		int setpin(string uuid);
+		int setpermission(string uuid, string permission);
+		int deletepermission(string uuid, string permission);
+		Variant::Map getpermissions(string uuid);
+
 		
 	private:
 		sqlite3 *db;

@@ -15,6 +15,19 @@ Inventory::Inventory(const char *dbfile) {
 		fprintf(stderr, "Can't open database: %s\n", sqlite3_errmsg(db));
 		sqlite3_close(db);
 	}
+	string query = "SELECT name FROM sqlite_master WHERE type='table' AND name = 'floorplans'";
+	if (getfirst(query.c_str()) != "floorplans") {
+		cout << "Creating missing table 'floorplans'" << endl;
+		query = "CREATE TABLE floorplans (uuid text, name text)";
+		getfirst(query.c_str());
+		cout << "Creating missing table 'devicefloorplan'" << endl;
+		query = "CREATE TABLE devicesfloorplan (floorplan text, device text, x integer, y integer)";
+		getfirst(query.c_str());
+		string query = "SELECT name FROM sqlite_master WHERE type='table' AND name = 'floorplans'";
+		if (getfirst(query.c_str()) != "floorplans") {
+			cout << "ERROR! Can't create floorplan table" << endl;
+		}
+	}
 }
 
 string Inventory::getdevicename (string uuid) {
@@ -245,6 +258,33 @@ Variant::Map Inventory::getfloorplans() {
 	}
 	return result;
 } 
+
+int Inventory::createuser(string uuid, string password) {
+	return 0;
+}
+int Inventory::deleteuser(string uuid){
+	return 0;
+}
+int Inventory::authuser(string uuid){
+	return 0;
+}
+int Inventory::setpassword(string uuid){
+	return 0;
+}
+int Inventory::setpin(string uuid){
+	return 0;
+}
+int Inventory::setpermission(string uuid, string permission){
+	return 0;
+}
+int Inventory::deletepermission(string uuid, string permission){
+	return 0;
+}
+Variant::Map Inventory::getpermissions(string uuid){
+	Variant::Map permissions;
+	return permissions;
+}
+
 
 #ifdef INVENTORY_TEST
 int main(int argc, char **argv){
