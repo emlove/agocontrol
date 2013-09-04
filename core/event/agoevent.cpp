@@ -38,7 +38,13 @@ void eventHandler(std::string subject, qpid::types::Variant::Map content) {
 					if (element["comp"] == "eq") {
 						qpid::types::Variant lval = content[element["lval"].asString()];
 						qpid::types::Variant rval = element["rval"];
-						criteria[crit->first] = lval.isEqualTo(rval);
+						cout << "lval: " << lval << " (" << getTypeName(lval.getType()) << ")" << endl;
+						cout << "rval: " << rval << " (" << getTypeName(rval.getType()) << ")" << endl;
+						if (lval.getType()==qpid::types::VAR_STRING || rval.getType()==qpid::types::VAR_STRING) { // compare as string
+							criteria[crit->first] = lval.asString() == rval.asString(); 
+						} else {
+							criteria[crit->first] = lval.isEqualTo(rval);
+						}
 						cout << lval << " == " << rval << " : " <<  criteria[crit->first] << endl;
 					}
 					if (element["comp"] == "lt") {
