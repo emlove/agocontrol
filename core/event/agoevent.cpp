@@ -10,6 +10,7 @@
 #include <cerrno>
 
 #include "agoclient.h"
+#include "bool.h"
 
 #ifndef EVENTMAPFILE
 #define EVENTMAPFILE "/etc/opt/agocontrol/eventmap.json"
@@ -21,16 +22,26 @@ using namespace agocontrol;
 qpid::types::Variant::Map eventmap;
 AgoConnection *agoConnection;
 
+void replaceString(std::string& subject, const std::string& search, const std::string& replace) {
+	size_t pos = 0;
+	while ((pos = subject.find(search, pos)) != std::string::npos) {
+		subject.replace(pos, search.length(), replace);
+		pos += replace.length();
+	}
+}
+
 // example event:eb68c4a5-364c-4fb8-9b13-7ea3a784081f:{action:{command:on, uuid:25090479-566d-4cef-877a-3e1927ed4af0}, criteria:{0:{comp:eq, lval:hour, rval:7}, 1:{comp:eq, lval:minute, rval:1}}, event:event.environment.timechanged, nesting:(criteria["0"] and criteria["1"])}
 
 
 void eventHandler(std::string subject, qpid::types::Variant::Map content) {
 	// iterate event map and match for event name
+	qpid::types::Variant::Map inventory = agoConnection->getInventory();
 	for (qpid::types::Variant::Map::const_iterator it = eventmap.begin(); it!=eventmap.end(); it++) { 
 		qpid::types::Variant::Map event = it->second.asMap();
 		if (event["event"] == subject) {
 			cout << "found matching event: " << event << endl;
 			qpid::types::Variant::Map criteria; // this holds the criteria evaluation results for each criteria
+			std::string nesting = event["nesting"].asString();
 			for (qpid::types::Variant::Map::const_iterator crit = event["criteria"].asMap().begin(); crit!= event["criteria"].asMap().end(); crit++) {
 				cout << "criteria[" << crit->first << "] - " << crit->second << endl;
 				qpid::types::Variant::Map element = crit->second.asMap();
@@ -65,8 +76,17 @@ void eventHandler(std::string subject, qpid::types::Variant::Map content) {
 					cout << "ERROR, exception occured" << errorstring.str() << endl;
 					criteria[crit->first] = false;
 				}
+				stringstream token; token << "criteria[\"" << crit->first << "\"]";
+				stringstream boolval; boolval << criteria[crit->first];
+				replaceString(nesting, token.str(), boolval.str()); 
 			}
-			cout << "criteria result: " << criteria << endl;
+			replaceString(nesting, "and", "&");
+			replaceString(nesting, "or", "|");
+			nesting += ";";
+			cout << "nesting prepared: " << nesting << endl;
+			if (evaluateNesting(nesting)) {
+				agoConnection->sendMessage(event["action"].asMap());
+			}
 		}	
 	}
 

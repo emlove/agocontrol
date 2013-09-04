@@ -6,7 +6,7 @@ INCLUDES ?= -I../../shared
 
 all: agoevent
 
-agoevent: agoevent.o
+agoevent: agoevent.o bool.o
 	$(LD) -o $@ $(LDFLAGS) $^ -lqpidmessaging -lqpidtypes -luuid -lagoclient
 
 clean:
