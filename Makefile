@@ -18,7 +18,8 @@ export INCDIR = $(DESTDIR)/usr/include/agocontrol
 
 ifneq (,$(filter parallel=%,$(DEB_BUILD_OPTIONS)))
 NUMJOBS = $(patsubst parallel=%,%,$(filter parallel=%,$(DEB_BUILD_OPTIONS)))
-MAKEFLAGS += -j$(NUMJOBS)
+MAKEFLAGS += -j1
+# MAKEFLAGS += -j$(NUMJOBS)
 else
 MAKEFLAGS += -j4
 endif
