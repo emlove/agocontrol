@@ -136,7 +136,7 @@ class AgoConnection:
 										if message.reply_to:
 											if self.handler:
 												replydata = {}
-												replydata[result] = self.handler(myid, message.content)
+												replydata["result"] = self.handler(myid, message.content)
 												replysession = self.connection.session()
 												replysender = replysession.sender(message.reply_to)
 												response = Message(replydata)
