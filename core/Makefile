@@ -1,4 +1,4 @@
-DIRS = resolver rpc messagesend agotimer scenario manager
+DIRS = resolver rpc messagesend timer scenario event manager
 
 BUILDDIRS = $(DIRS:%=build-%)
 INSTALLDIRS = $(DIRS:%=install-%)
