@@ -71,6 +71,9 @@ def messageHandler(internalid, content):
 					avr.command(command)
 		except ValueError, e:
 			print e
+	result = {}
+	result["result"] = 0;
+	return result
 
 client.addHandler(messageHandler)
 
