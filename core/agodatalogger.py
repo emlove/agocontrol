@@ -10,7 +10,7 @@ import syslog
 
 import agoclient
 
-import sqlite3 as lite
+import sqlite3 as sqlite
 import datetime
 
 import pandas
@@ -20,7 +20,7 @@ import simplejson
 client = agoclient.AgoConnection("datalogger")
 
 # get sqlite connection
-con = lite.connect('/var/opt/agocontrol/datalogger.db')
+con = sqlite.connect('/var/opt/agocontrol/datalogger.db')
 
 def GetGraphData(deviceid, start, end, env, freq):
 	uuid = deviceid
@@ -65,7 +65,7 @@ def GetGraphData(deviceid, start, end, env, freq):
 		else:
 			return "No data"
 
-	except sqlite3.Error as e:
+	except sqlite.Error as e:
 		print  "Error " + e.args[0]
 
 
@@ -90,7 +90,7 @@ def messageHandler(internalid, content):
 					for row in result:
 						sources[row[0]] = row[1]
 				print sources
-			except lite.Error as e:
+			except sqlite.Error as e:
 				print  "Error " + e.args[0]
 			return sources
 
@@ -111,7 +111,7 @@ def eventHandler(subject, content):
 				cur.execute("INSERT INTO data VALUES(null,?,?,?,?,?)", (uuid,environment,unit,level,datetime.datetime.now()))
 				newId = cur.lastrowid
 				print "Info: New record ID %s with values uuid: %s, environment: %s, unit: %s, level: %s" % (newId,uuid,environment,unit,level)
-		except sqlite3.Error as e:
+		except sqlite.Error as e:
 			print  "Error " + e.args[0]
 
 client.addEventHandler(eventHandler)
