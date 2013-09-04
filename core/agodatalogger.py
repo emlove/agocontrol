@@ -80,7 +80,7 @@ def messageHandler(internalid, content):
 			result = GetGraphData(deviceid, start, end, env, freq)
 			print result
 			return result
-		if message.content['command'] == 'getdeviceenvironments':
+		if content['command'] == 'getdeviceenvironments':
 			sources = {}
 			try:
 				with con:
