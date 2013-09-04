@@ -410,12 +410,12 @@ bool agocontrol::AgoConnection::sendMessage(const char *subject, qpid::types::Va
 qpid::types::Variant::Map agocontrol::AgoConnection::sendMessageReply(const char *subject, qpid::types::Variant::Map content) {
         Message message;
 	qpid::types::Variant::Map responseMap;
-
+	Receiver responseReceiver;
         try {
                 encode(content, message);
                 message.setSubject(subject);
 		Address responseQueue("#response-queue; {create:always, delete:always}");
-		Receiver responseReceiver = session.createReceiver(responseQueue);
+		responseReceiver = session.createReceiver(responseQueue);
 		message.setReplyTo(responseQueue);
 		sender.send(message);
                 Message response = responseReceiver.fetch(Duration::SECOND * 3);
