@@ -114,7 +114,7 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 	if (internalid == "agocontroller") {
 		bool isHandled = false;
 		if (content["command"] == "setroomname") {
-			string uuid = content["uuid"];
+			string uuid = content["room"];
 			// if no uuid is provided, we need to generate one for a new room
 			if (uuid == "") uuid = generateUuid();
 			inv->setroomname(uuid, content["name"]);
@@ -123,12 +123,12 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 			isHandled = true;
 			emitNameEvent(uuid.c_str(), "event.system.roomnamechanged", content["name"].asString().c_str());
 		} else if (content["command"] == "setdeviceroom") {
-			if ((content["uuid"].asString() != "") && (inv->setdeviceroom(content["uuid"], content["room"]) == 0)) {
+			if ((content["device"].asString() != "") && (inv->setdeviceroom(content["device"], content["room"]) == 0)) {
 				reply["returncode"] = 0;
 				// update room in local device map
 				Variant::Map *device;
-				string room = inv->getdeviceroom(content["uuid"]);
-				string uuid = content["uuid"];
+				string room = inv->getdeviceroom(content["device"]);
+				string uuid = content["device"];
 				device = &inventory[uuid].asMap();
 				(*device)["room"]= room;
 			} else {
@@ -136,23 +136,23 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 			}
 			isHandled = true;
 		} else if (content["command"] == "setdevicename") {
-			if ((content["uuid"].asString() != "") && (inv->setdevicename(content["uuid"], content["name"]) == 0)) {
+			if ((content["device"].asString() != "") && (inv->setdevicename(content["device"], content["name"]) == 0)) {
 				reply["returncode"] = 0;
 				// update name in local device map
 				Variant::Map *device;
-				string name = inv->getdevicename(content["uuid"]);
-				string uuid = content["uuid"];
+				string name = inv->getdevicename(content["device"]);
+				string uuid = content["device"];
 				device = &inventory[uuid].asMap();
 				(*device)["name"]= name;
-				emitNameEvent(content["uuid"].asString().c_str(), "event.system.devicenamechanged", content["name"].asString().c_str());
+				emitNameEvent(content["device"].asString().c_str(), "event.system.devicenamechanged", content["name"].asString().c_str());
 			} else {
 				reply["returncode"] = -1;
 			}
 			isHandled = true;
 
 		} else if (content["command"] == "deleteroom") {
-			if (inv->deleteroom(content["uuid"]) == 0) {
-				string uuid = content["uuid"].asString();
+			if (inv->deleteroom(content["room"]) == 0) {
+				string uuid = content["room"].asString();
 				emitNameEvent(uuid.c_str(), "event.system.roomdeleted", "");
 				reply["returncode"] = 0;
 			} else {
@@ -160,30 +160,30 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 			}
 			isHandled = true;
 		} else if (content["command"] == "setfloorplanname") {
-			string uuid = content["uuid"];
+			string uuid = content["floorplan"];
 			// if no uuid is provided, we need to generate one for a new floorplan
 			if (uuid == "") uuid = generateUuid();
 			if (inv->setfloorplanname(uuid, content["name"]) == 0) {
 				reply["uuid"] = uuid;
 				reply["returncode"] = 0;
-				emitNameEvent(content["uuid"].asString().c_str(), "event.system.floorplannamechanged", content["name"].asString().c_str());
+				emitNameEvent(content["floorplan"].asString().c_str(), "event.system.floorplannamechanged", content["name"].asString().c_str());
 			} else {
 				reply["returncode"] = -1;
 			}
 			isHandled = true;
 		} else if (content["command"] == "setdevicefloorplan") {
-			if ((content["uuid"].asString() != "") && (inv->setdevicefloorplan(content["uuid"], content["floorplan"], content["x"], content["y"]) == 0)) {
+			if ((content["device"].asString() != "") && (inv->setdevicefloorplan(content["device"], content["floorplan"], content["x"], content["y"]) == 0)) {
 				reply["returncode"] = 0;
-				emitFloorplanEvent(content["uuid"].asString().c_str(), "event.system.floorplandevicechanged", content["floorplan"].asString().c_str(), content["x"], content["y"]);
+				emitFloorplanEvent(content["device"].asString().c_str(), "event.system.floorplandevicechanged", content["floorplan"].asString().c_str(), content["x"], content["y"]);
 			} else {
 				reply["returncode"] = -1;
 			}
 			isHandled = true;
 
 		} else if (content["command"] == "deletefloorplan") {
-			if (inv->deletefloorplan(content["uuid"]) == 0) {
+			if (inv->deletefloorplan(content["floorplan"]) == 0) {
 				reply["returncode"] = 0;
-				emitNameEvent(content["uuid"].asString().c_str(), "event.system.floorplandeleted", "");
+				emitNameEvent(content["floorplan"].asString().c_str(), "event.system.floorplandeleted", "");
 			} else {
 				reply["returncode"] = -1;
 			}
