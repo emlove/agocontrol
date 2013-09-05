@@ -212,9 +212,6 @@ function handleInventory(response) {
 	}
     }
 
-    console.debug("Inventory:");
-    console.debug(response.result);
-
     var inventory = response.result.inventory;
     for ( var uuid in inventory) {
 	if (inventory[uuid].room !== undefined && inventory[uuid].room) {
@@ -379,37 +376,69 @@ function showDetails(device) {
     });
 }
 
-function formatDate(date) {
-    return date.getFullYear() + "." + date.getMonth() + "." + date.getDay() + " " + date.getHours() + ":" + date.getMinutes();
+
+/**
+ * Shows the detail page of a device
+ * 
+ * @param device
+ * @param template
+ */
+function doShowDetails(device, template) {
+
+    // TODO: Don't hardcode
+    renderGraph(device, "temperature");
+    
+    ko.renderTemplate("details/" + template, device, {}, document.getElementById("detailsPage"));
+    $("#detailsPage").dialog({
+	title : "Details",
+	modal : true,
+	width : 1000,
+	height : 700
+    });
 }
 
-function doShowDetails(device, template) {
+/**
+ * Renders the graph for the given device and environment
+ * 
+ * @param device
+ * @param environment
+ */
+function renderGraph(device, environment) {
+    var max_ticks = 10; // User option?
+    
+    
     var content = {};
     content.uuid = dataLoggerController;
     content.command = "getloggergraph";
     content.deviceid = device.uuid;
+    /* Time span of 24 hours */
     content.start = new Date((new Date()).getTime() - 24 * 3600 * 1000).toString(); // yesterday
     content.end = new Date();
     content.freq = "5Min"; // nothing
-    content.env = "temperature";
+    content.env = environment; ;
+   
     sendCommand(content, function(res) {
-	var container = document.getElementById('graph');
+	if (!res.result || !res.result.result || !res.result.result.values) {
+	    return;
+	}
+
+	/* Prepare the data */
 	var data = [];
 	var values = res.result.result.values;
 
-	var max_ticks = 10;
-	console.debug(values.length);
+	/* Split the values into buckets */
 	var num_buckets = Math.floor(values.length / max_ticks);
 	var buckets = values.chunk(num_buckets);
 	var labels = [];
 	var i = 0;
 
-	console.debug(buckets.length);
-
+	var formatDate = function (date) {
+	    return date.getFullYear() + "." + date.getMonth() + "." + date.getDay() + " " + date.getHours() + ":" + date.getMinutes();
+	};
+	
+	/* Compute averange for each bucket and pick a representative time to display */
 	for ( var j = 0; j < buckets.length; j++) {
 	    var bucket = buckets[j];
-	    console.debug((bucket[bucket.length - 1].time + bucket[0].time) / 2);
-
 	    labels.push(new Date((bucket[bucket.length - 1].time + bucket[0].time) / 2 * 1000));
 	    var value = 0;
 	    for ( var k = 0; k < bucket.length; k++) {
@@ -419,7 +448,9 @@ function doShowDetails(device, template) {
 	    i++;
 	}
 
-	Flotr.draw(container, [ data ], {
+	/* Render the graph */
+	var container = document.getElementById('graph'); 
+	Flotr.draw(container, [data], {
 	    HtmlText : false,
 	    mouse : {
 		track : true,
@@ -437,13 +468,5 @@ function doShowDetails(device, template) {
 		}
 	    }
 	});
-    });
-
-    ko.renderTemplate("details/" + template, device, {}, document.getElementById("detailsPage"));
-    $("#detailsPage").dialog({
-	title : "Details",
-	modal : true,
-	width : 1000,
-	height : 700
     });
 }
