@@ -232,7 +232,7 @@ function handleInventory(response) {
     if (model.devices !== undefined) {
 	model.devices(deviceMap);
     }
-    if (model.rooms !== undefined) {
+    if (model.rooms !== undefined && model.rooms.slice !== undefined) {
 	/* get uuid into rooms */
 	model.rooms([]);
 	for ( var uuid in rooms) {
@@ -356,4 +356,21 @@ $(function() {
 function openColorPicker(uuid) {
     $("#colorPickerDialog").data('uuid', uuid);
     $("#colorPickerDialog").dialog("open");
+}
+
+/* Opens details page for the given device */
+function showDetails(device) {
+    console.debug(device);
+    var content = {};
+    content.command = "getloggergraph";
+    content.deviceid = device.uuid;
+    content.start = "2012-3-23 08:00:00";
+    content.end = "2013-9-05 08:00:00";
+    content.freq = "5Min";
+    content.env = "temperature";
+    sendCommand(content, function(res) {
+	console.debug(res);
+    });
+    ko.renderTemplate("details/test", device, {}, document.getElementById("detailsPage"));
+    $("#detailsPage").dialog({ modal: true, width: 650, height: 400 });   
 }
