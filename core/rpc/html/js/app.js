@@ -376,7 +376,6 @@ function showDetails(device) {
     });
 }
 
-
 /**
  * Shows the detail page of a device
  * 
@@ -385,10 +384,12 @@ function showDetails(device) {
  */
 function doShowDetails(device, template) {
 
-    // TODO: Don't hardcode
-    renderGraph(device, "temperature");
-    
-    ko.renderTemplate("details/" + template, device, {}, document.getElementById("detailsPage"));
+    ko.renderTemplate("details/" + template, device, {
+	afterRender : function() {
+	    // TODO: Don't hardcode
+	    renderGraph(device, "temperature");
+	}
+    }, document.getElementById("detailsPage"));
     $("#detailsPage").dialog({
 	title : "Details",
 	modal : true,
@@ -405,18 +406,17 @@ function doShowDetails(device, template) {
  */
 function renderGraph(device, environment) {
     var max_ticks = 10; // User option?
-    
-    
+
     var content = {};
     content.uuid = dataLoggerController;
     content.command = "getloggergraph";
     content.deviceid = device.uuid;
     /* Time span of 24 hours */
     content.start = new Date((new Date()).getTime() - 24 * 3600 * 1000).toString(); // yesterday
-    content.end = new Date();
+    content.end = new Date().toString();
     content.freq = "5Min"; // nothing
-    content.env = environment; ;
-   
+    content.env = environment;
+
     sendCommand(content, function(res) {
 	if (!res.result || !res.result.result || !res.result.result.values) {
 	    return;
@@ -432,10 +432,10 @@ function renderGraph(device, environment) {
 	var labels = [];
 	var i = 0;
 
-	var formatDate = function (date) {
+	var formatDate = function(date) {
 	    return date.getFullYear() + "." + date.getMonth() + "." + date.getDay() + " " + date.getHours() + ":" + date.getMinutes();
 	};
-	
+
 	/* Compute averange for each bucket and pick a representative time to display */
 	for ( var j = 0; j < buckets.length; j++) {
 	    var bucket = buckets[j];
@@ -449,8 +449,8 @@ function renderGraph(device, environment) {
 	}
 
 	/* Render the graph */
-	var container = document.getElementById('graph'); 
-	Flotr.draw(container, [data], {
+	var container = document.getElementById('graph');
+	Flotr.draw(container, [ data ], {
 	    HtmlText : false,
 	    mouse : {
 		track : true,
