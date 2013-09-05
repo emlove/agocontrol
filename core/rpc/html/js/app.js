@@ -360,17 +360,26 @@ function openColorPicker(uuid) {
 
 /* Opens details page for the given device */
 function showDetails(device) {
-    console.debug(device);
-    var content = {};
-    content.command = "getloggergraph";
-    content.deviceid = device.uuid;
-    content.start = "2012-3-23 08:00:00";
-    content.end = "2013-9-05 08:00:00";
-    content.freq = "5Min";
-    content.env = "temperature";
-    sendCommand(content, function(res) {
-	console.debug(res);
+    /* Check if we have a template if yes use it otherwise fall back to default */
+    $.ajax({
+	type : 'HEAD',
+	url : "templates/details/" + device.devicetype + ".html",
+	success : function() {
+	    doShowDetails(device, device.devicetype);
+	},
+	error : function() {
+	    doShowDetails(device, "default");
+	}
     });
-    ko.renderTemplate("details/test", device, {}, document.getElementById("detailsPage"));
-    $("#detailsPage").dialog({ modal: true, width: 650, height: 400 });   
+}
+
+function doShowDetails(device, template) {
+    console.debug(device);
+    ko.renderTemplate("details/" + template, device, {}, document.getElementById("detailsPage"));
+    $("#detailsPage").dialog({
+	title : "Details",
+	modal : true,
+	width : 650,
+	height : 400
+    });    
 }
