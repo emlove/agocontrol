@@ -12,6 +12,7 @@ import agoclient
 
 import sqlite3 as sqlite
 import datetime
+from dateutil.parser import *
 
 import pandas
 import pandas.io.sql as psql
@@ -30,40 +31,27 @@ def GetGraphData(deviceid, start, end, env, freq):
 	frequency = freq
 
 	try:
-		df = psql.read_frame("""SELECT timestamp AS Date,
-		environment AS Env,
-		unit AS Unit,
-		level AS Level
-		FROM data
-		WHERE timestamp BETWEEN '""" + start_date + """' AND '""" + end_date + """' 
-		AND environment='""" + environment + """'
-		AND uuid='""" + uuid + """'
-		ORDER BY timestamp""", con, index_col = 'Date')
+		cur = con.execute("""SELECT timestamp AS Date,
+					unit AS Unit,
+					level AS Level
+					FROM data
+					WHERE timestamp BETWEEN ? AND ? 
+					AND environment=?
+					AND uuid=?
+					ORDER BY timestamp""", (parse(start_date), parse(end_date), environment, uuid))
 
-		if not df.empty:
-			df.index = [pandas.datetools.to_datetime(di) for di in df.index]
+		values = []
+		row = cur.fetchone()
+		while row:
+			tmp = {}
+			tmp["time"] = int(parse(row[0]).strftime("%s"))
+			tmp["level"] = row[2]
+			values.append(tmp)
+			row = cur.fetchone()
+		cur.close()
 
-			ticks = df.ix[:, ['Level', 'Unit']]
-			result = ticks
 
-			unit = map(lambda x: x.strip(), str(result["Unit"]).splitlines(True))[0].split()[-1]
-
-			ticks = ticks.asfreq('1Min', method='pad').prod(axis=1).resample(frequency, how='mean')
-
-			date_range = pandas.DatetimeIndex(start=start_date, end=end_date, freq=frequency)
-
-      			df2 = ticks.reindex(date_range).fillna(method='backfill').fillna(method='pad')
-
-			data = map(lambda x: x.strip(), str(df2).splitlines(True))
-			data_map = {}
-			data_map["unit"] = unit
-			data_map["values"] = {}
-			for i in range(len(data) - 1):
-				data_map["values"][data[i][:19]] = data[i][23:].split()
-
-			return data_map
-		else:
-			return "No data"
+		return values
 
 	except sqlite.Error as e:
 		print  "Error " + e.args[0]
@@ -78,8 +66,7 @@ def messageHandler(internalid, content):
 			env = content['env']
 			freq = content['freq']
 			result = GetGraphData(deviceid, start, end, env, freq)
-			print result
-			return result
+			return { "values" : result }
 		if content['command'] == 'getdeviceenvironments':
 			sources = {}
 			try:

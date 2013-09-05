@@ -43,6 +43,8 @@ var floorPlans = {};
 var systemvar = {};
 var currentFloorPlan = ko.observable({});
 
+var dataLoggerController = null;
+
 var supported_devices = [ "switch", "dimmer", "binarysensor", "dimmerrgb", "multilevelsensor", "placeholder" ];
 
 function device(obj, uuid) {
@@ -69,6 +71,10 @@ function device(obj, uuid) {
 	    content.level = newValue;
 	    sendCommand(content);
 	});
+    }
+
+    if (this.devicetype == "dataloggercontroller") {
+	dataLoggerController = uuid;
     }
 
     if (this.devicetype == "dimmerrgb") {
@@ -373,13 +379,71 @@ function showDetails(device) {
     });
 }
 
+function formatDate(date) {
+    return date.getFullYear() + "." + date.getMonth() + "." + date.getDay() + " " + date.getHours() + ":" + date.getMinutes();
+}
+
 function doShowDetails(device, template) {
-    console.debug(device);
+    var content = {};
+    content.uuid = dataLoggerController;
+    content.command = "getloggergraph";
+    content.deviceid = device.uuid;
+    content.start = new Date((new Date()).getTime() - 24 * 3600 * 1000).toString(); // yesterday
+    content.end = new Date();
+    content.freq = "5Min"; // nothing
+    content.env = "temperature";
+    sendCommand(content, function(res) {
+	var container = document.getElementById('graph');
+	var data = [];
+	var values = res.result.result.values;
+
+	var max_ticks = 10;
+	console.debug(values.length);
+	var num_buckets = Math.floor(values.length / max_ticks);
+	var buckets = values.chunk(num_buckets);
+	var labels = [];
+	var i = 0;
+
+	console.debug(buckets.length);
+
+	for ( var j = 0; j < buckets.length; j++) {
+	    var bucket = buckets[j];
+	    console.debug((bucket[bucket.length - 1].time + bucket[0].time) / 2);
+
+	    labels.push(new Date((bucket[bucket.length - 1].time + bucket[0].time) / 2 * 1000));
+	    var value = 0;
+	    for ( var k = 0; k < bucket.length; k++) {
+		value += bucket[k].level;
+	    }
+	    data.push([ i, value / k ]);
+	    i++;
+	}
+
+	Flotr.draw(container, [ data ], {
+	    HtmlText : false,
+	    mouse : {
+		track : true,
+		relative : true,
+		trackFormatter : function(o) {
+		    return formatDate(labels[Math.round(o.x)]) + " - " + o.y;
+		}
+	    },
+	    xaxis : {
+		noTicks : i,
+		labelsAngle : 90,
+		tickDecimals : 0,
+		tickFormatter : function(x) {
+		    return formatDate(labels[x]);
+		}
+	    }
+	});
+    });
+
     ko.renderTemplate("details/" + template, device, {}, document.getElementById("detailsPage"));
     $("#detailsPage").dialog({
 	title : "Details",
 	modal : true,
-	width : 650,
-	height : 400
-    });    
+	width : 1000,
+	height : 700
+    });
 }
