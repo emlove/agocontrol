@@ -223,22 +223,22 @@ void agocontrol::AgoConnection::run() {
 			} else {
 				if (message.getSubject().size() == 0) {
 					// no subject, this is a command
-					// lets see if this is for one of our devices or if we shall pass everything unfiltered
 					string internalid = uuidToInternalId(content["uuid"].asString());
-					if (
-						(
-							((internalid.size() > 0) && (deviceMap.find(internalIdToUuid(internalid)) != deviceMap.end()))
-							|| (!(filterCommands))
-						) 
-						&& commandHandler != NULL
-					) {
+					// lets see if this is for one of our devices
+					bool isOurDevice = (internalid.size() > 0) && (deviceMap.find(internalIdToUuid(internalid)) != deviceMap.end());
+					//  only handle if a command handler is set. In addition it needs to be one of our device when the filter is enabled
+					if ( ( isOurDevice || (!(filterCommands))) && commandHandler != NULL) {
 
 						// printf("command for id %s found, calling handler\n", internalid.c_str());
 						if (internalid.size() > 0) content["internalid"] = internalid;
 						qpid::types::Variant::Map responsemap = commandHandler(content);
 						// found a match, reply to sender and pass the command to the assigned handler method
 						const Address& replyaddress = message.getReplyTo();
-						if (replyaddress) {
+						// only send a reply if this was for one of our childs
+						// or if it was the special command inventory when the filterCommands was false, that's used by the resolver
+						// to reply to "anonymous" requests not destined to any specific uuid
+						if ((replyaddress && isOurDevice) || (content["command"]=="inventory" && filterCommands==false)) {
+							std::cout << "sending reply" << std::endl;
 							Session replysession = connection.createSession();
 							try {
 								Sender replysender = replysession.createSender(replyaddress);
