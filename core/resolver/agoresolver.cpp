@@ -108,11 +108,9 @@ void handleEvent(Variant::Map *device, string subject, Variant::Map *content) {
 }
 
 qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
-	qpid::types::Variant::Map returnval;
 	std::string internalid = content["internalid"].asString();
-	Variant::Map reply;
+	qpid::types::Variant::Map reply;
 	if (internalid == "agocontroller") {
-		bool isHandled = false;
 		if (content["command"] == "setroomname") {
 			string uuid = content["room"];
 			// if no uuid is provided, we need to generate one for a new room
@@ -120,7 +118,6 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 			inv->setroomname(uuid, content["name"]);
 			reply["uuid"] = uuid;
 			reply["returncode"] = 0;
-			isHandled = true;
 			emitNameEvent(uuid.c_str(), "event.system.roomnamechanged", content["name"].asString().c_str());
 		} else if (content["command"] == "setdeviceroom") {
 			if ((content["device"].asString() != "") && (inv->setdeviceroom(content["device"], content["room"]) == 0)) {
@@ -134,7 +131,6 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 			} else {
 				reply["returncode"] = -1;
 			}
-			isHandled = true;
 		} else if (content["command"] == "setdevicename") {
 			if ((content["device"].asString() != "") && (inv->setdevicename(content["device"], content["name"]) == 0)) {
 				reply["returncode"] = 0;
@@ -148,8 +144,6 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 			} else {
 				reply["returncode"] = -1;
 			}
-			isHandled = true;
-
 		} else if (content["command"] == "deleteroom") {
 			if (inv->deleteroom(content["room"]) == 0) {
 				string uuid = content["room"].asString();
@@ -158,7 +152,6 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 			} else {
 				reply["returncode"] = -1;
 			}
-			isHandled = true;
 		} else if (content["command"] == "setfloorplanname") {
 			string uuid = content["floorplan"];
 			// if no uuid is provided, we need to generate one for a new floorplan
@@ -170,7 +163,6 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 			} else {
 				reply["returncode"] = -1;
 			}
-			isHandled = true;
 		} else if (content["command"] == "setdevicefloorplan") {
 			if ((content["device"].asString() != "") && (inv->setdevicefloorplan(content["device"], content["floorplan"], content["x"], content["y"]) == 0)) {
 				reply["returncode"] = 0;
@@ -178,7 +170,6 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 			} else {
 				reply["returncode"] = -1;
 			}
-			isHandled = true;
 
 		} else if (content["command"] == "deletefloorplan") {
 			if (inv->deletefloorplan(content["floorplan"]) == 0) {
@@ -187,13 +178,6 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 			} else {
 				reply["returncode"] = -1;
 			}
-			isHandled = true;
-		}
-		if (isHandled) { 
-			/* Message response;
-			encode(reply, response);
-			replyMessage(message.getReplyTo(), response);
-			*/
 		}
 	} else {
 		if (content["command"] == "inventory") {
@@ -204,9 +188,6 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 			reply["floorplans"] = inv->getfloorplans();
 			reply["system"] = system;
 			reply["returncode"] = 0;
-			/* Message response;
-			encode(reply, response);
-			replyMessage(message.getReplyTo(), response); */
 		}
 	}
 	return reply;
