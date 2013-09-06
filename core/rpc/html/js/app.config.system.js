@@ -1,19 +1,20 @@
 /**
  * Model class
- * @returns {configuration}
+ * @returns {systemConfig}
  */
-function configuration() {
+function systemConfig() {
     this.hasNavigation = ko.observable(true);
+    this.system = ko.observable(systemvar);
 }
 
 /**
- * Initalizes the Configuration model
+ * Initalizes the System model
  */
-function init_configuration() {
-    model = new configuration();
+function init_systemConfig() {
+    model = new systemConfig();
 
     model.mainTemplate = function() {
-	return "configuration";
+	return "configuration/system";
     }.bind(model);
 
     model.navigation = function() {
