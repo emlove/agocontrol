@@ -40,7 +40,7 @@ test -e /etc/opt/agocontrol/eventmap.json || (
 	test -e /etc/opt/agocontrol/events.pck && (
 		echo converting eventmap
 		/opt/agocontrol/bin/convert-event.py
-		mv /etc/opt/agocontrol/eventss.pck /etc/opt/agocontrol/events.pck.obsolete
+		mv /etc/opt/agocontrol/events.pck /etc/opt/agocontrol/events.pck.obsolete
 	)
 )
 
