@@ -149,7 +149,7 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 }
 
 int main(int argc, char **argv) {
-	agoConnection = new AgoConnection("agoevent");	
+	agoConnection = new AgoConnection("event");	
 	agoConnection->addDevice("eventcontroller", "eventcontroller");
 	agoConnection->addHandler(commandHandler);
 	agoConnection->addEventHandler(eventHandler);

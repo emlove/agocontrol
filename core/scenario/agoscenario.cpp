@@ -124,7 +124,7 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 }
 
 int main(int argc, char **argv) {
-	agoConnection = new AgoConnection("agoscenario");	
+	agoConnection = new AgoConnection("scenario");	
 	agoConnection->addDevice("scenariocontroller", "scenariocontroller");
 	agoConnection->addHandler(commandHandler);
 
