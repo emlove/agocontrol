@@ -39,6 +39,11 @@
 #include "../../shared/agoclient.h"
 #include "../../version.h"
 
+#ifndef VARIABLESMAPFILE
+#define VARIABLESMAPFILE "/etc/opt/agocontrol/variablesmap.json"
+#endif
+
+
 #include "schema.h"
 #include "inventory.h"
 
@@ -52,6 +57,7 @@ AgoConnection *agoConnection;
 Variant::Map inventory; // used to hold device registrations
 Variant::Map schema;  
 Variant::Map system; // holds system information
+Variant::Map variables; // holds global variables
 
 Inventory *inv;
 
@@ -178,6 +184,31 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 			} else {
 				reply["returncode"] = -1;
 			}
+		} else if (content["command"] == "setvariable") {
+			if (content["variable"].asString() != "" && content["value"].asString() != "") {
+				variables[content["variable"].asString()] = content["value"].asString();
+				if (variantMapToJSONFile(variables, VARIABLESMAPFILE)) {
+					reply["returncode"] = 0;
+				} else {
+					reply["returncode"] = -1;
+				}
+			} else {
+				reply["returncode"] = -1;
+			}
+		} else if (content["command"] == "delvariable") {
+			if (content["variable"].asString() != "") {
+				Variant::Map::iterator it = variables.find(content["variable"].asString());
+				if (it != variables.end()) {
+					variables.erase(it);
+					if (variantMapToJSONFile(variables, VARIABLESMAPFILE)) {
+						reply["returncode"] = 0;
+					} else {
+						reply["returncode"] = -1;
+					}
+				} else {
+					reply["returncode"] = -1;
+				}
+			}
 		}
 	} else {
 		if (content["command"] == "inventory") {
@@ -187,6 +218,7 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 			reply["rooms"] = inv->getrooms();
 			reply["floorplans"] = inv->getfloorplans();
 			reply["system"] = system;
+			reply["variables"] = variables;
 			reply["returncode"] = 0;
 		}
 	}
@@ -257,6 +289,8 @@ int main(int argc, char **argv) {
 
 //	clog << agocontrol::kLogDebug << "reading inventory" << std::endl;
 	inv = new Inventory("/etc/opt/agocontrol/inventory.db");
+
+	variables = jsonFileToVariantMap(VARIABLESMAPFILE);
 
 	agoConnection->addDevice("agocontroller","agocontroller");
 	
