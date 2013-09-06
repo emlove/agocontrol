@@ -157,7 +157,9 @@ function initGUI() {
     } else if (page == "floorplanConfig") {
 	init_floorplanConfig();
     } else if (page == "configuration") {
-	deferredInit = init_configuration;
+	init_configuration();
+    } else if (page == "systemConfig") {
+	deferredInit = init_systemConfig;
     } else if (page == "deviceConfig") {
 	init_deviceConfig();
     }
