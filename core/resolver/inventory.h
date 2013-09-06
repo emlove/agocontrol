@@ -33,7 +33,14 @@ class Inventory {
 		int deletefloorplan(string uuid);
 		Variant::Map getfloorplans();
 
-		int createuser(string uuid, string password);
+		string getlocationname (string uuid);
+		string getroomlocation (string uuid);
+		int setlocationname(string uuid, string name);
+		int setroomlocation(string roomuuid, string locationuuid);
+		int deletelocation(string uuid);
+		Variant::Map getlocations();
+
+		int createuser(string uuid, string username, string password, string pin, string description);
 		int deleteuser(string uuid);
 		int authuser(string uuid);
 		int setpassword(string uuid);
@@ -46,4 +53,5 @@ class Inventory {
 	private:
 		sqlite3 *db;
 		string getfirst(const char *query);
+		bool createTableIfNotExist(std::string tablename, std::string createquery);
 };
