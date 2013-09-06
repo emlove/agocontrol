@@ -15,7 +15,8 @@ function roomConfig() {
 	eTable = $("#configRoomsTable").dataTable();
 	eTable.$('td.edit_room').editable(function(value, settings) {
 	    var content = {};
-	    content.uuid = $(this).data('uuid');
+	    content.room = $(this).data('uuid');
+	    content.uuid = agoController;
 	    content.command = "setroomname";
 	    content.name = value;
 	    sendCommand(content);
@@ -36,6 +37,7 @@ function roomConfig() {
 	var content = {};
 	content.name = $("#roomName").val();
 	content.command = 'setroomname';
+	content.uuid = agoController;
 	sendCommand(content, function(res) {
 	    if (res.result && res.result.returncode == 0) {
 		self.rooms.push({
@@ -56,7 +58,8 @@ function roomConfig() {
             css: { border: '3px solid #a00' } 
         }); 
 	var content = {};
-	content.uuid = item.uuid;
+	content.room = item.uuid;
+	content.uuid = agoController;
 	content.command = 'deleteroom';
 	sendCommand(content, function(res) {
 	    if (res.result && res.result.returncode == 0) {

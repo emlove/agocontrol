@@ -72,7 +72,6 @@ function floorPlan() {
 	}
 	self.placedDevices([]);
 	self.placedDevices(result);
-	console.log(result);
 	self.devSubscription.dispose();
 	self.devSubscription = 0;
     });
@@ -137,7 +136,8 @@ function floorPlan() {
 	var content = {};
 	content.command = "setdevicefloorplan";
 	content.floorplan = currentFloorPlan().uuid;
-	content.uuid = uuid;
+	content.device = uuid;
+	content.uuid = agoController;
 	content.x = x;
 	content.y = y;
 	sendCommand(content);
@@ -272,6 +272,7 @@ function init_floorPlan() {
 function createFloorPlan() {
     var content = {};
     content.command = "setfloorplanname";
+    content.uuid = agoController;
     content.name = window.prompt("Please enter a name for the floorplan", "FloorPlan Name");
     if (!content.name) {
 	return;

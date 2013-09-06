@@ -13,7 +13,8 @@ function deviceConfig() {
 	eTable = $("#configTable").dataTable();
 	eTable.$('td.edit_device').editable(function(value, settings) {
 	    var content = {};
-	    content.uuid = $(this).data('uuid');
+	    content.device = $(this).data('uuid');
+	    content.uuid = agoController;
 	    content.command = "setdevicename";
 	    content.name = value;
 	    sendCommand(content);
@@ -27,7 +28,8 @@ function deviceConfig() {
 
 	eTable.$('td.select_device_room').editable(function(value, settings) {
 	    var content = {};
-	    content.uuid = $(this).parent().data('uuid');
+	    content.device = $(this).parent().data('uuid');
+	    content.uuid = agoController;
 	    content.command = "setdeviceroom";
 	    content.room = value == "unset" ? "" : value;
 	    sendCommand(content);

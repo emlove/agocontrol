@@ -43,6 +43,7 @@ var floorPlans = {};
 var systemvar = {};
 var currentFloorPlan = ko.observable({});
 
+var agoController = null;
 var dataLoggerController = null;
 
 var supported_devices = [ "switch", "dimmer", "binarysensor", "dimmerrgb", "multilevelsensor", "placeholder" ];
@@ -66,7 +67,8 @@ function device(obj, uuid) {
 	this.level = ko.observable(currentState);
 	this.level.subscribe(function(newValue) {
 	    var content = {};
-	    content.uuid = uuid;
+	    content.device = uuid;
+	    content.uuid = agoController;
 	    content.command = "setlevel";
 	    content.level = newValue;
 	    sendCommand(content);
@@ -75,6 +77,10 @@ function device(obj, uuid) {
 
     if (this.devicetype == "dataloggercontroller") {
 	dataLoggerController = uuid;
+    }
+    
+    if (this.devicetype == "agocontroller") {
+	agoController = uuid;
     }
 
     if (this.devicetype == "dimmerrgb") {
@@ -108,14 +114,16 @@ function device(obj, uuid) {
 
     this.turnOn = function() {
 	var content = {};
-	content.uuid = uuid;
+	content.device = uuid;
+	content.uuid = agoController;
 	content.command = 'on';
 	sendCommand(content);
     };
 
     this.turnOff = function() {
 	var content = {};
-	content.uuid = uuid;
+	content.device = uuid;
+	content.uuid = agoController;
 	content.command = 'off';
 	sendCommand(content);
     };
@@ -383,7 +391,6 @@ function showDetails(device) {
  * @param template
  */
 function doShowDetails(device, template) {
-
     ko.renderTemplate("details/" + template, device, {
 	afterRender : function() {
 	    // TODO: Don't hardcode
