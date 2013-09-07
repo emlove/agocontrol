@@ -1,4 +1,4 @@
-agocontrol (1.0-98) UNRELEASED; urgency=low
+agocontrol (1.0-98) unstable; urgency=low
 
   * Non-maintainer upload.
   * add error pages for django and upstart script
@@ -92,7 +92,7 @@ agocontrol (1.0-98) UNRELEASED; urgency=low
   * make some commands work in webadmin and in jointspace
   * Reading channel and input list from TV devices
 
- -- root <root@agocontrol.swa.local>  Sun, 13 Jan 2013 15:08:56 +0100
+ -- root <root@pluto.vt100.at>  Sun, 08 Sep 2013 00:29:34 +0200
 
 agocontrol (1.0-14) UNRELEASED; urgency=low
 
