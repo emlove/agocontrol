@@ -244,6 +244,7 @@ void agocontrol::AgoConnection::run() {
 								Sender replysender = replysession.createSender(replyaddress);
 								Message response;
 								encode(responsemap, response);
+								response.setSubject(instance);
 								replysender.send(response);
 								replysession.close();
 							} catch(const std::exception& error) {

@@ -145,6 +145,7 @@ class AgoConnection:
 												print "Can't encode reply\n"
 												response = Message({})
 											try:
+												response.subject = self.instance
 												replysender.send(response)
 											except SendError, e:
 												syslog.syslog(syslog.LOG_ERR, "can't send reply: " + e)
