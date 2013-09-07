@@ -16,6 +16,6 @@ while (run):
 		if retval["result"]["result"]["hallo"] != "blah":
 			run = False
 			print "ERRORRRR"
-	except ValueError e:
+	except ValueError,  e:
 		print "ValueError exception:", e
 		print "Raw data:", rawdata
