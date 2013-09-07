@@ -78,9 +78,10 @@ function device(obj, uuid) {
     if (this.devicetype == "dataloggercontroller") {
 	dataLoggerController = uuid;
     }
-    
+
     if (this.devicetype == "agocontroller") {
 	agoController = uuid;
+	console.log(uuid);
     }
 
     if (this.devicetype == "dimmerrgb") {
@@ -157,11 +158,11 @@ function initGUI() {
     } else if (page == "floorplanConfig") {
 	init_floorplanConfig();
     } else if (page == "configuration") {
-	init_configuration();
-    } else if (page == "systemConfig") {
-	deferredInit = init_systemConfig;
+	deferredInit = init_configuration;
     } else if (page == "deviceConfig") {
 	init_deviceConfig();
+    } else if (page == "systemConfig") {
+	deferredInit = init_systemConfig;
     }
 }
 
@@ -423,7 +424,6 @@ function renderGraph(device, environment) {
     /* Time span of 24 hours */
     content.start = new Date((new Date()).getTime() - 24 * 3600 * 1000).toString(); // yesterday
     content.end = new Date().toString();
-    content.freq = "5Min"; // nothing
     content.env = environment;
 
     sendCommand(content, function(res) {
@@ -436,7 +436,7 @@ function renderGraph(device, environment) {
 	var values = res.result.result.values;
 
 	/* Split the values into buckets */
-	var num_buckets = Math.floor(values.length / max_ticks);
+	var num_buckets = Math.max(1, Math.floor(values.length / max_ticks));
 	var buckets = values.chunk(num_buckets);
 	var labels = [];
 	var i = 0;
@@ -448,7 +448,8 @@ function renderGraph(device, environment) {
 	/* Compute averange for each bucket and pick a representative time to display */
 	for ( var j = 0; j < buckets.length; j++) {
 	    var bucket = buckets[j];
-	    labels.push(new Date((bucket[bucket.length - 1].time + bucket[0].time) / 2 * 1000));
+	    var ts = bucket[0].time + (bucket[bucket.length - 1].time - bucket[0].time) / 2;
+	    labels.push(new Date(Math.floor(ts) * 1000));
 	    var value = 0;
 	    for ( var k = 0; k < bucket.length; k++) {
 		value += bucket[k].level;
