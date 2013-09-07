@@ -10,7 +10,12 @@ while (run):
 	req = urllib2.Request(url, values)
 	# response = urllib2.urlopen(req)
 	response = urllib2.urlopen(req)
-	retval = json.loads(response.read())
-	if retval["result"]["result"]["hallo"] != "blah":
-		run = False
-		print "ERRORRRR"
+	try:
+		rawdata = response.read()
+		retval = json.loads(rawdata)
+		if retval["result"]["result"]["hallo"] != "blah":
+			run = False
+			print "ERRORRRR"
+	except ValueError e:
+		print "ValueError exception:", e
+		print "Raw data:", rawdata
