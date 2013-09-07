@@ -22,6 +22,7 @@ using std::stringstream;
 using std::string;
 
 AgoConnection *agoConnection;
+std::string agocontroller;
 
 typedef struct { float lat; float lon;} latlon_struct;
 
@@ -68,30 +69,40 @@ void *suntimer(void *param) {
 
 	while(1) {
 		Variant::Map content;
+		Variant::Map setvariable;
+		setvariable["uuid"] = agocontroller;
+		setvariable["command"] = "setvariable";
+		setvariable["variable"] = "isDaytime";
 		std::string subject;
 		seconds = time(NULL);
 		if (GetSunriseSunset(sunrise,sunset,sunrise_tomorrow,sunset_tomorrow,lat,lon)) {
 			if (seconds < sunrise) {
 				// it is night, we're waiting for the sunrise
-				subject = "event.environment.sunrise";
+				// set global variable
+				setvariable["value"] = false;
+				agoConnection->sendMessage("", setvariable);
+				// now wait for sunrise
 				syslog(LOG_NOTICE, "minutes to wait for sunrise: %ld\n",(sunrise-seconds)/60);
 				// printf("minutes to wait for sunrise: %ld\n",(sunrise-seconds)/60);
 				// printf("sunrise: %s\n",asctime(localtime(&sunrise)));
 				sleep(sunrise-seconds);
 				syslog(LOG_NOTICE, "sending sunrise event");
+				agoConnection->sendMessage("event.environment.sunrise", content);
 			} else if (seconds > sunset) {
-				// printf("it is dark\n");
-				subject = "event.environment.sunrise";
+				setvariable["value"] = false;
+				agoConnection->sendMessage("", setvariable);
 				syslog(LOG_NOTICE, "minutes to wait for sunrise: %ld\n",(sunrise_tomorrow-seconds)/60);
 				sleep(sunrise_tomorrow-seconds);
 				syslog(LOG_NOTICE, "sending sunrise event");
+				agoConnection->sendMessage("event.environment.sunrise", content);
 			} else {
-				subject = "event.environment.sunset";
+				setvariable["value"] = true;
+				agoConnection->sendMessage("", setvariable);
 				syslog(LOG_NOTICE, "minutes to wait for sunset: %ld\n",(sunset-seconds)/60);
 				sleep(sunset-seconds);
 				syslog(LOG_NOTICE, "sending sunset event");
+				agoConnection->sendMessage("event.environment.sunset", content);
 			}
-			agoConnection->sendMessage(subject.c_str(), content);
 			sleep(2);
 		} else {
 			syslog(LOG_CRIT, "ERROR determining sunrise/sunset time");
@@ -104,8 +115,17 @@ int main(int argc, char** argv) {
 	latlon_struct latlon;
 
 	openlog(NULL, LOG_PID & LOG_CONS, LOG_DAEMON);
-
 	agoConnection = new AgoConnection("timer");
+	qpid::types::Variant::Map inventory = agoConnection->getInventory();
+	qpid::types::Variant::Map devices = inventory["inventory"].asMap();
+	qpid::types::Variant::Map::const_iterator it;
+	for (it = devices.begin(); it != devices.end(); it++) {
+		qpid::types::Variant::Map device = it->second.asMap();
+		if (device["devicetype"] == "agocontroller") {
+			cout << "Agocontroller: " << it->first << endl;
+			agocontroller = it->first;
+		}
+	}
 
 	latlon.lat=atof(getConfigOption("system", "lat", "47.07").c_str());
 	latlon.lon=atof(getConfigOption("system", "lon", "15.42").c_str());
