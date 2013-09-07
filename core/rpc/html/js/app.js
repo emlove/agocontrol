@@ -442,7 +442,7 @@ function renderGraph(device, environment) {
 	var i = 0;
 
 	var formatDate = function(date) {
-	    return date.getFullYear() + "." + date.getMonth() + "." + date.getDay() + " " + date.getHours() + ":" + date.getMinutes();
+	    return date.getFullYear() + "." + (date.getMonth() + 1) + "." + date.getDay() + " " + date.getHours() + ":" + date.getMinutes();
 	};
 
 	/* Compute averange for each bucket and pick a representative time to display */
