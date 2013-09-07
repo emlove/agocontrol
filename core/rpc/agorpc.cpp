@@ -53,6 +53,7 @@ using namespace agocontrol;
 Receiver receiver;
 Sender sender;
 Session session;
+Connection *connection;
 
 // context for embedded web server
 struct mg_context       *ctx;
@@ -203,6 +204,8 @@ bool jsonrpcRequestHandler(struct mg_connection *conn, Json::Value request, bool
 		const Json::Value params = request.get("params", Json::Value());
 		if (method == "message" ) {
 			if (params.isObject()) {
+				Session tmpSession = connection->createSession();
+				Sender tmpSender = tmpSession.createSender("agocontrol; {create: always, node: {type: topic}}"); 
 				Json::Value content = params["content"];
 				Json::Value subject = params["subject"];
 				Variant::Map command = jsonToVariantMap(content);
@@ -211,15 +214,15 @@ bool jsonrpcRequestHandler(struct mg_connection *conn, Json::Value request, bool
 				encode(command, message);
 
 				Address responseQueue("#response-queue; {create:always, delete:always}");
-				Receiver responseReceiver = session.createReceiver(responseQueue);
+				Receiver responseReceiver = tmpSession.createReceiver(responseQueue);
 				message.setReplyTo(responseQueue);
 				if (subject.isString()) message.setSubject(subject.asString());
 
-				sender.send(message);
+				tmpSender.send(message);
 				try {
 					Message response = responseReceiver.fetch(Duration::SECOND * 3);
 					cout << "Response received" << endl;
-					session.acknowledge();
+					tmpSession.acknowledge();
 					responseReceiver.close();
 					cout << "Response acknowledged, receiver closed" << endl;
 					if (!(id.isNull())) { // only send reply when id is not null
@@ -253,6 +256,7 @@ bool jsonrpcRequestHandler(struct mg_connection *conn, Json::Value request, bool
 					cout << "EXCEPTION: " << errorstring.str() << endl;
 					mg_printf(conn, "{\"jsonrpc\": \"2.0\", \"result\": \"exception: %s\", \"id\": %s}",errorstring.str().c_str(),myId.c_str());
 				}
+				tmpSession.close();
 				
 			} else {
 				mg_printf(conn, "{\"jsonrpc\": \"2.0\", \"error\": {\"code\":-32602,\"message\":\"Invalid params\"}, \"id\": %s}",myId.c_str());
@@ -413,15 +417,15 @@ int main(int argc, char **argv) {
 	};
 	connectionOptions["reconnect"] = "true";
 
-	Connection connection(broker, connectionOptions);
+	connection = new Connection(broker, connectionOptions);
 	try {
-		connection.open(); 
-		session = connection.createSession(); 
+		connection->open(); 
+		session = connection->createSession(); 
 		receiver = session.createReceiver("agocontrol; {create: always, node: {type: topic}}"); 
 		sender = session.createSender("agocontrol; {create: always, node: {type: topic}}"); 
 	} catch(const std::exception& error) {
 		std::cerr << error.what() << std::endl;
-		connection.close();
+		connection->close();
 		printf("could not startup\n");
 		return 1;
 	}
