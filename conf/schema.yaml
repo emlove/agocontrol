@@ -12,6 +12,21 @@ commands:
     name: run
   push:
     name: push button
+  setvariable:
+    name: set global variable
+    parameters:
+      value:
+         name: value to set
+         type: variant
+      variable:
+         name: name of the variable
+         type: string
+  delvariable:
+    name: delete global variable
+    parameters:
+      variable:
+         name: name of the variable
+         type: string
   settemperature:
     name: set temperature
     parameters:
@@ -171,6 +186,10 @@ commands:
   getepg:
     name: get electronic program guide
 devicetypes:
+  agocontroller:
+    name: resolver controller
+    description: internal device to control the resolver
+    commands: [setvariable, delvariable]
   pushbutton:
     name: Pushbutton
     description: momentary switch
