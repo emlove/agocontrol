@@ -15,7 +15,8 @@ function floorPlanConfig() {
 	eTable = $("#floorPlanTable").dataTable();
 	eTable.$('td.edit_fp').editable(function(value, settings) {
 	    var content = {};
-	    content.uuid = $(this).data('uuid');
+	    content.device = $(this).data('uuid');
+	    content.uuid = agoController;
 	    content.command = "setfloorplanname";
 	    content.name = value;
 	    sendCommand(content);
@@ -36,7 +37,8 @@ function floorPlanConfig() {
 	    }
 	});
 	var content = {};
-	content.uuid = item.uuid;
+	content.device = item.uuid;
+	content.uuid = agoController;
 	content.command = 'deletefloorplan';
 	sendCommand(content, function(res) {
 	    console.log(res);
