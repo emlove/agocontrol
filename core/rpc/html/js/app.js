@@ -398,16 +398,12 @@ function showDetails(device, environment) {
  * @param simple
  * @returns {String}
  */
-function formatDate(date, simple) {
+function formatDate(date) {
     var hour = date.getHours() < 10 ? "0" + date.getHours() : date.getHours();
     var min = date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes();
     var day = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
     var month = date.getMonth() + 1;
     month = month < 10 ? "0" + month : month;
-
-    if (simple) {
-	return date.getFullYear() + "." + month + "." + day;
-    }
 
     return date.getFullYear() + "." + month + "." + day + " " + hour + ":" + min;
 };
@@ -510,7 +506,10 @@ function renderGraph(device, environment) {
 	var labels = [];
 	var i = 0;
 
-	/* Compute averange for each bucket and pick a representative time to display */
+	/*
+	 * Compute averange for each bucket and pick a representative time to
+	 * display
+	 */
 	for ( var j = 0; j < buckets.length; j++) {
 	    var bucket = buckets[j];
 	    var ts = bucket[0].time + (bucket[bucket.length - 1].time - bucket[0].time) / 2;
