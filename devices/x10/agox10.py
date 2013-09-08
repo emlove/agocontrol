@@ -4,7 +4,7 @@ import time
 import logging
 from x10.controllers.cm11 import CM11
 
-dev = CM11(agoclient.getConfigOption("x10", "device", "/dev/ttyUSB1"))
+dev = CM11('/dev/ttyUSB1')
 dev.open()
 
 #  Dictionaries to decrypt hex values sent from CM11A to house/device codes as well as function on/off
@@ -21,32 +21,46 @@ client = agoclient.AgoConnection("X10")
 
 # This section handles sending X10 devices over the CM11A using Python-X10
 
+# this class will be instantiated and spawned into background to not block the messageHandler
+class x10send(threading.Thread):
+    def __init__(self, id, functioncommand):
+        threading.Thread.__init__(self)
+        self.id = id
+        self.functioncommand = functioncommand
+    def run(self):
+        if self.functioncommand == "on":
+                print "switching on: " + self.id
+                dev.actuator(self.id).on()
+                client.emitEvent(self.id, "event.device.statechanged", "255", "")
+        if self.functioncommand == "off":
+                print "switching off: " + self.id
+                dev.actuator(self.id).off()
+                client.emitEvent(self.id, "event.device.statechanged", "0", "")
+
 def messageHandler(internalid, content):
         if "command" in content:
-                if content["command"] == "on":
-                        print "switching on: " + internalid
-                        dev.actuator(internalid).on()
-                        client.emitEvent(internalid, "event.device.statechanged", "255", "")
-
-                if content["command"] == "off":
-                        print "switching off: " + internalid
-                        dev.actuator(internalid).off()
-                        client.emitEvent(internalid, "event.device.statechanged", "0", "")
-
+		# spawn into background
+		background = x10send(internalid, content["command"])
+		background.setDaemon(True)
+		background.start()
 
 # specify our message handler method
 client.addHandler(messageHandler)
 
 # X10 device configuration
-
-readSwitches = agoclient.getConfigOption("x10", "switches", "A2,A3,A9,B3,B4,B5,B9,B12")
-switches = map(str, readSwitches.split(','))
-for switch in switches:
-	client.addDevice(switch, "switch")
+client.addDevice("A2", "switch")
+client.addDevice("A3", "switch")
+client.addDevice("A9", "switch")
+client.addDevice("B3", "switch")
+client.addDevice("B4", "switch")
+client.addDevice("B5", "switch")
+client.addDevice("B9", "switch")
+client.addDevice("B12", "switch")
 
 # This section is used to monitor for incoming RF signals on the CM11A
 
-class readX10(threading.Thread):
+
+class testEvent(threading.Thread):
     def __init__(self,):
         threading.Thread.__init__(self)
     def run(self):
@@ -84,12 +98,12 @@ class readX10(threading.Thread):
                                 send_x10_command = x10_funct[fourth [1:]];
 
                                 # Use these values to change device states in Ago Control
-				if (send_x10_command == '0') or (send_x10_command == '255'):
-                                	client.emitEvent(send_x10_address , "event.device.statechanged", send_x10_command , "");
+                                print "here they are: " + send_x10_address + send_x10_command;
+                                if (send_x10_command == 0) or (send_x10_command == 255):
+                                        client.emitEvent(send_x10_address , "event.device.statechanged", send_x10_command , "");
 
-background = readX10()
+background = testEvent()
 background.setDaemon(True)
 background.start()
 
 client.run()
-
