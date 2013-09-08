@@ -522,6 +522,16 @@ function renderGraph(device, environment) {
 	    i++;
 	}
 
+	/* Get the unit */
+	var unit = "";
+	for ( var k = 0; k < device.valueList().length; k++) {
+	    console.log(device.valueList[k]);
+	    if (device.valueList()[k].name == environment) {
+		unit = device.valueList()[k].unit;
+		break;
+	    }
+	}
+
 	/* Render the graph */
 	var container = document.getElementById('graph');
 	container._environment = environment;
@@ -529,11 +539,17 @@ function renderGraph(device, environment) {
 	    HtmlText : false,
 	    title : environment,
 	    mode : "time",
+	    yaxis : {
+		tickFormatter : function(x) {
+		    return x + " " + unit;
+		},
+	    },
 	    mouse : {
 		track : true,
 		relative : true,
+
 		trackFormatter : function(o) {
-		    return formatDate(labels[Math.round(o.x)]) + " - " + o.y;
+		    return formatDate(labels[Math.round(o.x)]) + " - " + o.y + " " + unit;
 		}
 	    },
 	    xaxis : {
