@@ -208,6 +208,12 @@ bool jsonrpcRequestHandler(struct mg_connection *conn, Json::Value request, bool
 				Sender tmpSender = tmpSession.createSender("agocontrol; {create: always, node: {type: topic}}"); 
 				Json::Value content = params["content"];
 				Json::Value subject = params["subject"];
+				Json::Value replytimeout = params["replytimeout"];
+				qpid::messaging::Duration timeout = Duration::SECOND * 3;
+				if (replytimeout.isInt()) {
+					timeout = Duration::SECOND * replytimeout.asInt();
+				}
+					
 				Variant::Map command = jsonToVariantMap(content);
 				Variant::Map responseMap;
 				Message message;
@@ -220,7 +226,7 @@ bool jsonrpcRequestHandler(struct mg_connection *conn, Json::Value request, bool
 
 				tmpSender.send(message);
 				try {
-					Message response = responseReceiver.fetch(Duration::SECOND * 3);
+					Message response = responseReceiver.fetch(timeout);
 					cout << "Response received" << endl;
 					tmpSession.acknowledge();
 					responseReceiver.close();
