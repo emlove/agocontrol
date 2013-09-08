@@ -220,7 +220,7 @@ bool jsonrpcRequestHandler(struct mg_connection *conn, Json::Value request, bool
 
 				tmpSender.send(message);
 				try {
-					Message response = responseReceiver.fetch(Duration::SECOND * 15);
+					Message response = responseReceiver.fetch(Duration::SECOND * 3);
 					cout << "Response received" << endl;
 					tmpSession.acknowledge();
 					responseReceiver.close();
