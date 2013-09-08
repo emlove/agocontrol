@@ -16,10 +16,13 @@ export LIBDIR = $(DESTDIR)/usr/lib
 export CONFDIR = $(ETCDIR)/opt/agocontrol
 export INCDIR = $(DESTDIR)/usr/include/agocontrol
 
+ifdef DEB_BUILD_OPTIONS
+export BUILDEXTRA=yes
+endif
+
 ifneq (,$(filter parallel=%,$(DEB_BUILD_OPTIONS)))
 NUMJOBS = $(patsubst parallel=%,%,$(filter parallel=%,$(DEB_BUILD_OPTIONS)))
-MAKEFLAGS += -j1
-# MAKEFLAGS += -j$(NUMJOBS)
+MAKEFLAGS += -j$(NUMJOBS)
 else
 MAKEFLAGS += -j4
 endif
