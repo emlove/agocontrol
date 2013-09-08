@@ -41,6 +41,7 @@ var deviceMap = [];
 var rooms = {};
 var floorPlans = {};
 var systemvar = {};
+var variables = {};
 var currentFloorPlan = ko.observable({});
 
 var agoController = null;
@@ -154,7 +155,11 @@ function initGUI() {
 	deferredInit = init_floorPlan;
     } else if (page == "roomConfig") {
 	init_roomConfig();
-    } else if (page == "floorplanConfig") {
+    }
+    else if (page == "variablesConfig") {
+	init_variablesConfig();
+    }
+    else if (page == "floorplanConfig") {
 	init_floorplanConfig();
     } else if (page == "configuration") {
 	deferredInit = init_configuration;
@@ -203,6 +208,7 @@ function handleInventory(response) {
     systemvar = response.result.system;
     schema = response.result.schema;
     floorPlans = response.result.floorplans;
+    variables =  response.result.variables;
 
     /* Parse floorplan uuid */
     var fp = window.location.search.substring(1);
@@ -261,6 +267,16 @@ function handleInventory(response) {
 	    var tmp = floorPlans[uuid];
 	    tmp.uuid = uuid;
 	    model.floorplans.push(tmp);
+	}
+    }
+    
+    if (model.variables !== undefined) {
+	model.variables([]);
+	for ( var key in variables) {
+	    var tmp = {};
+	    tmp.variable = key;
+	    tmp.value = variables[key];
+	    model.variables.push(tmp);
 	}
     }
 }
@@ -525,7 +541,6 @@ function renderGraph(device, environment) {
 	/* Get the unit */
 	var unit = "";
 	for ( var k = 0; k < device.valueList().length; k++) {
-	    console.log(device.valueList[k]);
 	    if (device.valueList()[k].name == environment) {
 		unit = device.valueList()[k].unit;
 		break;

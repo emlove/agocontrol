@@ -3,9 +3,9 @@
  * 
  * @returns {roomConfig}
  */
-function roomConfig() {
+function variablesConfig() {
     this.hasNavigation = ko.observable(true);
-    this.rooms = ko.observableArray([]);
+    this.variables = ko.observableArray([]);
 
     var self = this;
 
@@ -13,12 +13,12 @@ function roomConfig() {
 	var eTable = $("#configTable").dataTable();
 	eTable.fnDestroy();
 	eTable = $("#configTable").dataTable();
-	eTable.$('td.edit_room').editable(function(value, settings) {
+	eTable.$('td.edit_var').editable(function(value, settings) {
 	    var content = {};
-	    content.room = $(this).data('uuid');
+	    content.variable = $(this).data('variable');
 	    content.uuid = agoController;
-	    content.command = "setroomname";
-	    content.name = value;
+	    content.command = "setvariable";
+	    content.value = value;
 	    sendCommand(content);
 	    return value;
 	}, {
@@ -29,47 +29,52 @@ function roomConfig() {
 	});
     };
 
-    this.createRoom = function(data, event) {
-	$('#configTable').block({ 
-            message: '<div>Please wait ...</div>', 
-            css: { border: '3px solid #a00' } 
-        }); 
+    this.createVariable = function(data, event) {
+	$('#configTable').block({
+	    message : '<div>Please wait ...</div>',
+	    css : {
+		border : '3px solid #a00'
+	    }
+	});
 	var content = {};
-	content.name = $("#roomName").val();
-	content.command = 'setroomname';
+	content.variable = $("#varName").val();
+	content.value = "True";
+	content.command = 'setvariable';
 	content.uuid = agoController;
 	sendCommand(content, function(res) {
+	    console.log(res);
 	    if (res.result && res.result.returncode == 0) {
-		self.rooms.push({
-		    uuid : res.result.uuid,
-		    name : content.name,
-		    location : ""
+		self.variables.push({
+		    variable : content.variable,
+		    value : content.value
 		});
 	    } else {
-		alert("Error while creating room!");
+		alert("Error while creating variable!");
 	    }
 	    $('#configTable').unblock();
 	});
     };
 
-    this.deleteRoom = function(item, event) {
-	$('#configTable').block({ 
-            message: '<div>Please wait ...</div>', 
-            css: { border: '3px solid #a00' } 
-        }); 
+    this.deleteVariable = function(item, event) {
+	$('#configTable').block({
+	    message : '<div>Please wait ...</div>',
+	    css : {
+		border : '3px solid #a00'
+	    }
+	});
 	var content = {};
-	content.room = item.uuid;
+	content.variable = item.variable;
 	content.uuid = agoController;
-	content.command = 'deleteroom';
+	content.command = 'delvariable';
 	sendCommand(content, function(res) {
 	    if (res.result && res.result.returncode == 0) {
-		self.rooms.remove(function(e) {
-		    return e.uuid == item.uuid;
+		self.variables.remove(function(e) {
+		    return e.variable == item.variable;
 		});
 		$("#configTable").dataTable().fnDeleteRow(event.target.parentNode.parentNode);
 		$("#configTable").dataTable().fnDraw();
 	    } else {
-		alert("Error while deleting room!");
+		alert("Error while deleting variable!");
 	    }
 	    $('#configTable').unblock();
 	});
@@ -80,11 +85,11 @@ function roomConfig() {
 /**
  * Initalizes the model
  */
-function init_roomConfig() {
-    model = new roomConfig();
+function init_variablesConfig() {
+    model = new variablesConfig();
 
     model.mainTemplate = function() {
-	return "configuration/rooms";
+	return "configuration/variables";
     }.bind(model);
 
     model.navigation = function() {

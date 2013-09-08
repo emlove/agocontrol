@@ -1,0 +1,32 @@
+<div class="container" id="contentarea">
+        <table id="configTable" style="width:100%; margin-top: 15px; margin-bottom: 5px;">
+                <thead>
+                    <tr>
+                        <th style="font-weight: 700">Name</th>
+                        <th style="font-weight: 700">Value</th>
+                        <th style="font-weight: 700">Action</th>
+                    </tr>
+                </thead>
+                <tbody data-bind="foreach: { data: variables, afterRender: makeEditable }">
+                    <tr>
+                        <td data-bind="text: variable"></td>
+                        <td class="edit_var" data-bind="attr: {'data-variable': variable}, text: value"></td>
+                        <td class="delete_var"><div class="cmd-btn pretty medium default btn btn-full grid-command" data-bind="click: $parent.deleteVariable">delete</div></td>
+                    </tr>
+                </tbody>
+        </table>
+        <br />
+
+
+<br />
+<h3>Add new variable</h3>
+<div class="row">
+ <ul class="ten columns">
+  <li class="append field">
+   <input class="wide email input" id="varName" type="text" placeholder="New variable name" />
+   <div class="medium primary btn"><a href="#" data-bind="click: createVariable">Create</a></div>
+  </li>
+ </ul>
+</div>
+</div>
+
