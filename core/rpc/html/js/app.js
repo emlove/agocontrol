@@ -320,11 +320,14 @@ function handleSubscribe(response) {
     }
 }
 
-function sendCommand(content, callback) {
+function sendCommand(content, callback, timeout) {
     var request = {};
     request.method = "message";
     request.params = {};
     request.params.content = content;
+    if (timeout) {
+	request.params.replytimeout = timeout;
+    }
     request.id = 1;
     request.jsonrpc = "2.0";
 
@@ -588,5 +591,5 @@ function renderGraph(device, environment) {
 	}
 
 	$('#graph').unblock();
-    });
+    }, 5);
 }
