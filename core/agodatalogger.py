@@ -30,19 +30,18 @@ def GetGraphData(deviceid, start, end, env):
 	environment = env
 
 	try:
-		cur = con.execute("""SELECT timestamp AS Date,
-					level AS Level
-					FROM data
-					WHERE timestamp BETWEEN ? AND ? 
-					AND environment=?
-					AND uuid=?
-					ORDER BY timestamp""", (parse(start_date), parse(end_date), environment, uuid))
+		cur = con.execute("""SELECT timestamp, level
+					         FROM data
+					         WHERE timestamp BETWEEN ? AND ? 
+					         AND environment = ?
+					         AND uuid = ?
+					         ORDER BY timestamp""", (int(parse(start_date).strftime("%s")), int(parse(end_date).strftime("%s")), environment, uuid))
 
 		values = []
 		row = cur.fetchone()
 		while row:
 			tmp = {}
-			tmp["time"] = int(parse(row[0]).strftime("%s"))
+			tmp["time"] = row[0]
 			tmp["level"] = row[1]
 			values.append(tmp)
 			row = cur.fetchone()
@@ -69,7 +68,7 @@ def messageHandler(internalid, content):
 			try:
 				with con:
 					cur = con.cursor()
-					result = cur.execute('select distinct uuid, environment from data').fetchall()
+					result = cur.execute('SELECT distinct uuid, environment FROM DATA').fetchall()
 					sources = {}
 					for row in result:
 						sources[row[0]] = row[1]
@@ -84,17 +83,13 @@ def eventHandler(subject, content):
 	if 'level' in content and subject:
 		uuid = content["uuid"]
 		environment =  subject.replace('environment.','').replace('changed','').replace('event.','')
-		if 'unit' in content:
-			unit =  content["unit"]
-		else:
-			unit = ""
 		level =  content["level"]
 		try:
 			with con:
 				cur = con.cursor()
-				cur.execute("INSERT INTO data VALUES(null,?,?,?,?,?)", (uuid,environment,unit,level,datetime.datetime.now()))
+				cur.execute("INSERT INTO data VALUES(null,?,?,?,?)", (uuid, environment, level, int(datetime.datetime.now().strftime("%s"))))
 				newId = cur.lastrowid
-				print "Info: New record ID %s with values uuid: %s, environment: %s, unit: %s, level: %s" % (newId,uuid,environment,unit,level)
+				print "Info: New record ID %s with values uuid: %s, environment: %s, level: %s" % (newId,uuid,environment,level)
 		except sqlite.Error as e:
 			print  "Error " + e.args[0]
 
