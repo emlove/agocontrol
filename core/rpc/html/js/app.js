@@ -396,16 +396,33 @@ function showDetails(device) {
 function doShowDetails(device, template) {
     ko.renderTemplate("details/" + template, device, {
 	afterRender : function() {
-	    // TODO: Don't hardcode
-	    renderGraph(device, "temperature");
+	    var dialogWidth = 800;
+	    var dialogHeight = 400;
+	    console.log(document.getElementById('graph'));
+	    if (document.getElementById('graph')) {
+		// TODO: Don't hardcode
+		renderGraph(device, "temperature");
+		dialogWidth = 1000;
+		dialogHeight = 700;
+	    }
+	    
+	    console.log([dialogWidth, dialogHeight]);
+	    
+	    $("#detailsPage").dialog({
+		title : "Details",
+		modal : true,
+		width : dialogWidth,
+		height : dialogHeight,
+		close: function() {
+		    var graphContainer = document.getElementById('graph');
+		    if (graphContainer) {
+			graphContainer.parentNode.removeChild(graphContainer);
+		    }
+		}
+	    });
+	    
 	}
     }, document.getElementById("detailsPage"));
-    $("#detailsPage").dialog({
-	title : "Details",
-	modal : true,
-	width : 1000,
-	height : 700
-    });
 }
 
 /**
@@ -415,7 +432,7 @@ function doShowDetails(device, template) {
  * @param environment
  */
 function renderGraph(device, environment) {
-    var max_ticks = 10; // User option?
+    var max_ticks = 25; // User option?
 
     var content = {};
     content.uuid = dataLoggerController;
@@ -427,7 +444,9 @@ function renderGraph(device, environment) {
     content.env = environment;
 
     sendCommand(content, function(res) {
+	console.log(res);
 	if (!res.result || !res.result.result || !res.result.result.values) {
+	    alert("Error while loading Graph!");
 	    return;
 	}
 
@@ -462,7 +481,7 @@ function renderGraph(device, environment) {
 	    data.push([ i, value / k ]);
 	    i++;
 	}
-
+	
 	/* Render the graph */
 	var container = document.getElementById('graph');
 	Flotr.draw(container, [ data ], {

@@ -23,16 +23,14 @@ client = agoclient.AgoConnection("datalogger")
 # get sqlite connection
 con = sqlite.connect('/var/opt/agocontrol/datalogger.db')
 
-def GetGraphData(deviceid, start, end, env, freq):
+def GetGraphData(deviceid, start, end, env):
 	uuid = deviceid
 	start_date = start
 	end_date = end
 	environment = env
-	frequency = freq
 
 	try:
 		cur = con.execute("""SELECT timestamp AS Date,
-					unit AS Unit,
 					level AS Level
 					FROM data
 					WHERE timestamp BETWEEN ? AND ? 
@@ -45,7 +43,7 @@ def GetGraphData(deviceid, start, end, env, freq):
 		while row:
 			tmp = {}
 			tmp["time"] = int(parse(row[0]).strftime("%s"))
-			tmp["level"] = row[2]
+			tmp["level"] = row[1]
 			values.append(tmp)
 			row = cur.fetchone()
 		cur.close()
@@ -64,8 +62,7 @@ def messageHandler(internalid, content):
 			start = content['start']
 			end = content['end']
 			env = content['env']
-			freq = content['freq']
-			result = GetGraphData(deviceid, start, end, env, freq)
+			result = GetGraphData(deviceid, start, end, env)
 			return { "values" : result }
 		if content['command'] == 'getdeviceenvironments':
 			sources = {}
