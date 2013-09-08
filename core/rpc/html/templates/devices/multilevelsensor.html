@@ -2,7 +2,7 @@
 	<div class="row">
 		<div class="three columns">
 			<div class="pretty large primary btn grid-item-icon handle">
-				<i class="icon-gauge" data-bind="click: showDetails"></i>
+				<i class="icon-gauge" data-bind="click: function(data, event) { showDetails(data) }"></i>
 			</div>
 		</div>
 		<div class="nine columns">
@@ -25,7 +25,7 @@
 				class="adjoined xnarrow" data-bind="text: unit">x</span>
 				<div
 					class="small pretty primary btn icon-left entypo icon-chart-area grid-command">
-					<a href="#">GRAPH</a>
+					<a href="#" data-bind="click: function(data, event) { showDetails($parent, data.name) }">GRAPH</a>
 				</div>
 				<br />
 			</div>

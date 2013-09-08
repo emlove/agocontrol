@@ -81,7 +81,6 @@ function device(obj, uuid) {
 
     if (this.devicetype == "agocontroller") {
 	agoController = uuid;
-	console.log(uuid);
     }
 
     if (this.devicetype == "dimmerrgb") {
@@ -372,14 +371,19 @@ function openColorPicker(uuid) {
     $("#colorPickerDialog").dialog("open");
 }
 
-/* Opens details page for the given device */
-function showDetails(device) {
+/**
+ * Opens details page for the given device
+ * 
+ * @param device
+ * @param environment
+ */
+function showDetails(device, environment) {
     /* Check if we have a template if yes use it otherwise fall back to default */
     $.ajax({
 	type : 'HEAD',
 	url : "templates/details/" + device.devicetype + ".html",
 	success : function() {
-	    doShowDetails(device, device.devicetype);
+	    doShowDetails(device, device.devicetype, environment);
 	},
 	error : function() {
 	    doShowDetails(device, "default");
@@ -388,39 +392,84 @@ function showDetails(device) {
 }
 
 /**
+ * Formats a date object
+ * 
+ * @param date
+ * @param simple
+ * @returns {String}
+ */
+function formatDate(date, simple) {
+    var hour = date.getHours() < 10 ? "0" + date.getHours() : date.getHours();
+    var min = date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes();
+    var day = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
+    var month = date.getMonth() + 1;
+    month = month < 10 ? "0" + month : month;
+
+    if (simple) {
+	return date.getFullYear() + "." + month + "." + day;
+    }
+
+    return date.getFullYear() + "." + month + "." + day + " " + hour + ":" + min;
+};
+
+/**
  * Shows the detail page of a device
  * 
  * @param device
  * @param template
+ * @param environment
  */
-function doShowDetails(device, template) {
+function doShowDetails(device, template, environment) {
     ko.renderTemplate("details/" + template, device, {
 	afterRender : function() {
 	    var dialogWidth = 800;
-	    var dialogHeight = 400;
-	    console.log(document.getElementById('graph'));
+	    var dialogHeight = 300;
+
 	    if (document.getElementById('graph')) {
-		// TODO: Don't hardcode
-		renderGraph(device, "temperature");
+		$('#graph').block({
+		    message : '<div>Please wait ...</div>',
+		    css : {
+			border : '3px solid #a00'
+		    }
+		});
+
+		/* Setup start date */
+		var start = new Date((new Date()).getTime() - 24 * 3600 * 1000);
+		$("#start_date").datepicker({
+		    dateFormat : "dd.mm.yy",
+		    onSelect : function() {
+			renderGraph(device, document.getElementById('graph')._environment);
+		    }
+		});
+		$("#start_date").datepicker("setDate", start);
+
+		/* Setup end date */
+		$("#end_date").datepicker({
+		    dateFormat : "dd.mm.yy",
+		    onSelect : function() {
+			renderGraph(device, document.getElementById('graph')._environment);
+		    }
+		});
+		$("#end_date").datepicker("setDate", new Date());
+
+		renderGraph(device, environment ? environment : device.valueList()[0].name);
 		dialogWidth = 1000;
-		dialogHeight = 700;
+		dialogHeight = 720;
 	    }
-	    
-	    console.log([dialogWidth, dialogHeight]);
-	    
+
 	    $("#detailsPage").dialog({
 		title : "Details",
 		modal : true,
 		width : dialogWidth,
 		height : dialogHeight,
-		close: function() {
+		close : function() {
 		    var graphContainer = document.getElementById('graph');
 		    if (graphContainer) {
 			graphContainer.parentNode.removeChild(graphContainer);
 		    }
 		}
 	    });
-	    
+
 	}
     }, document.getElementById("detailsPage"));
 }
@@ -434,19 +483,20 @@ function doShowDetails(device, template) {
 function renderGraph(device, environment) {
     var max_ticks = 25; // User option?
 
+    var endDate = new Date($("#end_date").datepicker("getDate").getTime() + 1000 * 3600 * 23 + 60 * 59);
+
     var content = {};
     content.uuid = dataLoggerController;
     content.command = "getloggergraph";
     content.deviceid = device.uuid;
-    /* Time span of 24 hours */
-    content.start = new Date((new Date()).getTime() - 24 * 3600 * 1000).toString(); // yesterday
-    content.end = new Date().toString();
-    content.env = environment;
+    content.start = $("#start_date").datepicker("getDate").toString();
+    content.end = endDate.toString();
+    content.env = environment.toLowerCase();
 
     sendCommand(content, function(res) {
-	console.log(res);
 	if (!res.result || !res.result.result || !res.result.result.values) {
 	    alert("Error while loading Graph!");
+	    $('#graph').unblock();
 	    return;
 	}
 
@@ -460,15 +510,6 @@ function renderGraph(device, environment) {
 	var labels = [];
 	var i = 0;
 
-	var formatDate = function(date) {
-	    var hour = date.getHours() < 10 ? "0" + date.getHours() :  date.getHours();
-	    var min = date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes();
-	    var day = date.getDay() < 10 ? "0" + date.getDay() : date.getDay();
-	    var month = date.getMonth() + 1;
-	    month = month < 10  ? "0" + month : month;
-	    return date.getFullYear() + "." + month + "." + day + " " + hour + ":" + min;
-	};
-
 	/* Compute averange for each bucket and pick a representative time to display */
 	for ( var j = 0; j < buckets.length; j++) {
 	    var bucket = buckets[j];
@@ -481,11 +522,14 @@ function renderGraph(device, environment) {
 	    data.push([ i, value / k ]);
 	    i++;
 	}
-	
+
 	/* Render the graph */
 	var container = document.getElementById('graph');
+	container._environment = environment;
 	Flotr.draw(container, [ data ], {
 	    HtmlText : false,
+	    title : environment,
+	    mode : "time",
 	    mouse : {
 		track : true,
 		relative : true,
@@ -502,5 +546,20 @@ function renderGraph(device, environment) {
 		}
 	    }
 	});
+
+	/* We have no data ... */
+	if (data.length == 0) {
+	    var canvas = document.getElementsByClassName("flotr-overlay")[0];
+	    var context = canvas.getContext("2d");
+	    var x = canvas.width / 2;
+	    var y = canvas.height / 2;
+
+	    context.font = "30pt Arial";
+	    context.textAlign = "center";
+	    context.fillStyle = "red";
+	    context.fillText('No data found for given time frame!', x, y);
+	}
+
+	$('#graph').unblock();
     });
 }

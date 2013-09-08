@@ -13,5 +13,25 @@
 	<span style="color: darkorange" data-bind="text: unit"></span>
 	<br />
 <!-- /ko -->
-<br /><br />
-<div style="width: 100%; height: 400px" id="graph"></div>
+<br />
+<div style="width: 100%; height: 380px; margin-bottom: 20px;" id="graph"></div>
+<div style="width: 50%; text-align: left; float: left;">
+	<form >
+		<label style="display: inline">
+			<strong>From:</strong>
+			<input type="text" id="dummyDate1" style="opacity: 0; position: absolute; top: 0; left: 0;" />
+			<input type="text" size="10" id="start_date" value="" style="display: inline" readonly="readonly" />
+		</label>
+		<label style="display: inline">
+			<strong>To:</strong>
+			<input type="text" size="10" id="end_date" value="" style="display: inline" readonly="readonly"/>
+		</label>
+	</form>
+</div>
+<div style="width: 50%; text-align: right; float: left;">
+	<!-- ko foreach: valueList -->
+		<p class="small pretty primary btn icon-left entypo icon-chart-area">
+		<a href="#" style="color: #FFF" data-bind="text: name, click: function(data, event) { renderGraph($root, data.name) }"></a>
+		</p> 
+	<!-- /ko -->
+</div>
