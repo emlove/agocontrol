@@ -22,6 +22,8 @@ client = agoclient.AgoConnection("X10")
 # This section handles sending X10 devices over the CM11A using Python-X10
 
 # this class will be instantiated and spawned into background to not block the messageHandler
+x10lock = threading.Lock()
+
 class x10send(threading.Thread):
     def __init__(self, id, functioncommand):
         threading.Thread.__init__(self)
@@ -30,11 +32,15 @@ class x10send(threading.Thread):
     def run(self):
         if self.functioncommand == "on":
                 print "switching on: " + self.id
+		x10lock.acquire()
                 dev.actuator(self.id).on()
+		x10lock.release()
                 client.emitEvent(self.id, "event.device.statechanged", "255", "")
         if self.functioncommand == "off":
                 print "switching off: " + self.id
+		x10lock.acquire()
                 dev.actuator(self.id).off()
+		x10lock.release()
                 client.emitEvent(self.id, "event.device.statechanged", "0", "")
 
 def messageHandler(internalid, content):
