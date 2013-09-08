@@ -116,7 +116,6 @@ function device(obj, uuid) {
 	var content = {};
 	content.uuid = uuid;
 	content.command = 'on';
-	console.log(content);
 	sendCommand(content);
     };
 
