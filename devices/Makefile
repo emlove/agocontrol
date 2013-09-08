@@ -1,7 +1,7 @@
-DIRS = agoEnOcean knx blinkm chromoflex firmata i2c irtrans_ethernet kwikwai mediaproxy rain8net zwave 1wire syslog enigma2 asterisk agoapc agojointspace raspiGPIO raspi1wGPIO raspiMCP3xxxGPIO gc100 onkyo
+DIRS = agoEnOcean blinkm chromoflex firmata i2c irtrans_ethernet kwikwai mediaproxy rain8net zwave 1wire syslog enigma2 asterisk agoapc agojointspace raspiGPIO raspi1wGPIO raspiMCP3xxxGPIO gc100 onkyo
 
 ifdef BUILDEXTRA
-DIRS += agodmx
+DIRS += agodmx knx 
 endif
 
 BUILDDIRS = $(DIRS:%=build-%)
