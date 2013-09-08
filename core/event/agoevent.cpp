@@ -46,6 +46,7 @@ void eventHandler(std::string subject, qpid::types::Variant::Map content) {
 				cout << "criteria[" << crit->first << "] - " << crit->second << endl;
 				qpid::types::Variant::Map element = crit->second.asMap();
 				try {
+					cout << "LVAL: " << element["lval"] << endl;
 					if (element["comp"] == "eq") {
 						qpid::types::Variant lval = content[element["lval"].asString()];
 						qpid::types::Variant rval = element["rval"];
