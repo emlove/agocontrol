@@ -46,6 +46,7 @@ class testEvent(threading.Thread):
 			counter = 0
 			temp = random.randint(50,300) / 10
 			client.emitEvent("126", "event.environment.temperaturechanged", temp, "degC");
+			client.emitEvent("126", "event.environment.humiditychanged", random.randint(20, 75), "percent");
 		client.emitEvent("125", "event.security.sensortriggered", level, "")
 		if (level == 0):
 			level = 255
