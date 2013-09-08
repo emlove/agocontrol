@@ -68,8 +68,7 @@ function device(obj, uuid) {
 	this.level = ko.observable(currentState);
 	this.level.subscribe(function(newValue) {
 	    var content = {};
-	    content.device = uuid;
-	    content.uuid = agoController;
+	    content.uuid = uuid;
 	    content.command = "setlevel";
 	    content.level = newValue;
 	    sendCommand(content);
@@ -115,16 +114,15 @@ function device(obj, uuid) {
 
     this.turnOn = function() {
 	var content = {};
-	content.device = uuid;
-	content.uuid = agoController;
+	content.uuid = uuid;
 	content.command = 'on';
+	console.log(content);
 	sendCommand(content);
     };
 
     this.turnOff = function() {
 	var content = {};
-	content.device = uuid;
-	content.uuid = agoController;
+	content.uuid = uuid;
 	content.command = 'off';
 	sendCommand(content);
     };
