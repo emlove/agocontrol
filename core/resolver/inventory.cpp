@@ -343,7 +343,7 @@ Variant::Map Inventory::getlocations() {
 		}
 	}
 
-    sqlite3_finalize (stmt);
+	sqlite3_finalize (stmt);
 
 	return result;
 }
