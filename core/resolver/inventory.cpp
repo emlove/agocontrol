@@ -125,6 +125,9 @@ Variant::Map Inventory::getrooms() {
 			result[uuid] = entry;
 		}
 	}
+
+	sqlite3_finalize (stmt);
+
 	return result;
 } 
 int Inventory::deleteroom (string uuid) {
@@ -158,12 +161,14 @@ string Inventory::getfirst(const char *query) {
 			if (sqlite3_column_type(stmt, 0) == SQLITE_TEXT) result =string( (const char*)sqlite3_column_text(stmt, 0));
 			break;
 	}
+
 	sqlite3_finalize(stmt);
+
 	return result;
 }
 
 string Inventory::getfloorplanname(std::string uuid) {
-	string query = "select name from devices where uuid = '" + uuid + "'";
+	string query = "select name from floorplans where uuid = '" + uuid + "'";
 	return getfirst(query.c_str());
 }
 
@@ -254,12 +259,16 @@ Variant::Map Inventory::getfloorplans() {
 			device["y"] = atoi(y);
 			entry[deviceuuid] = device;
 		}
-			
+
+		sqlite3_finalize (stmt2);			
 
 		if (uuid != NULL) {
 			result[uuid] = entry;
 		}
 	}
+
+	sqlite3_finalize (stmt);
+
 	return result;
 } 
 
@@ -333,6 +342,9 @@ Variant::Map Inventory::getlocations() {
 			result[uuid] = entry;
 		}
 	}
+
+    sqlite3_finalize (stmt);
+
 	return result;
 }
 
