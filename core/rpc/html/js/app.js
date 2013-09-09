@@ -178,6 +178,10 @@ function handleEvent(response) {
 
 	    if (response.result.quantity) {
 		var values = deviceMap[i].values();
+		if (values[response.result.quantity] === undefined) {
+		    console.log("BROKEN DEVICE [" + response.result.uuid + "]");
+		    break;
+		}
 		values[response.result.quantity].level = response.result.level;
 		deviceMap[i].values(values);
 	    }
