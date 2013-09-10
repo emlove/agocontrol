@@ -152,11 +152,9 @@ function initGUI() {
 	deferredInit = init_floorPlan;
     } else if (page == "roomConfig") {
 	init_roomConfig();
-    }
-    else if (page == "variablesConfig") {
+    } else if (page == "variablesConfig") {
 	init_variablesConfig();
-    }
-    else if (page == "floorplanConfig") {
+    } else if (page == "floorplanConfig") {
 	init_floorplanConfig();
     } else if (page == "configuration") {
 	deferredInit = init_configuration;
@@ -164,6 +162,9 @@ function initGUI() {
 	init_deviceConfig();
     } else if (page == "systemConfig") {
 	deferredInit = init_systemConfig;
+
+    } else if (page == "eventConfig") {
+	deferredInit = init_eventConfig;
     }
 }
 
@@ -209,7 +210,7 @@ function handleInventory(response) {
     systemvar = response.result.system;
     schema = response.result.schema;
     floorPlans = response.result.floorplans;
-    variables =  response.result.variables;
+    variables = response.result.variables;
 
     /* Parse floorplan uuid */
     var fp = window.location.search.substring(1);
@@ -270,7 +271,7 @@ function handleInventory(response) {
 	    model.floorplans.push(tmp);
 	}
     }
-    
+
     if (model.variables !== undefined) {
 	model.variables([]);
 	for ( var key in variables) {
