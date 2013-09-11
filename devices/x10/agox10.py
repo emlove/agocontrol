@@ -4,7 +4,7 @@ import time
 import logging
 from x10.controllers.cm11 import CM11
 
-dev = CM11('/dev/ttyUSB1')
+dev = CM11(agoclient.getConfigOption("x10", "device", "/dev/ttyUSB1"))
 dev.open()
 
 #  Dictionaries to decrypt hex values sent from CM11A to house/device codes as well as function on/off
@@ -54,19 +54,15 @@ def messageHandler(internalid, content):
 client.addHandler(messageHandler)
 
 # X10 device configuration
-client.addDevice("A2", "switch")
-client.addDevice("A3", "switch")
-client.addDevice("A9", "switch")
-client.addDevice("B3", "switch")
-client.addDevice("B4", "switch")
-client.addDevice("B5", "switch")
-client.addDevice("B9", "switch")
-client.addDevice("B12", "switch")
+readSwitches = agoclient.getConfigOption("x10", "switches", "A2,A3,A9,B3,B4,B5,B9,B12") 
+switches = map(str, readSwitches.split(',')) 
+for switch in switches: 
+	client.addDevice(switch, "switch")
 
 # This section is used to monitor for incoming RF signals on the CM11A
 
 
-class testEvent(threading.Thread):
+class readX10(threading.Thread):
     def __init__(self,):
         threading.Thread.__init__(self)
     def run(self):
@@ -108,7 +104,7 @@ class testEvent(threading.Thread):
                                 if (send_x10_command == 0) or (send_x10_command == 255):
                                         client.emitEvent(send_x10_address , "event.device.statechanged", send_x10_command , "");
 
-background = testEvent()
+background = readX10()
 background.setDaemon(True)
 background.start()
 
