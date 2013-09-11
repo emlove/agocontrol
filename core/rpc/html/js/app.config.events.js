@@ -13,10 +13,110 @@ function eventConfig() {
     this.eventMap = schema.events;
     this.deviceList = deviceMap;
 
+    this.map = {};
+
     var self = this;
 
     this.createEvent = function() {
-	alert("NOT DONE YET!");
+	if ($("#eventName").val() == "") {
+	    alert("Please supply an event name!");
+	    return;
+	}
+	
+	this.createEventMap(self.createJSON());
+
+	var content = {};
+	content.uuid = eventController;
+	content.command = "setevent";
+	content.eventmap = this.map;
+
+	sendCommand(content, function(res) {
+	    if (res.result && res.result.event) {
+		var cnt = {};
+		cnt.uuid = agoController;
+		cnt.device = res.result.event;
+		cnt.command = "setdevicename";
+		cnt.name = $("#eventName").val();
+		sendCommand(cnt, function(nameRes) {
+		    if (nameRes.result && nameRes.result.returncode == "0") {
+			alert("event with uuid [" + res.result.event + "] has been created!");
+		    }
+		});
+	    } else {
+		alert("ERROR");
+	    }
+	});
+    };
+
+    /**
+     * Helper for event map creation
+     */
+    this.parseElement = function(element) {
+	// 'empty' events like 'sun did rise'
+	if (element.sub === undefined) {
+	    return "True";
+	}
+
+	var nesting = "";
+
+	for ( var j = 0; j < element.sub.length; j++) {
+	    var obj = element.sub[j];
+	    if (obj.param !== undefined) {
+		self.map.criteria[self.idx] = {};
+		self.map.criteria[self.idx].lval = obj.param;
+		self.map.criteria[self.idx].comp = obj.comp;
+		self.map.criteria[self.idx].rval = obj.value;
+		if (nesting == "") {
+		    nesting += "(criteria[" + self.idx + "]";
+		} else {
+		    nesting += " " + element.type + " criteria[" + self.idx + "]";
+		}
+		self.idx = self.idx + 1;
+	    } else {
+		nesting += " " + element.type + " (" + self.parseElement(obj) + ")";
+	    }
+	}
+
+	return nesting + ")";
+
+    };
+
+    /**
+     * Creates the event map for the resolver
+     */
+    this.createEventMap = function(data) {
+	self.map = {};
+	self.map.criteria = {};
+	self.map.nesting = "";
+	self.map.event = data.path;
+
+	self.idx = 0;
+
+	for ( var i = 0; i < data.elements.length; i++) {
+	    self.map.nesting += self.parseElement(data.elements[i]);
+	    self.idx = self.idx + 1;
+	}
+
+	// Add the toplevel operator
+	self.map.nesting = self.map.nesting.replace(/\)\(/g, ") " + data.conn + " (");
+
+	// Remove useless and/or suffixes
+	self.map.nesting = $.trim(self.map.nesting);
+	self.map.nesting = self.map.nesting.replace(/^(and|or)/g, "");
+	self.map.nesting = $.trim(self.map.nesting);
+
+	if (self.map.criteria == {}) {
+	    self.map.nesting = "True";
+	}
+
+	console.log(self.deviceList);
+	console.log(document.getElementById("deviceListSelect").options[document.getElementById("deviceListSelect").selectedIndex].value);
+
+	// Set the action
+	self.map.action = {};
+	self.map.action.command = document.getElementById("commandSelect").options[document.getElementById("commandSelect").selectedIndex].value;
+	self.map.action.uuid = self.deviceList[document.getElementById("deviceListSelect").options[document.getElementById("deviceListSelect").selectedIndex].value].uuid;
+
     };
 
     /**
@@ -217,9 +317,9 @@ function eventConfig() {
     };
 
     /**
-     * Create ajson structure out of the whole event
+     * Create a JSON structure out of the whole event
      */
-    this.createJSON = function(uuid) {
+    this.createJSON = function() {
 	var ops = document.getElementsByClassName("operator");
 	var res = [];
 	for ( var i = 0; i < ops.length; i++) {
@@ -235,13 +335,7 @@ function eventConfig() {
 	    "path" : eventSelector.options[eventSelector.selectedIndex].value
 	};
 
-	var action = {};
-	action.command = document.getElementById("commandSelect").options[document.getElementById("commandSelect").selectedIndex].value;
-	action.uuid = self.deviceList[document.getElementById("deviceListSelect").options[document.getElementById("deviceListSelect").selectedIndex].value].id;
-
-	var event_name = document.getElementById("event_name").value;
-	console.log(res);
-	console.log(event_name);
+	return res;
     };
 
     /**

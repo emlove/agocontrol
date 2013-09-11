@@ -45,6 +45,7 @@ var variables = {};
 var currentFloorPlan = ko.observable({});
 
 var agoController = null;
+var eventController = null;
 var dataLoggerController = null;
 
 var supported_devices = [ "switch", "dimmer", "binarysensor", "dimmerrgb", "multilevelsensor", "placeholder" ];
@@ -81,6 +82,10 @@ function device(obj, uuid) {
 
     if (this.devicetype == "agocontroller") {
 	agoController = uuid;
+    }
+    
+    if (this.devicetype == "eventcontroller") {
+	eventController = uuid;
     }
 
     if (this.devicetype == "dimmerrgb") {
@@ -212,6 +217,8 @@ function handleInventory(response) {
     floorPlans = response.result.floorplans;
     variables = response.result.variables;
 
+    console.log(response.result);
+    
     /* Parse floorplan uuid */
     var fp = window.location.search.substring(1);
     var tmp = fp.split("&");
