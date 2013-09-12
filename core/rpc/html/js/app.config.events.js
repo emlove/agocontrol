@@ -7,22 +7,83 @@
  */
 function eventConfig() {
     this.hasNavigation = ko.observable(true);
-
-    this.current_id = 0;
-
-    this.eventMap = schema.events;
-    this.deviceList = deviceMap;
-
-    this.map = {};
+    this.devices = ko.observableArray([]);
+    this.events = ko.observableArray([]);
 
     var self = this;
+    this.current_id = 0;
+    this.map = {};
+    this.eventMap = {};
+    this.deviceList = {};
+
+    this.devices.subscribe(function() {
+	if (self.events().length > 0) {
+	    return;
+	}
+	for ( var i = 0; i < self.devices().length; i++) {
+	    var dev = self.devices()[i];
+	    if (dev.devicetype == "event") {
+		self.events.push(dev);
+	    }
+	}
+	self.eventMap = schema.events;
+	self.deviceList = deviceMap;
+    });
+
+    this.initBuilder = function() {
+	self.eventMap = schema.events;
+	self.deviceList = deviceMap;
+
+	// Clean
+	document.getElementById("eventBuilder").innerHTML = "";
+	document.getElementById("actionBuilder").innerHTML = "";
+
+	// Build new
+	var eventSelector = self.getEventSelector(self.eventMap, document.getElementById("eventBuilder"));
+	eventSelector.id = "eventSelector";
+	document.getElementById("eventBuilder").appendChild(eventSelector);
+	self.renderMainConnector("and", document.getElementById("eventBuilder"));
+	self.addNesting(document.getElementById("eventBuilder"), "and");
+	self.createActionBuilder(document.getElementById("actionBuilder"));
+    };
+
+    this.makeEditable = function() {
+	var eTable = $("#configTable").dataTable();
+	eTable.fnDestroy();
+	eTable = $("#configTable").dataTable();
+	eTable.$('td.edit_event').editable(function(value, settings) {
+	    var content = {};
+	    content.device = $(this).data('uuid');
+	    content.uuid = agoController;
+	    content.command = "setdevicename";
+	    content.name = value;
+	    sendCommand(content);
+	    return value;
+	}, {
+	    data : function(value, settings) {
+		return value;
+	    },
+	    onblur : "cancel"
+	});
+
+	// Initial build
+	if (!document.getElementById("eventBuilder")._set) {
+	    self.initBuilder();
+	    document.getElementById("eventBuilder")._set = true;
+	}
+
+    };
+
+    this.deleteEvent = function(item, event) {
+	alert("TODO");
+    };
 
     this.createEvent = function() {
 	if ($("#eventName").val() == "") {
 	    alert("Please supply an event name!");
 	    return;
 	}
-	
+
 	this.createEventMap(self.createJSON());
 
 	var content = {};
@@ -39,7 +100,11 @@ function eventConfig() {
 		cnt.name = $("#eventName").val();
 		sendCommand(cnt, function(nameRes) {
 		    if (nameRes.result && nameRes.result.returncode == "0") {
-			alert("event with uuid [" + res.result.event + "] has been created!");
+			self.events.push({
+			    name : cnt.name,
+			    uuid : res.result.event
+			});
+			self.initBuilder();
 		    }
 		});
 	    } else {
@@ -571,12 +636,7 @@ function eventConfig() {
      */
     ko.bindingHandlers.initEvents = {
 	init : function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
-	    var eventSelector = self.getEventSelector(self.eventMap, document.getElementById("eventBuilder"));
-	    eventSelector.id = "eventSelector";
-	    document.getElementById("eventBuilder").appendChild(eventSelector);
-	    self.renderMainConnector("and", document.getElementById("eventBuilder"));
-	    self.addNesting(document.getElementById("eventBuilder"), "and");
-	    self.createActionBuilder(document.getElementById("actionBuilder"));
+
 	},
 	update : function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
 	    // IGNORE, we don't have to do anything on update (yet) ...
@@ -599,5 +659,6 @@ function init_eventConfig() {
 	return "navigation/configuration";
     }.bind(model);
 
+    console.log("XXXX");
     ko.applyBindings(model);
 }

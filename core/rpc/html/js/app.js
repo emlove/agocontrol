@@ -20,7 +20,6 @@ ko.bindingHandlers.slider = {
 	});
     },
     update : function(element, valueAccessor) {
-	var value = ko.utils.unwrapObservable(valueAccessor());
 	if (isNaN(value))
 	    value = 0;
 	$(element).slider("value", value);
@@ -83,7 +82,7 @@ function device(obj, uuid) {
     if (this.devicetype == "agocontroller") {
 	agoController = uuid;
     }
-    
+
     if (this.devicetype == "eventcontroller") {
 	eventController = uuid;
     }
@@ -167,9 +166,8 @@ function initGUI() {
 	init_deviceConfig();
     } else if (page == "systemConfig") {
 	deferredInit = init_systemConfig;
-
     } else if (page == "eventConfig") {
-	deferredInit = init_eventConfig;
+	init_eventConfig();
     }
 }
 
@@ -217,8 +215,6 @@ function handleInventory(response) {
     floorPlans = response.result.floorplans;
     variables = response.result.variables;
 
-    console.log(response.result);
-    
     /* Parse floorplan uuid */
     var fp = window.location.search.substring(1);
     var tmp = fp.split("&");

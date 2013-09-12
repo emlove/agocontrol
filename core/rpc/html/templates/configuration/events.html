@@ -1,14 +1,32 @@
 <div class="container" id="contentarea">
+	<h3>Event Configuration</h3>
+	<div class="row">
+        <table id="configTable" style="width:100%; margin-top: 15px; margin-bottom: 5px;">
+                <thead>
+                    <tr>
+                        <th style="font-weight: 700">Name</th>
+                        <th style="font-weight: 700">Action</th>
+                    </tr>
+                </thead>
+                <tbody data-bind="foreach: { data: events, afterRender: makeEditable }">
+                    <tr>
+                        <td class="edit_event" data-bind="attr: {'data-uuid': uuid}, text: name"></td>
+                        <td ><div class="cmd-btn pretty medium default btn btn-full grid-command" data-bind="attr: {'data-uuid': uuid}, click: $parent.deleteEvent">delete</div></td>
+                    </tr>
+                </tbody>
+        </table>
+   </div>
+   <br />
+
 	<div class="row">
 		<h3>Create Event</h3>
-		<div style="color: red; text-align: center; font-weight: 700">THIS IS NOT FINISHED YET!</div>
 		<h4>Criteria</h4>
 		<div id="eventBuilder"></div>
 		<br />
 		<h4>Action</h4>
 		<div id="actionBuilder"></div>
 		<br />
-		<form action="" method="post" data-bind="initEvents: $root">
+		<form action="" method="post">
 			<h4>Name</h4>
 			<div class="row">
 				<ul class="ten columns">
