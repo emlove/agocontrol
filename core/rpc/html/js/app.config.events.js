@@ -75,7 +75,28 @@ function eventConfig() {
     };
 
     this.deleteEvent = function(item, event) {
-	alert("TODO");
+	$('#configTable').block({
+	    message : '<div>Please wait ...</div>',
+	    css : {
+		border : '3px solid #a00'
+	    }
+	});
+	var content = {};
+	content.event = item.uuid;
+	content.uuid = eventController;
+	content.command = 'delevent';
+	sendCommand(content, function(res) {
+	    if (res.result && res.result.result == 0) {
+		self.events.remove(function(e) {
+		    return e.uuid == item.uuid;
+		});
+		$("#configTable").dataTable().fnDeleteRow(event.target.parentNode.parentNode);
+		$("#configTable").dataTable().fnDraw();
+	    } else {
+		alert("Error while deleting event!");
+	    }
+	    $('#configTable').unblock();
+	});
     };
 
     this.createEvent = function() {
