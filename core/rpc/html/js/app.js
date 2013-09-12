@@ -20,6 +20,7 @@ ko.bindingHandlers.slider = {
 	});
     },
     update : function(element, valueAccessor) {
+	var value = valueAccessor();
 	if (isNaN(value))
 	    value = 0;
 	$(element).slider("value", value);
