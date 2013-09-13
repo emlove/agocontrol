@@ -110,7 +110,7 @@ function eventConfig() {
 	var content = {};
 	content.uuid = eventController;
 	content.command = "setevent";
-	content.eventmap = this.map;
+	content.eventmap = self.map;
 
 	sendCommand(content, function(res) {
 	    if (res.result && res.result.event) {
@@ -194,9 +194,6 @@ function eventConfig() {
 	if (self.map.criteria == {}) {
 	    self.map.nesting = "True";
 	}
-
-	console.log(self.deviceList);
-	console.log(document.getElementById("deviceListSelect").options[document.getElementById("deviceListSelect").selectedIndex].value);
 
 	// Set the action
 	self.map.action = {};
@@ -346,10 +343,10 @@ function eventConfig() {
 	dd.appendChild(span);
 
 	if (eventObj) {
-	    self.renderEvent(eventObj.path, self.eventMap[eventObj.path], span, eventObj);
+	    self.renderEvent("event", eventObj.path, self.eventMap[eventObj.path], span, eventObj);
 	} else {
 	    var selector = document.getElementById("eventSelector");
-	    self.renderEvent(selector.options[selector.selectedIndex].value, self.eventMap[selector.options[selector.selectedIndex].value], span);
+	    self.renderEvent("event", selector.options[selector.selectedIndex].value, self.eventMap[selector.options[selector.selectedIndex].value], span);
 	}
 
 	var button = document.createElement("button");
@@ -384,9 +381,22 @@ function eventConfig() {
 		eventObj.path = selector.options[selector.selectedIndex].value;
 
 		if (selects.length > 0) {
-		    eventObj.comp = selects[1].options[selects[1].selectedIndex].value;
-		    eventObj.param = selects[0].options[selects[0].selectedIndex].value;
-		    eventObj.value = subList.childNodes[j].getElementsByTagName("input")[0].value;
+		    var type = selects[0].options[selects[0].selectedIndex].value;
+		    if (type == "event") {
+			eventObj.comp = selects[2].options[selects[2].selectedIndex].value;
+			eventObj.param = "event." + selects[1].options[selects[1].selectedIndex].value;
+			eventObj.value = subList.childNodes[j].getElementsByTagName("input")[0].value;
+		    } else if (type == "device") {
+			eventObj.comp = selects[3].options[selects[3].selectedIndex].value;
+			eventObj.param = "device." + selects[1].options[selects[1].selectedIndex].value +
+					  "." + selects[2].options[selects[2].selectedIndex].value;
+			eventObj.value = subList.childNodes[j].getElementsByTagName("input")[0].value;
+		    }
+		    if (type == "variable") {
+			eventObj.comp = selects[2].options[selects[2].selectedIndex].value;
+			eventObj.param = "variable." + selects[1].options[selects[1].selectedIndex].value;
+			eventObj.value = subList.childNodes[j].getElementsByTagName("input")[0].value;
+		    }
 		}
 		op.sub.push(eventObj);
 	    }
@@ -476,7 +486,7 @@ function eventConfig() {
 	    var path = eventList.options[eventList.selectedIndex].value;
 	    var eventParams = document.getElementsByClassName("eventParams");
 	    for ( var i = 0; i < eventParams.length; i++) {
-		self.renderEvent(path, events[path], eventParams[i]);
+		self.renderEvent("event", path, events[path], eventParams[i]);
 	    }
 	};
 	var i = 0;
@@ -525,46 +535,116 @@ function eventConfig() {
     /**
      * Renders an event
      */
-    this.renderEvent = function(path, event, container, defaultValues) {
+    this.renderEvent = function(selectType, path, event, container, defaultValues) {
 	container.innerHTML = "";
 
-	var params = document.createElement("select");
-	params.name = path + ".param";
-	if (event.parameters !== undefined) {
-	    for ( var i = 0; i < event.parameters.length; i++) {
-		var opt = new Option(event.parameters[i], event.parameters[i]);
-		params.options[i] = opt;
-		if (defaultValues && event.parameters[i] == defaultValues.param) {
-		    params.options[i].selected = true;
-		}
-	    }
+	var baseType = document.createElement("select");
+	baseType.options[0] = new Option("event", "event");
+	baseType.options[1] = new Option("device", "device");
+	baseType.options[2] = new Option("variable", "variable");
+	container.appendChild(baseType);
 
-	    var comp = document.createElement("select");
-	    comp.name = path + ".comp";
-	    comp.options[0] = new Option("=", "eq");
-	    comp.options[1] = new Option("!=", "new");
-	    comp.options[2] = new Option(">", "gt");
-	    comp.options[3] = new Option("<", "lt");
+	if (selectType == "event") {
+	    baseType.selectedIndex = 0;
+	} else if (selectType == "device") {
+	    baseType.selectedIndex = 1;
+	} else if (selectType == "variable") {
+	    baseType.selectedIndex = 2;
+	}
 
-	    if (defaultValues) {
-		for ( var i = 0; comp.options.length; i++) {
-		    if (comp.options[i].value == defaultValues.comp) {
-			comp.options[i].selected = true;
-			break;
+	baseType.onchange = function() {
+	    var type = baseType.options[baseType.selectedIndex].value;
+	    self.renderEvent(type, path, event, container, defaultValues);
+	};
+
+	if (selectType == "event") {
+	    var params = document.createElement("select");
+	    params.name = path + ".param";
+	    if (event.parameters !== undefined) {
+		for ( var i = 0; i < event.parameters.length; i++) {
+		    var opt = new Option(event.parameters[i], event.parameters[i]);
+		    params.options[i] = opt;
+		    if (defaultValues && event.parameters[i] == defaultValues.param) {
+			params.options[i].selected = true;
 		    }
 		}
 	    }
 
-	    var inputField = document.createElement("input");
-	    inputField.name = path + ".value";
-	    if (defaultValues) {
-		inputField.value = defaultValues.value;
+	    container.appendChild(params);
+	} else if (selectType == "device") {
+	    var deviceSelect = document.createElement("select");
+	    deviceSelect.name = path + ".device";
+	    for ( var i = 0; i < self.deviceList.length; i++) {
+		deviceSelect.options[i] = new Option(self.deviceList[i].name, self.deviceList[i].uuid);
 	    }
 
+	    var params = document.createElement("select");
+	    params.name = path + ".param";
+
+	    var _buildParamList = function(dev) {
+		params.options.length = 0;
+		params.options[0] = new Option("state", "state");
+		if (dev.values) {
+		    var i = 0;
+		    for ( var k in dev.values()) {
+			params.options[i + 1] = new Option(k, k);
+			i++;
+		    }
+		}
+	    };
+
+	    _buildParamList(self.deviceList[0]);
+
+	    deviceSelect.onchange = function() {
+		var selectedUuid = deviceSelect.options[deviceSelect.selectedIndex].value;
+		var dev = {};
+		for ( var i = 0; i < self.deviceList.length; i++) {
+		    if (self.deviceList[i].uuid == selectedUuid) {
+			dev = self.deviceList[i];
+			break;
+		    }
+		}
+		_buildParamList(dev);
+	    };
+
+	    container.appendChild(deviceSelect);
 	    container.appendChild(params);
-	    container.appendChild(comp);
-	    container.appendChild(inputField);
+	} else if (selectType == "variable") {
+	    var params = document.createElement("select");
+	    params.name = path + ".param";
+	    var i = 0;
+	    for ( var k in variables) {
+		params.options[i] = new Option(k, k);
+		i++;
+	    }
+	    container.appendChild(params);
 	}
+
+	var comp = document.createElement("select");
+	comp.name = path + ".comp";
+	comp.options[0] = new Option("=", "eq");
+	comp.options[1] = new Option("!=", "new");
+	comp.options[2] = new Option(">", "gt");
+	comp.options[3] = new Option("<", "lt");
+
+	if (defaultValues) {
+	    for ( var i = 0; comp.options.length; i++) {
+		if (comp.options[i].value == defaultValues.comp) {
+		    comp.options[i].selected = true;
+		    break;
+		}
+	    }
+	}
+
+	var inputField = document.createElement("input");
+	inputField.name = path + ".value";
+	if (defaultValues) {
+	    inputField.value = defaultValues.value;
+	}
+
+	container.appendChild(comp);
+	container.appendChild(inputField);
+
     };
 
     /**
@@ -651,19 +731,6 @@ function eventConfig() {
 
 	commandSelect.onchange();
     };
-
-    /**
-     * Custom binding to init the rendering
-     */
-    ko.bindingHandlers.initEvents = {
-	init : function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
-
-	},
-	update : function(element, valueAccessor, allBindingsAccessor, viewModel, bindingContext) {
-	    // IGNORE, we don't have to do anything on update (yet) ...
-	    // Will be needed for edit
-	}
-    };
 }
 
 /**
@@ -680,6 +747,5 @@ function init_eventConfig() {
 	return "navigation/configuration";
     }.bind(model);
 
-    console.log("XXXX");
     ko.applyBindings(model);
 }
