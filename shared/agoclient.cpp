@@ -18,6 +18,14 @@ Iter next(Iter iter)
     return ++iter;
 }
 
+void agocontrol::replaceString(std::string& subject, const std::string& search, const std::string& replace) {
+        size_t pos = 0;
+        while ((pos = subject.find(search, pos)) != std::string::npos) {
+                subject.replace(pos, search.length(), replace);
+                pos += replace.length();
+        }
+}
+
 bool agocontrol::variantMapToJSONFile(qpid::types::Variant::Map map, std::string filename) {
 	ofstream mapfile;
 	try { 
@@ -53,6 +61,7 @@ std::string agocontrol::variantMapToJSONString(qpid::types::Variant::Map map) {
 	result += "{";
 	for (Variant::Map::const_iterator it = map.begin(); it != map.end(); ++it) {
 		result += "\""+ it->first + "\":";
+		std::string tmpstring;
 		switch (it->second.getType()) {
 			case VAR_MAP:
 				result += variantMapToJSONString(it->second.asMap());
@@ -61,7 +70,9 @@ std::string agocontrol::variantMapToJSONString(qpid::types::Variant::Map map) {
 				result += variantListToJSONString(it->second.asList());
 				break;
 			case VAR_STRING:
-				result += "\"" +  it->second.asString() + "\"";
+				tmpstring = it->second.asString();
+				replaceString(tmpstring, "\"", "\\\"");	
+				result += "\"" +  tmpstring + "\"";
 				break;
 			default:
 				if (it->second.asString().size() != 0) {
@@ -81,6 +92,7 @@ std::string agocontrol::variantListToJSONString(qpid::types::Variant::List list)
 	string result;
 	result += "[";
 	for (Variant::List::const_iterator it = list.begin(); it != list.end(); ++it) {
+		std::string tmpstring;
 		switch(it->getType()) {
 			case VAR_MAP:
 				result += variantMapToJSONString(it->asMap());
@@ -89,7 +101,9 @@ std::string agocontrol::variantListToJSONString(qpid::types::Variant::List list)
 				result += variantListToJSONString(it->asList());
 				break;
 			case VAR_STRING:
-				result += "\"" + it->asString()+ "\"";
+				tmpstring = it->asString();
+				replaceString(tmpstring, "\"", "\\\"");	
+				result += "\"" +  tmpstring + "\"";
 				break;
 			default:
 				if (it->asString().size() != 0) {

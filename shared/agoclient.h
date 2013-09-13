@@ -23,6 +23,7 @@
 
 namespace agocontrol {
 
+	void replaceString(std::string& subject, const std::string& search, const std::string& replace);
 	// these will convert back and forth between a Variant type and JSON
 	std::string variantMapToJSONString(qpid::types::Variant::Map map);
 	std::string variantListToJSONString(qpid::types::Variant::List list);
