@@ -44,14 +44,20 @@ int main(int argc, char **argv) {
 	AgoConnection agoConnection = AgoConnection("messagesend");		
 
 	qpid::types::Variant::Map content;
+	std::string subject;
+	subject = "";
 	for (int i=1;i<argc;i++) {
 		string name, value;
 		if (nameval(string(argv[i]),name, value)) {
-			content[name]=value;
+			if (name == "subject") {
+				subject = value;
+			} else {
+				content[name]=value;
+			}
 		}
 	}
 	cout << "Sending message: " << content << endl;
-	qpid::types::Variant::Map replyMap = agoConnection.sendMessageReply("", content);
+	qpid::types::Variant::Map replyMap = agoConnection.sendMessageReply(subject.c_str(), content);
 	cout << "Reply: " << replyMap << endl;
 }
 
