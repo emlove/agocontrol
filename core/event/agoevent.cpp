@@ -18,9 +18,63 @@
 
 using namespace std;
 using namespace agocontrol;
+using namespace qpid::types;
 
 qpid::types::Variant::Map eventmap;
 AgoConnection *agoConnection;
+
+double variantToDouble(qpid::types::Variant v) {
+	double result;
+	switch(v.getType()) {
+		case VAR_DOUBLE:
+			result = v.asDouble();	
+			break;
+		case VAR_FLOAT:
+			result = v.asFloat();	
+			break;
+		case VAR_BOOL:
+			result = v.asBool();
+			break;
+		case VAR_STRING:
+			result = atof(v.asString().c_str());
+			break;
+		case VAR_INT8:
+			result = v.asInt8();
+			break;
+		case VAR_INT16:
+			result = v.asInt16();
+			break;
+		case VAR_INT32:
+			result = v.asInt32();
+			break;
+		case VAR_INT64:
+			result = v.asInt64();
+			break;
+		case VAR_UINT8:
+			result = v.asUint8();
+			break;
+		case VAR_UINT16:
+			result = v.asUint16();
+			break;
+		case VAR_UINT32:
+			result = v.asUint32();
+			break;
+		case VAR_UINT64:
+			result = v.asUint64();
+			break;
+		default:
+			cout << "ERROR! No conversion for type:" << v << endl;
+			result = 0;
+	}
+	return result;
+}
+qpid::types::Variant operator<(qpid::types::Variant a, qpid::types::Variant b) {
+	return variantToDouble(a) < variantToDouble(b);
+}
+
+qpid::types::Variant operator>(qpid::types::Variant a, qpid::types::Variant b) {
+	return variantToDouble(a) < variantToDouble(b);
+}
 
 // example event:eb68c4a5-364c-4fb8-9b13-7ea3a784081f:{action:{command:on, uuid:25090479-566d-4cef-877a-3e1927ed4af0}, criteria:{0:{comp:eq, lval:hour, rval:7}, 1:{comp:eq, lval:minute, rval:1}}, event:event.environment.timechanged, nesting:(criteria["0"] and criteria["1"])}
 
@@ -82,13 +136,9 @@ void eventHandler(std::string subject, qpid::types::Variant::Map content) {
 							criteria[crit->first] = lval.isEqualTo(rval);
 						}
 					} else if (element["comp"] == "lt") {
-						float flval = lval;
-						float frval = rval;
-						criteria[crit->first] = flval < frval;
+						criteria[crit->first] = lval < rval;
 					} else if (element["comp"] == "gt") {
-						float flval = lval;
-						float frval = rval;
-						criteria[crit->first] = flval > frval;
+						criteria[crit->first] = lval > rval;
 					} else {
 						criteria[crit->first] = false;
 					}
