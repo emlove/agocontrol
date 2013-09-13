@@ -26,6 +26,13 @@ function eventConfig() {
 		self.events.push(dev);
 	    }
 	}
+	/* No events add a dummy to trigger afterRender */
+	if (self.events().length == 0) {
+	    self.events.push({
+		name : "dummy",
+		uuid : "0"
+	    });
+	}
 	self.eventMap = schema.events;
 	self.deviceList = deviceMap;
     });
@@ -71,6 +78,10 @@ function eventConfig() {
 	    self.initBuilder();
 	    document.getElementById("eventBuilder")._set = true;
 	}
+
+	self.events.filter(function(ev) {
+	    return ev.uuid != '0';
+	});
 
     };
 
@@ -384,15 +395,15 @@ function eventConfig() {
 		    var type = selects[0].options[selects[0].selectedIndex].value;
 		    if (type == "event") {
 			eventObj.comp = selects[2].options[selects[2].selectedIndex].value;
-			
+
 			eventObj.param = {};
 			eventObj.param.type = "event";
 			eventObj.param.parameter = selects[1].options[selects[1].selectedIndex].value;
-			
+
 			eventObj.value = subList.childNodes[j].getElementsByTagName("input")[0].value;
 		    } else if (type == "device") {
 			eventObj.comp = selects[3].options[selects[3].selectedIndex].value;
-			
+
 			eventObj.param = {};
 			eventObj.param.type = "device";
 			eventObj.param.uuid = selects[1].options[selects[1].selectedIndex].value;
@@ -740,7 +751,7 @@ function eventConfig() {
 	};
 
 	commandSelect.onchange();
-    };	
+    };
 }
 
 /**

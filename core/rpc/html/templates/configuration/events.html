@@ -9,10 +9,12 @@
                     </tr>
                 </thead>
                 <tbody data-bind="foreach: { data: events, afterRender: makeEditable }">
+                	<!-- ko if: uuid != '0' -->
                     <tr>
                         <td class="edit_event" data-bind="attr: {'data-uuid': uuid}, text: name"></td>
                         <td ><div class="cmd-btn pretty medium default btn btn-full grid-command" data-bind="attr: {'data-uuid': uuid}, click: $parent.deleteEvent">delete</div></td>
                     </tr>
+                    <!-- /ko -->
                 </tbody>
         </table>
    </div>
