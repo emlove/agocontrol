@@ -47,30 +47,59 @@ void eventHandler(std::string subject, qpid::types::Variant::Map content) {
 				qpid::types::Variant::Map element = crit->second.asMap();
 				try {
 					cout << "LVAL: " << element["lval"] << endl;
+					qpid::types::Variant::Map lvalmap;
+					qpid::types::Variant lval;
+					if (!element["lval"].isVoid()) {
+						if (element["lval"].getType()==qpid::types::VAR_STRING) {
+							// legacy eventmap entry
+							lvalmap["type"] = "event";
+							lvalmap["parameter"] = element["lval"];
+						} else {
+							lvalmap = element["lval"].asMap();
+						}
+					}
+					if (lvalmap["type"] == "variable") {
+						qpid::types::Variant::Map variables;
+						std::string name = lvalmap["name"];
+						if (!inventory["variables"].isVoid()) variables = inventory["variables"].asMap();
+						lval = variables[name];	
+
+					} else if (lvalmap["type"] == "device") {
+						std::string uuid = lvalmap["uuid"].asString();
+						qpid::types::Variant::Map devices = inventory["inventory"].asMap();
+						qpid::types::Variant::Map device = devices[uuid].asMap();
+						if (lvalmap["parameter"] == "state") {
+							lval = device["state"];
+						} else {
+							qpid::types::Variant::Map values = device["values"].asMap();
+							std::string value = lvalmap["parameter"].asString();
+							lval = values[value];
+						}
+					} else { // event
+						lval = content[lvalmap["parameter"].asString()];
+					}
+					qpid::types::Variant rval = element["rval"];
+					cout << "lval: " << lval << " (" << getTypeName(lval.getType()) << ")" << endl;
+					cout << "rval: " << rval << " (" << getTypeName(rval.getType()) << ")" << endl;
+
 					if (element["comp"] == "eq") {
-						qpid::types::Variant lval = content[element["lval"].asString()];
-						qpid::types::Variant rval = element["rval"];
-						cout << "lval: " << lval << " (" << getTypeName(lval.getType()) << ")" << endl;
-						cout << "rval: " << rval << " (" << getTypeName(rval.getType()) << ")" << endl;
 						if (lval.getType()==qpid::types::VAR_STRING || rval.getType()==qpid::types::VAR_STRING) { // compare as string
 							criteria[crit->first] = lval.asString() == rval.asString(); 
 						} else {
 							criteria[crit->first] = lval.isEqualTo(rval);
 						}
-						cout << lval << " == " << rval << " : " <<  criteria[crit->first] << endl;
 					}
 					if (element["comp"] == "lt") {
-						float lval = event[element["lval"].asString()];
-						float rval = element["rval"];
-						criteria[crit->first] = lval < rval;
-						cout << lval << " < " << rval << " : " << criteria[crit->first] << endl;
+						float flval = lval;
+						float frval = rval;
+						criteria[crit->first] = flval < frval;
 					}
 					if (element["comp"] == "gt") {
-						float lval = event[element["lval"].asString()];
-						float rval = element["rval"];
-						criteria[crit->first] = lval > rval;
-						cout << lval << " > " << rval << " : " << criteria[crit->first] << endl;
+						float flval = lval;
+						float frval = rval;
+						criteria[crit->first] = flval > frval;
 					}
+					cout << lval << " == " << rval << " : " <<  criteria[crit->first] << endl;
 				} catch ( const std::exception& error) {
 					stringstream errorstring;
 					errorstring << error.what();
