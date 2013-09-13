@@ -79,8 +79,8 @@ function eventConfig() {
 	    document.getElementById("eventBuilder")._set = true;
 	}
 
-	self.events.filter(function(ev) {
-	    return ev.uuid != '0';
+	self.events.remove(function(ev) {
+	    return ev.uuid == '0';
 	});
 
     };
