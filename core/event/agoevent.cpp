@@ -73,7 +73,7 @@ qpid::types::Variant operator<(qpid::types::Variant a, qpid::types::Variant b) {
 }
 
 qpid::types::Variant operator>(qpid::types::Variant a, qpid::types::Variant b) {
-	return variantToDouble(a) < variantToDouble(b);
+	return variantToDouble(a) > variantToDouble(b);
 }
 
 // example event:eb68c4a5-364c-4fb8-9b13-7ea3a784081f:{action:{command:on, uuid:25090479-566d-4cef-877a-3e1927ed4af0}, criteria:{0:{comp:eq, lval:hour, rval:7}, 1:{comp:eq, lval:minute, rval:1}}, event:event.environment.timechanged, nesting:(criteria["0"] and criteria["1"])}
@@ -119,8 +119,9 @@ void eventHandler(std::string subject, qpid::types::Variant::Map content) {
 							lval = device["state"];
 						} else {
 							qpid::types::Variant::Map values = device["values"].asMap();
-							std::string value = lvalmap["parameter"].asString();
-							lval = values[value];
+							std::string parameter = lvalmap["parameter"].asString();
+							qpid::types::Variant::Map value = values[parameter].asMap();
+							lval = value["level"];
 						}
 					} else { // event
 						lval = content[lvalmap["parameter"].asString()];
@@ -142,7 +143,7 @@ void eventHandler(std::string subject, qpid::types::Variant::Map content) {
 					} else {
 						criteria[crit->first] = false;
 					}
-					cout << lval << " == " << rval << " : " <<  criteria[crit->first] << endl;
+					cout << lval << " " << element["comp"] << " " << rval << " : " <<  criteria[crit->first] << endl;
 				} catch ( const std::exception& error) {
 					stringstream errorstring;
 					errorstring << error.what();
