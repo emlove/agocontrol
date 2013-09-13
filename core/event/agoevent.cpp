@@ -42,7 +42,7 @@ void eventHandler(std::string subject, qpid::types::Variant::Map content) {
 			cout << "found matching event: " << event << endl;
 			qpid::types::Variant::Map criteria; // this holds the criteria evaluation results for each criteria
 			std::string nesting = event["nesting"].asString();
-			for (qpid::types::Variant::Map::const_iterator crit = event["criteria"].asMap().begin(); crit!= event["criteria"].asMap().end(); crit++) {
+			if (!event["criteria"].isVoid()) for (qpid::types::Variant::Map::const_iterator crit = event["criteria"].asMap().begin(); crit!= event["criteria"].asMap().end(); crit++) {
 				cout << "criteria[" << crit->first << "] - " << crit->second << endl;
 				qpid::types::Variant::Map element = crit->second.asMap();
 				try {
