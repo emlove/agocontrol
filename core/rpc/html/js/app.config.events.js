@@ -384,17 +384,27 @@ function eventConfig() {
 		    var type = selects[0].options[selects[0].selectedIndex].value;
 		    if (type == "event") {
 			eventObj.comp = selects[2].options[selects[2].selectedIndex].value;
-			eventObj.param = "event." + selects[1].options[selects[1].selectedIndex].value;
+			
+			eventObj.param = {};
+			eventObj.param.type = "event";
+			eventObj.param.parameter = selects[1].options[selects[1].selectedIndex].value;
+			
 			eventObj.value = subList.childNodes[j].getElementsByTagName("input")[0].value;
 		    } else if (type == "device") {
 			eventObj.comp = selects[3].options[selects[3].selectedIndex].value;
-			eventObj.param = "device." + selects[1].options[selects[1].selectedIndex].value +
-					  "." + selects[2].options[selects[2].selectedIndex].value;
+			
+			eventObj.param = {};
+			eventObj.param.type = "device";
+			eventObj.param.uuid = selects[1].options[selects[1].selectedIndex].value;
+			eventObj.param.parameter = selects[2].options[selects[2].selectedIndex].value;
+
 			eventObj.value = subList.childNodes[j].getElementsByTagName("input")[0].value;
 		    }
 		    if (type == "variable") {
 			eventObj.comp = selects[2].options[selects[2].selectedIndex].value;
-			eventObj.param = "variable." + selects[1].options[selects[1].selectedIndex].value;
+			eventObj.param = {};
+			eventObj.param.type = "variable";
+			eventObj.param.name = selects[1].options[selects[1].selectedIndex].value;
 			eventObj.value = subList.childNodes[j].getElementsByTagName("input")[0].value;
 		    }
 		}
@@ -730,7 +740,7 @@ function eventConfig() {
 	};
 
 	commandSelect.onchange();
-    };
+    };	
 }
 
 /**
