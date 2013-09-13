@@ -58,6 +58,7 @@ void eventHandler(std::string subject, qpid::types::Variant::Map content) {
 							lvalmap = element["lval"].asMap();
 						}
 					}
+					// determine lval depending on type
 					if (lvalmap["type"] == "variable") {
 						qpid::types::Variant::Map variables;
 						std::string name = lvalmap["name"];
@@ -88,16 +89,16 @@ void eventHandler(std::string subject, qpid::types::Variant::Map content) {
 						} else {
 							criteria[crit->first] = lval.isEqualTo(rval);
 						}
-					}
-					if (element["comp"] == "lt") {
+					} else if (element["comp"] == "lt") {
 						float flval = lval;
 						float frval = rval;
 						criteria[crit->first] = flval < frval;
-					}
-					if (element["comp"] == "gt") {
+					} else if (element["comp"] == "gt") {
 						float flval = lval;
 						float frval = rval;
 						criteria[crit->first] = flval > frval;
+					} else {
+						criteria[crit->first] = false;
 					}
 					cout << lval << " == " << rval << " : " <<  criteria[crit->first] << endl;
 				} catch ( const std::exception& error) {
@@ -106,9 +107,14 @@ void eventHandler(std::string subject, qpid::types::Variant::Map content) {
 					cout << "ERROR, exception occured" << errorstring.str() << endl;
 					criteria[crit->first] = false;
 				}
+				// this is for converted legacy scenario maps
 				stringstream token; token << "criteria[\"" << crit->first << "\"]";
 				stringstream boolval; boolval << criteria[crit->first];
 				replaceString(nesting, token.str(), boolval.str()); 
+				// new javascript editor sends criteria[x] not criteria["x"]
+				stringstream token2; token2 << "criteria[" << crit->first << "]";
+				stringstream boolval2; boolval2 << criteria[crit->first];
+				replaceString(nesting, token2.str(), boolval2.str()); 
 			}
 			replaceString(nesting, "and", "&");
 			replaceString(nesting, "or", "|");
@@ -180,15 +186,20 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 
 int main(int argc, char **argv) {
 	agoConnection = new AgoConnection("event");	
+	cout << "parsing eventmap file" << endl;
+	eventmap = jsonFileToVariantMap(EVENTMAPFILE);
+	cout << "eventmap: " << eventmap << endl;
+	cout << "adding controller" << endl;
 	agoConnection->addDevice("eventcontroller", "eventcontroller");
+	cout << "setting handlers" << endl;
 	agoConnection->addHandler(commandHandler);
 	agoConnection->addEventHandler(eventHandler);
 
-	eventmap = jsonFileToVariantMap(EVENTMAPFILE);
 	// cout  << eventmap;
 	for (qpid::types::Variant::Map::const_iterator it = eventmap.begin(); it!=eventmap.end(); it++) {
 		cout << "adding event:" << it->first << ":" << it->second << endl;	
 		agoConnection->addDevice(it->first.c_str(), "event", true);
 	}
+	cout << "run()" << endl;
 	agoConnection->run();
 }
