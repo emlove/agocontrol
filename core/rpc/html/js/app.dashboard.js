@@ -6,11 +6,18 @@ function dashBoard() {
     var self = this;
     this.devices = ko.observableArray([]);
     this.hasNavigation = ko.observable(false);
+    this.deviceList = ko.computed(function() {
+	var list = self.devices();
+	list = list.filter(function(dev) {
+	    return dev.devicetype != "event";
+	});
+	return list;
+    });
 
     this.page = ko.observable(1);
     this.pages = ko.computed(function() {
 	var pages = [];
-	var max = Math.ceil(self.devices().length / 9);
+	var max = Math.ceil(self.deviceList().length / 9);
 	for ( var i = 1; i <= max; i++) {
 	    pages.push({
 		idx : i
@@ -20,7 +27,7 @@ function dashBoard() {
     });
 
     this.firstRow = ko.computed(function() {
-	var currentList = self.devices().chunk(9);
+	var currentList = self.deviceList().chunk(9);
 	if (currentList.length < self.page()) {
 	    return [];
 	}
@@ -32,7 +39,7 @@ function dashBoard() {
     });
 
     this.secondRow = ko.computed(function() {
-	var currentList = self.devices().chunk(9);
+	var currentList = self.deviceList().chunk(9);
 	if (currentList.length < self.page()) {
 	    return [];
 	}
@@ -44,7 +51,7 @@ function dashBoard() {
     });
 
     this.thirdRow = ko.computed(function() {
-	var currentList = self.devices().chunk(9);
+	var currentList = self.deviceList().chunk(9);
 	if (currentList.length < self.page()) {
 	    return [];
 	}
