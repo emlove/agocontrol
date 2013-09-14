@@ -105,7 +105,7 @@ class readX10(threading.Thread):
 
                                 # Use these values to change device states in Ago Control
                                 print "here they are: " + send_x10_address + send_x10_command;
-                                if (send_x10_command == 0) or (send_x10_command == 255):
+                                if (send_x10_command == "0") or (send_x10_command == "255"):
                                         client.emitEvent(send_x10_address , "event.device.statechanged", send_x10_command , "");
 
 background = readX10()
