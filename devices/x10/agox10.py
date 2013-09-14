@@ -68,10 +68,13 @@ class readX10(threading.Thread):
     def run(self):
                 loop=1
                 while (loop == 1):
+			x10lock.acquire()
                         data=dev.read()
+			x10lock.release()
                         # Check to see if the CM11A received a command
                         if (data == 90):
                                 # Send 0xc3 to CM11A to tell it to send the data
+				x10lock.acquire()
                                 dev.write(0xc3)
 
                                 # Read the data.  This should be modified as this code only reads
@@ -91,6 +94,7 @@ class readX10(threading.Thread):
                                 # This is another value.  For now this is the function (ie ON)
                                 fourth=dev.read()
                                 fourth = "%x"%(fourth)
+				x10lock.release()
 
                                 # Print values (debug)
                                 print x10_house[third [:1]] + x10_device[third [1:]] + " " + x10_funct[fourth [1:]];
