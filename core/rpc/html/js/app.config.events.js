@@ -559,6 +559,8 @@ function eventConfig() {
     this.renderEvent = function(selectType, path, event, container, defaultValues) {
 	container.innerHTML = "";
 
+	var params = null;
+
 	var baseType = document.createElement("select");
 	baseType.options[0] = new Option("event", "event");
 	baseType.options[1] = new Option("device", "device");
@@ -579,7 +581,7 @@ function eventConfig() {
 	};
 
 	if (selectType == "event") {
-	    var params = document.createElement("select");
+	    params = document.createElement("select");
 	    params.name = path + ".param";
 	    if (event.parameters !== undefined) {
 		for ( var i = 0; i < event.parameters.length; i++) {
@@ -599,7 +601,7 @@ function eventConfig() {
 		deviceSelect.options[i] = new Option(self.deviceList[i].name, self.deviceList[i].uuid);
 	    }
 
-	    var params = document.createElement("select");
+	    params = document.createElement("select");
 	    params.name = path + ".param";
 
 	    var _buildParamList = function(dev) {
@@ -631,7 +633,7 @@ function eventConfig() {
 	    container.appendChild(deviceSelect);
 	    container.appendChild(params);
 	} else if (selectType == "variable") {
-	    var params = document.createElement("select");
+	    params = document.createElement("select");
 	    params.name = path + ".param";
 	    var i = 0;
 	    for ( var k in variables) {
@@ -661,6 +663,13 @@ function eventConfig() {
 	inputField.name = path + ".value";
 	if (defaultValues) {
 	    inputField.value = defaultValues.value;
+	}
+
+	if (selectType == "variable") {
+	    inputField.setAttribute("placeholder", variables[params.options[0].value]);
+	    params.onchange = function() {
+		inputField.setAttribute("placeholder", variables[params.options[params.selectedIndex].value]);
+	    };
 	}
 
 	container.appendChild(comp);
