@@ -460,17 +460,9 @@ void OnNotification
 				// basic_set or hail message.
 				ValueID id = _notification->GetValueID();
 				string label = Manager::Get()->GetValueLabel(id);
-				if (label == "") label= "Basic";
-				stringstream tempstream;
-				tempstream << (int) _notification->GetNodeId();
-				tempstream << "/";
-				tempstream << (int) id.GetInstance();
-				tempstream << "-";
-				tempstream << label;
 				stringstream level;
 				level << (int) _notification->GetByte();
 				string eventtype = "event.device.statechanged";
-				if (debug) printf("Sending %s event from child %s\n",eventtype.c_str(), tempstream.str().c_str());
 				ZWaveNode *device = devices.findValue(id);
 				if (device != NULL) {
 					if (debug) printf("Sending %s event from child %s\n",eventtype.c_str(), device->getId().c_str());
