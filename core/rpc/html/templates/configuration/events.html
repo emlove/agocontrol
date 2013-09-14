@@ -12,7 +12,10 @@
                 	<!-- ko if: uuid != '0' -->
                     <tr>
                         <td class="edit_event" data-bind="attr: {'data-uuid': uuid}, text: name"></td>
-                        <td ><div class="cmd-btn pretty medium default btn btn-full grid-command" data-bind="attr: {'data-uuid': uuid}, click: $parent.deleteEvent">delete</div></td>
+                        <td style="text-align: center">
+                        	<div style="width: 48%;" class="cmd-btn pretty medium default btn" data-bind="attr: {'data-uuid': uuid}, click: $parent.editEvent">edit</div>
+                        	<div style="width: 48%;" class="cmd-btn pretty medium default btn" data-bind="attr: {'data-uuid': uuid}, click: $parent.deleteEvent">delete</div>
+                        </td>
                     </tr>
                     <!-- /ko -->
                 </tbody>
@@ -23,7 +26,7 @@
 	<div class="row">
 		<h3>Create Event</h3>
 		<h4>Criteria</h4>
-		<div id="eventBuilder"></div>
+		<div id="eventBuilder" class="eventBuilder"></div>
 		<br />
 		<h4>Action</h4>
 		<div id="actionBuilder"></div>
@@ -41,4 +44,24 @@
 			</div>
 		</form>
 	</div>
+</div>
+
+<div class="row" id="editEventDialog" style="display: none">
+	<h3>Edit Event</h3>
+	<h4>Criteria</h4>
+	<div id="eventBuilderEdit"></div>
+	<br />
+	<h4>Action</h4>
+	<div id="actionBuilderEdit"></div>
+	<br />
+	<form action="" method="post">
+		<div class="row">
+			<ul class="ten columns">
+				<li class="append field">
+					<div class="medium primary btn">
+						<a href="#" data-bind="click: doEditEvent">Save</a>
+					</div></li>
+			</ul>
+		</div>
+	</form>
 </div>

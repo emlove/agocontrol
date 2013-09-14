@@ -2060,14 +2060,14 @@ ago control Styles
     width: 15px;
 }
 
-#eventBuilder dd dl {
+.eventBuilder dd dl {
     margin-left: 20px;
 }
-#eventBuilder dl:before {
+.eventBuilder dl:before {
     content: "{";
     font-weight: bold;
 }
-#eventBuilder dl:after {
+.eventBuilder dl:after {
     content: "}";
     font-weight: bold;
 }

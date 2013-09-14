@@ -195,7 +195,7 @@ function handleEvent(response) {
 	}
 
     }
-    getEvent();
+    //getEvent();
 }
 
 function getEvent() {

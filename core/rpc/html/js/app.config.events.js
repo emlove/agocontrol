@@ -1,5 +1,3 @@
-/* Event generation code */
-
 /**
  * Model class
  * 
@@ -11,6 +9,7 @@ function eventConfig() {
     this.events = ko.observableArray([]);
 
     var self = this;
+    this.openEvent = null;
     this.current_id = 0;
     this.map = {};
     this.eventMap = {};
@@ -37,23 +36,29 @@ function eventConfig() {
 	self.deviceList = deviceMap;
     });
 
+    /**
+     * Initalizes the empty event creation builder
+     */
     this.initBuilder = function() {
 	self.eventMap = schema.events;
 	self.deviceList = deviceMap;
 
 	// Clean
-	document.getElementById("eventBuilder").innerHTML = "";
+	document.getElementsByClassName("eventBuilder")[0].innerHTML = "";
 	document.getElementById("actionBuilder").innerHTML = "";
 
 	// Build new
-	var eventSelector = self.getEventSelector(self.eventMap, document.getElementById("eventBuilder"));
+	var eventSelector = self.getEventSelector(self.eventMap, document.getElementsByClassName("eventBuilder")[0]);
 	eventSelector.id = "eventSelector";
-	document.getElementById("eventBuilder").appendChild(eventSelector);
-	self.renderMainConnector("and", document.getElementById("eventBuilder"));
-	self.addNesting(document.getElementById("eventBuilder"), "and");
+	document.getElementsByClassName("eventBuilder")[0].appendChild(eventSelector);
+	self.renderMainConnector("and", document.getElementsByClassName("eventBuilder")[0]);
+	self.addNesting(document.getElementsByClassName("eventBuilder")[0], "and");
 	self.createActionBuilder(document.getElementById("actionBuilder"));
     };
 
+    /**
+     * Callback for editable table
+     */
     this.makeEditable = function() {
 	var eTable = $("#configTable").dataTable();
 	eTable.fnDestroy();
@@ -74,9 +79,9 @@ function eventConfig() {
 	});
 
 	// Initial build
-	if (!document.getElementById("eventBuilder")._set) {
+	if (!document.getElementsByClassName("eventBuilder")[0]._set) {
 	    self.initBuilder();
-	    document.getElementById("eventBuilder")._set = true;
+	    document.getElementsByClassName("eventBuilder")[0]._set = true;
 	}
 
 	self.events.remove(function(ev) {
@@ -85,31 +90,127 @@ function eventConfig() {
 
     };
 
-    this.deleteEvent = function(item, event) {
-	$('#configTable').block({
-	    message : '<div>Please wait ...</div>',
-	    css : {
-		border : '3px solid #a00'
+    /* Used for parsing event into JSON structure */
+    this.getCriteriaIdx = function(str) {
+	var regex = /.+([0-9]).+/g;
+	var matches = regex.exec(str);
+	return matches[1];
+    };
+
+    /* Used for parsing event into JSON structure */
+    this.parseGroup = function(str, criteria) {
+	var sub = [];
+	var type = "and";
+	str = str.replace(/(^\()|(\)$)/g, "");
+	var data = str.split(/(and|or)/g);
+
+	for ( var i = 0; i < data.length; i++) {
+	    var tmp = data[i];
+	    if (tmp == "and" || tmp == "or") {
+		type = tmp;
+		continue;
 	    }
-	});
+	    if ($.trim(tmp)[0] == "(") {
+		var next = "";
+		for ( var j = i; j < data.length; j++) {
+		    next += data[j];
+		}
+		sub.push(self.parseGroup($.trim(next).replace(/(^\()|(\)$)/g, ""), criteria));
+		break;
+	    }
+	    sub.push(criteria[self.getCriteriaIdx(tmp)]);
+	}
+
+	return {
+	    "sub" : sub,
+	    "type" : type
+	};
+    };
+
+    /* Used for parsing event into JSON structure */
+    this.mapToJSON = function(input) {
+	var criteria = {};
+	for ( var idx in input.criteria) {
+	    criteria[idx] = {};
+	    criteria[idx].path = input.event;
+	    criteria[idx].comp = input.criteria[idx].comp;
+	    criteria[idx].param = input.criteria[idx].lval;
+	    criteria[idx].value = input.criteria[idx].rval;
+	}
+
+	var res = {};
+	res.conn = "and";
+	if (input.nesting == "True") {
+	    res.elements = [];
+	} else {
+	    res.elements = [ self.parseGroup(input.nesting, criteria) ];
+	}
+	res.path = input.event;
+
+	return res;
+    };
+
+    /**
+     * Opens edit event dialog
+     */
+    this.editEvent = function(item) {
 	var content = {};
+	content.command = "getevent";
 	content.event = item.uuid;
 	content.uuid = eventController;
-	content.command = 'delevent';
 	sendCommand(content, function(res) {
-	    if (res.result && res.result.result == 0) {
-		self.events.remove(function(e) {
-		    return e.uuid == item.uuid;
-		});
-		$("#configTable").dataTable().fnDeleteRow(event.target.parentNode.parentNode);
-		$("#configTable").dataTable().fnDraw();
-	    } else {
-		alert("Error while deleting event!");
-	    }
-	    $('#configTable').unblock();
+	    // Swap active selector
+	    document.getElementById("eventBuilder").className = "";
+	    document.getElementById("eventBuilderEdit").className = "eventBuilder";
+
+	    // Disable main one to avoid id conflicts
+	    document.getElementById("eventBuilder").innerHTML = "";
+	    document.getElementById("actionBuilder").innerHTML = "";
+
+	    // Create prepopulated builders
+	    self.buildListFromJSON(self.mapToJSON(res.result.eventmap), document.getElementById("eventBuilderEdit"));
+	    self.createActionBuilder(document.getElementById("actionBuilderEdit"), res.result.eventmap.action);
+
+	    // Save the id (needed for the save command)
+	    self.openEvent = item.uuid;
+
+	    // Open the dialog
+	    $("#editEventDialog").dialog({
+		modal : true,
+		width : 900,
+		height : 600,
+		close : function() {
+		    // Done, restore stuff
+		    document.getElementById("eventBuilderEdit").className = "";
+		    document.getElementById("eventBuilder").className = "eventBuilder";
+		    self.initBuilder();
+		    self.openEvent = null;
+		}
+	    });
+	    ;
 	});
     };
 
+    /**
+     * Sends the event edit command
+     */
+    this.doEditEvent = function() {
+	this.createEventMap(self.createJSON());
+	var content = {};
+	content.uuid = eventController;
+	content.command = "setevent";
+	content.eventmap = self.map;
+	content.event = self.openEvent;
+	sendCommand(content, function(res) {
+	    if (res.result && res.result.event) {
+		$("#editEventDialog").dialog("close");
+	    }
+	});
+    };
+
+    /**
+     * Sends the create event commands
+     */
     this.createEvent = function() {
 	if ($("#eventName").val() == "") {
 	    alert("Please supply an event name!");
@@ -142,6 +243,34 @@ function eventConfig() {
 	    } else {
 		alert("ERROR");
 	    }
+	});
+    };
+
+    /**
+     * Sends the delete event command
+     */
+    this.deleteEvent = function(item, event) {
+	$('#configTable').block({
+	    message : '<div>Please wait ...</div>',
+	    css : {
+		border : '3px solid #a00'
+	    }
+	});
+	var content = {};
+	content.event = item.uuid;
+	content.uuid = eventController;
+	content.command = 'delevent';
+	sendCommand(content, function(res) {
+	    if (res.result && res.result.result == 0) {
+		self.events.remove(function(e) {
+		    return e.uuid == item.uuid;
+		});
+		$("#configTable").dataTable().fnDeleteRow(event.target.parentNode.parentNode);
+		$("#configTable").dataTable().fnDraw();
+	    } else {
+		alert("Error while deleting event!");
+	    }
+	    $('#configTable').unblock();
 	});
     };
 
@@ -275,7 +404,7 @@ function eventConfig() {
 	button.appendChild(document.createTextNode("delete"));
 	button._list = dl;
 	button.onclick = function() {
-	    if (this._list.parentNode == document.getElementById("eventBuilder") && document.getElementsByClassName("operator").length == 1) {
+	    if (this._list.parentNode == document.getElementsByClassName("eventBuilder")[0] && document.getElementsByClassName("operator").length == 1) {
 		alert("Last element cannot be deleted!");
 		return;
 	    }
@@ -288,7 +417,7 @@ function eventConfig() {
 	button.appendChild(document.createTextNode("<"));
 	button._list = dl;
 	button.onclick = function() {
-	    if (this._list.parentNode == document.getElementById("eventBuilder")) {
+	    if (this._list.parentNode == document.getElementsByClassName("eventBuilder")[0]) {
 		alert("This is already a top level element!");
 		return;
 	    }
@@ -354,7 +483,7 @@ function eventConfig() {
 	dd.appendChild(span);
 
 	if (eventObj) {
-	    self.renderEvent("event", eventObj.path, self.eventMap[eventObj.path], span, eventObj);
+	    self.renderEvent(eventObj.param.type, eventObj.path, self.eventMap[eventObj.path], span, eventObj);
 	} else {
 	    var selector = document.getElementById("eventSelector");
 	    self.renderEvent("event", selector.options[selector.selectedIndex].value, self.eventMap[selector.options[selector.selectedIndex].value], span);
@@ -440,7 +569,7 @@ function eventConfig() {
 	var ops = document.getElementsByClassName("operator");
 	var res = [];
 	for ( var i = 0; i < ops.length; i++) {
-	    if (ops[i].parentNode != document.getElementById("eventBuilder")) {
+	    if (ops[i].parentNode != document.getElementsByClassName("eventBuilder")[0]) {
 		continue;
 	    }
 	    res.push(self.operationToJSON(ops[i]));
@@ -474,19 +603,17 @@ function eventConfig() {
     /**
      * (re) Builds the list from JSON
      */
-    this.buildListFromJSON = function(str, container) {
-	var input = JSON.parse(str);
-
-	document.getElementById("eventBuilder").innerHTML = "";
-	var eventSelector = getEventSelector(self.eventMap, document.getElementById("eventBuilder"));
+    this.buildListFromJSON = function(input, container) {
+	document.getElementsByClassName("eventBuilder")[0].innerHTML = "";
+	var eventSelector = self.getEventSelector(self.eventMap, document.getElementsByClassName("eventBuilder")[0]);
 	eventSelector.id = "eventSelector";
-	document.getElementById("eventBuilder").appendChild(eventSelector);
-	self.renderMainConnector(input.conn, document.getElementById("eventBuilder"));
+	document.getElementsByClassName("eventBuilder")[0].appendChild(eventSelector);
+	self.renderMainConnector(input.conn, document.getElementsByClassName("eventBuilder")[0]);
 
 	var inputList = input.elements;
 	for ( var i = 0; i < inputList.length; i++) {
 	    var op = inputList[i];
-	    self.createOperation(op.sub, document.getElementById("eventBuilder"), op.type);
+	    self.createOperation(op.sub, document.getElementsByClassName("eventBuilder")[0], op.type);
 	}
 
 	var eventSelector = document.getElementById("eventSelector");
@@ -586,14 +713,13 @@ function eventConfig() {
 	    if (event.parameters !== undefined) {
 		for ( var i = 0; i < event.parameters.length; i++) {
 		    var opt = null;
-		    console.log(event.parameters[i]);
 		    if (event.parameters[i] == "uuid") {
 			opt = new Option("device", event.parameters[i]);
 		    } else {
 			opt = new Option(event.parameters[i], event.parameters[i]);
 		    }
 		    params.options[i] = opt;
-		    if (defaultValues && event.parameters[i] == defaultValues.param) {
+		    if (defaultValues && event.parameters[i] == defaultValues.param.parameter) {
 			params.options[i].selected = true;
 		    }
 		}
@@ -688,6 +814,9 @@ function eventConfig() {
 	    deviceSelect.name = path + ".device";
 	    for ( var i = 0; i < self.deviceList.length; i++) {
 		deviceSelect.options[i] = new Option(self.deviceList[i].name, self.deviceList[i].uuid);
+		if (defaultValues && defaultValues.param.parameter == "uuid" && self.deviceList[i].uuid == defaultValues.value) {
+		    deviceSelect.selectedIndex = i;
+		}
 	    }
 	    deviceSelect.onchange = function() {
 		inputField.value = deviceSelect.options[deviceSelect.selectedIndex].value;
@@ -704,6 +833,9 @@ function eventConfig() {
 		    inputField.value = "";
 		}
 	    };
+	    if (defaultValues && defaultValues.param.parameter == "uuid") {
+		params.onchange();
+	    }
 	}
 
     };
@@ -712,6 +844,7 @@ function eventConfig() {
      * Creates the action builder
      */
     this.createActionBuilder = function(container, defaults) {
+	container.innerHTML = "";
 	var deviceListSelect = document.createElement("select");
 	deviceListSelect.id = "deviceListSelect";
 	var commandSelect = document.createElement("select");
@@ -723,8 +856,8 @@ function eventConfig() {
 	    if (schema.devicetypes[dev.devicetype] === undefined || schema.devicetypes[dev.devicetype].commands.length == 0) {
 		continue;
 	    }
-	    deviceListSelect.options[j] = new Option(dev["name"] == "" ? dev["id"] : dev["name"], i);
-	    if (defaults && defaults.uuid == dev["id"]) {
+	    deviceListSelect.options[j] = new Option(dev["name"] == "" ? dev["uuid"] : dev["name"], i);
+	    if (defaults && defaults.uuid == dev["uuid"]) {
 		deviceListSelect.options[j].selected = true;
 	    }
 	    j++;
