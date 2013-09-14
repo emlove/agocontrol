@@ -69,7 +69,7 @@ void get_sysinfo() {
 	error = sysinfo(&s_info);
 	if(error != 0) {
 		printf("code error = %d\n", error);
-	} else {
+	} else { /*
 		systeminfo["uptime"] = s_info.uptime;
 		systeminfo["loadavg1"] = s_info.loads[0];
 		systeminfo["loadavg5"] = s_info.loads[1];
@@ -77,6 +77,7 @@ void get_sysinfo() {
 		systeminfo["totalram"] = s_info.totalram;
 		systeminfo["freeram"] = s_info.freeram;
 		systeminfo["procs"] = s_info.procs;
+		*/
 	}
 }
 
