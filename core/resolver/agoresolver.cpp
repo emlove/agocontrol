@@ -22,6 +22,8 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <errno.h>
+#include <stdlib.h>
+#include <sys/sysinfo.h>
 
 #include <sstream>
 #include <map>
@@ -56,10 +58,27 @@ AgoConnection *agoConnection;
 
 Variant::Map inventory; // used to hold device registrations
 Variant::Map schema;  
-Variant::Map system; // holds system information
+Variant::Map systeminfo; // holds system information
 Variant::Map variables; // holds global variables
 
 Inventory *inv;
+
+void get_sysinfo() {
+	struct sysinfo s_info;
+	int error;
+	error = sysinfo(&s_info);
+	if(error != 0) {
+		printf("code error = %d\n", error);
+	} else {
+		systeminfo["uptime"] = s_info.uptime;
+		systeminfo["loadavg1"] = s_info.loads[0];
+		systeminfo["loadavg5"] = s_info.loads[1];
+		systeminfo["loadavg15"] = s_info.loads[2];
+		systeminfo["totalram"] = s_info.totalram;
+		systeminfo["freeram"] = s_info.freeram;
+		systeminfo["procs"] = s_info.procs;
+	}
+}
 
 bool emitNameEvent(const char *uuid, const char *eventType, const char *name) {
         Variant::Map content;
@@ -217,7 +236,8 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 			reply["schema"] = schema;	
 			reply["rooms"] = inv->getrooms();
 			reply["floorplans"] = inv->getfloorplans();
-			reply["system"] = system;
+			get_sysinfo();
+			reply["system"] = systeminfo;
 			reply["variables"] = variables;
 			reply["returncode"] = 0;
 		}
@@ -281,8 +301,8 @@ int main(int argc, char **argv) {
 
 	schemafile=getConfigOption("system", "schema", "/etc/opt/agocontrol/schema.yaml");
 
-	system["uuid"] = getConfigOption("system", "uuid", "00000000-0000-0000-000000000000");
-	system["version"] = AGOCONTROL_VERSION;
+	systeminfo["uuid"] = getConfigOption("system", "uuid", "00000000-0000-0000-000000000000");
+	systeminfo["version"] = AGOCONTROL_VERSION;
 
 //	clog << agocontrol::kLogDebug << "parsing schema file" << std::endl;
 	schema = parseSchema(schemafile.c_str());
