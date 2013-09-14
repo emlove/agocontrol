@@ -585,7 +585,13 @@ function eventConfig() {
 	    params.name = path + ".param";
 	    if (event.parameters !== undefined) {
 		for ( var i = 0; i < event.parameters.length; i++) {
-		    var opt = new Option(event.parameters[i], event.parameters[i]);
+		    var opt = null;
+		    console.log(event.parameters[i]);
+		    if (event.parameters[i] == "uuid") {
+			opt = new Option("device", event.parameters[i]);
+		    } else {
+			opt = new Option(event.parameters[i], event.parameters[i]);
+		    }
 		    params.options[i] = opt;
 		    if (defaultValues && event.parameters[i] == defaultValues.param) {
 			params.options[i].selected = true;
@@ -665,6 +671,7 @@ function eventConfig() {
 	    inputField.value = defaultValues.value;
 	}
 
+	/* Show variable value placeholder */
 	if (selectType == "variable") {
 	    inputField.setAttribute("placeholder", variables[params.options[0].value]);
 	    params.onchange = function() {
@@ -674,6 +681,30 @@ function eventConfig() {
 
 	container.appendChild(comp);
 	container.appendChild(inputField);
+
+	/* Add a device selector when someone selects the uuid field of event */
+	if (selectType == "event") {
+	    var deviceSelect = document.createElement("select");
+	    deviceSelect.name = path + ".device";
+	    for ( var i = 0; i < self.deviceList.length; i++) {
+		deviceSelect.options[i] = new Option(self.deviceList[i].name, self.deviceList[i].uuid);
+	    }
+	    deviceSelect.onchange = function() {
+		inputField.value = deviceSelect.options[deviceSelect.selectedIndex].value;
+	    };
+	    deviceSelect.style.display = "none";
+	    container.appendChild(deviceSelect);
+	    params.onchange = function() {
+		if (params.options[params.selectedIndex].value == "uuid") {
+		    deviceSelect.style.display = "";
+		    inputField.style.display = "none";
+		} else {
+		    deviceSelect.style.display = "none";
+		    inputField.style.display = "";
+		    inputField.value = "";
+		}
+	    };
+	}
 
     };
 
