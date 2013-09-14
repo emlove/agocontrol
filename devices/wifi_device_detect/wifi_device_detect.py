@@ -26,7 +26,7 @@ client.addDevice("iphone", "binarysensor")
 
 def checkForDevice(deviceaddress):
         # See if the device has connected to the network
-        systemCommand = "arp-scan -l | nawk '{print $2}' | grep -F -x '" + deviceaddress + "'> /dev/null"
+        systemCommand = "arp-scan -l | nawk '{print $2}' | grep -F -x '" + deviceaddress + "'"
         check_status = os.system(systemCommand) # Will return 0 if the line is found 256 if not found
 	if check_status == 0:
 		success = True
