@@ -49,7 +49,7 @@ var eventController = null;
 var dataLoggerController = null;
 var scenarioController = null;
 
-var supported_devices = [ "switch", "dimmer", "binarysensor", "dimmerrgb", "multilevelsensor", , "scenario", "drapes", "brightnesssensor", "powermeter", "placeholder" ];
+var supported_devices = [ "switch", "dimmer", "binarysensor", "dimmerrgb", "multilevelsensor", , "scenario", "drapes", "brightnesssensor", "powermeter", "energysensor", "humiditysensor", "phone", "pushbutton", "placeholder" ];
 
 function device(obj, uuid) {
     var self = this;
@@ -140,6 +140,13 @@ function device(obj, uuid) {
 	var content = {};
 	content.uuid = uuid;
 	content.command = 'stop';
+	sendCommand(content);
+    };
+
+    this.turnPush = function() {
+	var content = {};
+	content.uuid = uuid;
+	content.command = 'push';
 	sendCommand(content);
     };
 

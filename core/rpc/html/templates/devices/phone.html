@@ -2,22 +2,22 @@
 	<div class="row">
 		<div class="three columns">
 			<div class="pretty large primary btn grid-item-icon handle">
-				<i class="icon-list" data-bind="click: showDetails"></i>
+				<i class="icon-phone" data-bind="click: showDetails"></i>
 			</div>
 		</div>
 		<div class="nine columns">
 			<div class="grid-item-header">
-				<h3 data-bind="text: name, if: name"></h3>
+                                <!-- ko if: name -->
+                                    <h3 data-bind="text: name"></h3>
+                                <!-- /ko -->
+                                <!-- ko ifnot: name -->
+                                    <h3 data-bind="text: devicetype"></h3>
+                                <!-- /ko -->
 				<!-- ko if: room -->
 					<p class="room"><i class="icon-location"></i><span data-bind="text: room"></span></p>
 				<!-- /ko -->
 				<p class="info"><i class="icon-info"></i><span data-bind="text: state"></span></p>
 			</div>
-		</div>
-	</div>
-	<div class="row grid-item-controls">
-		<div class="twelve columns">
-                	<div class="cmd-btn pretty medium default btn btn-full grid-command" data-bind="click: turnOn" data-value="on">RUN SCENARIO</div>
 		</div>
 	</div>
 </div>
