@@ -13,7 +13,7 @@ fi
 
 grep "00000000-0000-0000-000000000000" /etc/opt/agocontrol/conf.d/system.conf && (
 	UUID=$(uuidgen)
-	sed -i "s/<uuid>/${UUID}/" /etc/opt/agocontrol/conf.d/system.conf
+	sed -i "s/00000000-0000-0000-000000000000/${UUID}/" /etc/opt/agocontrol/conf.d/system.conf
 )
 
 test -e /etc/opt/agocontrol/db/inventory.db || (
