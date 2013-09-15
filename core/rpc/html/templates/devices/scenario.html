@@ -2,14 +2,16 @@
 	<div class="row">
 		<div class="three columns">
 			<div class="pretty large primary btn grid-item-icon handle">
-				<i class="icon-lamp" data-bind="click: showDetails"></i>
+				<i class="icon-list" data-bind="click: showDetails"></i>
 			</div>
 		</div>
 		<div class="nine columns">
 			<div class="grid-item-header">
 				<h3 data-bind="text: name, if: name"></h3>
-				<p class="room" data-bind="text: room"><i class="icon-location"></i></p>
-				<p class="info" data-bind="text: state"><i class="icon-info"></i></p>
+				<!-- ko if: room -->
+					<p class="room"><i class="icon-location"></i><span data-bind="text: room"></span></p>
+				<!-- /ko -->
+				<p class="info"><i class="icon-info"></i><span data-bind="text: state"></span></p>
 			</div>
 		</div>
 	</div>

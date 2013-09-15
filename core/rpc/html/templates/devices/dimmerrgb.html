@@ -14,8 +14,10 @@
 				<!-- ko ifnot: name -->
 				    <h3 data-bind="text: devicetype"></h3>
 				<!-- /ko -->
-				<p class="room" data-bind="text: room"><i class="icon-location"></i></p>
-				<p class="info" data-bind="text: state"><i class="icon-info"></i></p>
+				<!-- ko if: room -->
+					<p class="room"><i class="icon-location"></i><span data-bind="text: room"></span></p>
+				<!-- /ko -->
+				<p class="info"><i class="icon-info"></i><span data-bind="text: state"></span></p>
 			</div>
 		</div>
 	</div>
