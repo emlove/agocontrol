@@ -49,14 +49,14 @@ $(CLEANDIRS):
 install: $(INSTALLDIRS) all
 	@echo Installing
 	install -d $(ETCDIR)
-	install -d $(ETCDIR)/db
-	install -d $(ETCDIR)/conf.d
-	install -d $(ETCDIR)/old
-	install -d $(ETCDIR)/rpc
 	install -d $(BINDIR)
 	install -d $(INCDIR)
 	install -d $(LIBDIR)
 	install -d $(DESTDIR)/var/opt/agocontrol
+	install -d $(CONFDIR)/db
+	install -d $(CONFDIR)/conf.d
+	install -d $(CONFDIR)/old
+	install -d $(CONFDIR)/rpc
 	install -d $(CONFDIR)/uuidmap
 	install -d $(CONFDIR)/maps
 	install -d $(DESTDIR)/lib/systemd/system
