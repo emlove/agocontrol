@@ -77,6 +77,7 @@ install: $(INSTALLDIRS) all
 	install scripts/convert-zwave-uuid.py $(BINDIR)
 	install scripts/convert-scenario.py $(BINDIR)
 	install scripts/convert-event.py $(BINDIR)
+	install scripts/convert-config.py $(BINDIR)
 
 $(INSTALLDIRS):
 	$(MAKE) -C $(@:install-%=%) install
