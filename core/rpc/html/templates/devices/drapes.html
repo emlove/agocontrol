@@ -23,10 +23,10 @@
 	<div class="row grid-item-controls">
 		<div class="four columns">
 		    <!-- ko if: state -->
-                <div class="cmd-btn pretty medium default btn btn-full grid-command" data-bind="click: turnOn" data-value="on">CLOSE</div>
+                <div class="cmd-btn pretty medium default btn btn-full grid-command" data-bind="click: turnOn" data-value="on">OPEN</div>
             <!-- /ko -->
             <!-- ko ifnot: state -->
-                <div class="cmd-btn pretty medium primary btn btn-full grid-command" data-bind="click: turnOn" data-value="on">CLOSE</div>
+                <div class="cmd-btn pretty medium primary btn btn-full grid-command" data-bind="click: turnOn" data-value="on">OPEN</div>
             <!-- /ko -->
 		</div>
 		<div class="four columns">
@@ -34,10 +34,10 @@
 		</div>
 		<div class="four columns">
 		    <!-- ko if: state -->
-		        <div class="cmd-btn pretty medium primary btn btn-full grid-command" data-bind="click: turnOff" data-value="off">OPEN</div>
+		        <div class="cmd-btn pretty medium primary btn btn-full grid-command" data-bind="click: turnOff" data-value="off">CLOSE</div>
 		    <!-- /ko -->
             <!-- ko ifnot: state -->
-                <div class="cmd-btn pretty medium default btn btn-full grid-command" data-bind="click: turnOff" data-value="off">OPEN</div>
+                <div class="cmd-btn pretty medium default btn btn-full grid-command" data-bind="click: turnOff" data-value="off">CLOSE</div>
             <!-- /ko --> 
 		</div>
 	</div>
