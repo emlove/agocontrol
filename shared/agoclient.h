@@ -19,7 +19,7 @@
 
 #include "CDataFile.h"
 
-#define CONFIG_FILE "/etc/opt/agocontrol/config.ini"
+#define CONFIG_FILE_PATH "/etc/opt/agocontrol/conf.d"
 
 namespace agocontrol {
 

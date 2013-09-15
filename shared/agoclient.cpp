@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <unistd.h>
+#include <sstream>
 
 #include <jsoncpp/json/reader.h>
 #include "agoclient.h"
@@ -167,7 +168,12 @@ std::string agocontrol::generateUuid() {
 std::string agocontrol::getConfigOption(const char *section, const char *option, const char *defaultvalue) {
 	std::string result;
 	t_Str value = t_Str("");
-	CDataFile ExistingDF(CONFIG_FILE);
+	std::stringstream filename;
+	filename  << CONFIG_FILE_PATH;
+	filename << "/";
+	filename << section;
+	filename << ".conf";
+	CDataFile ExistingDF(filename.str().c_str());
 
 	value = ExistingDF.GetString(option, section);
 	if (value.size() == 0)

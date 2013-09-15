@@ -9,11 +9,11 @@ from qpid.log import enable, DEBUG, WARN
 
 syslog.openlog(sys.argv[0], syslog.LOG_PID, syslog.LOG_DAEMON)
 
-config = ConfigParser.ConfigParser()
-config.read('/etc/opt/agocontrol/config.ini')
 
 def getConfigOption(section, option, default):
+	config = ConfigParser.ConfigParser()
 	try:
+		config.read('/etc/opt/agocontrol/conf.d/' + section + '.conf')
 		value = config.get(section,option)
 	except:
 		value = default
