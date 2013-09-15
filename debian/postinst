@@ -10,6 +10,10 @@ if ! getent passwd agocontrol > /dev/null ; then
     chown agocontrol:agocontrol /var/run/agocontrol
 fi
 
+test -e /etc/opt/agocontrol/config.ini && (
+	/opt/agocontrol/bin/convert-config.py
+	mv /etc/opt/agocontrol/config.ini /etc/opt/agocontrol/old/config.ini.obsolete
+)
 
 grep "00000000-0000-0000-000000000000" /etc/opt/agocontrol/conf.d/system.conf && (
 	UUID=$(uuidgen)
