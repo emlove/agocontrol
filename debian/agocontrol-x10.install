@@ -1,0 +1,3 @@
+lib/systemd/system/agox10.service
+opt/agocontrol/bin/agox10.py
+etc/opt/agocontrol/conf.d/x10.conf

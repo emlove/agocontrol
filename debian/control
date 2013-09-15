@@ -38,6 +38,11 @@ Architecture: all
 Depends: ${shlibs:Depends}, ${misc:Depends}, python-ow, python-agoclient
 Description: 1wire device
 
+Package: agocontrol-x10
+Architecture: all
+Depends: ${shlibs:Depends}, ${misc:Depends}, python-agoclient
+Description: x10 device
+
 Package: agocontrol-meloware
 Architecture: all
 Depends: ${shlibs:Depends}, ${misc:Depends}, python-agoclient
