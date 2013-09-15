@@ -52,8 +52,21 @@ test -e /etc/opt/agocontrol/eventmap.json || (
 	)
 )
 
-mv /etc/opt/agocontrol/*.json /etc/opt/agocontrol/maps | tee
-mv /etc/opt/agocontrol/*.pck /etc/opt/agocontrol/old | tee
+# cleanups
+for file in /etc/opt/agocontrol/*.json
+do
+	mv $file /etc/opt/agocontrol/maps
+done
+for file in /etc/opt/agocontrol/*.pck
+do
+	mv $file /etc/opt/agocontrol/old
+done
+for file in /etc/opt/agocontrol/*.sql
+do
+	rm $file
+done
+test -e /etc/opt/agocontrol/rpc_cert.pem && rm /etc/opt/agocontrol/rpc_cert.pem
+test -e /etc/opt/agocontrol/config.ini.tpl && rm /etc/opt/agocontrol/config.ini.tpl
 
 chown -R agocontrol:agocontrol /etc/opt/agocontrol
 
