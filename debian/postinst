@@ -12,6 +12,10 @@ fi
 
 test -e /etc/opt/agocontrol/config.ini && (
 	/opt/agocontrol/bin/convert-config.py
+	for i in /etc/opt/agocontrol/conf.d/*.conf
+	do
+		sed -i 's/ = /=/g' $i
+	done
 	mv /etc/opt/agocontrol/config.ini /etc/opt/agocontrol/old/config.ini.obsolete
 )
 
