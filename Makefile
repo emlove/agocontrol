@@ -65,7 +65,8 @@ install: $(INSTALLDIRS) all
 	install -d $(DESTDIR)/var/crash
 	install conf/security-limits.conf $(ETCDIR)/security/limits.d/agocontrol.conf
 	install conf/sysctl.conf $(ETCDIR)/sysctl.d/agocontrol.conf
-	install conf/conf.d/*.conf $(CONFDIR)/conf.d
+	install conf/conf.d/system.conf $(CONFDIR)/conf.d
+	install conf/conf.d/rpc.conf $(CONFDIR)/conf.d
 	install conf/schema.yaml $(CONFDIR)
 	install conf/rpc_cert.pem $(CONFDIR)/rpc
 	install conf/systemd/*.service $(DESTDIR)/lib/systemd/system
