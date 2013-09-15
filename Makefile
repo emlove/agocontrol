@@ -68,7 +68,7 @@ install: $(INSTALLDIRS) all
 	install conf/conf.d/*.conf $(CONFDIR)/conf.d
 	install conf/schema.yaml $(CONFDIR)
 	install conf/rpc_cert.pem $(CONFDIR)/rpc
-	install conf/*.service $(DESTDIR)/lib/systemd/system
+	install conf/systemd/*.service $(DESTDIR)/lib/systemd/system
 	install data/inventory.sql $(DESTDIR)/var/opt/agocontrol
 	install data/datalogger.sql $(DESTDIR)/var/opt/agocontrol
 	install gateways/agomeloware.py $(BINDIR)
