@@ -44,6 +44,9 @@ test -e /etc/opt/agocontrol/eventmap.json || (
 	)
 )
 
+mv /etc/opt/agocontrol/*.json /etc/opt/agocontrol/maps | tee
+mv /etc/opt/agocontrol/*.pck /etc/opt/agocontrol/old | tee
+
 chown -R agocontrol:agocontrol /etc/opt/agocontrol
 
 # install datalogger 
