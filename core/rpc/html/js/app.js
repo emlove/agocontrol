@@ -49,7 +49,7 @@ var eventController = null;
 var dataLoggerController = null;
 var scenarioController = null;
 
-var supported_devices = [ "switch", "dimmer", "binarysensor", "dimmerrgb", "multilevelsensor", , "scenario", "drapes", "placeholder" ];
+var supported_devices = [ "switch", "dimmer", "binarysensor", "dimmerrgb", "multilevelsensor", , "scenario", "drapes", "brightnesssensor", "powermeter", "placeholder" ];
 
 function device(obj, uuid) {
     var self = this;
