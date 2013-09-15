@@ -169,6 +169,8 @@ function initGUI() {
 	deferredInit = init_systemConfig;
     } else if (page == "eventConfig") {
 	init_eventConfig();
+    } else if (page == "scenarioConfig") {
+	init_scenarioConfig();
     }
 }
 
@@ -195,7 +197,7 @@ function handleEvent(response) {
 	}
 
     }
-    //getEvent();
+    getEvent();
 }
 
 function getEvent() {
