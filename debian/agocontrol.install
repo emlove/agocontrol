@@ -4,12 +4,14 @@ lib/systemd/system/agoscenario.service
 lib/systemd/system/agotimer.service
 lib/systemd/system/agorpc.service
 lib/systemd/system/agodatalogger.service
-etc/opt/agocontrol/config.ini.tpl
+etc/opt/agocontrol/conf.d/system.conf
+etc/opt/agocontrol/conf.d/rpc.conf
 etc/opt/agocontrol/schema.yaml
-etc/opt/agocontrol/inventory.sql
-etc/opt/agocontrol/datalogger.sql
-etc/opt/agocontrol/rpc_cert.pem
+var/opt/agocontrol/inventory.sql
+var/opt/agocontrol/datalogger.sql
+etc/opt/agocontrol/rpc/rpc_cert.pem
 etc/opt/agocontrol/uuidmap
+etc/opt/agocontrol/maps
 etc/sysctl.d/agocontrol.conf
 var/crash
 etc/security/limits.d/agocontrol.conf
@@ -29,3 +31,4 @@ opt/agocontrol/bin/agososreport.sh
 core/rpc/html /opt/agocontrol
 opt/agocontrol/bin/convert-event.py
 opt/agocontrol/bin/convert-scenario.py
+opt/agocontrol/bin/convert-config.py

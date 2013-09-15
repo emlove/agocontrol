@@ -49,23 +49,28 @@ $(CLEANDIRS):
 install: $(INSTALLDIRS) all
 	@echo Installing
 	install -d $(ETCDIR)
+	install -d $(ETCDIR)/db
+	install -d $(ETCDIR)/conf.d
+	install -d $(ETCDIR)/old
+	install -d $(ETCDIR)/rpc
 	install -d $(BINDIR)
 	install -d $(INCDIR)
 	install -d $(LIBDIR)
 	install -d $(DESTDIR)/var/opt/agocontrol
 	install -d $(CONFDIR)/uuidmap
+	install -d $(CONFDIR)/maps
 	install -d $(DESTDIR)/lib/systemd/system
 	install -d $(ETCDIR)/sysctl.d
 	install -d $(ETCDIR)/security/limits.d
 	install -d $(DESTDIR)/var/crash
 	install conf/security-limits.conf $(ETCDIR)/security/limits.d/agocontrol.conf
 	install conf/sysctl.conf $(ETCDIR)/sysctl.d/agocontrol.conf
-	install conf/config.ini.tpl $(CONFDIR)
+	install conf/conf.d/*.conf $(CONFDIR)/conf.d
 	install conf/schema.yaml $(CONFDIR)
-	install conf/rpc_cert.pem $(CONFDIR)
+	install conf/rpc_cert.pem $(CONFDIR)/rpc
 	install conf/*.service $(DESTDIR)/lib/systemd/system
-	install data/inventory.sql $(CONFDIR)
-	install data/datalogger.sql $(CONFDIR)
+	install data/inventory.sql $(DESTDIR)/var/opt/agocontrol
+	install data/datalogger.sql $(DESTDIR)/var/opt/agocontrol
 	install gateways/agomeloware.py $(BINDIR)
 	install scripts/agososreport.sh $(BINDIR)
 	install scripts/convert-zwave-uuid.py $(BINDIR)

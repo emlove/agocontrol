@@ -13,7 +13,7 @@
 #include "bool.h"
 
 #ifndef EVENTMAPFILE
-#define EVENTMAPFILE "/etc/opt/agocontrol/eventmap.json"
+#define EVENTMAPFILE "/etc/opt/agocontrol/maps/eventmap.json"
 #endif
 
 using namespace std;

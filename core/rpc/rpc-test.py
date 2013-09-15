@@ -16,14 +16,17 @@ values = '{"method":"message","params":{"content":{"command":"inventory"}},"id":
 # response = urllib2.urlopen(req)
 # print response.read()
 # controller = '51f9c2d8-d761-47db-894a-ba5905435142'; # 457991c4-4d3e-4533-82dc-2da65e4b6f27
-controller = '457991c4-4d3e-4533-82dc-2da65e4b6f27';
+# controller = '457991c4-4d3e-4533-82dc-2da65e4b6f27';
+controller = '42b9bbae-4457-483f-94bf-72c27e0b3c38';
 
 values = '{"method":"message","params":{"content":{"command":"setscenario","uuid":"' + controller + '","scenariomap":{"1":{"command":"on","uuid":"c81a868e-e3da-418a-9f4e-fbfa30dfdcb9"},"2":{"command":"scenariosleep","delay":1},"3":{"command":"off","uuid":"c81a868e-e3da-418a-9f4e-fbfa30dfdcb9"}}}},"id":2,"jsonrpc":"2.0"}'
 # values = '{"method":"message","params":{"content":{"command":"setscenario","uuid":"' + controller + '","scenariomap":{"1":{"command":"on","uuid":"c81a868e-e3da-418a-9f4e-fbfa30dfdcb9"},"2":{"command":"scenariosleep","delay":1},"3":{"command":"off","uuid":"c81a868e-e3da-418a-9f4e-fbfa30dfdcb9"}}}},"id":2,"jsonrpc":"2.0"}'
 print values
 req = urllib2.Request(url, values)
 response = urllib2.urlopen(req)
-retval = json.loads(response.read())
+rawdata = response.read()
+print rawdata
+retval = json.loads(rawdata)
 scenario = retval['result']['scenario']
 print "created scenario:", scenario
 print "running getscenario:"

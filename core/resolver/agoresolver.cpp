@@ -42,7 +42,7 @@
 #include "../../version.h"
 
 #ifndef VARIABLESMAPFILE
-#define VARIABLESMAPFILE "/etc/opt/agocontrol/variablesmap.json"
+#define VARIABLESMAPFILE "/etc/opt/agocontrol/maps/variablesmap.json"
 #endif
 
 
@@ -309,7 +309,7 @@ int main(int argc, char **argv) {
 	schema = parseSchema(schemafile.c_str());
 
 //	clog << agocontrol::kLogDebug << "reading inventory" << std::endl;
-	inv = new Inventory("/etc/opt/agocontrol/inventory.db");
+	inv = new Inventory("/etc/opt/agocontrol/db/inventory.db");
 
 	variables = jsonFileToVariantMap(VARIABLESMAPFILE);
 
