@@ -119,6 +119,35 @@ std::string agocontrol::variantListToJSONString(qpid::types::Variant::List list)
 	return result;
 }
 
+qpid::types::Variant::List agocontrol::jsonToVariantList(Json::Value value) {
+	Variant::List list;
+	try {
+		for (Json::ValueIterator it = value.begin(); it != value.end(); it++) {
+			if ((*it).size() > 0) {
+				// cout << "JSON Type: " << (*it).type() << endl;
+				if ((*it).type() == 6) {
+					list.push_back(jsonToVariantList((*it)));
+				} else if ((*it).type() == 7) {
+					list.push_back(jsonToVariantMap((*it)));
+				}
+			} else {
+				if ((*it).isString()) list.push_back( (*it).asString());
+				if ((*it).isBool()) list.push_back( (*it).asBool());
+				if ((*it).isInt()) list.push_back( (*it).asInt());
+				if ((*it).isUInt()) list.push_back( (*it).asUInt());
+				if ((*it).isDouble()) list.push_back( (*it).asDouble());
+			}
+		}
+	} catch (const std::exception& error) {
+                cout << "ERROR! Exception during JSON->Variant::Map conversion!" << endl;
+                stringstream errorstring;
+                errorstring << error.what();
+		cout << "EXCEPTION: " << errorstring.str() << endl;
+        }
+
+
+	return list;
+}
 qpid::types::Variant::Map agocontrol::jsonToVariantMap(Json::Value value) {
 	Variant::Map map;
 	try {
@@ -126,7 +155,13 @@ qpid::types::Variant::Map agocontrol::jsonToVariantMap(Json::Value value) {
 			// printf("%s\n",it.key().asString().c_str());
 			// printf("%s\n", (*it).asString().c_str());
 			if ((*it).size() > 0) {
-				map[it.key().asString()] = jsonToVariantMap((*it));
+				// cout << "JSON Type: " << (*it).type() << endl;
+				// cout << "Key: " << it.key().asString() << endl;
+				if ((*it).type() == 6) {
+					map[it.key().asString()] = jsonToVariantList((*it));
+				} else if ((*it).type() == 7) {
+					map[it.key().asString()] = jsonToVariantMap((*it));
+				}
 			} else {
 				if ((*it).isString()) map[it.key().asString()] = (*it).asString();
 				if ((*it).isBool()) map[it.key().asString()] = (*it).asBool();

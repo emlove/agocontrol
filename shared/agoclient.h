@@ -28,6 +28,7 @@ namespace agocontrol {
 	std::string variantMapToJSONString(qpid::types::Variant::Map map);
 	std::string variantListToJSONString(qpid::types::Variant::List list);
 	qpid::types::Variant::Map jsonToVariantMap(Json::Value value);
+	qpid::types::Variant::List jsonToVariantList(Json::Value value);
 	qpid::types::Variant::Map jsonStringToVariantMap(std::string jsonstring);
 	qpid::types::Variant::Map jsonFileToVariantMap(std::string filename);
 	bool variantMapToJSONFile(qpid::types::Variant::Map map, std::string filename);
