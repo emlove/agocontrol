@@ -67,10 +67,73 @@ function scenarioConfig() {
 	});
     };
 
+    /**
+     * Sends the create scenario command
+     */
     this.createScenario = function() {
-	alert("TODO");
+	if ($("#scenarioName").val() == "") {
+	    alert("Please supply an event name!");
+	    return;
+	}
+
+	var map = {};
+	var map_idx = 0;
+	var commands = document.getElementById("scenarioBuilder").childNodes;
+	for ( var i = 0; i < commands.length; i++) {
+	    var command = commands[i];
+	    var tmp = {};
+	    for ( var j = 0; j < command.childNodes.length; j++) {
+		var child = command.childNodes[j];
+		if (child.name && child.name == "device") {
+		    tmp.uuid = child.options[child.selectedIndex].value;
+		} else if (child.tagName == "DIV") {
+		    for ( var k = 0; k < child.childNodes.length; k++) {
+			var subChild = child.childNodes[k];
+			if (subChild.name && subChild.name == "command") {
+			    tmp.command = subChild.options[subChild.selectedIndex].value;
+			}
+			if (subChild.name && subChild.type && subChild.type == "text") {
+			    tmp[subChild.name] = subChild.value;
+			}
+		    }
+		}
+	    }
+	    map[map_idx++] = tmp;
+	}
+
+	var content = {};
+	content.command = "setscenario";
+	content.uuid = scenarioController;
+	content.scenariomap = map;
+
+	sendCommand(content, function(res) {
+	    console.log(res);
+	    if (res.result && res.result.scenario) {
+		var cnt = {};
+		cnt.uuid = agoController;
+		cnt.device = res.result.scenario;
+		cnt.command = "setdevicename";
+		cnt.name = $("#scenarioName").val();
+		sendCommand(cnt, function(nameRes) {
+		    if (nameRes.result && nameRes.result.returncode == "0") {
+			self.scenarios.push({
+			    name : cnt.name,
+			    uuid : res.result.scenario,
+			    room : "",
+			});
+			document.getElementById("scenarioBuilder").innerHTML = "";
+		    }
+		});
+	    } else {
+		alert("ERROR");
+	    }
+	});
+
     };
 
+    /**
+     * Adds a command selection entry
+     */
     this.addCommand = function() {
 	var row = document.createElement("div");
 
@@ -109,7 +172,7 @@ function scenarioConfig() {
 	    commands.name = "command";
 	    for ( var i = 0; i < schema.devicetypes[dev.devicetype].commands.length; i++) {
 		var cmd = schema.devicetypes[dev.devicetype].commands[i];
-		commands.options[i] = new Option(schema.commands[cmd].name, schema.commands[cmd].name);
+		commands.options[i] = new Option(schema.commands[cmd].name, cmd);
 		commands.options[i]._cmd = schema.commands[cmd];
 
 	    }
@@ -152,6 +215,34 @@ function scenarioConfig() {
 
 	row.appendChild(commandContainer);
 	document.getElementById("scenarioBuilder").appendChild(row);
+    };
+
+    /**
+     * Sends the delete scenario command
+     */
+    this.deleteScenario = function(item, event) {
+	$('#configTable').block({
+	    message : '<div>Please wait ...</div>',
+	    css : {
+		border : '3px solid #a00'
+	    }
+	});
+	var content = {};
+	content.scenario = item.uuid;
+	content.uuid = scenarioController;
+	content.command = 'delscenario';
+	sendCommand(content, function(res) {
+	    if (res.result && res.result.result == 0) {
+		self.scenarios.remove(function(e) {
+		    return e.uuid == item.uuid;
+		});
+		$("#configTable").dataTable().fnDeleteRow(event.target.parentNode.parentNode);
+		$("#configTable").dataTable().fnDraw();
+	    } else {
+		alert("Error while deleting scenarios!");
+	    }
+	    $('#configTable').unblock();
+	});
     };
 }
 

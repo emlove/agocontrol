@@ -47,6 +47,7 @@ var currentFloorPlan = ko.observable({});
 var agoController = null;
 var eventController = null;
 var dataLoggerController = null;
+var scenarioController = null;
 
 var supported_devices = [ "switch", "dimmer", "binarysensor", "dimmerrgb", "multilevelsensor", "placeholder" ];
 
@@ -86,6 +87,10 @@ function device(obj, uuid) {
 
     if (this.devicetype == "eventcontroller") {
 	eventController = uuid;
+    }
+
+    if (this.devicetype == "scenariocontroller") {
+	scenarioController = uuid;
     }
 
     if (this.devicetype == "dimmerrgb") {
