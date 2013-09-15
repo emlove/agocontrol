@@ -729,8 +729,19 @@ function eventConfig() {
 	} else if (selectType == "device") {
 	    var deviceSelect = document.createElement("select");
 	    deviceSelect.name = path + ".device";
+	    self.deviceList.sort(function(a, b) {
+		return a.room.localeCompare(b.room);
+	    });
 	    for ( var i = 0; i < self.deviceList.length; i++) {
-		deviceSelect.options[i] = new Option(self.deviceList[i].name, self.deviceList[i].uuid);
+		if (self.deviceList[i].name) {
+		    var dspName = "";
+		    if (self.deviceList[i].room) {
+			dspName = self.deviceList[i].room + " - " + self.deviceList[i].name;
+		    } else {
+			dspName = self.deviceList[i].name;
+		    }
+		    deviceSelect.options[deviceSelect.options.length] = new Option(dspName, self.deviceList[i].uuid);
+		}
 	    }
 
 	    params = document.createElement("select");
@@ -812,10 +823,21 @@ function eventConfig() {
 	if (selectType == "event") {
 	    var deviceSelect = document.createElement("select");
 	    deviceSelect.name = path + ".device";
+	    self.deviceList.sort(function(a, b) {
+		return a.room.localeCompare(b.room);
+	    });
 	    for ( var i = 0; i < self.deviceList.length; i++) {
-		deviceSelect.options[i] = new Option(self.deviceList[i].name, self.deviceList[i].uuid);
-		if (defaultValues && defaultValues.param.parameter == "uuid" && self.deviceList[i].uuid == defaultValues.value) {
-		    deviceSelect.selectedIndex = i;
+		if (self.deviceList[i].name) {
+		    var dspName = "";
+		    if (self.deviceList[i].room) {
+			dspName = self.deviceList[i].room + " - " + self.deviceList[i].name;
+		    } else {
+			dspName = self.deviceList[i].name;
+		    }
+		    deviceSelect.options[deviceSelect.options.length] = new Option(dspName, self.deviceList[i].uuid);
+		    if (defaultValues && defaultValues.param.parameter == "uuid" && self.deviceList[i].uuid == defaultValues.value) {
+			deviceSelect.selectedIndex = deviceSelect.options.length - 1;
+		    }
 		}
 	    }
 	    deviceSelect.onchange = function() {
@@ -851,16 +873,27 @@ function eventConfig() {
 	commandSelect.id = "commandSelect";
 	var commandParams = document.createElement("fieldset");
 	var j = 0;
+	self.deviceList.sort(function(a, b) {
+	    return a.room.localeCompare(b.room);
+	});
 	for ( var i = 0; i < self.deviceList.length; i++) {
 	    var dev = self.deviceList[i];
 	    if (schema.devicetypes[dev.devicetype] === undefined || schema.devicetypes[dev.devicetype].commands.length == 0) {
 		continue;
 	    }
-	    deviceListSelect.options[j] = new Option(dev["name"] == "" ? dev["uuid"] : dev["name"], i);
-	    if (defaults && defaults.uuid == dev["uuid"]) {
-		deviceListSelect.options[j].selected = true;
+	    if (self.deviceList[i].name) {
+		var dspName = "";
+		if (self.deviceList[i].room) {
+		    dspName = self.deviceList[i].room + " - " + self.deviceList[i].name;
+		} else {
+		    dspName = self.deviceList[i].name;
+		}
+		deviceListSelect.options[j] = new Option(dspName, i);
+		if (defaults && defaults.uuid == dev["uuid"]) {
+		    deviceListSelect.options[j].selected = true;
+		}
+		j++;
 	    }
-	    j++;
 	}
 
 	container.appendChild(deviceListSelect);

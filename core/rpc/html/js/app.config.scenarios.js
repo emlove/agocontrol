@@ -151,10 +151,20 @@ function scenarioConfig() {
 	deviceSelect.name = "device";
 	deviceSelect.style.display = "inline";
 	deviceSelect.options.length = 0;
+	self.devices.sort(function(a, b) {
+	    return a.room.localeCompare(b.room);
+	});
 	for ( var i = 0; i < self.devices().length; i++) {
 	    var dev = self.devices()[i];
-	    if (schema.devicetypes[dev.devicetype] && schema.devicetypes[dev.devicetype].commands.length > 0) {
-		deviceSelect.options[deviceSelect.options.length] = new Option(dev.name ? dev.name : dev.devicetype, dev.uuid);
+	    if (schema.devicetypes[dev.devicetype] && schema.devicetypes[dev.devicetype].commands.length > 0 && dev.name) {
+		var dspName = "";
+		if (dev.room) {
+		    dspName = dev.room + " - " + dev.name;
+		}
+		else {
+		    dspName = dev.name;
+		}
+		deviceSelect.options[deviceSelect.options.length] = new Option(dspName, dev.uuid);
 		deviceSelect.options[deviceSelect.options.length - 1]._dev = dev;
 	    }
 	}
