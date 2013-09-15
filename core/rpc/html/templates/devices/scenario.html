@@ -9,13 +9,13 @@
 			<div class="grid-item-header">
 				<h3 data-bind="text: name, if: name"></h3>
 				<p class="room" data-bind="text: room"><i class="icon-location"></i></p>
+				<p class="info" data-bind="text: state"><i class="icon-info"></i></p>
 			</div>
 		</div>
-		<div class="row grid-item-controls">
-		<div class="twelve columns">
-			<br />
-        	<div class="cmd-btn pretty medium danger btn btn-full grid-command" data-bind="click: turnOn" data-value="on">ON</div>
-		</div>
 	</div>
+	<div class="row grid-item-controls">
+		<div class="twelve columns">
+                	<div class="cmd-btn pretty medium danger btn btn-full grid-command" data-bind="click: turnOn" data-value="on">RUN SCENARIO</div>
+		</div>
 	</div>
 </div>
