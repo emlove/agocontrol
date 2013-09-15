@@ -12,6 +12,7 @@ var/opt/agocontrol/datalogger.sql
 etc/opt/agocontrol/rpc/rpc_cert.pem
 etc/opt/agocontrol/uuidmap
 etc/opt/agocontrol/maps
+etc/opt/agocontrol/old
 etc/sysctl.d/agocontrol.conf
 var/crash
 etc/security/limits.d/agocontrol.conf

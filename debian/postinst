@@ -52,7 +52,7 @@ if [ ! -d "/var/opt/agocontrol" ]; then
 fi
 
 test -e /var/opt/agocontrol/datalogger.db || (
-	sqlite3 -init /etc/opt/agocontrol/datalogger.sql /var/opt/agocontrol/datalogger.db .quit | tee
+	sqlite3 -init /var/opt/agocontrol/datalogger.sql /var/opt/agocontrol/datalogger.db .quit | tee
 )
 
 chown -R agocontrol:agocontrol /var/opt/agocontrol
