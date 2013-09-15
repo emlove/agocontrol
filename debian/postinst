@@ -10,16 +10,16 @@ if ! getent passwd agocontrol > /dev/null ; then
     chown agocontrol:agocontrol /var/run/agocontrol
 fi
 
-# replace config.ini if there is an old version without username setting
-# grep -q username /etc/opt/agocontrol/config.ini || rm /etc/opt/agocontrol/config.ini
 
-test -e /etc/opt/agocontrol/config.ini || (
+grep "00000000-0000-0000-000000000000" /etc/opt/agocontrol/conf.d/system.conf && (
 	UUID=$(uuidgen)
-	cat /etc/opt/agocontrol/config.ini.tpl | sed "s/<uuid>/${UUID}/" > /etc/opt/agocontrol/config.ini
+	sed -i "s/<uuid>/${UUID}/" /etc/opt/agocontrol/conf.d/system.conf
 )
 
-test -e /etc/opt/agocontrol/inventory.db || (
-	sqlite3 -init /etc/opt/agocontrol/inventory.sql /etc/opt/agocontrol/inventory.db .quit | tee
+test -e /etc/opt/agocontrol/db/inventory.db || (
+	test -e /etc/opt/agocontrol/inventory.db && (mv /etc/opt/agocontrol/inventory.db /etc/opt/agocontrol/db/inventory.db) || (
+		sqlite3 -init /var/opt/agocontrol/inventory.sql /etc/opt/agocontrol/db/inventory.db .quit | tee
+	)
 )
 
 sasldblistusers2 -f /etc/qpid/qpidd.sasldb  | grep -q agocontrol || (
@@ -33,14 +33,14 @@ test -e /etc/opt/agocontrol/scenariomap.json || (
 	test -e /etc/opt/agocontrol/scenarios.pck && (
 		echo converting scenariomap
 		/opt/agocontrol/bin/convert-scenario.py
-		mv /etc/opt/agocontrol/scenarios.pck /etc/opt/agocontrol/scenarios.pck.obsolete
+		mv /etc/opt/agocontrol/scenarios.pck /etc/opt/agocontrol/old/scenarios.pck.obsolete
 	)
 )
 test -e /etc/opt/agocontrol/eventmap.json || (
 	test -e /etc/opt/agocontrol/events.pck && (
 		echo converting eventmap
 		/opt/agocontrol/bin/convert-event.py
-		mv /etc/opt/agocontrol/events.pck /etc/opt/agocontrol/events.pck.obsolete
+		mv /etc/opt/agocontrol/events.pck /etc/opt/agocontrol/old/events.pck.obsolete
 	)
 )
 
