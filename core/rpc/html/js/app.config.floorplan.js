@@ -54,6 +54,10 @@ function floorPlanConfig() {
 	    $('#floorPlanTable').unblock();
 	});
     };
+    
+    this.editPlan = function(item) {
+	document.location.href = "/?floorplan&fp=" + item.uuid;
+    };
 
 }
 

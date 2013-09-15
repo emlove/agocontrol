@@ -15,7 +15,10 @@
                         <!-- ko ifnot: name -->
                                 <td class="edit_fp" data-bind="attr: {'data-uuid': uuid}">unset</td>
                         <!-- /ko -->
-                        <td class="delete_fp"><div class="cmd-btn pretty medium default btn btn-full grid-command" data-bind="click: $parent.deletePlan">delete</div></td>
+                        <td style="text-align: center">
+                        	<div style="width: 48%;" class="cmd-btn pretty medium default btn" data-bind="click: $parent.editPlan">edit</div>
+                        	<div style="width: 48%;" class="cmd-btn pretty medium default btn" data-bind="click: $parent.deletePlan">delete</div>
+                        </td>
                     </tr>
                     <!-- /ko -->
                 </tbody>
