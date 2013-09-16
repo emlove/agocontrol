@@ -68,8 +68,7 @@ function scenarioConfig() {
     };
 
     /**
-     * Creates a scenario map out of the form fields
-     * inside a container
+     * Creates a scenario map out of the form fields inside a container
      */
     this.buildScenarioMap = function(containerID) {
 	var map = {};
@@ -239,11 +238,11 @@ function scenarioConfig() {
 			var field = document.createElement("input");
 			field = document.createElement("input");
 			field.setAttribute("type", "text");
-			field.setAttribute("size", "20");
+			field.setAttribute("size", "15");
 			field.setAttribute("name", key);
 			field.setAttribute("placeholder", cmd.parameters[key].name);
 			if (defaultValues && defaultValues[key]) {
-			    field.setAttribute("value", defaultValues.key);
+			    field.setAttribute("value", defaultValues[key]);
 			}
 			commandContainer._params.push(field);
 			commandContainer.appendChild(field);
@@ -341,6 +340,7 @@ function scenarioConfig() {
 	content.uuid = scenarioController;
 	content.command = 'getscenario';
 	sendCommand(content, function(res) {
+	    console.log(res);
 	    // Build command list
 	    for ( var idx in res.result.scenariomap) {
 		self.addCommand("scenarioBuilderEdit", res.result.scenariomap[idx]);
@@ -352,7 +352,7 @@ function scenarioConfig() {
 	    // Open the dialog
 	    $("#editScenarioDialog").dialog({
 		modal : true,
-		width : 900,
+		width : 940,
 		height : 600,
 		close : function() {
 		    // Done, restore stuff
