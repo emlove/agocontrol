@@ -348,6 +348,13 @@ function scenarioConfig() {
 	});
     };
 
+    this.runScenario = function(item) {
+	var content = {};
+	content.uuid = item.uuid;
+	content.command = 'on';
+	sendCommand(content);
+    };
+
 }
 
 /**

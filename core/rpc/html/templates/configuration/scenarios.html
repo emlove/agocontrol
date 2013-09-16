@@ -29,9 +29,11 @@
 					<td class="select_room" data-bind="attr: {'data-uuid': uuid}">unset</td>
 					<!-- /ko -->
 					<td style="text-align: center">
-						<div style="width: 48%;" class="cmd-btn pretty medium default btn"
+						<div style="width: 32%;" class="cmd-btn pretty medium default btn"
+							data-bind="attr: {'data-uuid': uuid}, click: $parent.runScenario">run</div>
+						<div style="width: 32%;" class="cmd-btn pretty medium default btn"
 							data-bind="attr: {'data-uuid': uuid}, click: $parent.editScenario">edit</div>
-						<div style="width: 48%;" class="cmd-btn pretty medium default btn"
+						<div style="width: 32%;" class="cmd-btn pretty medium default btn"
 							data-bind="attr: {'data-uuid': uuid}, click: $parent.deleteScenario">delete</div>
 					</td>
 				</tr>
@@ -45,7 +47,9 @@
 		<div id="scenarioBuilder" class="scenarioBuilder"></div>
 		<br />
 		<div class="medium primary btn">
-			<a href="#" data-bind="click: function() { addCommand('scenarioBuilder'); }">Add Command</a>
+			<a href="#"
+				data-bind="click: function() { addCommand('scenarioBuilder'); }">Add
+				Command</a>
 		</div>
 		<br />
 		<form action="" method="post">
@@ -70,7 +74,9 @@
 		<div id="scenarioBuilderEdit" class="scenarioBuilder"></div>
 		<br />
 		<div class="medium primary btn">
-			<a href="#" data-bind="click: function() { addCommand('scenarioBuilderEdit'); }" style="color: #FFF">Add Command</a>
+			<a href="#"
+				data-bind="click: function() { addCommand('scenarioBuilderEdit'); }"
+				style="color: #FFF">Add Command</a>
 		</div>
 		<br />
 		<form action="" method="post">
