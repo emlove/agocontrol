@@ -272,6 +272,35 @@ function scenarioConfig() {
 	deviceSelect.onchange();
 
 	row.appendChild(commandContainer);
+
+	// Mpve up button
+	var upBtn = document.createElement("input");
+	upBtn.style.display = "inline";
+	upBtn.setAttribute("type", "button");
+	upBtn.setAttribute("value", "\u21D1");
+
+	upBtn.onclick = function() {
+	    var prev = row.previousSibling;
+	    document.getElementById(containerID).removeChild(row);
+	    document.getElementById(containerID).insertBefore(row, prev);
+	};
+
+	row.appendChild(upBtn);
+
+	// Mpve down button
+	var downBtn = document.createElement("input");
+	downBtn.style.display = "inline";
+	downBtn.setAttribute("type", "button");
+	downBtn.setAttribute("value", "\u21D3");
+
+	downBtn.onclick = function() {
+	    var next = row.nextSibling;
+	    document.getElementById(containerID).removeChild(next);
+	    document.getElementById(containerID).insertBefore(next, row);
+	};
+
+	row.appendChild(downBtn);
+
 	document.getElementById(containerID).appendChild(row);
     };
 
