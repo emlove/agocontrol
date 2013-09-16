@@ -284,7 +284,7 @@ void eventHandler(std::string subject, qpid::types::Variant::Map content) {
 			// clog << agocontrol::kLogDebug << "getting room from inventory" << endl;
 			device["room"]=inv->getdeviceroom(content["uuid"].asString()); 
 			device["room"].setEncoding("utf8");
-			long int timestamp;
+			uint64_t timestamp;
 			timestamp = time(NULL);
 			device["lastseen"] = timestamp;
 			qpid::types::Variant::Map::const_iterator it = inventory.find(uuid);
