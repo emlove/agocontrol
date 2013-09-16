@@ -22,33 +22,47 @@ using namespace agocontrol;
 
 AgoConnection *agoConnection;
 sqlite3 *db;
+qpid::types::Variant::Map inventory;
 
+std::string uuidToName(std::string uuid) {
+	qpid::types::Variant::Map devices = inventory["inventory"].asMap();
+	qpid::types::Variant::Map device = devices[uuid].asMap();
+	return device["name"].asString() == "" ? uuid : device["name"].asString();
+}
 
 void eventHandler(std::string subject, qpid::types::Variant::Map content) {
 	sqlite3_stmt *stmt;
 	int rc;
 	string result;
-	string uuid = content["uuid"].asString();
-	string environment = subject; // todo: replacements
-	string level = content["level"].asString();
-	int time = 0; // todo: calc unix timestamp
-	string query = "INSERT INTO data VALUES(null,?,?,?,?)";
-	rc = sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, NULL);
-	if(rc!=SQLITE_OK) {
-		fprintf(stderr, "sql error #%d: %s\n", rc,sqlite3_errmsg(db));
-		return;
-	}
-	rc = sqlite3_step(stmt);
-	switch(rc) {
-		case SQLITE_ERROR:
-			fprintf(stderr, "step error: %s\n",sqlite3_errmsg(db));
-			break;
-		case SQLITE_ROW:
-			if (sqlite3_column_type(stmt, 0) == SQLITE_TEXT) result =string( (const char*)sqlite3_column_text(stmt, 0));
-			break;
-	}
+	string uuid = uuidToName(content["uuid"].asString());
+	cout << subject << " " << content << endl;
+	if (subject != "" && content["level"].asString() != "") {
+		string environment = subject; // todo: replacements
+		replaceString(subject, "event.environment.", "");
+		replaceString(subject, "changed", "");
+		cout << "environment: " << environment << endl;
+		string level = content["level"].asString();
+		stringstream timestring;
+		timestring << time(NULL);
+		string query = "INSERT INTO data VALUES(null," + uuid + "," + environment + "," + level + "," + timestring.str() + ")";
 
-	sqlite3_finalize(stmt);
+		rc = sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, NULL);
+		if(rc!=SQLITE_OK) {
+			fprintf(stderr, "sql error #%d: %s\n", rc,sqlite3_errmsg(db));
+			return;
+		}
+		rc = sqlite3_step(stmt);
+		switch(rc) {
+			case SQLITE_ERROR:
+				fprintf(stderr, "step error: %s\n",sqlite3_errmsg(db));
+				break;
+			case SQLITE_ROW:
+				if (sqlite3_column_type(stmt, 0) == SQLITE_TEXT) result =string( (const char*)sqlite3_column_text(stmt, 0));
+				break;
+		}
+
+		sqlite3_finalize(stmt);
+	}
 }
 
 qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
@@ -70,5 +84,6 @@ int main(int argc, char **argv) {
 	agoConnection->addDevice("dataloggercontroller", "dataloggercontroller");
 	agoConnection->addHandler(commandHandler);
 	agoConnection->addEventHandler(eventHandler);
+	inventory = agoConnection->getInventory();
 	agoConnection->run();
 }
