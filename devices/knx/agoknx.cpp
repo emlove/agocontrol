@@ -10,19 +10,13 @@
 */
 
 #include <iostream>
+#include <sstream>
 #include <uuid/uuid.h>
 #include <stdlib.h>
 
 #include <unistd.h>
 #include <pthread.h>
 #include <stdio.h>
-
-#include <qpid/messaging/Connection.h>
-#include <qpid/messaging/Message.h>
-#include <qpid/messaging/Receiver.h>
-#include <qpid/messaging/Sender.h>
-#include <qpid/messaging/Session.h>
-#include <qpid/messaging/Address.h>
 
 #include <tinyxml2.h>
 
@@ -39,15 +33,13 @@ using namespace agocontrol;
 
 int polldelay = 0;
 
-Sender sender;
-Receiver receiver;
-Session session;
-
 Variant::Map deviceMap;
 
 EIBConnection *eibcon;
 pthread_mutex_t mutexCon;
 pthread_t listenerThread;
+
+AgoConnection *agoConnection;
 
 /**
  * parses the device XML file and creates a qpid::types::Variant::Map with the data
@@ -105,11 +97,7 @@ void reportDevices(Variant::Map devicemap) {
 		// printf("uuid: %s\n", it->first.c_str());
 		device = it->second.asMap();
 		// printf("devicetype: %s\n", device["devicetype"].asString().c_str());
-		content["devicetype"] = device["devicetype"].asString();
-		content["uuid"] = it->first;
-		encode(content, event);
-		event.setSubject("event.device.announce");
-		sender.send(event);
+		agoConnection->addDevice(it->first.c_str(), device["devicetype"].asString().c_str(), true);
 	}
 }
 
@@ -183,47 +171,27 @@ void *listener(void *param) {
 						Message event;
 						Variant::Map content;
 
-						content["uuid"] = uuid;
 						if(type == "onoff" || type == "onoffstatus") { 
 							content["level"] = tl.getShortUserData()==1 ? 255 : 0;
-							encode(content, event);
-							event.setSubject("event.device.statechanged");
+							agoConnection->emitEvent(uuid.c_str(), "event.device.statechanged", tl.getShortUserData()==1 ? 255 : 0, "");
 						} else if (type == "setlevel" || type == "levelstatus") {
 							int data = tl.getUIntData(); 
-							printf("levelstatus/setlevel: %i %u\n", data, (unsigned int) data);
-							content["level"] = data;
-							encode(content, event);
-							event.setSubject("event.device.statechanged");
+							agoConnection->emitEvent(uuid.c_str(), "event.device.statechanged", data, "");
 						} else if (type == "temperature") {
-							content["level"] = tl.getFloatData(); 
-							content["unit"] = "degC";
-							encode(content, event);
-							event.setSubject("event.environment.temperaturechanged");
+							agoConnection->emitEvent(uuid.c_str(), "event.environment.temperaturechanged", tl.getFloatData(), "degC");
 						} else if (type == "brightness") {
-							content["level"] = tl.getFloatData(); 
-							content["unit"] = "lux";
-							encode(content, event);
-							event.setSubject("event.environment.brightnesschanged");
+							agoConnection->emitEvent(uuid.c_str(), "event.environment.brightnesschanged", tl.getFloatData(), "lux");
 						} else if (type == "energy") {
-							content["level"] = tl.getFloatData(); 
-							content["unit"] = "mA";
-							encode(content, event);
-							event.setSubject("event.environment.energychanged");
+							agoConnection->emitEvent(uuid.c_str(), "event.environment.energychanged", tl.getFloatData(), "mA");
 						} else if (type == "energyusage") {
 							unsigned char buffer[4];
 							if (tl.getUserData(buffer,4) == 4) {
 								printf("USER DATA: %x %x %x %x \n", buffer[0],buffer[1],buffer[2],buffer[3]);
 							}
-							content["level"] = "";
-							content["unit"] = "Wh";
-							encode(content, event);
-							event.setSubject("event.environment.powerchanged");
+							// event.setSubject("event.environment.powerchanged");
 						} else if (type == "binary") {
-							content["level"] = tl.getShortUserData()==1 ? 255 : 0; 
-							encode(content, event);
-							event.setSubject("event.environment.sensorchanged");
+							agoConnection->emitEvent(uuid.c_str(), "event.security.sensortriggered", tl.getShortUserData()==1 ? 255 : 0, "");
 						}
-						sender.send(event);	
 					}
 				}
 				break;
@@ -233,17 +201,66 @@ void *listener(void *param) {
 
 	return NULL;
 }
+
+qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
+	qpid::types::Variant::Map returnval;
+	std::string internalid = content["internalid"].asString();
+	printf("received command  %s for device %s\n", content["command"].asString().c_str(), internalid.c_str());
+	qpid::types::Variant::Map::const_iterator it = deviceMap.find(internalid);
+	qpid::types::Variant::Map device;
+	if (it != deviceMap.end()) {
+		device=it->second.asMap();
+	} else {
+		returnval["result"]=-1;
+	}
+	Telegram *tg = new Telegram();
+	eibaddr_t dest;
+	bool handled=true;
+	if (content["command"] == "on") {
+		string destGA = device["onoff"];
+		dest = Telegram::stringtogaddr(destGA);
+		tg->setShortUserData(1);
+	} else if (content["command"] == "off") {
+		string destGA = device["onoff"];
+		dest = Telegram::stringtogaddr(destGA);
+		tg->setShortUserData(0);
+	} else if (content["command"] == "stop") {
+		string destGA = device["stop"];
+		dest = Telegram::stringtogaddr(destGA);
+		tg->setShortUserData(1);
+	} else if (content["command"] == "push") {
+		string destGA = device["push"];
+		dest = Telegram::stringtogaddr(destGA);
+		tg->setShortUserData(0);
+	} else if (content["command"] == "setlevel") {
+		int level=0;
+		string destGA = device["setlevel"];
+		dest = Telegram::stringtogaddr(destGA);
+		level = atoi(content["level"].asString().c_str());
+		printf("GOT LEVEL: %d\n", level);
+		tg->setDataFromChar(level);
+	} else {
+		handled=false;
+	}
+	if (handled) {	
+		tg->setGroupAddress(dest);
+		printf("sending telegram\n");
+		pthread_mutex_lock (&mutexCon);
+		bool result = tg->sendTo(eibcon);
+		pthread_mutex_unlock (&mutexCon);
+		printf("Result: %i\n",result);
+		returnval["result"]=result;
+	} else {
+		printf("ERROR, received undhandled command\n");
+		returnval["result"]=-1;
+	}
+}
+
 int main(int argc, char **argv) {
-	std::string broker;
 	std::string eibdurl;
 	std::string devicesFile;
 
-	Variant::Map connectionOptions;
-
 	// parse config
-	broker=getConfigOption("system", "broker", "localhost:5672");
-	connectionOptions["username"]=getConfigOption("system", "username", "agocontrol");
-	connectionOptions["password"]=getConfigOption("system", "password", "letmein");
 	eibdurl=getConfigOption("knx", "url", "ip:127.0.0.1");
 	polldelay=atoi(getConfigOption("knx", "polldelay", "5000").c_str());
 	devicesFile=getConfigOption("knx", "devicesfile", "/etc/opt/agocontrol/knx/devices.xml");
@@ -252,21 +269,6 @@ int main(int argc, char **argv) {
 	if (!loadDevices(devicesFile, deviceMap)) {
 		printf("ERROR, can't load device xml\n");
 		exit(-1);
-	}
-
-	connectionOptions["reconnect"] = "true";
-
-	Connection connection(broker, connectionOptions);
-	try {
-		connection.open(); 
-		session = connection.createSession(); 
-		receiver = session.createReceiver("agocontrol; {create: always, node: {type: topic}}"); 
-		sender = session.createSender("agocontrol; {create: always, node: {type: topic}}"); 
-	} catch(const std::exception& error) {
-		std::cerr << error.what() << std::endl;
-		connection.close();
-		printf("could not startup\n");
-		return 1;
 	}
 
 	printf("connecting to eibd\n");
@@ -283,95 +285,16 @@ int main(int argc, char **argv) {
 		exit(-1);
 	}
 
-	pthread_mutex_init(&mutexCon,NULL);
-	pthread_create(&listenerThread, NULL, listener, NULL);
+	// connect to broker
+	agoConnection = new AgoConnection("knx");
 
 	// announce devices to resolver
 	reportDevices(deviceMap);
 
+	pthread_mutex_init(&mutexCon,NULL);
+	pthread_create(&listenerThread, NULL, listener, NULL);
 
-
-	while( true )
-	{
-
-		// Do stuff
-		try{
-			Variant::Map content;
-			Message message = receiver.fetch(Duration::SECOND * 3);
-
-			// workaround for bug qpid-3445
-			if (message.getContent().size() < 4) {
-				throw qpid::messaging::EncodingException("message too small");
-			}
-
-			decode(message, content);
-			// std::cout << content << std::endl;
-				session.acknowledge();
-			if (content["command"] == "discover") {
-				reportDevices(deviceMap);
-			} else if (message.getSubject()=="") { // no subject, this should be a command
-				// let's see if the command is for one of our devices
-				for (Variant::Map::const_iterator it = deviceMap.begin(); it != deviceMap.end(); ++it) {
-					if (content["uuid"] == it->first) {
-						Variant::Map device = it->second.asMap();
-						printf("received command  %s for device %s\n", content["command"].asString().c_str(), it->first.c_str());
-						Telegram *tg = new Telegram();
-						eibaddr_t dest;
-						bool handled=true;
-						if (content["command"] == "on") {
-							string destGA = device["onoff"];
-							dest = Telegram::stringtogaddr(destGA);
-							tg->setShortUserData(1);
-						} else if (content["command"] == "off") {
-							string destGA = device["onoff"];
-							dest = Telegram::stringtogaddr(destGA);
-							tg->setShortUserData(0);
-						} else if (content["command"] == "stop") {
-							string destGA = device["stop"];
-							dest = Telegram::stringtogaddr(destGA);
-							tg->setShortUserData(1);
-						} else if (content["command"] == "push") {
-							string destGA = device["push"];
-							dest = Telegram::stringtogaddr(destGA);
-							tg->setShortUserData(0);
-						} else if (content["command"] == "setlevel") {
-							int level=0;
-							string destGA = device["setlevel"];
-							dest = Telegram::stringtogaddr(destGA);
-							level = atoi(content["level"].asString().c_str());
-							printf("GOT LEVEL: %d\n", level);
-							tg->setDataFromChar(level);
-						} else {
-							handled=false;
-						}
-						if (handled) {	
-							tg->setGroupAddress(dest);
-							printf("sending telegram\n");
-							pthread_mutex_lock (&mutexCon);
-							bool result = tg->sendTo(eibcon);
-							pthread_mutex_unlock (&mutexCon);
-							printf("Result: %i\n",result);
-						} else {
-							printf("ERROR, received undhandled command\n");
-						}
-					}
-				}
-			}
-
-		} catch(const NoMessageAvailable& error) {
-			
-		} catch(const std::exception& error) {
-			std::cerr << error.what() << std::endl;
-		}
-
-	}
-
-	try {
-		connection.close();
-	} catch(const std::exception& error) {
-		std::cerr << error.what() << std::endl;
-		connection.close();
-		return 1;
-	}
-	
+	agoConnection->addHandler(commandHandler);
+	agoConnection->run();
 }
+

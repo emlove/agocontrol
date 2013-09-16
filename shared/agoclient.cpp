@@ -520,6 +520,20 @@ bool agocontrol::AgoConnection::emitEvent(const char *internalId, const char *ev
 	content["uuid"] = internalIdToUuid(internalId);
 	return sendMessage(eventType, content);
 }
+bool agocontrol::AgoConnection::emitEvent(const char *internalId, const char *eventType, float level, const char *unit) {
+	Variant::Map content;
+	content["level"] = level;
+	content["unit"] = unit;
+	content["uuid"] = internalIdToUuid(internalId);
+	return sendMessage(eventType, content);
+}
+bool agocontrol::AgoConnection::emitEvent(const char *internalId, const char *eventType, int level, const char *unit) {
+	Variant::Map content;
+	content["level"] = level;
+	content["unit"] = unit;
+	content["uuid"] = internalIdToUuid(internalId);
+	return sendMessage(eventType, content);
+}
 
 
 string agocontrol::AgoConnection::getDeviceType(const char *internalId) {
