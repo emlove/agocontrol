@@ -129,7 +129,9 @@ void handleEvent(Variant::Map *device, string subject, Variant::Map *content) {
 
 		value["unit"] = (*content)["unit"];
 		value["level"] = (*content)["level"];
-		value["timestamp"] = time(NULL);
+		stringstream timestamp;
+		timestamp << time(NULL);
+		value["timestamp"] = timestamp.str();
 		(*values)[quantity] = value;
 	}
 }
