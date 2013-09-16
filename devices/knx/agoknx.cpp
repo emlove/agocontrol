@@ -168,11 +168,7 @@ void *listener(void *param) {
 					string type = typeFromGA(deviceMap[uuid].asMap(),Telegram::gaddrtostring(tl.getGroupAddress()));
 					if (type != "") {
 						printf("handling telegram, GA from telegram belongs to: %s - type: %s\n",uuid.c_str(),type.c_str());
-						Message event;
-						Variant::Map content;
-
 						if(type == "onoff" || type == "onoffstatus") { 
-							content["level"] = tl.getShortUserData()==1 ? 255 : 0;
 							agoConnection->emitEvent(uuid.c_str(), "event.device.statechanged", tl.getShortUserData()==1 ? 255 : 0, "");
 						} else if (type == "setlevel" || type == "levelstatus") {
 							int data = tl.getUIntData(); 
@@ -254,6 +250,7 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 		printf("ERROR, received undhandled command\n");
 		returnval["result"]=-1;
 	}
+	return returnval;
 }
 
 int main(int argc, char **argv) {
