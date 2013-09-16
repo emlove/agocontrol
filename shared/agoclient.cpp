@@ -307,7 +307,7 @@ void agocontrol::AgoConnection::run() {
 						// or if it was the special command inventory when the filterCommands was false, that's used by the resolver
 						// to reply to "anonymous" requests not destined to any specific uuid
 						if ((replyaddress && isOurDevice) || (content["command"]=="inventory" && filterCommands==false)) {
-							std::cout << "sending reply" << std::endl;
+							// std::cout << "sending reply" << std::endl;
 							Session replysession = connection.createSession();
 							try {
 								Sender replysender = replysession.createSender(replyaddress);

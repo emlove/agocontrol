@@ -23,6 +23,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <stdlib.h>
+#include <pthread.h>
 #include <sys/sysinfo.h>
 
 #include <sstream>
@@ -62,6 +63,7 @@ Variant::Map systeminfo; // holds system information
 Variant::Map variables; // holds global variables
 
 Inventory *inv;
+int discoverdelay;
 
 void get_sysinfo() {
 	struct sysinfo s_info;
@@ -115,6 +117,10 @@ string valuesToString(Variant::Map *values) {
 
 void handleEvent(Variant::Map *device, string subject, Variant::Map *content) {
 	Variant::Map *values;
+	if ((*device)["values"].isVoid())  {
+		cout << "error, device[values] is empty in handleEvent()" << endl;
+		return;
+	}
 	values = &(*device)["values"].asMap();
 	if (subject == "event.device.statechanged") {// event.device.statechange
 		(*values)["state"] = (*content)["level"];
@@ -155,8 +161,10 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 				Variant::Map *device;
 				string room = inv->getdeviceroom(content["device"]);
 				string uuid = content["device"];
-				device = &inventory[uuid].asMap();
-				(*device)["room"]= room;
+				if (!inventory[uuid].isVoid()) {
+					device = &inventory[uuid].asMap();
+					(*device)["room"]= room;
+				}
 			} else {
 				reply["returncode"] = -1;
 			}
@@ -167,8 +175,10 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 				Variant::Map *device;
 				string name = inv->getdevicename(content["device"]);
 				string uuid = content["device"];
-				device = &inventory[uuid].asMap();
-				(*device)["name"]= name;
+				if (!inventory[uuid].isVoid()) {
+					device = &inventory[uuid].asMap();
+					(*device)["name"]= name;
+				}
 				emitNameEvent(content["device"].asString().c_str(), "event.system.devicenamechanged", content["name"].asString().c_str());
 			} else {
 				reply["returncode"] = -1;
@@ -235,7 +245,15 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 		}
 	} else {
 		if (content["command"] == "inventory") {
-			cout << "responding to inventory request" << std::endl;
+			// cout << "responding to inventory request" << std::endl;
+			for (qpid::types::Variant::Map::iterator it = inventory.begin(); it != inventory.end(); it++) {
+				if (!it->second.isVoid()) {
+					qpid::types::Variant::Map device = it->second.asMap();
+					if (time(NULL) - device["lastseen"].asUint64() > 2*discoverdelay) {
+						cout << "Stale device: " << it->first << endl;
+					}
+				}
+			}
 			reply["inventory"] = inventory;
 			reply["schema"] = schema;	
 			reply["rooms"] = inv->getrooms();
@@ -266,10 +284,17 @@ void eventHandler(std::string subject, qpid::types::Variant::Map content) {
 			// clog << agocontrol::kLogDebug << "getting room from inventory" << endl;
 			device["room"]=inv->getdeviceroom(content["uuid"].asString()); 
 			device["room"].setEncoding("utf8");
-			device["state"]="0";
-			device["state"].setEncoding("utf8");
-			device["values"]=values;
-			cout << "adding device: uuid="  << uuid  << " type: " << device["devicetype"].asString() << std::endl;
+			long int timestamp;
+			timestamp = time(NULL);
+			device["lastseen"] = timestamp;
+			qpid::types::Variant::Map::const_iterator it = inventory.find(uuid);
+			if (it == inventory.end()) {
+				// device is newly announced, set default state and values
+				device["state"]="0";
+				device["state"].setEncoding("utf8");
+				device["values"]=values;
+				cout << "adding device: uuid="  << uuid  << " type: " << device["devicetype"].asString() << std::endl;
+			}
 			// clog << agocontrol::kLogDebug << "adding device: uuid="  << uuid  << " type: " << device["devicetype"].asString() << std::endl;
 			inventory[uuid] = device;
 		}
@@ -286,9 +311,21 @@ void eventHandler(std::string subject, qpid::types::Variant::Map content) {
 		if (content["uuid"].asString() != "") {
 			string uuid = content["uuid"];
 			// see if we have that device in the inventory already, if yes handle the event
-			if (inventory.find(uuid) != inventory.end()) handleEvent(&inventory[uuid].asMap(), subject, &content);
+			if (inventory.find(uuid) != inventory.end()) {
+				if (!inventory[uuid].isVoid()) handleEvent(&inventory[uuid].asMap(), subject, &content);
+			}
 		}
 
+	}
+}
+
+void *discover(void *param) {
+	Variant::Map discovercmd;
+	discovercmd["command"] = "discover";
+	sleep(2);
+	while (true) {
+		agoConnection->sendMessage("",discovercmd);
+		sleep(discoverdelay);
 	}
 }
 
@@ -305,6 +342,7 @@ int main(int argc, char **argv) {
 //	clog << agocontrol::kLogNotice << "starting up" << std::endl;
 
 	schemafile=getConfigOption("system", "schema", "/etc/opt/agocontrol/schema.yaml");
+	discoverdelay=atoi(getConfigOption("system", "discoverdelay", "300").c_str());
 
 	systeminfo["uuid"] = getConfigOption("system", "uuid", "00000000-0000-0000-000000000000");
 	systeminfo["version"] = AGOCONTROL_VERSION;
@@ -318,12 +356,12 @@ int main(int argc, char **argv) {
 	variables = jsonFileToVariantMap(VARIABLESMAPFILE);
 
 	agoConnection->addDevice("agocontroller","agocontroller");
+
+	static pthread_t discoverThread;
+	pthread_create(&discoverThread,NULL,discover,NULL);
 	
 	// discover devices
 //	clog << agocontrol::kLogDebug << "discovering devices" << std::endl;
-	Variant::Map discovercmd;
-	discovercmd["command"] = "discover";
-	agoConnection->sendMessage("",discovercmd);
 	agoConnection->run();	
 }
 
