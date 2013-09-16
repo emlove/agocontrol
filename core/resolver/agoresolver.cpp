@@ -258,6 +258,7 @@ void eventHandler(std::string subject, qpid::types::Variant::Map content) {
 			device["handled-by"]=content["handled-by"].asString();
 			// clog << agocontrol::kLogDebug << "getting name from inventory" << endl;
 			device["name"]=inv->getdevicename(content["uuid"].asString());
+			if (device["name"].asString() == "" && device["devicetype"] == "agocontroller") device["name"]="agocontroller";
 			device["name"].setEncoding("utf8");
 			// clog << agocontrol::kLogDebug << "getting room from inventory" << endl;
 			device["room"]=inv->getdeviceroom(content["uuid"].asString()); 
