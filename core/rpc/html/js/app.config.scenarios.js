@@ -68,17 +68,13 @@ function scenarioConfig() {
     };
 
     /**
-     * Sends the create scenario command
+     * Creates a scenario map out of the form fields
+     * inside a container
      */
-    this.createScenario = function() {
-	if ($("#scenarioName").val() == "") {
-	    alert("Please supply an event name!");
-	    return;
-	}
-
+    this.buildScenarioMap = function(containerID) {
 	var map = {};
 	var map_idx = 0;
-	var commands = document.getElementById("scenarioBuilder").childNodes;
+	var commands = document.getElementById(containerID).childNodes;
 	for ( var i = 0; i < commands.length; i++) {
 	    var command = commands[i];
 	    var tmp = {};
@@ -101,10 +97,22 @@ function scenarioConfig() {
 	    map[map_idx++] = tmp;
 	}
 
+	return map;
+    };
+
+    /**
+     * Sends the create scenario command
+     */
+    this.createScenario = function() {
+	if ($("#scenarioName").val() == "") {
+	    alert("Please supply an event name!");
+	    return;
+	}
+
 	var content = {};
 	content.command = "setscenario";
 	content.uuid = scenarioController;
-	content.scenariomap = map;
+	content.scenariomap = self.buildScenarioMap("scenarioBuilder");
 
 	sendCommand(content, function(res) {
 	    console.log(res);
@@ -134,8 +142,12 @@ function scenarioConfig() {
     /**
      * Adds a command selection entry
      */
-    this.addCommand = function() {
+    this.addCommand = function(containerID, defaultValues) {
 	var row = document.createElement("div");
+
+	if (!containerID) {
+	    containerID = "scenarioBuilder";
+	}
 
 	var removeBtn = document.createElement("input");
 	removeBtn.style.display = "inline";
@@ -165,12 +177,18 @@ function scenarioConfig() {
 		}
 		deviceSelect.options[deviceSelect.options.length] = new Option(dspName, dev.uuid);
 		deviceSelect.options[deviceSelect.options.length - 1]._dev = dev;
+		if (defaultValues && defaultValues.uuid == dev.uuid) {
+		    deviceSelect.selectedIndex = deviceSelect.options.length - 1;
+		}
 	    }
 	}
 
 	// Special case for the sleep command
 	deviceSelect.options[deviceSelect.options.length] = new Option("Sleep", "sleep");
 	deviceSelect.options[deviceSelect.options.length - 1]._dev = "sleep";
+	if (defaultValues && !defaultValues.uuid) {
+	    deviceSelect.selectedIndex = deviceSelect.options.length - 1;
+	}
 
 	row.appendChild(deviceSelect);
 
@@ -187,12 +205,17 @@ function scenarioConfig() {
 		    var cmd = schema.devicetypes[dev.devicetype].commands[i];
 		    commands.options[i] = new Option(schema.commands[cmd].name, cmd);
 		    commands.options[i]._cmd = schema.commands[cmd];
-
+		    if (defaultValues && defaultValues.command == cmd) {
+			commands.selectedIndex = i;
+		    }
 		}
 	    } else {
 		// Special case for the sleep command
 		commands.options[commands.options.length] = new Option("Delay", "scenariosleep");
 		commands.options[commands.options.length - 1]._cmd = "sleep";
+		if (defaultValues && defaultValues.command == "scenariosleep") {
+		    commands.selectedIndex = commands.options.length - 1;
+		}
 	    }
 	    commands.style.display = "inline";
 	    commandContainer.appendChild(commands);
@@ -219,6 +242,9 @@ function scenarioConfig() {
 			field.setAttribute("size", "20");
 			field.setAttribute("name", key);
 			field.setAttribute("placeholder", cmd.parameters[key].name);
+			if (defaultValues && defaultValues[key]) {
+			    field.setAttribute("value", defaultValues.key);
+			}
 			commandContainer._params.push(field);
 			commandContainer.appendChild(field);
 		    }
@@ -231,6 +257,9 @@ function scenarioConfig() {
 		    field.setAttribute("size", "20");
 		    field.setAttribute("name", "delay");
 		    field.setAttribute("placeholder", "Delay in seconds");
+		    if (defaultValues && defaultValues["delay"]) {
+			field.setAttribute("value", defaultValues.delay);
+		    }
 		    commandContainer._params.push(field);
 		    commandContainer.appendChild(field);
 		}
@@ -243,7 +272,7 @@ function scenarioConfig() {
 	deviceSelect.onchange();
 
 	row.appendChild(commandContainer);
-	document.getElementById("scenarioBuilder").appendChild(row);
+	document.getElementById(containerID).appendChild(row);
     };
 
     /**
@@ -273,6 +302,49 @@ function scenarioConfig() {
 	    $('#configTable').unblock();
 	});
     };
+
+    this.editScenario = function(item) {
+	var content = {};
+	content.scenario = item.uuid;
+	content.uuid = scenarioController;
+	content.command = 'getscenario';
+	sendCommand(content, function(res) {
+	    // Build command list
+	    for ( var idx in res.result.scenariomap) {
+		self.addCommand("scenarioBuilderEdit", res.result.scenariomap[idx]);
+	    }
+
+	    // Save the id (needed for the save command)
+	    self.openScenario = item.uuid;
+
+	    // Open the dialog
+	    $("#editScenarioDialog").dialog({
+		modal : true,
+		width : 900,
+		height : 600,
+		close : function() {
+		    // Done, restore stuff
+		    document.getElementById("scenarioBuilderEdit").innerHTML = "";
+		    self.openScenario = null;
+		}
+	    });
+	});
+    };
+
+    this.doEditScenario = function() {
+	var content = {};
+	content.command = "setscenario";
+	content.uuid = scenarioController;
+	content.scenario = self.openScenario;
+	content.scenariomap = self.buildScenarioMap("scenarioBuilderEdit");
+	console.log(content);
+	sendCommand(content, function(res) {
+	    if (res.result && res.result.scenario) {
+		$("#editScenarioDialog").dialog("close");
+	    }
+	});
+    };
+
 }
 
 /**

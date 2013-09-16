@@ -1,43 +1,52 @@
 <div class="container" id="contentarea">
 	<h3>Scenario Configuration</h3>
 	<div class="row">
-        <table id="configTable" style="width:100%; margin-top: 15px; margin-bottom: 5px;">
-                <thead>
-                    <tr>
-                        <th style="font-weight: 700">Name</th>
-                        <th style="font-weight: 700">Room</th>
-                        <th style="font-weight: 700">Action</th>
-                    </tr>
-                </thead>
-                <tbody data-bind="foreach: { data: scenarios, afterRender: makeEditable }">
-                	<!-- ko if: uuid != '0' -->
-                    <tr>
-                       	<!-- ko if: name -->
-					        	<td class="edit_device" data-bind="attr: {'data-uuid': uuid}, text: name"></td>
-						<!-- /ko -->
-						<!-- ko ifnot: name -->
-					        	<td class="edit_device" data-bind="attr: {'data-uuid': uuid}">unset</td>
-						<!-- /ko -->
-                        <!-- ko if: room -->
-					        	<td class="select_room" data-bind="attr: {'data-uuid': uuid}, text: room"></td>
-						<!-- /ko -->
-						<!-- ko ifnot: room -->
-					        	<td class="select_room" data-bind="attr: {'data-uuid': uuid}" >unset</td>
-						<!-- /ko -->
-                        <td style="text-align: center">
-                        	<div style="width: 48%;" class="cmd-btn pretty medium default btn" data-bind="attr: {'data-uuid': uuid}">edit</div>
-                        	<div style="width: 48%;" class="cmd-btn pretty medium default btn" data-bind="attr: {'data-uuid': uuid}, click: $parent.deleteScenario">delete</div>
-                        </td>
-                    </tr>
-                    <!-- /ko -->
-                </tbody>
-        </table>
-   </div>
-   
-   	<div class="row">
+		<table id="configTable"
+			style="width: 100%; margin-top: 15px; margin-bottom: 5px;">
+			<thead>
+				<tr>
+					<th style="font-weight: 700">Name</th>
+					<th style="font-weight: 700">Room</th>
+					<th style="font-weight: 700">Action</th>
+				</tr>
+			</thead>
+			<tbody
+				data-bind="foreach: { data: scenarios, afterRender: makeEditable }">
+				<!-- ko if: uuid != '0' -->
+				<tr>
+					<!-- ko if: name -->
+					<td class="edit_device"
+						data-bind="attr: {'data-uuid': uuid}, text: name"></td>
+					<!-- /ko -->
+					<!-- ko ifnot: name -->
+					<td class="edit_device" data-bind="attr: {'data-uuid': uuid}">unset</td>
+					<!-- /ko -->
+					<!-- ko if: room -->
+					<td class="select_room"
+						data-bind="attr: {'data-uuid': uuid}, text: room"></td>
+					<!-- /ko -->
+					<!-- ko ifnot: room -->
+					<td class="select_room" data-bind="attr: {'data-uuid': uuid}">unset</td>
+					<!-- /ko -->
+					<td style="text-align: center">
+						<div style="width: 48%;" class="cmd-btn pretty medium default btn"
+							data-bind="attr: {'data-uuid': uuid}, click: $parent.editScenario">edit</div>
+						<div style="width: 48%;" class="cmd-btn pretty medium default btn"
+							data-bind="attr: {'data-uuid': uuid}, click: $parent.deleteScenario">delete</div>
+					</td>
+				</tr>
+				<!-- /ko -->
+			</tbody>
+		</table>
+	</div>
+
+	<div class="row">
 		<h3>Create Scenario</h3>
-		<div id="scenarioBuilder" class="scenarioBuilder"></div><br />
-		<div class="medium primary btn"><a href="#" data-bind="click: addCommand">Add Command</a></div>
+		<div id="scenarioBuilder" class="scenarioBuilder"></div>
+		<br />
+		<div class="medium primary btn">
+			<a href="#" data-bind="click: function() { addCommand('scenarioBuilder'); }">Add Command</a>
+		</div>
 		<br />
 		<form action="" method="post">
 			<h4>Name</h4>
@@ -52,6 +61,22 @@
 			</div>
 		</form>
 	</div>
-   
+
 </div>
 <br />
+<div class="row" id="editScenarioDialog" style="display: none">
+	<div class="row">
+		<h3>Edit Scenario</h3>
+		<div id="scenarioBuilderEdit" class="scenarioBuilder"></div>
+		<br />
+		<div class="medium primary btn">
+			<a href="#" data-bind="click: function() { addCommand('scenarioBuilderEdit'); }" style="color: #FFF">Add Command</a>
+		</div>
+		<br />
+		<form action="" method="post">
+			<div class="medium primary btn">
+				<a href="#" data-bind="click: doEditScenario" style="color: #FFF">Save</a>
+			</div>
+		</form>
+	</div>
+</div>
