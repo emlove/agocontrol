@@ -11,7 +11,7 @@
 				<!-- ko if: room -->
 					<p class="room"><i class="icon-location"></i><span data-bind="text: room"></span></p>
 				<!-- /ko -->
-				<p class="info"><i class="icon-info"></i><span data-bind="text: state"></span></p>
+				<p class="info"><i class="icon-info"></i><span data-bind="text: state() == 0 ? 'OFF' : 'ON'"></span></p>
 			</div>
 		</div>
 	</div>
