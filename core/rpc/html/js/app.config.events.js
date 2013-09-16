@@ -249,6 +249,9 @@ function eventConfig() {
      * Sends the delete event command
      */
     this.deleteEvent = function(item, event) {
+	if (!window.confirm("Are you sure that you want to delete this event?")) {
+	    return;
+	}
 	$('#configTable').block({
 	    message : '<div>Please wait ...</div>',
 	    css : {

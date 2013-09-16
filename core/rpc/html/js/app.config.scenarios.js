@@ -279,6 +279,9 @@ function scenarioConfig() {
      * Sends the delete scenario command
      */
     this.deleteScenario = function(item, event) {
+	if (!window.confirm("Are you sure that you want to delete this scenario?")) {
+	    return;
+	}
 	$('#configTable').block({
 	    message : '<div>Please wait ...</div>',
 	    css : {

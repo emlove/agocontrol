@@ -30,6 +30,9 @@ function floorPlanConfig() {
     };
 
     this.deletePlan = function(item, event) {
+	if (!window.confirm("Are you sure that you want to delete this floorplan?")) {
+	    return;
+	}
 	$('#floorPlanTable').block({
 	    message : '<div>Please wait ...</div>',
 	    css : {
