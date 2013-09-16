@@ -248,9 +248,10 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 			// cout << "responding to inventory request" << std::endl;
 			for (qpid::types::Variant::Map::iterator it = inventory.begin(); it != inventory.end(); it++) {
 				if (!it->second.isVoid()) {
-					qpid::types::Variant::Map device = it->second.asMap();
-					if (time(NULL) - device["lastseen"].asUint64() > 2*discoverdelay) {
-						cout << "Stale device: " << it->first << endl;
+					qpid::types::Variant::Map *device = &it->second.asMap();
+					if (time(NULL) - (*device)["lastseen"].asUint64() > 2*discoverdelay) {
+						// cout << "Stale device: " << it->first << endl;
+						(*device)["stale"] = 1;
 					}
 				}
 			}
@@ -287,6 +288,7 @@ void eventHandler(std::string subject, qpid::types::Variant::Map content) {
 			uint64_t timestamp;
 			timestamp = time(NULL);
 			device["lastseen"] = timestamp;
+			device["stale"] = 0;
 			qpid::types::Variant::Map::const_iterator it = inventory.find(uuid);
 			if (it == inventory.end()) {
 				// device is newly announced, set default state and values
@@ -294,7 +296,16 @@ void eventHandler(std::string subject, qpid::types::Variant::Map content) {
 				device["state"].setEncoding("utf8");
 				device["values"]=values;
 				cout << "adding device: uuid="  << uuid  << " type: " << device["devicetype"].asString() << std::endl;
+			} else {
+				// device exists, get current values
+				qpid::types::Variant::Map olddevice;
+				if (!it->second.isVoid())  {
+					olddevice= it->second.asMap();
+					device["state"] = olddevice["state"];
+					device["values"] = olddevice["values"];
+				}
 			}
+				
 			// clog << agocontrol::kLogDebug << "adding device: uuid="  << uuid  << " type: " << device["devicetype"].asString() << std::endl;
 			inventory[uuid] = device;
 		}
