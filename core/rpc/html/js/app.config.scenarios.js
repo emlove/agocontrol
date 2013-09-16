@@ -84,7 +84,7 @@ function scenarioConfig() {
 	    var tmp = {};
 	    for ( var j = 0; j < command.childNodes.length; j++) {
 		var child = command.childNodes[j];
-		if (child.name && child.name == "device") {
+		if (child.name && child.name == "device" && child.options[child.selectedIndex].value != "sleep") {
 		    tmp.uuid = child.options[child.selectedIndex].value;
 		} else if (child.tagName == "DIV") {
 		    for ( var k = 0; k < child.childNodes.length; k++) {
@@ -160,16 +160,18 @@ function scenarioConfig() {
 		var dspName = "";
 		if (dev.room) {
 		    dspName = dev.room + " - " + dev.name;
-		}
-		else {
+		} else {
 		    dspName = dev.name;
 		}
 		deviceSelect.options[deviceSelect.options.length] = new Option(dspName, dev.uuid);
 		deviceSelect.options[deviceSelect.options.length - 1]._dev = dev;
 	    }
 	}
-	// TODO
-	// deviceSelect.options[i++] = new Option("Sleep", "sleep");
+
+	// Special case for the sleep command
+	deviceSelect.options[deviceSelect.options.length] = new Option("Sleep", "sleep");
+	deviceSelect.options[deviceSelect.options.length - 1]._dev = "sleep";
+
 	row.appendChild(deviceSelect);
 
 	var commandContainer = document.createElement("div");
@@ -180,11 +182,17 @@ function scenarioConfig() {
 	    var dev = deviceSelect.options[deviceSelect.selectedIndex]._dev;
 	    var commands = document.createElement("select");
 	    commands.name = "command";
-	    for ( var i = 0; i < schema.devicetypes[dev.devicetype].commands.length; i++) {
-		var cmd = schema.devicetypes[dev.devicetype].commands[i];
-		commands.options[i] = new Option(schema.commands[cmd].name, cmd);
-		commands.options[i]._cmd = schema.commands[cmd];
+	    if (dev != "sleep") {
+		for ( var i = 0; i < schema.devicetypes[dev.devicetype].commands.length; i++) {
+		    var cmd = schema.devicetypes[dev.devicetype].commands[i];
+		    commands.options[i] = new Option(schema.commands[cmd].name, cmd);
+		    commands.options[i]._cmd = schema.commands[cmd];
 
+		}
+	    } else {
+		// Special case for the sleep command
+		commands.options[commands.options.length] = new Option("Delay", "scenariosleep");
+		commands.options[commands.options.length - 1]._cmd = "sleep";
 	    }
 	    commands.style.display = "inline";
 	    commandContainer.appendChild(commands);
@@ -214,6 +222,17 @@ function scenarioConfig() {
 			commandContainer._params.push(field);
 			commandContainer.appendChild(field);
 		    }
+		} else if (cmd == "sleep") {
+		    // Special case for the sleep command
+		    commandContainer._params = [];
+		    var field = document.createElement("input");
+		    field = document.createElement("input");
+		    field.setAttribute("type", "text");
+		    field.setAttribute("size", "20");
+		    field.setAttribute("name", "delay");
+		    field.setAttribute("placeholder", "Delay in seconds");
+		    commandContainer._params.push(field);
+		    commandContainer.appendChild(field);
 		}
 	    };
 	    if (commands.options.length > 0) {
