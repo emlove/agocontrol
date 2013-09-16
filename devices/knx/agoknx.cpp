@@ -249,7 +249,7 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 		bool result = tg->sendTo(eibcon);
 		pthread_mutex_unlock (&mutexCon);
 		printf("Result: %i\n",result);
-		returnval["result"]=result;
+		returnval["result"]=result ? 0 : -1;
 	} else {
 		printf("ERROR, received undhandled command\n");
 		returnval["result"]=-1;
