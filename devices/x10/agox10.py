@@ -58,6 +58,10 @@ readSwitches = agoclient.getConfigOption("x10", "switches", "A2,A3,A9,B3,B4,B5,B
 switches = map(str, readSwitches.split(',')) 
 for switch in switches: 
 	client.addDevice(switch, "switch")
+readDimmers = agoclient.getConfigOption("x10", "dimmers", "") 
+dimmers = map(str, readDimmers.split(',')) 
+for dimmer in dimmers: 
+	client.addDevice(dimmer, "dimmer")
 
 # This section is used to monitor for incoming RF signals on the CM11A
 
