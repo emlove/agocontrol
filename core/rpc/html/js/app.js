@@ -14,6 +14,12 @@ ko.bindingHandlers.slider = {
 	ko.utils.registerEventHandler(element, "slidechange", function(event, ui) {
 	    var observable = valueAccessor();
 	    observable(ui.value);
+	    // Hack to avoid setting the level on startup
+	    // So we call the syncLevel method when we have
+	    // a mouse event (means user triggered).
+	    if (options.dev && event.clientX) {
+		options.dev.syncLevel();
+	    }
 	});
 	ko.utils.domNodeDisposal.addDisposeCallback(element, function() {
 	    $(element).slider("destroy");
@@ -68,16 +74,16 @@ function device(obj, uuid) {
     this.values = ko.observable(this.values);
 
     this.timeStamp = ko.observable(formatDate(new Date(this.lastseen * 1000)));
-    
+
     if (this.devicetype == "dimmer" || this.devicetype == "dimmerrgb") {
 	this.level = ko.observable(currentState);
-	this.level.subscribe(function(newValue) {
+	this.syncLevel = function() {
 	    var content = {};
 	    content.uuid = uuid;
 	    content.command = "setlevel";
-	    content.level = newValue;
+	    content.level = self.level();
 	    sendCommand(content);
-	});
+	};
     }
 
     if (this.devicetype == "dataloggercontroller") {
