@@ -365,6 +365,7 @@ void OnNotification
 					string label = Manager::Get()->GetValueLabel(id);
 					string units = Manager::Get()->GetValueUnits(id);
 
+					// TODO: send proper types and don't convert everything to string
 					string level = str;
 					string eventtype = "";
 					if (str == "True") level="255";
