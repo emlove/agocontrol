@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.UUID;
 
+import org.alexd.jsonrpc.*;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
@@ -15,6 +16,7 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.util.Log;
@@ -25,7 +27,7 @@ public class AgoConnection {
 	String inventory;
 	Double schemaVersion;
 	ArrayList<AgoDevice> deviceList;
-
+	JSONRPCClient client;
 	public static String SCHEMA = "schema";
 	public static String SCHEMA_VERSION = "version";
 	public static String DEVICES = "inventory"; // TODO needs to be fixed in the resolver, should be devices
@@ -38,6 +40,9 @@ public class AgoConnection {
 		this.host = host;
 		this.port = port;
 		System.out.println(host + ":" + port);
+		client = JSONRPCClient.create("http://" + host + ":" + port + "/jsonrpc", JSONRPCParams.Versions.VERSION_2);
+		client.setConnectionTimeout(2000);
+		client.setSoTimeout(2000);
 		deviceList = new ArrayList<AgoDevice>();
 		getDevices();
 	}
@@ -80,65 +85,54 @@ public class AgoConnection {
 	}
 	
 	public boolean sendCommand(UUID uuid, String command) {
-	    HttpClient client = new DefaultHttpClient();
-	    HttpGet httpGet = new HttpGet("http://" + host + ":" + port + "/command/" + uuid.toString() + "/" + command);
 	    try {
-	        HttpResponse response = client.execute(httpGet);
-	        StatusLine statusLine = response.getStatusLine();
-	        int statusCode = statusLine.getStatusCode();
-	        if (statusCode == 200) {
-	        	return true;
-	        }
-	    } catch (ClientProtocolException e) {
-		        e.printStackTrace();
-		} catch (IOException e) {
-		        e.printStackTrace();
+	    	JSONObject agocommand = new JSONObject();
+	    	agocommand.put("command", command);
+	    	agocommand.put("uuid", uuid.toString());
+	    	JSONObject params = new JSONObject();
+	    	params.put("content", agocommand); 
+	    	JSONObject result = client.callJSONObject("message", params);
+	    	return true;
+	    } catch (JSONRPCException e) {
+	    	  e.printStackTrace();
+	    } catch (JSONException e) {
+	    		e.printStackTrace();
 		}
 		return false;
 	}
 	
 	public boolean setDeviceLevel(UUID uuid, String level) {
-	    HttpClient client = new DefaultHttpClient();
-	    HttpGet httpGet = new HttpGet("http://" + host + ":" + port + "/setdevicelevel/" + uuid.toString() + "/setlevel/" + level);
 	    try {
-	        HttpResponse response = client.execute(httpGet);
-	        StatusLine statusLine = response.getStatusLine();
-	        int statusCode = statusLine.getStatusCode();
-	        if (statusCode == 200) {
-	        	return true;
-	        }
-	    } catch (ClientProtocolException e) {
-		        e.printStackTrace();
-		} catch (IOException e) {
-		        e.printStackTrace();
+	    	JSONObject agocommand = new JSONObject();
+	    	agocommand.put("command", "setlevel");
+	    	agocommand.put("level", level);
+	    	agocommand.put("uuid", uuid.toString());
+	    	JSONObject params = new JSONObject();
+	    	params.put("content", agocommand); 
+	    	JSONObject result = client.callJSONObject("message", params);
+	    	return true;
+	    } catch (JSONRPCException e) {
+	    	  e.printStackTrace();
+	    } catch (JSONException e) {
+	    		e.printStackTrace();
 		}
-		return false;
+	    return false;
 	}
 	
 	private String getInventory() {
 	    StringBuilder builder = new StringBuilder();
-	    HttpClient client = new DefaultHttpClient();
-	    HttpGet httpGet = new HttpGet("http://" + host + ":" + port + "/getinventory");
 	    try {
-	        HttpResponse response = client.execute(httpGet);
-	        StatusLine statusLine = response.getStatusLine();
-	        int statusCode = statusLine.getStatusCode();
-	        if (statusCode == 200) {
-	          HttpEntity entity = response.getEntity();
-	          InputStream content = entity.getContent();
-	          BufferedReader reader = new BufferedReader(new InputStreamReader(content));
-	          String line;
-	          while ((line = reader.readLine()) != null) {
-	            builder.append(line);
-	          }
-	        } else {
-	          Log.e(AgoConnection.class.toString(), "Failed to download file");
-	        }
-	      } catch (ClientProtocolException e) {
-	        e.printStackTrace();
-	      } catch (IOException e) {
-	        e.printStackTrace();
-	      }
+	    	JSONObject command = new JSONObject();
+	    	command.put("command", "inventory");
+	    	JSONObject params = new JSONObject();
+	    	params.put("content", command); 
+	    	JSONObject result = client.callJSONObject("message", params);
+	    	builder.append(result.toString());
+	    } catch (JSONRPCException e) {
+	    	  e.printStackTrace();
+	    } catch (JSONException e) {
+	    		e.printStackTrace();
+		}
 	    return builder.toString();
 	}
 
