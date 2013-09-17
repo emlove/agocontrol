@@ -49,7 +49,8 @@ var eventController = null;
 var dataLoggerController = null;
 var scenarioController = null;
 
-var supported_devices = [ "switch", "dimmer", "binarysensor", "dimmerrgb", "multilevelsensor", , "scenario", "drapes", "brightnesssensor", "powermeter", "energysensor", "humiditysensor", "phone", "pushbutton", "placeholder" ];
+var supported_devices = [ "switch", "dimmer", "binarysensor", "dimmerrgb", "multilevelsensor", , "scenario", "drapes", "brightnesssensor", "powermeter", "energysensor", "humiditysensor", "phone",
+	"pushbutton", "placeholder" ];
 
 function device(obj, uuid) {
     var self = this;
@@ -182,6 +183,8 @@ function initGUI() {
 	init_floorplanConfig();
     } else if (page == "configuration") {
 	deferredInit = init_configuration;
+    } else if (page == "cloudConfig") {
+	init_cloudConfig();
     } else if (page == "deviceConfig") {
 	init_deviceConfig();
     } else if (page == "systemConfig") {

@@ -144,6 +144,8 @@ function scenarioConfig() {
     this.addCommand = function(containerID, defaultValues) {
 	var row = document.createElement("div");
 
+	console.log(schema);
+	
 	if (!containerID) {
 	    containerID = "scenarioBuilder";
 	}
