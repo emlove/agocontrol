@@ -25,6 +25,7 @@ def getP12(SYSTEM_UUID, username, password, pin):
 		f.write(buffer)
 		f.close()
 		command = "/opt/agocontrol/bin/agocloud-import.sh %s %s" % (file_name, pin)
+		# TODO: return codes seem to not work properly with mongoose/cgi/python
 		if os.system(command) == 0:
 			result = "Activation certificate was installed successfully"
 		else:
