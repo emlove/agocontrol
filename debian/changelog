@@ -1,3 +1,9 @@
+agocontrol (1.0-868) UNRELEASED; urgency=low
+
+  * version jump
+
+ -- root <root@pluto.vt100.at>  Tue, 17 Sep 2013 15:46:23 +0200
+
 agocontrol (1.0-98) unstable; urgency=low
 
   * Non-maintainer upload.
