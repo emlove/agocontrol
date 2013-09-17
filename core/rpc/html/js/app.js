@@ -67,6 +67,8 @@ function device(obj, uuid) {
 
     this.values = ko.observable(this.values);
 
+    this.timeStamp = ko.observable(formatDate(new Date(this.lastseen * 1000)));
+    
     if (this.devicetype == "dimmer" || this.devicetype == "dimmerrgb") {
 	this.level = ko.observable(currentState);
 	this.level.subscribe(function(newValue) {
@@ -204,7 +206,7 @@ function handleEvent(response) {
     for ( var i = 0; i < deviceMap.length; i++) {
 	if (deviceMap[i].uuid == response.result.uuid) {
 	    deviceMap[i].state(parseInt(response.result.level));
-
+	    deviceMap[i].timeStamp(formatDate(new Date()));
 	    if (response.result.quantity) {
 		var values = deviceMap[i].values();
 		if (values[response.result.quantity] === undefined) {
