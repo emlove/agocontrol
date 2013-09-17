@@ -85,8 +85,9 @@ CDataFile::CDataFile()
 // Saves the file if any values have changed since the last save.
 CDataFile::~CDataFile()
 {
-	if ( m_bDirty )
+/*	if ( m_bDirty )
 		Save();
+*/
 }
 
 // Clear
