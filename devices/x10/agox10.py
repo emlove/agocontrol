@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 import agoclient
 import threading
 import time
