@@ -10,8 +10,7 @@
 		<strong style="color:red">NOTE: This does NOT work yet</strong><br />	
 		
 		<div style="text-align: center">
-			<form method="post"
-				action="https://cloud.agocontrol.com/cloudreg//">
+			<form method="post" data-bind="attr: {'action': cloudURL}">
 				<input type="text" required="required" placeholder="Your username" name="username"><br>
 				<input type="email" required="required" placeholder="Your E-Mail" name="email"><br>
 				<input type="password" required="required" placeholder="password" name="password"><br>

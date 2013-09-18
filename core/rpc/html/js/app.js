@@ -192,7 +192,7 @@ function initGUI() {
     } else if (page == "configuration") {
 	deferredInit = init_configuration;
     } else if (page == "cloudConfig") {
-	init_cloudConfig();
+	deferredInit = init_cloudConfig;
     } else if (page == "deviceConfig") {
 	init_deviceConfig();
     } else if (page == "systemConfig") {

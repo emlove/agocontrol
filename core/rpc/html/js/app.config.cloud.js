@@ -5,6 +5,9 @@
  */
 function cloudConfig() {
     this.hasNavigation = ko.observable(true);
+    this.cloudURL = ko.observable("");
+    
+    this.cloudURL("https://cloud.agocontrol.com/cloudreg/" + systemvar.uuid + "/");
 }
 
 /**
