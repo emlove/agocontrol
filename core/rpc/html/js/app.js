@@ -108,7 +108,7 @@ function device(obj, uuid) {
 	};
     }
 
-    if (this.devicetype.match(/sensor$/)) {
+    if (this.devicetype.match(/sensor$/) || this.devicetype == "powermeter") {
 	this.valueList = ko.computed(function() {
 	    var result = [];
 	    var i = 0;
