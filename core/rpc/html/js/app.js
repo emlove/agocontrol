@@ -210,7 +210,7 @@ initGUI();
 
 function handleEvent(response) {
     for ( var i = 0; i < deviceMap.length; i++) {
-	if (deviceMap[i].uuid == response.result.uuid) {
+	if (deviceMap[i].uuid == response.result.uuid && response.result.level !== undefined) {
 	    deviceMap[i].state(parseInt(response.result.level));
 	    deviceMap[i].timeStamp(formatDate(new Date()));
 	    if (response.result.quantity) {
