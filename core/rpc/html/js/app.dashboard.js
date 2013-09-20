@@ -9,7 +9,7 @@ function dashBoard() {
     this.deviceList = ko.computed(function() {
 	var list = self.devices();
 	list = list.filter(function(dev) {
-	    return dev.name && dev.devicetype != "event";
+	    return $.trim(dev.name).length != 0 && dev.devicetype != "event";
 	});
 	return list;
     });
