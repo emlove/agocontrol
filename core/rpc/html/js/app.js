@@ -75,7 +75,7 @@ var dataLoggerController = null;
 var scenarioController = null;
 
 var supported_devices = [ "switch", "dimmer", "binarysensor", "dimmerrgb", "multilevelsensor", , "scenario", "drapes", "brightnesssensor", "powermeter", "energysensor", "humiditysensor", "phone",
-	"pushbutton", "placeholder", "temperaturesensor" ];
+	"pushbutton", "placeholder", "temperaturesensor", "energymeter" ];
 
 function device(obj, uuid) {
     var self = this;
@@ -127,7 +127,7 @@ function device(obj, uuid) {
 	};
     }
 
-    if (this.devicetype.match(/sensor$/) || this.devicetype == "powermeter") {
+    if (this.devicetype.match(/sensor$/) || this.devicetype.match(/meter$/)) {
 	this.valueList = ko.computed(function() {
 	    var result = [];
 	    var i = 0;
