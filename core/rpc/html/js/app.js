@@ -113,7 +113,7 @@ function device(obj, uuid) {
 	    var result = [];
 	    var i = 0;
 	    for ( var k in self.values()) {
-		var unit = "-";
+		var unit = self.values()[k].unit;
 		if (schema.units[self.values()[k].unit] !== undefined) {
 		    unit = schema.units[self.values()[k].unit].label;
 		}
