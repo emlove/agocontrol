@@ -32,7 +32,7 @@ function dashBoard() {
 	    return [];
 	}
 	currentList = currentList[self.page() - 1];
-	if (currentList.length >= 3) {
+	if (currentList.length >= 0) {
 	    return currentList.chunk(3)[0];
 	}
 	return [];
@@ -44,7 +44,7 @@ function dashBoard() {
 	    return [];
 	}
 	currentList = currentList[self.page() - 1];
-	if (currentList.length >= 3) {
+	if (currentList.length >= 4) {
 	    return currentList.chunk(3)[1];
 	}
 	return [];
@@ -56,7 +56,7 @@ function dashBoard() {
 	    return [];
 	}
 	currentList = currentList[self.page() - 1];
-	if (currentList.length >= 3) {
+	if (currentList.length >= 7) {
 	    return currentList.chunk(3)[2];
 	}
 	return [];
