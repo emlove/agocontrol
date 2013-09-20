@@ -108,7 +108,7 @@ function device(obj, uuid) {
 	};
     }
 
-    if (this.devicetype == "multilevelsensor") {
+    if (this.devicetype.match(/sensor$/)) {
 	this.valueList = ko.computed(function() {
 	    var result = [];
 	    var i = 0;
