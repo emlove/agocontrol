@@ -7,6 +7,25 @@ Array.prototype.chunk = function(chunkSize) {
     }));
 };
 
+if (!Date.prototype.toISOString) {
+    (function() {
+
+	function pad(number) {
+	    var r = String(number);
+	    if (r.length === 1) {
+		r = '0' + r;
+	    }
+	    return r;
+	}
+
+	Date.prototype.toISOString = function() {
+	    return this.getUTCFullYear() + '-' + pad(this.getUTCMonth() + 1) + '-' + pad(this.getUTCDate()) + 'T' + pad(this.getUTCHours()) + ':' + pad(this.getUTCMinutes()) + ':'
+		    + pad(this.getUTCSeconds()) + '.' + String((this.getUTCMilliseconds() / 1000).toFixed(3)).slice(2, 5) + 'Z';
+	};
+
+    }());
+}
+
 ko.bindingHandlers.slider = {
     init : function(element, valueAccessor, allBindingsAccessor) {
 	var options = allBindingsAccessor().sliderOptions || {};
@@ -542,8 +561,8 @@ function renderGraph(device, environment) {
     content.uuid = dataLoggerController;
     content.command = "getloggergraph";
     content.deviceid = device.uuid;
-    content.start = $("#start_date").datepicker("getDate").toString();
-    content.end = endDate.toString();
+    content.start = $("#start_date").datepicker("getDate").toISOString();
+    content.end = endDate.toISOString();
     content.env = environment.toLowerCase();
 
     sendCommand(content, function(res) {
