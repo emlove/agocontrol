@@ -539,6 +539,9 @@ function doShowDetails(device, template, environment) {
 		    if (graphContainer) {
 			graphContainer.parentNode.removeChild(graphContainer);
 		    }
+		},
+		open : function() {
+		    $("#detailsPage").css("overflow", "visible");
 		}
 	    });
 
