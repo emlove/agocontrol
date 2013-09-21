@@ -220,6 +220,8 @@ function initGUI() {
 	init_eventConfig();
     } else if (page == "scenarioConfig") {
 	init_scenarioConfig();
+    } else if (page == "inventoryView") {
+	deferredInit = init_inventoryView;
     }
 }
 
@@ -308,6 +310,11 @@ function handleInventory(response) {
     if (model.devices !== undefined) {
 	model.devices(deviceMap);
     }
+
+    if (model.inventory !== undefined) {
+	model.inventory(response.result);
+    }
+
     if (model.rooms !== undefined && model.rooms.slice !== undefined) {
 	/* get uuid into rooms */
 	model.rooms([]);
