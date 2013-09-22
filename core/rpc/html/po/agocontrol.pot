@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-09-22 16:32+0200\n"
+"POT-Creation-Date: 2013-09-22 20:12+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,4 +23,36 @@ msgstr ""
 
 #: ../templates/configuration.xml.in.h:2
 msgid "Common Tasks"
+msgstr ""
+
+#: ../templates/navigation/configuration.xml.in.h:1
+msgid "Floorplans"
+msgstr ""
+
+#: ../templates/navigation/configuration.xml.in.h:2
+msgid "Rooms"
+msgstr ""
+
+#: ../templates/navigation/configuration.xml.in.h:3
+msgid "Scenarios"
+msgstr ""
+
+#: ../templates/navigation/configuration.xml.in.h:4
+msgid "Events"
+msgstr ""
+
+#: ../templates/navigation/configuration.xml.in.h:5
+msgid "Devices"
+msgstr ""
+
+#: ../templates/navigation/configuration.xml.in.h:6
+msgid "Variables"
+msgstr ""
+
+#: ../templates/navigation/configuration.xml.in.h:7
+msgid "Cloud"
+msgstr ""
+
+#: ../templates/navigation/configuration.xml.in.h:8
+msgid "System"
 msgstr ""
