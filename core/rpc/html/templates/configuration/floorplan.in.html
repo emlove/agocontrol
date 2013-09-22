@@ -7,20 +7,20 @@
                     </tr>
                 </thead>
                 <tbody data-bind="foreach: { data: floorplans, afterRender: makeEditable }">
-                    <!-- ko if: uuid -->
+                    <ko opts="if: uuid">
                     <tr data-bind="attr: {'data-uuid': uuid}">
-                        <!-- ko if: name -->
+                        <ko opts="if: name">
                                 <td class="edit_fp" data-bind="attr: {'data-uuid': uuid}, text: name"></td>
-                        <!-- /ko -->
-                        <!-- ko ifnot: name -->
+                        </ko>
+                        <ko opts="ifnot: name">
                                 <td class="edit_fp" data-bind="attr: {'data-uuid': uuid}">unset</td>
-                        <!-- /ko -->
+                        </ko>
                         <td style="text-align: center">
                         	<div style="width: 48%;" class="cmd-btn pretty medium default btn" data-bind="click: $parent.editPlan">edit</div>
                         	<div style="width: 48%;" class="cmd-btn pretty medium default btn" data-bind="click: $parent.deletePlan">delete</div>
                         </td>
                     </tr>
-                    <!-- /ko -->
+                    </ko>
                 </tbody>
         </table>
         <br />
