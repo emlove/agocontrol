@@ -53,7 +53,7 @@
 		templateContent = templateContent.replace(/<\/ko>/g, "<!-- /ko -->");
 		var parser = new DOMParser();
 		var doc = parser.parseFromString(templateContent, "application/xml");
-		templateContent = prepareTemplate(doc, "de"); // HARCODED for now
+		templateContent = prepareTemplate(doc, "en"); // HARCODED for now
 	    }
 	    this.templates[templateId] = templateContent;
 	},
