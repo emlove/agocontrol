@@ -8,6 +8,9 @@ cd ..
 
 cd po
 intltool-update -p -x -g agocontrol
+for i  in *.po;
+    do msgmerge -U "$i" agocontrol.pot;
+done
 cd ..
 
 for i in `find . -name \*xml.in`; 
