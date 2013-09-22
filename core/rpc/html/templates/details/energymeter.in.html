@@ -1,0 +1,33 @@
+<div>
+<strong>UUID: </strong><span style="color: darkorange" data-bind="text: uuid"></span><br />
+<ko opts="if: name ">
+<strong>Name:</strong><span style="color: darkorange" data-bind="text: name"></span><br />
+</ko>
+<strong>Type:</strong><span style="color: darkorange" data-bind="text: devicetype"></span><br />
+<ko opts="if: room ">
+<strong>Room:</strong><span style="color: darkorange" data-bind="text: room"></span><br />
+</ko>
+<strong>Lastseen:</strong><span style="color: darkorange" data-bind="text: timeStamp"></span><br />
+<br />
+<ko opts="foreach: valueList">
+	<strong data-bind="text: name"></strong><strong>: </strong>
+	<span style="color: darkorange" data-bind="text: level"></span>
+	<span style="color: darkorange" data-bind="text: unit"></span>
+	<br />
+</ko>
+<br />
+<div style="width: 100%; height: 380px; margin-bottom: 20px;" id="graph"></div>
+<div style="width: 50%; text-align: left; float: left;">
+	<form >
+		<label style="display: inline">
+			<strong>From:</strong>
+			<input type="text" id="dummyDate1" style="opacity: 0; position: absolute; top: 0; left: 0;" />
+			<input type="text" size="10" id="start_date" value="" style="display: inline" readonly="readonly" />
+		</label>
+		<label style="display: inline">
+			<strong>To:</strong>
+			<input type="text" size="10" id="end_date" value="" style="display: inline" readonly="readonly"/>
+		</label>
+	</form>
+</div>
+</div>

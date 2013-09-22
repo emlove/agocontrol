@@ -1,0 +1,44 @@
+<div class="four columns grid-item device"  data-bind="attr: {'data-uuid': uuid}">
+	<div class="row">
+		<div class="three columns">
+			<div class="pretty large primary btn grid-item-icon handle">
+				<i class="icon-arrow-combo" data-bind="click: showDetails"></i>
+			</div>
+		</div>
+		<div class="nine columns">
+			<div class="grid-item-header">
+                                <ko opts="if: name">
+                                    <h3 data-bind="text: name"></h3>
+                                </ko>
+                                <ko opts="ifnot: name">
+                                    <h3 data-bind="text: devicetype"></h3>
+                                </ko>
+				<ko opts="if: room">
+					<p class="room"><i class="icon-location"></i><span data-bind="text: room"></span></p>
+				</ko>
+				<p class="info"><i class="icon-info"></i><span data-bind="text: state"></span></p>
+			</div>
+		</div>
+	</div>
+	<div class="row grid-item-controls">
+		<div class="four columns">
+		    <ko opts="if: state">
+                <div class="cmd-btn pretty medium default btn btn-full grid-command" data-bind="click: turnOn" data-value="on">OPEN</div>
+            </ko>
+            <ko opts="ifnot: state">
+                <div class="cmd-btn pretty medium primary btn btn-full grid-command" data-bind="click: turnOn" data-value="on">OPEN</div>
+            </ko>
+		</div>
+		<div class="four columns">
+			<div class="cmd-btn pretty medium primary btn btn-full grid-command" data-bind="click: turnStop" data-value="stop">STOP</div>
+		</div>
+		<div class="four columns">
+		    <ko opts="if: state">
+		        <div class="cmd-btn pretty medium primary btn btn-full grid-command" data-bind="click: turnOff" data-value="off">CLOSE</div>
+		    </ko>
+            <ko opts="ifnot: state">
+                <div class="cmd-btn pretty medium default btn btn-full grid-command" data-bind="click: turnOff" data-value="off">CLOSE</div>
+            </ko> 
+		</div>
+	</div>
+</div>
