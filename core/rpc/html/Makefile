@@ -3,4 +3,4 @@ all:
 
 clean:
 	echo clean
-	find ./templates -name "*.html" | grep -v in.html | while read file ; do rm $$file ; done
+	find ./templates -name "*.html" | grep -v in.html | while read file ; do rm $$file ; done | tee
