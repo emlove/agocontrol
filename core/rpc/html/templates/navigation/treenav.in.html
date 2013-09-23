@@ -2,12 +2,12 @@
 	<ul data-bind="foreach: { data: rooms, afterRender: afterTreeView }">
 		<li><a data-bind="text: name"></a>
 		<ul data-bind="foreach: devices">
-			<!-- ko if: name != '' -->
+			<ko opts="if: name != ''">
 				<li class="dnd-device" data-bind="text: name, attr : {'data-uuid' : uuid}"></li>
-			<!-- /ko -->
-			<!-- ko if: name == '' -->
+			</ko>
+			<ko opts="if: name == ''">
 				<li class="dnd-device" data-bind="text: devicetype, attr : {'data-uuid' : uuid}"></li>
-			<!-- /ko -->
+			</ko>
 		</ul>
 		</li>
 	</ul>
