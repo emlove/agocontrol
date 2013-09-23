@@ -1,2 +1,3 @@
 templates/configuration.xml.in
 templates/navigation/configuration.xml.in
+templates/navigation/main.xml.in
