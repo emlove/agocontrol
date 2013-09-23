@@ -743,6 +743,9 @@ function eventConfig() {
 			dspName = self.deviceList[i].name;
 		    }
 		    deviceSelect.options[deviceSelect.options.length] = new Option(dspName, self.deviceList[i].uuid);
+		    if (defaultValues && self.deviceList[i].uuid == defaultValues.param.uuid) {
+			deviceSelect.options[deviceSelect.options.length - 1].selected = true;
+		    }
 		}
 	    }
 
