@@ -412,7 +412,7 @@ int main(int argc, char **argv) {
 	port=getConfigOption("rpc", "ports", "8008,8009s");
 	htdocs=getConfigOption("rpc", "htdocs", "/opt/agocontrol/html");
 	certificate=getConfigOption("rpc", "certificate", "/etc/opt/agocontrol/rpc/rpc_cert.pem");
-	numthreads=getConfigOption("rpc", "numthreads", "10");
+	numthreads=getConfigOption("rpc", "numthreads", "30");
 
 	static const char *options[] = {
 		"document_root", htdocs.c_str(),
@@ -473,7 +473,7 @@ int main(int argc, char **argv) {
 				}
 				pthread_mutex_lock(&mutexSubscriptions);	
 				for (map<string,Subscriber>::iterator it = subscriptions.begin(); it != subscriptions.end(); ) {
-					if (it->second.queue.size() > 100) {
+					if (it->second.queue.size() > 20) {
 						// this subscription seems to be abandoned, let's remove it to save resources
 						printf("removing subscription %s as the queue size exceeds limits\n", it->first.c_str());
 						subscriptions.erase(it++);
