@@ -482,13 +482,7 @@ function showDetails(device, environment) {
  * @returns {String}
  */
 function formatDate(date) {
-    var hour = date.getHours() < 10 ? "0" + date.getHours() : date.getHours();
-    var min = date.getMinutes() < 10 ? "0" + date.getMinutes() : date.getMinutes();
-    var day = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
-    var month = date.getMonth() + 1;
-    month = month < 10 ? "0" + month : month;
-
-    return date.getFullYear() + "." + month + "." + day + " " + hour + ":" + min;
+    return date.toLocaleDateString() + " " + date.toLocaleTimeString();
 };
 
 /**
