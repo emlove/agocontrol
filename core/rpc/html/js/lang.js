@@ -49,8 +49,13 @@ function xml2string(node) {
     }
 }
 
+function getBrowserLang() {
+    var lang = navigator.language || navigator.userLanguage;
+    return lang.split("_")[0].split("-")[0];
+}
+
 function prepareTemplate(doc) {
-    var targetLang = navigator.language || navigator.userLanguage;
+    var targetLang = getBrowserLang();
 
     var supportedLanguages = {};
     var tags = doc.getElementsByTagName("*");
@@ -66,9 +71,9 @@ function prepareTemplate(doc) {
 	    supportedLanguages[lang] = true;
 	}
     }
-    
+
     targetLang = supportedLanguages[targetLang] ? targetLang : null;
-    
+
     /* Remove tags which have a different language */
     for ( var i = 0; i < tags.length; i++) {
 	var tag = tags[i];
@@ -80,11 +85,10 @@ function prepareTemplate(doc) {
 	    tag.parentNode.removeChild(tag);
 	}
     }
-    
+
     return xml2string(doc);
 }
 
 function getDataTableLangUrl() {
-    var lang = navigator.language || navigator.userLanguage;
-    return "cgi-bin/get_table_lang.cgi?lang=" + lang;
+    return "cgi-bin/get_table_lang.cgi?lang=" + getBrowserLang();
 }
