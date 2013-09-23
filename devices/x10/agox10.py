@@ -4,6 +4,7 @@ import agoclient
 import threading
 import time
 import logging
+
 from x10.controllers.cm11 import CM11
 
 dev = CM11(agoclient.getConfigOption("x10", "device", "/dev/ttyUSB1"))
