@@ -49,12 +49,27 @@ function xml2string(node) {
     }
 }
 
-function prepareTemplate(doc, targetLang) {
-    if (targetLang == "en") {
-	targetLang = null;
-    }
+function prepareTemplate(doc) {
+    var targetLang = navigator.language || navigator.userLanguage;
+
+    var supportedLanguages = {};
     var tags = doc.getElementsByTagName("*");
 
+    /* First find out which languages we support */
+    for ( var i = 0; i < tags.length; i++) {
+	var tag = tags[i];
+	if (tag.getAttribute("data-translateable") == null) {
+	    continue;
+	}
+	var lang = tag.getAttribute("xml:lang");
+	if (lang != null) {
+	    supportedLanguages[lang] = true;
+	}
+    }
+    
+    targetLang = supportedLanguages[targetLang] ? targetLang : null;
+    
+    /* Remove tags which have a different language */
     for ( var i = 0; i < tags.length; i++) {
 	var tag = tags[i];
 	if (tag.getAttribute("data-translateable") == null) {
