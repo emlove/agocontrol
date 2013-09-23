@@ -12,7 +12,7 @@ function floorPlanConfig() {
     this.makeEditable = function() {
 	var eTable = $("#floorPlanTable").dataTable();
 	eTable.fnDestroy();
-	eTable = $("#floorPlanTable").dataTable();
+	eTable = $("#floorPlanTable").dataTable({ "oLanguage": { "sUrl": getDataTableLangUrl() } });
 	eTable.$('td.edit_fp').editable(function(value, settings) {
 	    var content = {};
 	    content.floorplan = $(this).data('uuid');

@@ -12,7 +12,7 @@ function roomConfig() {
     this.makeEditable = function() {
 	var eTable = $("#configTable").dataTable();
 	eTable.fnDestroy();
-	eTable = $("#configTable").dataTable();
+	eTable = $("#configTable").dataTable({ "oLanguage": { "sUrl": getDataTableLangUrl() } });
 	eTable.$('td.edit_room').editable(function(value, settings) {
 	    var content = {};
 	    content.room = $(this).data('uuid');

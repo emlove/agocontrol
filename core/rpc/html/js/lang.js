@@ -83,3 +83,8 @@ function prepareTemplate(doc) {
     
     return xml2string(doc);
 }
+
+function getDataTableLangUrl() {
+    var lang = navigator.language || navigator.userLanguage;
+    return "cgi-bin/get_table_lang.cgi?lang=" + lang;
+}
