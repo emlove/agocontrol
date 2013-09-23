@@ -2,7 +2,7 @@
 <head>
 <title>ago control - Administration</title>
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
 
 <meta http-equiv="cache-control" content="no-cache" />
 <meta http-equiv="expires" content='0' />
@@ -57,22 +57,8 @@
 
 <div class="container">
 	<div class="row">
-		<div class="two columns" id="col-left">
-			<div class="pretty medium success btn btn-full icon-left icon-heart"><a href="#">System Status</a></div>
-			<hr />
-			<div class="pretty medium primary btn btn-full icon-left icon-home">
-				<a href="?dashboard">Dashboard</a>
-			</div>
-			<!-- ko foreach: floorPlans -->
-				<div class="pretty medium primary btn btn-full icon-left icon-list">
-	    			<a href="?floorPlan" data-bind="text: name, attr: {href: '?floorplan&fp=' + uuid}"></a>
-				</div>
-			<!-- /ko -->
-			<hr />
-			<div class="pretty medium default btn btn-full icon-left icon-tools"><a href="?configuration">Configuration</a></div>
-			<!-- ko if: hasNavigation -->
-				<div data-bind="template: {name: navigation}"></div>
-			<!-- /ko -->
+		<div class="two columns" id="col-left" data-bind="template: 'navigation/main'">
+
 		</div>
 	    <div class="ten columns" id="col-right">
 		  	<div class="row" id="header">

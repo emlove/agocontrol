@@ -16,6 +16,7 @@ templates/dashboard.html
 templates/floorplan.html
 templates/navigation/treenav.html
 templates/navigation/configuration.html
+templates/navigation/main.html
 templates/devices/drapes.html
 templates/devices/humiditysensor.html
 templates/devices/phone.html
