@@ -62,7 +62,7 @@ function eventConfig() {
     this.makeEditable = function() {
 	var eTable = $("#configTable").dataTable();
 	eTable.fnDestroy();
-	eTable = $("#configTable").dataTable({ "oLanguage": { "sUrl": getDataTableLangUrl() } });
+	eTable = $("#configTable").dataTable();
 	eTable.$('td.edit_event').editable(function(value, settings) {
 	    var content = {};
 	    content.device = $(this).data('uuid');

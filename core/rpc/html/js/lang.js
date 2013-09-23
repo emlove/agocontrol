@@ -92,3 +92,26 @@ function prepareTemplate(doc) {
 function getDataTableLangUrl() {
     return "cgi-bin/get_table_lang.cgi?lang=" + getBrowserLang();
 }
+
+// Prepare datatable language
+var dataTableLang = JSON.parse($.ajax({
+    type : "GET",
+    url : getDataTableLangUrl(),
+    async : false,
+}).responseText); 
+
+var dataTableLangBase = JSON.parse($.ajax({
+    type : "GET",
+    url : "cgi-bin/get_table_lang.cgi",
+    async : false,
+}).responseText); 
+
+for (var k in dataTableLangBase) {
+    if (dataTableLang[k] == undefined) {
+	dataTableLang[k] = dataTableLangBase[k];
+    }
+}
+
+$.extend($.fn.dataTable.defaults, {
+    "oLanguage": dataTableLang,
+});

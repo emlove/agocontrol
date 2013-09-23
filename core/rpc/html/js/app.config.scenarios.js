@@ -28,7 +28,7 @@ function scenarioConfig() {
     this.makeEditable = function() {
 	var eTable = $("#configTable").dataTable();
 	eTable.fnDestroy();
-	eTable = $("#configTable").dataTable({ "oLanguage": { "sUrl": getDataTableLangUrl() } });
+	eTable = $("#configTable").dataTable();
 	eTable.$('td.edit_scenario').editable(function(value, settings) {
 	    var content = {};
 	    content.device = $(this).data('uuid');

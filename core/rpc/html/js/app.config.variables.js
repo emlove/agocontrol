@@ -12,7 +12,7 @@ function variablesConfig() {
     this.makeEditable = function() {
 	var eTable = $("#configTable").dataTable();
 	eTable.fnDestroy();
-	eTable = $("#configTable").dataTable({ "oLanguage": { "sUrl": getDataTableLangUrl() } });
+	eTable = $("#configTable").dataTable();
 	eTable.$('td.edit_var').editable(function(value, settings) {
 	    var content = {};
 	    content.variable = $(this).data('variable');
