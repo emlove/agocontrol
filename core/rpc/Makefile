@@ -17,7 +17,6 @@ cgi:
 	$(CXX) $(CFLAGS) -o html/cgi-bin/get_table_lang.cgi get_table_lang.cpp
 
 clean:
-	$(MAKE) -C html clean
 	rm -f agorpc agorpc.o mongoose.o
 	rm -f html/cgi-bin/get_table_lang.cgi
 	find html/templates -name "*.html" | grep -v in.html | while read file ; do rm -v $$file ; done
