@@ -10,7 +10,7 @@
                     </tr>
                 </thead>
                 <tbody data-bind="foreach: { data: events, afterRender: makeEditable }">
-                	<ko opts="uuid != '0'">
+                	<ko opts="if: uuid != '0'">
                     <tr>
                         <td class="edit_event" data-bind="attr: {'data-uuid': uuid}, text: name"></td>
                         <td style="text-align: center">
