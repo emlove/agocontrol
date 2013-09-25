@@ -4,6 +4,7 @@
  * @returns {deviceConfig}
  */
 function deviceConfig() {
+    var self = this;
     this.devices = ko.observableArray([]);
     this.hasNavigation = ko.observable(true);
 
@@ -47,6 +48,91 @@ function deviceConfig() {
 	    type : "select",
 	    onblur : "submit"
 	});
+
+	var resetFilter = function() {
+	    var oSettings = eTable.fnSettings();
+	    for ( var i = 0; i < oSettings.aoPreSearchCols.length; i++) {
+		oSettings.aoPreSearchCols[i].sSearch = "";
+	    }
+	    oSettings.oPreviousSearch.sSearch = "";
+	    eTable.fnDraw();
+	};
+
+	var baseWeight = 15;
+	var tagMap = {};
+	for ( var i = 0; i < self.devices().length; i++) {
+	    var dev = self.devices()[i];
+	    if (tagMap["type_" + dev.devicetype]) {
+		tagMap["type_" + dev.devicetype].w++;
+	    } else {
+		tagMap["type_" + dev.devicetype] = {
+		    type : "device",
+		    value : dev.devicetype,
+		    w : baseWeight,
+		};
+	    }
+	    if (dev.room) {
+		if (tagMap["room_" + dev.room]) {
+		    tagMap["room_" + dev.room].w++;
+		} else {
+		    tagMap["room_" + dev.room] = {
+			type : "room",
+			value : dev.room,
+			w : baseWeight,
+		    };
+		}
+	    }
+	}
+
+	document.getElementById("tags").innerHTML = "";
+	var list = document.createElement("ul");
+	document.getElementById("tags").appendChild(list);
+
+	for ( var k in tagMap) {
+	    var obj = tagMap[k];
+	    var item = document.createElement("li");
+	    var link = document.createElement("a");
+	    link.href = "#";
+	    link.setAttribute("data-weight", obj.w);
+	    link.appendChild(document.createTextNode(obj.value));
+	    item.appendChild(link);
+	    list.appendChild(item);
+
+	    link.onclick = function(value, idx) {
+		return function() {
+		    resetFilter();
+		    eTable.fnFilter(value, idx);
+		    return false;
+		};
+	    }(obj.value, obj.type == "device" ? 2 : 1);
+
+	}
+
+	// All link for reset
+	var item = document.createElement("li");
+	var link = document.createElement("a");
+	link.href = "#";
+	link.setAttribute("data-weight", baseWeight + self.devices().length);
+	link.appendChild(document.createTextNode("All"));
+	item.appendChild(link);
+	list.appendChild(item);
+
+	link.onclick = function() {
+	    resetFilter();
+	    return false;
+	};
+
+	$('#tagArea').tagcanvas({
+	    textColour : '#ff0000',
+	    outlineColour : '#0000ff',
+	    reverse : true,
+	    depth : 0.8,
+	    maxSpeed : 0.05,
+	    weight : true,
+	    weightFrom : "data-weight",
+	    zoom : 1.5,
+	}, "tags");
+
     };
 }
 
