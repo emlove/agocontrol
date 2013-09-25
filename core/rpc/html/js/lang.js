@@ -102,7 +102,7 @@ var dataTableLang = JSON.parse($.ajax({
 
 var dataTableLangBase = JSON.parse($.ajax({
     type : "GET",
-    url : "cgi-bin/get_table_lang.cgi",
+    url : "cgi-bin/get_table_lang.cgi?lang=en",
     async : false,
 }).responseText); 
 
