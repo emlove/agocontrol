@@ -473,7 +473,7 @@ int main(int argc, char **argv) {
 				}
 				pthread_mutex_lock(&mutexSubscriptions);	
 				for (map<string,Subscriber>::iterator it = subscriptions.begin(); it != subscriptions.end(); ) {
-					if (it->second.queue.size() > 20) {
+					if (it->second.queue.size() > 100) {
 						// this subscription seems to be abandoned, let's remove it to save resources
 						printf("removing subscription %s as the queue size exceeds limits\n", it->first.c_str());
 						subscriptions.erase(it++);
