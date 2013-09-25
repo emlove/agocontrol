@@ -24,6 +24,7 @@ int main(int argc, char **argv){
 		ifstream fdef("../datatables_lang/en.txt");
 		while (getline(fdef,line)) cout << line << endl;
 	}
+	fin.close();
 	return 0;
 }
 
