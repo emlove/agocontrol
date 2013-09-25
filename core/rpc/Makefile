@@ -5,7 +5,7 @@ LD = $(CXX)
 %.o : %.cpp
 	$(CXX) -c $(CFLAGS) $(INCLUDES) -o $@ $<
 
-all: agorpc translations
+all: agorpc translations cgi
 
 agorpc: agorpc.o mongoose.o
 	$(LD) -o $@ $(LDFLAGS) $^ -lqpidmessaging -lqpidtypes -luuid -ljsoncpp -lagoclient
@@ -13,9 +13,13 @@ agorpc: agorpc.o mongoose.o
 translations:
 	$(MAKE) -C html
 
+cgi:
+	$(CXX) $(CFLAGS) -o html/cgi-bin/get_table_lang.cgi get_table_lang.cpp
+
 clean:
 	$(MAKE) -C html clean
 	rm -f agorpc agorpc.o mongoose.o
+	rm -f html/cgi-bin/get_table_lang.cgi
 
 install:
 	$(INSTALL_DIR) $(BINDIR)
