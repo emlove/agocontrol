@@ -10,4 +10,6 @@ for i in `find . -name \*in.html`; do
     sed -i '1d' "${i%.*.*}.html";
 done
 
-find . -name "*xml.in" -exec rm \{} \;
+for i in `find . -name \*xml.in`; 
+    do rm "$i";
+done
