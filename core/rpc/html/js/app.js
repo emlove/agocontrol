@@ -177,6 +177,20 @@ function device(obj, uuid) {
 	content.command = 'push';
 	sendCommand(content);
     };
+    
+    this.execCommand = function() {
+	var command = document.getElementById("commandSelect").options[document.getElementById("commandSelect").selectedIndex].value;
+	var content = {};
+	content.uuid = uuid;
+	content.command = command;
+	var params = document.getElementsByClassName("cmdParam");
+	for (var i = 0; i < params.length; i++) {
+	    content[params[i].name] = params[i].value;
+	}
+	sendCommand(content, function(res) {
+	   alert("Done"); 
+	});
+    };
 
 }
 
@@ -486,6 +500,44 @@ function formatDate(date) {
 };
 
 /**
+ * Shows the command selector for the detail pages
+ * 
+ * @param container
+ * @param device
+ */
+function showCommandList(container, device) {
+    var commandSelect = document.createElement("select");
+    var commandParams = document.createElement("span");
+    commandSelect.id = "commandSelect";
+    var type = device.devicetype;
+    for ( var i = 0; i < schema.devicetypes[type].commands.length; i++) {
+	commandSelect.options[i] = new Option(schema.commands[schema.devicetypes[type].commands[i]].name, schema.devicetypes[type].commands[i]);
+    }
+
+    commandSelect.onchange = function() {
+	var cmd = schema.commands[commandSelect.options[commandSelect.selectedIndex].value];
+	commandParams.innerHTML = "";
+	if (cmd.parameters !== undefined) {
+	    commandParams.style.display = "";
+	    for ( var param in cmd.parameters) {
+		var input = document.createElement("input");
+		input.name = param;
+		input.className = "cmdParam";
+		input.placeholder = cmd.parameters[param].name;
+		commandParams.appendChild(input);
+	    }
+	} else {
+	    commandParams.style.display = "none";
+	}
+    };
+
+    commandSelect.onchange();
+
+    container.appendChild(commandSelect);
+    container.appendChild(commandParams);
+}
+
+/**
  * Shows the detail page of a device
  * 
  * @param device
@@ -497,6 +549,10 @@ function doShowDetails(device, template, environment) {
 	afterRender : function() {
 	    var dialogWidth = 800;
 	    var dialogHeight = 300;
+
+	    if (document.getElementById('commandList')) {
+		showCommandList(document.getElementById('commandList'), device);
+	    }
 
 	    if (document.getElementById('graph')) {
 		$('#graph').block({
