@@ -28,12 +28,7 @@
 		        <td data-bind="text: devicetype"></td>
 		        <td data-bind="text: handledBy"></td>
 		        <td data-bind="text: internalid"></td>
-			<ko opts="if: room">
-		        	<td class="state" data-bind="text: state">{{dev.state}}</td>
-			</ko>
-			<ko opts="ifnot: room">
-		        	<td class="state">unset</td>
-			</ko>
+				<td class="cmd-btn pretty medium default btn" data-bind="click: function(data, event) { showDetails(data) }">Details</td>
 		    </tr>
 		</tbody>
 	</table>
