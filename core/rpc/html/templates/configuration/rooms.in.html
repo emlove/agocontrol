@@ -19,14 +19,6 @@
 				<td class="edit_room" data-bind="attr: {'data-uuid': uuid}">unset</td>
 				</ko>
 
-				<ko opts="if: location">
-				<td class="select_room_location"
-					data-bind="attr: {'data-uuid': uuid}, text: location"></td>
-				</ko>
-				<ko opts="ifnot: location">
-				<td class="select_room_location"
-					data-bind="attr: {'data-uuid': uuid}">unset</td>
-				</ko>
 				<td class="delete_room"><div
 						class="cmd-btn pretty medium default btn btn-full grid-command"
 						data-bind="click: $parent.deleteRoom">delete</div></td>
