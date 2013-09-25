@@ -46,7 +46,7 @@ clean: $(CLEANDIRS)
 $(CLEANDIRS): 
 	$(MAKE) -C $(@:clean-%=%) clean
 
-install: $(INSTALLDIRS) all
+install: $(INSTALLDIRS)
 	@echo Installing
 	install -d $(ETCDIR)
 	install -d $(BINDIR)
