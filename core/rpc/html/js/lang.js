@@ -112,6 +112,9 @@ for (var k in dataTableLangBase) {
     }
 }
 
+// Make sure we have no url
+dataTableLang.sUrl = "";
+
 $.extend($.fn.dataTable.defaults, {
     "oLanguage": dataTableLang,
 });
