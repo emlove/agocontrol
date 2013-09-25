@@ -6,10 +6,28 @@ function dashBoard() {
     var self = this;
     this.devices = ko.observableArray([]);
     this.hasNavigation = ko.observable(false);
+    this.keyword = ko.observable("");
     this.deviceList = ko.computed(function() {
 	var list = self.devices();
 	list = list.filter(function(dev) {
-	    return $.trim(dev.name).length != 0 && dev.devicetype != "event";
+	    if (dev.devicetype == "event" || $.trim(dev.name) == "") {
+		return false;
+	    }
+	    var keyword = self.keyword().toLowerCase();
+	    if ($.trim(keyword) != "") {
+		if (dev.devicetype.toLowerCase().indexOf(keyword) != -1) {
+		    return true;
+		}
+		if (dev.name.toLowerCase().indexOf(keyword) != -1) {
+		    return true;
+		}
+		if (dev.room.toLowerCase().indexOf(keyword) != -1) {
+		    return true;
+		}
+		return false;
+	    }
+	    
+	    return true;
 	});
 	return list;
     });
