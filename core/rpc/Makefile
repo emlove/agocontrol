@@ -11,6 +11,7 @@ agorpc: agorpc.o mongoose.o
 	$(LD) -o $@ $(LDFLAGS) $^ -lqpidmessaging -lqpidtypes -luuid -ljsoncpp -lagoclient
 
 cgi:
+	( cd html ; ./mergetranslations.sh )
 	$(CXX) $(CFLAGS) -o html/cgi-bin/get_table_lang.cgi get_table_lang.cpp
 
 clean:
@@ -19,7 +20,6 @@ clean:
 	find html/templates -name "*.html" | grep -v in.html | while read file ; do rm -v $$file ; done
 
 install:
-	( cd html ; ./mergetranslations.sh )
 	$(INSTALL_DIR) $(BINDIR)
 	$(INSTALL_PROGRAM) agorpc $(BINDIR)
 
