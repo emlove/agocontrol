@@ -1,4 +1,4 @@
-#/bin/bash
+#!/bin/bash
 cd templates
 for i in `find . -name \*in.html`; 
     do ln -s `basename "$i"` "${i%.*.*}.xml.in";
