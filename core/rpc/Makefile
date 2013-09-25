@@ -5,13 +5,10 @@ LD = $(CXX)
 %.o : %.cpp
 	$(CXX) -c $(CFLAGS) $(INCLUDES) -o $@ $<
 
-all: agorpc translations cgi
+all: agorpc cgi
 
 agorpc: agorpc.o mongoose.o
 	$(LD) -o $@ $(LDFLAGS) $^ -lqpidmessaging -lqpidtypes -luuid -ljsoncpp -lagoclient
-
-translations:
-	( cd html ; ./mergetranslations.sh )
 
 cgi:
 	$(CXX) $(CFLAGS) -o html/cgi-bin/get_table_lang.cgi get_table_lang.cpp
@@ -22,6 +19,7 @@ clean:
 	find html/templates -name "*.html" | grep -v in.html | while read file ; do rm -v $$file ; done
 
 install:
+	( cd html ; ./mergetranslations.sh )
 	$(INSTALL_DIR) $(BINDIR)
 	$(INSTALL_PROGRAM) agorpc $(BINDIR)
 
