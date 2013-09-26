@@ -2,7 +2,7 @@
 import cgi
 import cgitb
 
-import os
+import subprocess
 
 import urllib2
 
@@ -24,9 +24,8 @@ def getP12(SYSTEM_UUID, username, password, pin):
 		f = open(file_name, 'wb')
 		f.write(buffer)
 		f.close()
-		command = "/opt/agocontrol/bin/agocloud-import.sh %s %s" % (file_name, pin)
-		# TODO: return codes seem to not work properly with mongoose/cgi/python
-		if os.system(command) == 0:
+		ret = subprocess.call(["/opt/agocontrol/bin/agocloud-import.sh", file_name, pin])
+		if ret == 0:
 			result = "Activation certificate was installed successfully"
 		else:
 			result = "Error, could not import certificate, check pin"
