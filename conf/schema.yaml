@@ -367,7 +367,7 @@ events:
     description: sun did rise
   event.environment.timechanged:
     description: time did advance
-    parameters: [second, minute, hour, month, day, year, weekday, yday]
+    parameters: [minute, hour, month, day, year, weekday, yday]
   event.mediaplayer.statechanged:
     description: mediaplayer changed play state
     parameters: [new_state]
