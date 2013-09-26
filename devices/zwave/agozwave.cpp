@@ -718,12 +718,12 @@ int main(int argc, char **argv) {
 
 		agoConnection->addDevice("zwavecontroller", "zwavecontroller");
 		agoConnection->addHandler(commandHandler);
-		for (std::list<ZWaveNode*>::const_iterator it = devices.nodes.begin(); it != devices.nodes.end(); it++) {
+		/* for (std::list<ZWaveNode*>::const_iterator it = devices.nodes.begin(); it != devices.nodes.end(); it++) {
 			ZWaveNode *node = *it;
 			printf("adding ago device for value id: %s - type: %s\n", node->getId().c_str(),node->getDevicetype().c_str());
 			agoConnection->addDevice(node->getId().c_str(), node->getDevicetype().c_str());
 
-		}
+		}*/
 
 		agoConnection->run();
 	} else {
