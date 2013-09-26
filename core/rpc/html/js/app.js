@@ -554,7 +554,7 @@ function doShowDetails(device, template, environment) {
 		showCommandList(document.getElementById('commandList'), device);
 	    }
 
-	    if (document.getElementById('graph')) {
+	    if (document.getElementById('graph') && device.valueList && device.valueList()) {
 		$('#graph').block({
 		    message : '<div>Please wait ...</div>',
 		    css : {
