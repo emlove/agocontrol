@@ -596,6 +596,7 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 					result = Manager::Get()->SetValue(*tmpValueID , (uint8) 255);
 				} else if (content["command"] == "setlevel") {
 					uint8 level = atoi(content["level"].asString().c_str());
+					if (level > 99) level=99;
 					result = Manager::Get()->SetValue(*tmpValueID, level);
 				} else {
 					result = Manager::Get()->SetValue(*tmpValueID , (uint8) 0);
