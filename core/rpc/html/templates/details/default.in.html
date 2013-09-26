@@ -1,15 +1,17 @@
 <div>
-<strong>UUID:</strong><span style="color: darkorange" data-bind="text: uuid"></span><br />
 <ko opts="if: name">
-<strong>Name:</strong><span style="color: darkorange" data-bind="text: name"></span><br />
+	<h3 data-bind="text: name"></h3>
 </ko>
-<strong>Type:</strong><span style="color: darkorange" data-bind="text: devicetype"></span><br />
-<ko opts="if: room">
-<strong>Room:</strong><span style="color: darkorange" data-bind="text: room"></span><br />
-</ko>
-<strong>State:</strong><span style="color: darkorange" data-bind="text: state"></span><br />
-<strong>Lastseen:</strong><span style="color: darkorange" data-bind="text: timeStamp"></span><br />
+<p>
+	<ko opts="if: room">
+		<_strong data-translateable="true">Room:</_strong> <span data-bind="text: room"></span><br />
+	</ko>
+	<_strong data-translateable="true">State:</_strong> <span data-bind="text: state"></span><br />
+	<strong>UUID:</strong> <span data-bind="text: uuid"></span><br />
+	<_strong data-translateable="true">Type: </_strong> <span data-bind="text: devicetype"></span><br />
+	<_strong data-translateable="true">Lastseen: </_strong> <span data-bind="text: timeStamp"></span><br />
+</p>
 <form>
-<strong>Command:</strong><div style="display: inline" id="commandList"></div><button data-bind="click: execCommand">Run</button>
+	<_strong data-translateable="true">Command:</_strong> <div style="display: inline" id="commandList"></div><_button data-translateable="true" data-bind="click: execCommand">Run</_button>
 </form>
 </div>

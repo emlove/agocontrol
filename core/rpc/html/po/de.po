@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-09-23 09:48+0200\n"
+"POT-Creation-Date: 2013-09-26 18:55+0200\n"
 "PO-Revision-Date: 2013-09-22 12:28+0100\n"
 "Last-Translator: \n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -65,3 +65,28 @@ msgstr "System Status"
 #: ../templates/navigation/main.xml.in.h:2
 msgid "Dashboard"
 msgstr "Übersicht"
+
+#: ../templates/details/default.xml.in.h:1
+#, fuzzy
+msgid "Room:"
+msgstr "Räume:"
+
+#: ../templates/details/default.xml.in.h:2
+msgid "State:"
+msgstr "Status:"
+
+#: ../templates/details/default.xml.in.h:3
+msgid "Type:"
+msgstr "Gerätetyp:"
+
+#: ../templates/details/default.xml.in.h:4
+msgid "Lastseen:"
+msgstr "Zuletzt gesehen:"
+
+#: ../templates/details/default.xml.in.h:5
+msgid "Command:"
+msgstr "Befehl:"
+
+#: ../templates/details/default.xml.in.h:6
+msgid "Run"
+msgstr "Ausführen"
