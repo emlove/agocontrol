@@ -237,6 +237,7 @@ void OnNotification
 								device = new ZWaveNode(nodeinstance, "dimmer");	
 								device->addValue(label, id);
 								devices.add(device);
+								agoConnection->addDevice(device->getId().c_str(), device->getDevicetype().c_str());
 							}
 						
 						}
@@ -249,6 +250,7 @@ void OnNotification
 								device = new ZWaveNode(nodeinstance, "switch");	
 								device->addValue(label, id);
 								devices.add(device);
+								agoConnection->addDevice(device->getId().c_str(), device->getDevicetype().c_str());
 							}
 						}
 					break;
@@ -260,6 +262,7 @@ void OnNotification
 								device = new ZWaveNode(tempstring, "binarysensor");	
 								device->addValue(label, id);
 								devices.add(device);
+								agoConnection->addDevice(device->getId().c_str(), device->getDevicetype().c_str());
 							}
 						}
 					break;
@@ -268,10 +271,12 @@ void OnNotification
 							device = new ZWaveNode(tempstring, "brightnesssensor");	
 							device->addValue(label, id);
 							devices.add(device);
+							agoConnection->addDevice(device->getId().c_str(), device->getDevicetype().c_str());
 						} else if (label == "Temperature") {
 							device = new ZWaveNode(tempstring, "temperaturesensor");	
 							device->addValue(label, id);
 							devices.add(device);
+							agoConnection->addDevice(device->getId().c_str(), device->getDevicetype().c_str());
 						} else {
 							printf("WARNING: unhandled label for SENSOR_MULTILEVEL: %s - adding generic multilevelsensor\n",label.c_str());
 							if ((device = devices.findId(nodeinstance)) != NULL) {
@@ -280,6 +285,7 @@ void OnNotification
 								device = new ZWaveNode(nodeinstance, "multilevelsensor");	
 								device->addValue(label, id);
 								devices.add(device);
+								agoConnection->addDevice(device->getId().c_str(), device->getDevicetype().c_str());
 							}
 						}
 					break;
@@ -288,10 +294,12 @@ void OnNotification
 							device = new ZWaveNode(tempstring, "powermeter");	
 							device->addValue(label, id);
 							devices.add(device);
+							agoConnection->addDevice(device->getId().c_str(), device->getDevicetype().c_str());
 						} else if (label == "Energy") {
 							device = new ZWaveNode(tempstring, "energymeter");	
 							device->addValue(label, id);
 							devices.add(device);
+							agoConnection->addDevice(device->getId().c_str(), device->getDevicetype().c_str());
 						} else {
 							printf("WARNING: unhandled label for CLASS_METER: %s - adding generic multilevelsensor\n",label.c_str());
 							if ((device = devices.findId(nodeinstance)) != NULL) {
@@ -300,6 +308,7 @@ void OnNotification
 								device = new ZWaveNode(nodeinstance, "multilevelsensor");	
 								device->addValue(label, id);
 								devices.add(device);
+								agoConnection->addDevice(device->getId().c_str(), device->getDevicetype().c_str());
 							}
 						}
 					break;
@@ -312,6 +321,7 @@ void OnNotification
 								device = new ZWaveNode(nodeinstance, "drapes");	
 								device->addValue(label, id);
 								devices.add(device);
+								agoConnection->addDevice(device->getId().c_str(), device->getDevicetype().c_str());
 							}
 					//	}
 					break;
@@ -324,6 +334,7 @@ void OnNotification
 							device = new ZWaveNode(nodeinstance, "thermostat");	
 							device->addValue(label, id);
 							devices.add(device);
+							agoConnection->addDevice(device->getId().c_str(), device->getDevicetype().c_str());
 						}
 					break;
 					default:
@@ -590,16 +601,21 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 					result = Manager::Get()->SetValue(*tmpValueID , false);
 				}
 			} else if(devicetype == "dimmer") {
-				tmpValueID = device->getValueID("Level");
 				if (tmpValueID == NULL) { returnval["result"] = -1;  return returnval; }
 				if (content["command"] == "on" ) {
-					result = Manager::Get()->SetValue(*tmpValueID , (uint8) 255);
+					tmpValueID = device->getValueID("Switch");
+					if (tmpValueID == NULL) { returnval["result"] = -1;  return returnval; }
+					result = Manager::Get()->SetValue(*tmpValueID , true);
 				} else if (content["command"] == "setlevel") {
+					tmpValueID = device->getValueID("Level");
+					if (tmpValueID == NULL) { returnval["result"] = -1;  return returnval; }
 					uint8 level = atoi(content["level"].asString().c_str());
 					if (level > 99) level=99;
 					result = Manager::Get()->SetValue(*tmpValueID, level);
 				} else {
-					result = Manager::Get()->SetValue(*tmpValueID , (uint8) 0);
+					tmpValueID = device->getValueID("Switch");
+					if (tmpValueID == NULL) { returnval["result"] = -1;  return returnval; }
+					result = Manager::Get()->SetValue(*tmpValueID , false);
 				}
 			} else if (devicetype == "drapes") {
 				if (content["command"] == "on") {
