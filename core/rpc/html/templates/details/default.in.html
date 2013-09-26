@@ -1,6 +1,9 @@
 <div>
+<ko opts="ifnot: name">
+<span id="detailsTitle">Details</span>
+</ko>
 <ko opts="if: name">
-	<h3 data-bind="text: name"></h3>
+<span id="detailsTitle" data-bind="text: name">Details</span>
 </ko>
 <p>
 	<ko opts="if: room">

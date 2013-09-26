@@ -19,6 +19,9 @@
 .ui-widget p {
 	font-size: 0.8em;
 }
+.ui-widget #detailsTitle {
+	display:none;
+}
 .ui-widget .ui-widget {
 }
 .ui-widget input,

@@ -67,9 +67,8 @@ msgid "Dashboard"
 msgstr "Übersicht"
 
 #: ../templates/details/default.xml.in.h:1
-#, fuzzy
 msgid "Room:"
-msgstr "Räume:"
+msgstr "Raum:"
 
 #: ../templates/details/default.xml.in.h:2
 msgid "State:"
