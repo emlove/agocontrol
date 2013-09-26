@@ -16,6 +16,9 @@
 ----------------------------------*/
 .ui-widget {
 }
+.ui-widget p {
+	font-size: 0.8em;
+}
 .ui-widget .ui-widget {
 }
 .ui-widget input,

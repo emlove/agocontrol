@@ -89,7 +89,7 @@ def sendStateChangedEvent(uuid, level):
 syslog.syslog(syslog.LOG_NOTICE, "agowebcam.py startup")
 
 devices = {}
-devices["2ab0e80d-7b48-4d17-b083-58fda121d6e4"] = "http://192.168.80.3/axis-cgi/jpg/image.cgi?resolution=640x480"
+devices["2ab0e80d-7b48-4d17-b083-58fda121d6e4"] = "http://192.168.0.90/axis-cgi/jpg/image.cgi?resolution=640x480"
 
 def discovery():
 	for (uuid, url) in devices.iteritems():
