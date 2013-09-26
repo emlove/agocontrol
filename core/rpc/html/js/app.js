@@ -177,18 +177,18 @@ function device(obj, uuid) {
 	content.command = 'push';
 	sendCommand(content);
     };
-    
+
     this.execCommand = function() {
 	var command = document.getElementById("commandSelect").options[document.getElementById("commandSelect").selectedIndex].value;
 	var content = {};
 	content.uuid = uuid;
 	content.command = command;
 	var params = document.getElementsByClassName("cmdParam");
-	for (var i = 0; i < params.length; i++) {
+	for ( var i = 0; i < params.length; i++) {
 	    content[params[i].name] = params[i].value;
 	}
 	sendCommand(content, function(res) {
-	   alert("Done"); 
+	    alert("Done");
 	});
     };
 
@@ -586,21 +586,23 @@ function doShowDetails(device, template, environment) {
 		dialogHeight = 720;
 	    }
 
-	    $("#detailsPage").dialog({
-		title : "Details",
-		modal : true,
-		width : dialogWidth,
-		height : dialogHeight,
-		close : function() {
-		    var graphContainer = document.getElementById('graph');
-		    if (graphContainer) {
-			graphContainer.parentNode.removeChild(graphContainer);
+	    if (document.getElementById("detailsTitle")) {
+		$("#detailsPage").dialog({
+		    title : document.getElementById("detailsTitle").innerHTML,
+		    modal : true,
+		    width : dialogWidth,
+		    height : dialogHeight,
+		    close : function() {
+			var graphContainer = document.getElementById('graph');
+			if (graphContainer) {
+			    graphContainer.parentNode.removeChild(graphContainer);
+			}
+		    },
+		    open : function() {
+			$("#detailsPage").css("overflow", "visible");
 		    }
-		},
-		open : function() {
-		    $("#detailsPage").css("overflow", "visible");
-		}
-	    });
+		});
+	    }
 
 	}
     }, document.getElementById("detailsPage"));
