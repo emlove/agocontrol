@@ -1,4 +1,16 @@
 <div class="container" id="contentarea">
+	<div style="width:100%; margin-top: 15px;">
+		<strong>Rooms:</strong>
+		<ko opts="foreach: { data: roomFilters}">
+			<button data-bind="attr: {'class': className }, text: value, click: $parent.addFilter"></button>
+		</ko>
+		<br />
+		<strong>Devicetypes:</strong>
+		<ko opts="foreach: { data: deviceTypeFilters }">
+			<button data-bind="attr: {'class': className }, text: value, click: $parent.addFilter"></button>
+		</ko>
+	</div>
+	<br />
 	<table id="configTable" style="width:100%; margin-top: 15px; margin-bottom: 5px;">
 		<thead>
 		    <tr>

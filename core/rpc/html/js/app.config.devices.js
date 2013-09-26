@@ -4,8 +4,120 @@
  * @returns {deviceConfig}
  */
 function deviceConfig() {
+    var self = this;
     this.devices = ko.observableArray([]);
     this.hasNavigation = ko.observable(true);
+
+    this.roomFilters = ko.observableArray([]);
+    this.deviceTypeFilters = ko.observableArray([]);
+
+    this.devices.subscribe(function() {
+	var tagMap = {};
+	for ( var i = 0; i < self.devices().length; i++) {
+	    var dev = self.devices()[i];
+	    if (tagMap["type_" + dev.devicetype]) {
+		tagMap["type_" + dev.devicetype].w++;
+	    } else {
+		tagMap["type_" + dev.devicetype] = {
+		    type : "device",
+		    value : dev.devicetype,
+		    w : 1,
+		    className : "default label"
+		};
+	    }
+	    if (dev.room) {
+		if (tagMap["room_" + dev.room]) {
+		    tagMap["room_" + dev.room].w++;
+		} else {
+		    tagMap["room_" + dev.room] = {
+			type : "room",
+			value : dev.room,
+			w : 1,
+			className : "default label"
+		    };
+		}
+	    }
+	}
+
+	var devList = [];
+	var roomList = [];
+
+	for ( var k in tagMap) {
+	    var entry = tagMap[k];
+	    if (entry.type == "device") {
+		devList.push(entry);
+	    } else {
+		roomList.push(entry);
+	    }
+	}
+
+	devList.sort(function(a, b) {
+	    return b.w - a.w;
+	});
+
+	roomList.sort(function(a, b) {
+	    return b.w - a.w;
+	});
+
+	self.roomFilters(roomList);
+	self.deviceTypeFilters(devList);
+    });
+
+    this.addFilter = function(item) {
+	if (item.type == "device") {
+	    for ( var i = 0; i < self.deviceTypeFilters().length; i++) {
+		if (self.deviceTypeFilters()[i].value == item.value) {
+		    self.deviceTypeFilters()[i].className = item.className == "default label" ? "primary label" : "default label";
+		}
+	    }
+	    var tmp = self.deviceTypeFilters();
+	    self.deviceTypeFilters([]);
+	    self.deviceTypeFilters(tmp);
+	} else {
+	    for ( var i = 0; i < self.roomFilters().length; i++) {
+		if (self.roomFilters()[i].value == item.value) {
+		    self.roomFilters()[i].className = item.className == "default label" ? "primary label" : "default label";
+		}
+	    }
+	    var tmp = self.roomFilters();
+	    self.roomFilters([]);
+	    self.roomFilters(tmp);
+	}
+
+	var eTable = $("#configTable").dataTable();
+	self.resetFilter();
+	var filters = [];
+	for ( var i = 0; i < self.deviceTypeFilters().length; i++) {
+	    var tmp = self.deviceTypeFilters()[i];
+	    if (tmp.className == "primary label") {
+		filters.push(tmp.value);
+	    }
+	}
+	if (filters.length > 0) {
+	    eTable.fnFilter("^(" + filters.join("|") + ")$", 2, true, false);
+	}
+
+	var filters = [];
+	for ( var i = 0; i < self.roomFilters().length; i++) {
+	    var tmp = self.roomFilters()[i];
+	    if (tmp.className == "primary label") {
+		filters.push(tmp.value);
+	    }
+	}
+	if (filters.length > 0) {
+	    eTable.fnFilter("^(" + filters.join("|") + ")$", 1, true, false);
+	}
+    };
+
+    this.resetFilter = function() {
+	var eTable = $("#configTable").dataTable();
+	var oSettings = eTable.fnSettings();
+	for ( var i = 0; i < oSettings.aoPreSearchCols.length; i++) {
+	    oSettings.aoPreSearchCols[i].sSearch = "";
+	}
+	oSettings.oPreviousSearch.sSearch = "";
+	eTable.fnDraw();
+    };
 
     this.makeEditable = function() {
 	var eTable = $("#configTable").dataTable();
