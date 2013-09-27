@@ -273,7 +273,7 @@ function createFloorPlan() {
     var content = {};
     content.command = "setfloorplanname";
     content.uuid = agoController;
-    content.name = window.prompt("Please enter a name for the floorplan", "FloorPlan Name");
+    content.name = $("#floorplanName").val();
     if (!content.name) {
 	return;
     }
