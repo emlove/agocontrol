@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-09-27 21:20+0200\n"
+"POT-Creation-Date: 2013-09-27 21:27+0200\n"
 "PO-Revision-Date: 2013-09-22 12:28+0100\n"
 "Last-Translator: \n"
 "Language-Team: ago control <jaeger@agocontrol.com>\n"
@@ -25,6 +25,10 @@ msgstr "Konfiguration"
 #: ../templates/configuration.xml.in.h:2
 msgid "Common Tasks"
 msgstr "Häufige Aufgaben"
+
+#: ../templates/dashboard.xml.in.h:1
+msgid "Search"
+msgstr "Suche"
 
 #: ../templates/navigation/configuration.xml.in.h:1
 msgid "Floorplans"

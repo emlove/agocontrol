@@ -1,4 +1,5 @@
 templates/configuration.xml.in
+templates/dashboard.xml.in
 templates/navigation/configuration.xml.in
 templates/navigation/main.xml.in
 templates/details/default.xml.in
