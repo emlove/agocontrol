@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-09-27 21:04+0200\n"
+"POT-Creation-Date: 2013-09-27 21:26+0200\n"
 "PO-Revision-Date: 2013-09-22 12:28+0100\n"
 "Last-Translator: \n"
 "Language-Team: ago control <jaeger@agocontrol.com>\n"
@@ -157,13 +157,26 @@ msgid "Create Scenario"
 msgstr "Szenario erstellen"
 
 #: ../templates/configuration/scenarios.xml.in.h:9
+msgid ""
+"To create a scenario press the \"Add Command\" button to add commands. After "
+"you need to give a name and press \"Create Scenario\"."
+msgstr ""
+"Um ein Szenario zu erstellen verwenden Sie bitte den \"Befehl hinzufügen\" "
+"Knopf. Danach ein Name vergeben und dann auf \"Szenario erstellen"
+"\" drücken."
+
+#: ../templates/configuration/scenarios.xml.in.h:10
 msgid "Add Command"
 msgstr "Befehl hinzufügen"
 
-#: ../templates/configuration/scenarios.xml.in.h:10
+#: ../templates/configuration/scenarios.xml.in.h:11
+msgid "Input scenario name"
+msgstr "Namen für Szenario eingeben"
+
+#: ../templates/configuration/scenarios.xml.in.h:12
 msgid "Edit Scenario"
 msgstr "Szenario bearbeiten"
 
-#: ../templates/configuration/scenarios.xml.in.h:11
+#: ../templates/configuration/scenarios.xml.in.h:13
 msgid "Save"
 msgstr "Speichern"

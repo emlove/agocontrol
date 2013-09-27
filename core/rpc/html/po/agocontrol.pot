@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-09-27 21:04+0200\n"
+"POT-Creation-Date: 2013-09-27 21:28+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -157,13 +157,23 @@ msgid "Create Scenario"
 msgstr ""
 
 #: ../templates/configuration/scenarios.xml.in.h:9
-msgid "Add Command"
+msgid ""
+"To create a scenario press the \"Add Command\" button to add commands. After "
+"you need to give a name and press \"Create Scenario\"."
 msgstr ""
 
 #: ../templates/configuration/scenarios.xml.in.h:10
-msgid "Edit Scenario"
+msgid "Add Command"
 msgstr ""
 
 #: ../templates/configuration/scenarios.xml.in.h:11
+msgid "Input scenario name"
+msgstr ""
+
+#: ../templates/configuration/scenarios.xml.in.h:12
+msgid "Edit Scenario"
+msgstr ""
+
+#: ../templates/configuration/scenarios.xml.in.h:13
 msgid "Save"
 msgstr ""
