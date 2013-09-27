@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-09-27 23:05+0200\n"
+"POT-Creation-Date: 2013-09-27 23:16+0200\n"
 "PO-Revision-Date: 2013-09-22 12:28+0100\n"
 "Last-Translator: \n"
 "Language-Team: ago control <jaeger@agocontrol.com>\n"
@@ -105,17 +105,20 @@ msgstr "Raumplan Name"
 #: ../templates/configuration/floorplan.xml.in.h:3
 #: ../templates/configuration/rooms.xml.in.h:3
 #: ../templates/configuration/scenarios.xml.in.h:4
+#: ../templates/configuration/events.xml.in.h:3
 msgid "Action"
 msgstr "Aktion"
 
 #: ../templates/configuration/floorplan.xml.in.h:4
 #: ../templates/configuration/scenarios.xml.in.h:6
+#: ../templates/configuration/events.xml.in.h:4
 msgid "edit"
 msgstr "Bearbeiten"
 
 #: ../templates/configuration/floorplan.xml.in.h:5
 #: ../templates/configuration/rooms.xml.in.h:4
 #: ../templates/configuration/scenarios.xml.in.h:7
+#: ../templates/configuration/events.xml.in.h:5
 msgid "delete"
 msgstr "Löschen"
 
@@ -133,6 +136,7 @@ msgstr "Raum Konfiguration"
 
 #: ../templates/configuration/rooms.xml.in.h:2
 #: ../templates/configuration/scenarios.xml.in.h:2
+#: ../templates/configuration/events.xml.in.h:2
 msgid "Name"
 msgstr "Name"
 
@@ -185,6 +189,7 @@ msgid "Edit Scenario"
 msgstr "Szenario bearbeiten"
 
 #: ../templates/configuration/scenarios.xml.in.h:13
+#: ../templates/configuration/events.xml.in.h:10
 msgid "Save"
 msgstr "Speichern"
 
@@ -240,3 +245,24 @@ msgstr "Passwort bestätigen"
 #: ../templates/configuration/cloud.xml.in.h:11
 msgid "Register Cloud account"
 msgstr "Cloud Konto erstellen"
+
+#: ../templates/configuration/events.xml.in.h:1
+msgid "Event Configuration"
+msgstr "Ereignis Konfiguration"
+
+#: ../templates/configuration/events.xml.in.h:6
+msgid "Create Event"
+msgstr "Ereignis erstellen"
+
+#: ../templates/configuration/events.xml.in.h:7
+msgid "Criteria"
+msgstr "Kriterium"
+
+#: ../templates/configuration/events.xml.in.h:8
+msgid "Input event name"
+msgstr "Namen für Ereignis eingeben"
+
+#: ../templates/configuration/events.xml.in.h:9
+msgid "Edit Event"
+msgstr "Ereignis bearbeiten"
+
