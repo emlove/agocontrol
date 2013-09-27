@@ -2,21 +2,35 @@
 
 <div class="row ">
 	<div class="twelve columns">
+		<h2>ago control Cloud Registration</h2>
+		<ul>
+			<li class="warning alert">This service is currently under heavy development!</li>
+		</ul>
 
-		<h2>Please fill in the requested fields</h2>
-		<p>You will be taken to the plan purchase site after completing
-			your registration</p>
+		<p>Register a ago control Cloud account to remote control your installation via <a href="https://cloud.agocontrol.com" target="_blank">cloud.agocontrol.com</a><br />
+		You will be taken to the plan purchase site after completing your registration</p>
 		
-		<strong style="color:red">NOTE: This does NOT work yet</strong><br />	
-		
-		<div style="text-align: center">
+		<div>
 			<form method="post" data-bind="attr: {'action': cloudURL}">
-				<input type="text" required="required" placeholder="Your username" name="username" /><br />
-				<input type="email" required="required" placeholder="Your E-Mail" name="email" /><br />
-				<input type="password" required="required" placeholder="password" name="password" /><br />
-				<input type="password" required="required" placeholder="password"
-					name="password_confirm" /><br /> <input type="submit"
-					value="Register" class="btn" />
+				<ul>
+					<li class="prepend field">
+						<span class="adjoined narrow">Your username</span>
+						<input class="wide input" type="text" required="required" placeholder="Input your username" name="username" />
+					</li>
+					<li class="prepend field">
+						<span class="adjoined narrow">Your E-Mail address</span>
+						<input class="wide email input" type="email" required="required" placeholder="Input your E-Mail address" name="email" />
+					</li>
+					<li class="prepend field">
+						<span class="adjoined narrow">Your new password</span>
+						<input class="wide input" type="password" required="required" placeholder="Input new password" name="password" />
+					</li>
+					<li class="prepend field">
+						<span class="adjoined narrow">Confirm new password</span>
+						<input class="wide input" type="password" required="required" placeholder="Confirm new password" name="password_confirm" />
+					</li>
+				</ul>
+				<div class="medium primary btn"><input type="submit" value="Register your Cloud account now" /></div>
 			</form>
 		</div>
 
