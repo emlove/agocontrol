@@ -7,11 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-<<<<<<< HEAD
 "POT-Creation-Date: 2013-09-27 21:26+0200\n"
-=======
-"POT-Creation-Date: 2013-09-27 21:27+0200\n"
->>>>>>> 5c4c99126fbf6e90b02cea72d6e630e5059c3ced
 "PO-Revision-Date: 2013-09-22 12:28+0100\n"
 "Last-Translator: \n"
 "Language-Team: ago control <jaeger@agocontrol.com>\n"
