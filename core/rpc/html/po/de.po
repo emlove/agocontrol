@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-09-27 21:26+0200\n"
+"POT-Creation-Date: 2013-09-27 22:41+0200\n"
 "PO-Revision-Date: 2013-09-22 12:28+0100\n"
 "Last-Translator: \n"
 "Language-Team: ago control <jaeger@agocontrol.com>\n"
@@ -170,8 +170,7 @@ msgid ""
 "you need to give a name and press \"Create Scenario\"."
 msgstr ""
 "Um ein Szenario zu erstellen verwenden Sie bitte den \"Befehl hinzufügen\" "
-"Knopf. Danach ein Name vergeben und dann auf \"Szenario erstellen"
-"\" drücken."
+"Knopf. Danach ein Name vergeben und dann auf \"Szenario erstellen\" drücken."
 
 #: ../templates/configuration/scenarios.xml.in.h:10
 msgid "Add Command"
@@ -188,3 +187,51 @@ msgstr "Szenario bearbeiten"
 #: ../templates/configuration/scenarios.xml.in.h:13
 msgid "Save"
 msgstr "Speichern"
+
+#: ../templates/configuration/cloud.xml.in.h:1
+msgid "ago control Cloud Registration"
+msgstr ""
+
+#: ../templates/configuration/cloud.xml.in.h:2
+msgid "This service is currently under heavy development!"
+msgstr ""
+
+#: ../templates/configuration/cloud.xml.in.h:3
+msgid ""
+"Register a ago control Cloud account to remote control your installation via "
+"<a target=\"_blank\" href=\"https://cloud.agocontrol.com\">cloud.agocontrol."
+"com</a><br/> You will be taken to the plan purchase site after completing "
+"your registration"
+msgstr ""
+
+#: ../templates/configuration/cloud.xml.in.h:4
+msgid "Your username"
+msgstr "Dein Benutzername"
+
+#: ../templates/configuration/cloud.xml.in.h:5
+msgid "Input your username"
+msgstr "Benutzername eingeben"
+
+#: ../templates/configuration/cloud.xml.in.h:6
+msgid "Your E-Mail address"
+msgstr "Deine E-Mail Adresse"
+
+#: ../templates/configuration/cloud.xml.in.h:7
+msgid "Input your E-Mail address"
+msgstr "E-Mail Adresse eingeben"
+
+#: ../templates/configuration/cloud.xml.in.h:8
+msgid "Your new password"
+msgstr "Dein Passwort"
+
+#: ../templates/configuration/cloud.xml.in.h:9
+msgid "Input new password"
+msgstr "Passwort eingeben"
+
+#: ../templates/configuration/cloud.xml.in.h:10
+msgid "Confirm new password"
+msgstr "Passwort bestätigen"
+
+#: ../templates/configuration/cloud.xml.in.h:11
+msgid "Register Cloud account"
+msgstr "Cloud Konto erstellen"

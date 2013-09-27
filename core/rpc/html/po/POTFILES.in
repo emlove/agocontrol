@@ -6,3 +6,4 @@ templates/details/default.xml.in
 templates/configuration/floorplan.xml.in
 templates/configuration/rooms.xml.in
 templates/configuration/scenarios.xml.in
+templates/configuration/cloud.xml.in

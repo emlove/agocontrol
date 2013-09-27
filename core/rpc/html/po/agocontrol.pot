@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-09-27 21:33+0200\n"
+"POT-Creation-Date: 2013-09-27 22:41+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -184,4 +184,52 @@ msgstr ""
 
 #: ../templates/configuration/scenarios.xml.in.h:13
 msgid "Save"
+msgstr ""
+
+#: ../templates/configuration/cloud.xml.in.h:1
+msgid "ago control Cloud Registration"
+msgstr ""
+
+#: ../templates/configuration/cloud.xml.in.h:2
+msgid "This service is currently under heavy development!"
+msgstr ""
+
+#: ../templates/configuration/cloud.xml.in.h:3
+msgid ""
+"Register a ago control Cloud account to remote control your installation via "
+"<a target=\"_blank\" href=\"https://cloud.agocontrol.com\">cloud.agocontrol."
+"com</a><br/> You will be taken to the plan purchase site after completing "
+"your registration"
+msgstr ""
+
+#: ../templates/configuration/cloud.xml.in.h:4
+msgid "Your username"
+msgstr ""
+
+#: ../templates/configuration/cloud.xml.in.h:5
+msgid "Input your username"
+msgstr ""
+
+#: ../templates/configuration/cloud.xml.in.h:6
+msgid "Your E-Mail address"
+msgstr ""
+
+#: ../templates/configuration/cloud.xml.in.h:7
+msgid "Input your E-Mail address"
+msgstr ""
+
+#: ../templates/configuration/cloud.xml.in.h:8
+msgid "Your new password"
+msgstr ""
+
+#: ../templates/configuration/cloud.xml.in.h:9
+msgid "Input new password"
+msgstr ""
+
+#: ../templates/configuration/cloud.xml.in.h:10
+msgid "Confirm new password"
+msgstr ""
+
+#: ../templates/configuration/cloud.xml.in.h:11
+msgid "Register Cloud account"
 msgstr ""
