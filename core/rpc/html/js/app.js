@@ -555,13 +555,6 @@ function doShowDetails(device, template, environment) {
 	    }
 
 	    if (document.getElementById('graph') && device.valueList && device.valueList() && device.valueList().length) {
-		$('#graph').block({
-		    message : '<div>Please wait ...</div>',
-		    css : {
-			border : '3px solid #a00'
-		    }
-		});
-
 		/* Setup start date */
 		var start = new Date((new Date()).getTime() - 24 * 3600 * 1000);
 		$("#start_date").datepicker({
@@ -615,6 +608,14 @@ function doShowDetails(device, template, environment) {
  * @param environment
  */
 function renderGraph(device, environment) {
+
+    $('#graph').block({
+	message : '<div>Please wait ...</div>',
+	css : {
+	    border : '3px solid #a00'
+	}
+    });
+
     var max_ticks = 25; // User option?
 
     var endDate = new Date($("#end_date").datepicker("getDate").getTime() + 1000 * 3600 * 23 + 60 * 59);
