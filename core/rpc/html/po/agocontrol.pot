@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-09-27 19:59+0200\n"
+"POT-Creation-Date: 2013-09-27 20:24+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -99,6 +99,7 @@ msgid "Floorplan Name"
 msgstr ""
 
 #: ../templates/configuration/floorplan.xml.in.h:3
+#: ../templates/configuration/rooms.xml.in.h:3
 msgid "Action"
 msgstr ""
 
@@ -107,6 +108,7 @@ msgid "edit"
 msgstr ""
 
 #: ../templates/configuration/floorplan.xml.in.h:5
+#: ../templates/configuration/rooms.xml.in.h:4
 msgid "delete"
 msgstr ""
 
@@ -116,4 +118,20 @@ msgstr ""
 
 #: ../templates/configuration/floorplan.xml.in.h:7
 msgid "Create Floorplan"
+msgstr ""
+
+#: ../templates/configuration/rooms.xml.in.h:1
+msgid "Room Configuration"
+msgstr ""
+
+#: ../templates/configuration/rooms.xml.in.h:2
+msgid "Name"
+msgstr ""
+
+#: ../templates/configuration/rooms.xml.in.h:5
+msgid "Create a new room"
+msgstr ""
+
+#: ../templates/configuration/rooms.xml.in.h:6
+msgid "Create Room"
 msgstr ""
