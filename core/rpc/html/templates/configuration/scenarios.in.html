@@ -1,14 +1,14 @@
 <div>
 	<div class="container" id="contentarea">
-		<h3>Scenario Configuration</h3>
+		<_h3 data-translateable="true">Scenario Configuration</_h3>
 		<div class="row">
 			<table id="configTable"
 				style="width: 100%; margin-top: 15px; margin-bottom: 5px;">
 				<thead>
 					<tr>
-						<th style="font-weight: 700">Name</th>
-						<th style="font-weight: 700">Room</th>
-						<th style="font-weight: 700">Action</th>
+						<_th data-translateable="true" style="font-weight: 700">Name</_th>
+						<_th data-translateable="true" style="font-weight: 700">Room</_th>
+						<_th data-translateable="true" style="font-weight: 700">Action</_th>
 					</tr>
 				</thead>
 				<tbody
@@ -30,15 +30,15 @@
 						<td class="select_room" data-bind="attr: {'data-uuid': uuid}">unset</td>
 						</ko>
 						<td style="text-align: center">
-							<div style="width: 32%;"
+							<_div data-translateable="true" style="width: 32%;"
 								class="cmd-btn pretty medium default btn"
-								data-bind="attr: {'data-uuid': uuid}, click: $parent.runScenario">run</div>
-							<div style="width: 32%;"
+								data-bind="attr: {'data-uuid': uuid}, click: $parent.runScenario">run</_div>
+							<_div data-translateable="true" style="width: 32%;"
 								class="cmd-btn pretty medium default btn"
-								data-bind="attr: {'data-uuid': uuid}, click: $parent.editScenario">edit</div>
-							<div style="width: 32%;"
+								data-bind="attr: {'data-uuid': uuid}, click: $parent.editScenario">edit</_div>
+							<_div data-translateable="true" style="width: 32%;"
 								class="cmd-btn pretty medium default btn"
-								data-bind="attr: {'data-uuid': uuid}, click: $parent.deleteScenario">delete</div>
+								data-bind="attr: {'data-uuid': uuid}, click: $parent.deleteScenario">delete</_div>
 						</td>
 					</tr>
 					</ko>
@@ -47,24 +47,24 @@
 		</div>
 
 		<div class="row">
-			<h3>Create Scenario</h3>
+			<_h3 data-translateable="true">Create Scenario</_h3>
 			<div id="scenarioBuilder" class="scenarioBuilder"></div>
 			<br />
 			<div class="medium primary btn">
-				<a href="#"
+				<_a data-translateable="true" href="#"
 					data-bind="click: function() { addCommand('scenarioBuilder'); }">Add
-					Command</a>
+					Command</_a>
 			</div>
 			<br />
 			<form action="" method="post">
-				<h4>Name</h4>
+				<_h4 data-translateable="true">Name</_h4>
 				<div class="row">
 					<ul class="ten columns">
 						<li class="append field"><input class="wide email input"
 							id="scenarioName" type="text" placeholder="Scenario name" />
 							<div class="medium primary btn">
-								<a href="#" data-bind="click: createScenario">Create
-									Scenario</a>
+								<_a data-translateable="true" href="#" data-bind="click: createScenario">Create
+									Scenario</_a>
 							</div></li>
 					</ul>
 				</div>
@@ -75,18 +75,18 @@
 	<br />
 	<div class="row" id="editScenarioDialog" style="display: none">
 		<div class="row">
-			<span id="editScenarioDialogTitle">Edit Scenario</span>
+			<_span data-translateable="true" id="editScenarioDialogTitle">Edit Scenario</_span>
 			<div id="scenarioBuilderEdit" class="scenarioBuilder"></div>
 			<br />
 			<div class="medium primary btn">
-				<a href="#"
+				<_a data-translateable="true" href="#"
 					data-bind="click: function() { addCommand('scenarioBuilderEdit'); }"
-					style="color: #FFF">Add Command</a>
+					style="color: #FFF">Add Command</_a>
 			</div>
 			<br />
 			<form action="" method="post">
 				<div class="medium primary btn">
-					<a href="#" data-bind="click: doEditScenario" style="color: #FFF">Save</a>
+					<_a data-translateable="true" href="#" data-bind="click: doEditScenario" style="color: #FFF">Save</_a>
 				</div>
 			</form>
 		</div>

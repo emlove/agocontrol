@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-09-27 20:24+0200\n"
+"POT-Creation-Date: 2013-09-27 21:04+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -100,15 +100,18 @@ msgstr ""
 
 #: ../templates/configuration/floorplan.xml.in.h:3
 #: ../templates/configuration/rooms.xml.in.h:3
+#: ../templates/configuration/scenarios.xml.in.h:4
 msgid "Action"
 msgstr ""
 
 #: ../templates/configuration/floorplan.xml.in.h:4
+#: ../templates/configuration/scenarios.xml.in.h:6
 msgid "edit"
 msgstr ""
 
 #: ../templates/configuration/floorplan.xml.in.h:5
 #: ../templates/configuration/rooms.xml.in.h:4
+#: ../templates/configuration/scenarios.xml.in.h:7
 msgid "delete"
 msgstr ""
 
@@ -125,6 +128,7 @@ msgid "Room Configuration"
 msgstr ""
 
 #: ../templates/configuration/rooms.xml.in.h:2
+#: ../templates/configuration/scenarios.xml.in.h:2
 msgid "Name"
 msgstr ""
 
@@ -134,4 +138,32 @@ msgstr ""
 
 #: ../templates/configuration/rooms.xml.in.h:6
 msgid "Create Room"
+msgstr ""
+
+#: ../templates/configuration/scenarios.xml.in.h:1
+msgid "Scenario Configuration"
+msgstr ""
+
+#: ../templates/configuration/scenarios.xml.in.h:3
+msgid "Room"
+msgstr ""
+
+#: ../templates/configuration/scenarios.xml.in.h:5
+msgid "run"
+msgstr ""
+
+#: ../templates/configuration/scenarios.xml.in.h:8
+msgid "Create Scenario"
+msgstr ""
+
+#: ../templates/configuration/scenarios.xml.in.h:9
+msgid "Add Command"
+msgstr ""
+
+#: ../templates/configuration/scenarios.xml.in.h:10
+msgid "Edit Scenario"
+msgstr ""
+
+#: ../templates/configuration/scenarios.xml.in.h:11
+msgid "Save"
 msgstr ""

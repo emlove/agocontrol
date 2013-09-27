@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-09-27 20:12+0200\n"
+"POT-Creation-Date: 2013-09-27 21:04+0200\n"
 "PO-Revision-Date: 2013-09-22 12:28+0100\n"
 "Last-Translator: \n"
 "Language-Team: ago control <jaeger@agocontrol.com>\n"
@@ -36,7 +36,7 @@ msgstr "Räume"
 
 #: ../templates/navigation/configuration.xml.in.h:3
 msgid "Scenarios"
-msgstr "Abläufe"
+msgstr "Szenarien"
 
 #: ../templates/navigation/configuration.xml.in.h:4
 msgid "Events"
@@ -100,15 +100,18 @@ msgstr "Raumplan Name"
 
 #: ../templates/configuration/floorplan.xml.in.h:3
 #: ../templates/configuration/rooms.xml.in.h:3
+#: ../templates/configuration/scenarios.xml.in.h:4
 msgid "Action"
 msgstr "Aktion"
 
 #: ../templates/configuration/floorplan.xml.in.h:4
+#: ../templates/configuration/scenarios.xml.in.h:6
 msgid "edit"
 msgstr "Bearbeiten"
 
 #: ../templates/configuration/floorplan.xml.in.h:5
 #: ../templates/configuration/rooms.xml.in.h:4
+#: ../templates/configuration/scenarios.xml.in.h:7
 msgid "delete"
 msgstr "Löschen"
 
@@ -125,6 +128,7 @@ msgid "Room Configuration"
 msgstr "Raum Konfiguration"
 
 #: ../templates/configuration/rooms.xml.in.h:2
+#: ../templates/configuration/scenarios.xml.in.h:2
 msgid "Name"
 msgstr "Name"
 
@@ -136,3 +140,30 @@ msgstr "Neuen Raum erstellen"
 msgid "Create Room"
 msgstr "Neuen Raum erstellen"
 
+#: ../templates/configuration/scenarios.xml.in.h:1
+msgid "Scenario Configuration"
+msgstr "Szenario Konfiguration"
+
+#: ../templates/configuration/scenarios.xml.in.h:3
+msgid "Room"
+msgstr "Raum"
+
+#: ../templates/configuration/scenarios.xml.in.h:5
+msgid "run"
+msgstr "Ausführen"
+
+#: ../templates/configuration/scenarios.xml.in.h:8
+msgid "Create Scenario"
+msgstr "Szenario erstellen"
+
+#: ../templates/configuration/scenarios.xml.in.h:9
+msgid "Add Command"
+msgstr "Befehl hinzufügen"
+
+#: ../templates/configuration/scenarios.xml.in.h:10
+msgid "Edit Scenario"
+msgstr "Szenario bearbeiten"
+
+#: ../templates/configuration/scenarios.xml.in.h:11
+msgid "Save"
+msgstr "Speichern"
