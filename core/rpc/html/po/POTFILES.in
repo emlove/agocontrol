@@ -9,3 +9,4 @@ templates/configuration/scenarios.xml.in
 templates/configuration/cloud.xml.in
 templates/configuration/events.xml.in
 templates/configuration/variables.xml.in
+templates/configuration/devices.xml.in

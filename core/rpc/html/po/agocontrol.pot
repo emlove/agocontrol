@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-09-27 23:34+0200\n"
+"POT-Creation-Date: 2013-09-27 23:46+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -107,6 +107,7 @@ msgstr ""
 #: ../templates/configuration/scenarios.xml.in.h:4
 #: ../templates/configuration/events.xml.in.h:3
 #: ../templates/configuration/variables.xml.in.h:4
+#: ../templates/configuration/devices.xml.in.h:9
 msgid "Action"
 msgstr ""
 
@@ -280,4 +281,40 @@ msgstr ""
 
 #: ../templates/configuration/variables.xml.in.h:8
 msgid "Create variable"
+msgstr ""
+
+#: ../templates/configuration/devices.xml.in.h:1
+msgid "Device Configuration"
+msgstr ""
+
+#: ../templates/configuration/devices.xml.in.h:2
+msgid "Rooms:"
+msgstr ""
+
+#: ../templates/configuration/devices.xml.in.h:3
+msgid "Devicetypes:"
+msgstr ""
+
+#: ../templates/configuration/devices.xml.in.h:4
+msgid "Device Name"
+msgstr ""
+
+#: ../templates/configuration/devices.xml.in.h:5
+msgid "Room Name"
+msgstr ""
+
+#: ../templates/configuration/devices.xml.in.h:6
+msgid "Device Type"
+msgstr ""
+
+#: ../templates/configuration/devices.xml.in.h:7
+msgid "Handler"
+msgstr ""
+
+#: ../templates/configuration/devices.xml.in.h:8
+msgid "IntID"
+msgstr ""
+
+#: ../templates/configuration/devices.xml.in.h:10
+msgid "Details"
 msgstr ""
