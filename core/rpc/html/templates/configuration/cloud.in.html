@@ -36,4 +36,28 @@
 
 	</div>
 </div>
+<div class="row ">
+	<div class="twelve columns">
+		<_h2 data-translateable="true">Cloud Activation</_h2>
+		<div>
+			<form method="post" data-bind="attr: {'action': cloudActivate }">
+				<ul>
+					<li class="prepend field">
+						<_span data-translateable="true" class="adjoined narrow">Your username</_span>
+						<input class="wide input" type="text" required="required" data-translateable="true" _placeholder="Input your username" name="username" />
+					</li>
+					<li class="prepend field">
+						<_span data-translateable="true" class="adjoined narrow">Your password</_span>
+						<input class="wide input" data-bind="value: password" type="password" required="required" data-translateable="true" _placeholder="Input password" name="password" />
+					</li>
+					<li class="prepend field">
+						<_span data-translateable="true" class="adjoined narrow">Your PIN</_span>
+						<input class="wide input" data-bind="value: password" type="password" required="required" data-translateable="true" _placeholder="Input PIN" name="password" />
+					</li>
+				</ul>
+				<div class="medium primary btn"><input type="submit" data-translateable="true" _value="Activate Cloud" /></div>
+			</form>
+		</div>
+	</div>
+</div>
 </div>

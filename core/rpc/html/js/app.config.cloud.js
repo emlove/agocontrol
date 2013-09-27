@@ -6,6 +6,7 @@
 function cloudConfig() {
     this.hasNavigation = ko.observable(true);
     this.cloudURL = ko.observable("");
+    this.cloudActivate = ko.observable("");
 
     var self = this;
 

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-09-27 23:43+0200\n"
+"POT-Creation-Date: 2013-09-28 00:43+0200\n"
 "PO-Revision-Date: 2013-09-22 12:28+0100\n"
 "Last-Translator: \n"
 "Language-Team: ago control <jaeger@agocontrol.com>\n"
@@ -249,6 +249,30 @@ msgstr "Passwort bestätigen"
 #: ../templates/configuration/cloud.xml.in.h:11
 msgid "Register Cloud account"
 msgstr "Cloud Konto erstellen"
+
+#: ../templates/configuration/cloud.xml.in.h:12
+msgid "Cloud Activation"
+msgstr "Cloud Aktivierung"
+
+#: ../templates/configuration/cloud.xml.in.h:13
+msgid "Your password"
+msgstr "Dein Passwort"
+
+#: ../templates/configuration/cloud.xml.in.h:14
+msgid "Input password"
+msgstr "Passwort eingeben"
+
+#: ../templates/configuration/cloud.xml.in.h:15
+msgid "Your PIN"
+msgstr "Dein PIN"
+
+#: ../templates/configuration/cloud.xml.in.h:16
+msgid "Input PIN"
+msgstr "PIN eingeben"
+
+#: ../templates/configuration/cloud.xml.in.h:17
+msgid "Activate Cloud"
+msgstr "Cloud aktivieren"
 
 #: ../templates/configuration/events.xml.in.h:1
 msgid "Event Configuration"
