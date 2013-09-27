@@ -786,6 +786,9 @@ function eventConfig() {
 	    var i = 0;
 	    for ( var k in variables) {
 		params.options[i] = new Option(k, k);
+		if (defaultValues && k == defaultValues.param.name) {
+		    params.options[i].selected = true;
+		}
 		i++;
 	    }
 	    container.appendChild(params);
