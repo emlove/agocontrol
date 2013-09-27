@@ -86,11 +86,16 @@ function deviceConfig() {
 
 	var eTable = $("#configTable").dataTable();
 	self.resetFilter();
+
+	var escapeRegExp = function(str) {
+	    return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+	};
+
 	var filters = [];
 	for ( var i = 0; i < self.deviceTypeFilters().length; i++) {
 	    var tmp = self.deviceTypeFilters()[i];
 	    if (tmp.className == "primary label") {
-		filters.push(tmp.value);
+		filters.push(escapeRegExp(tmp.value));
 	    }
 	}
 	if (filters.length > 0) {
@@ -101,7 +106,7 @@ function deviceConfig() {
 	for ( var i = 0; i < self.roomFilters().length; i++) {
 	    var tmp = self.roomFilters()[i];
 	    if (tmp.className == "primary label") {
-		filters.push(tmp.value);
+		filters.push(escapeRegExp(tmp.value));
 	    }
 	}
 	if (filters.length > 0) {
