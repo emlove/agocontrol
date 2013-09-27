@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-09-27 22:41+0200\n"
+"POT-Creation-Date: 2013-09-27 23:05+0200\n"
 "PO-Revision-Date: 2013-09-22 12:28+0100\n"
 "Last-Translator: \n"
 "Language-Team: ago control <jaeger@agocontrol.com>\n"
@@ -190,19 +190,24 @@ msgstr "Speichern"
 
 #: ../templates/configuration/cloud.xml.in.h:1
 msgid "ago control Cloud Registration"
-msgstr ""
+msgstr "ago control Cloud Registrierung"
 
 #: ../templates/configuration/cloud.xml.in.h:2
 msgid "This service is currently under heavy development!"
-msgstr ""
+msgstr "An diesem Dienst wird gerade schwer gearbeitet!"
 
 #: ../templates/configuration/cloud.xml.in.h:3
 msgid ""
 "Register a ago control Cloud account to remote control your installation via "
 "<a target=\"_blank\" href=\"https://cloud.agocontrol.com\">cloud.agocontrol."
-"com</a><br/> You will be taken to the plan purchase site after completing "
-"your registration"
+"com</a><br/> You will be taken to the order page after completing your "
+"registration<br/>This service is not free."
 msgstr ""
+"Registriere Dich auf der ago control Cloud um die Installation via <a target="
+"\"_blank\" href=\"https://cloud.agocontrol.com\">cloud.agocontrol.com</a> "
+"fernzusteuern.<br/> Du wirst dann automatisch auf die Bestellseite weiter "
+"geleitet um die Registrierung abzuschliessen.<br />Dieses Service ist nicht "
+"kostenlos."
 
 #: ../templates/configuration/cloud.xml.in.h:4
 msgid "Your username"
