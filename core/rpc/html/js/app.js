@@ -714,5 +714,5 @@ function renderGraph(device, environment) {
 	}
 
 	$('#graph').unblock();
-    }, 5);
+    }, 30);
 }

@@ -175,18 +175,21 @@ function eventConfig() {
 	    self.openEvent = item.uuid;
 
 	    // Open the dialog
-	    $("#editEventDialog").dialog({
-		modal : true,
-		width : 900,
-		height : 600,
-		close : function() {
-		    // Done, restore stuff
-		    document.getElementById("eventBuilderEdit").className = "";
-		    document.getElementById("eventBuilder").className = "eventBuilder";
-		    self.initBuilder();
-		    self.openEvent = null;
-		}
-	    });
+	    if (document.getElementById("editEventDialogTitle")) {
+	        $("#editEventDialog").dialog({
+                    title : document.getElementById("editEventDialogTitle").innerHTML,
+		    modal : true,
+		    width : 900,
+		    height : 600,
+		    close : function() {
+		        // Done, restore stuff
+		        document.getElementById("eventBuilderEdit").className = "";
+		        document.getElementById("eventBuilder").className = "eventBuilder";
+		        self.initBuilder();
+		        self.openEvent = null;
+		    }
+	        });
+	    }
 	});
     };
 

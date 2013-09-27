@@ -352,16 +352,19 @@ function scenarioConfig() {
 	    self.openScenario = item.uuid;
 
 	    // Open the dialog
-	    $("#editScenarioDialog").dialog({
-		modal : true,
-		width : 940,
-		height : 600,
-		close : function() {
-		    // Done, restore stuff
-		    document.getElementById("scenarioBuilderEdit").innerHTML = "";
-		    self.openScenario = null;
-		}
-	    });
+	    if (document.getElementById("editScenarioDialogTitle")) {
+	        $("#editScenarioDialog").dialog({
+		    title : document.getElementById("editScenarioDialogTitle").innerHTML,
+		    modal : true,
+		    width : 940,
+		    height : 600,
+		    close : function() {
+		        // Done, restore stuff
+		        document.getElementById("scenarioBuilderEdit").innerHTML = "";
+		        self.openScenario = null;
+		    }
+	        });
+            }
 	});
     };
 

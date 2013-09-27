@@ -19,9 +19,6 @@
 .ui-widget p {
 	font-size: 0.8em;
 }
-.ui-widget #detailsTitle {
-	display:none;
-}
 .ui-widget .ui-widget {
 }
 .ui-widget input,
@@ -404,4 +401,9 @@
 	opacity: .3/*{opacityShadow}*/;
 	filter: Alpha(Opacity=30)/*{opacityFilterShadow}*/;
 	border-radius: 8px/*{cornerRadiusShadow}*/;
+}
+
+/* ago control mods */
+#detailsTitle, #editEventDialogTitle, #editScenarioDialogTitle {
+	display:none;
 }
