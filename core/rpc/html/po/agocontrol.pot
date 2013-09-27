@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-09-27 21:04+0200\n"
+"POT-Creation-Date: 2013-09-27 21:20+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -137,6 +137,10 @@ msgid "Create a new room"
 msgstr ""
 
 #: ../templates/configuration/rooms.xml.in.h:6
+msgid "New room name"
+msgstr ""
+
+#: ../templates/configuration/rooms.xml.in.h:7
 msgid "Create Room"
 msgstr ""
 

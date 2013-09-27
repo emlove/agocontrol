@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-09-27 21:04+0200\n"
+"POT-Creation-Date: 2013-09-27 21:20+0200\n"
 "PO-Revision-Date: 2013-09-22 12:28+0100\n"
 "Last-Translator: \n"
 "Language-Team: ago control <jaeger@agocontrol.com>\n"
@@ -137,6 +137,10 @@ msgid "Create a new room"
 msgstr "Neuen Raum erstellen"
 
 #: ../templates/configuration/rooms.xml.in.h:6
+msgid "New room name"
+msgstr "Neuer Raumname"
+
+#: ../templates/configuration/rooms.xml.in.h:7
 msgid "Create Room"
 msgstr "Neuen Raum erstellen"
 
