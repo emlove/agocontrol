@@ -44,12 +44,15 @@ function cloudConfig() {
 		success : function(res) {
 			var result = JSON.parse(res);
 			self.openDialog = "#cloudActivationResult_" + result.rc;
-			$(self.openDialog).dialog({
-				modal: true,
-				height: 180,
-				width: 500,
-				buttons: buttons
-			});
+			if (document.getElementById("cloudActivationResultTitle")) {
+				$(self.openDialog).dialog({
+					title : document.getElementById("cloudActivationResultTitle").innerHTML,
+					modal: true,
+					height: 180,
+					width: 500,
+					buttons: buttons
+				});
+			}
 		},
 		async: true
 	});

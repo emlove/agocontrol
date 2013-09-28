@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-09-28 16:04+0200\n"
+"POT-Creation-Date: 2013-09-28 16:24+0200\n"
 "PO-Revision-Date: 2013-09-22 12:28+0100\n"
 "Last-Translator: \n"
 "Language-Team: ago control <jaeger@agocontrol.com>\n"
@@ -279,20 +279,20 @@ msgid "Register Cloud account"
 msgstr "Cloud Konto erstellen"
 
 #: ../templates/configuration/cloud.xml.in.h:12
+msgid "Cloud Activation"
+msgstr "Cloud Aktivierung"
+
+#: ../templates/configuration/cloud.xml.in.h:13
 msgid "Success, activation successful!"
 msgstr "Aktivierung erfolgreich abgeschlossen!"
 
-#: ../templates/configuration/cloud.xml.in.h:13
+#: ../templates/configuration/cloud.xml.in.h:14
 msgid "Certificate read error!"
 msgstr "Fehler beim Lesen vom Zertifikat!"
 
-#: ../templates/configuration/cloud.xml.in.h:14
-msgid "Wrong activation PIN!"
-msgstr "Falscher Aktivierungsschlüssel(PIN)!"
-
 #: ../templates/configuration/cloud.xml.in.h:15
-msgid "Cloud Activation"
-msgstr "Cloud Aktivierung"
+msgid "Wrong username, password or activation PIN!"
+msgstr "Benutzername, Passwort oder Aktivierungsschlüssel(PIN) falsch!"
 
 #: ../templates/configuration/cloud.xml.in.h:16
 msgid "Close"
