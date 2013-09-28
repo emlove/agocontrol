@@ -52,7 +52,27 @@ function roomConfig() {
 	});
     };
 
-    this.deleteRoom = function(item, event) {
+    
+    this.deleteRoom  = function(item, event) {
+	var button_yes = $("#confirmDeleteButtons").data("yes");
+	var button_no = $("#confirmDeleteButtons").data("no");
+	var buttons = {};
+	buttons[button_no] = function() {
+	    $("#confirmDelete").dialog("close");
+	};
+	buttons[button_yes] = function() {
+	    self.doDeleteRoom(item, event);
+	    $("#confirmDelete").dialog("close");
+	};
+	$("#confirmDelete").dialog({
+	    modal: true,
+	    height: 180,
+	    width: 500,
+	    buttons: buttons
+	});
+    };
+    
+    this.doDeleteRoom = function(item, event) {
 	$('#configTable').block({ 
             message: '<div>Please wait ...</div>', 
             css: { border: '3px solid #a00' } 
