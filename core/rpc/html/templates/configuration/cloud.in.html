@@ -15,7 +15,7 @@
 				<ul>
 					<li class="prepend field">
 						<_span data-translateable="true" class="adjoined narrow">Your username</_span>
-						<input class="wide input" type="text" required="required" data-translateable="true" _placeholder="Input your username" name="username" />
+						<input class="wide input" data-bind="value: cloudUsername" type="text" required="required" data-translateable="true" _placeholder="Input your username" name="username" />
 					</li>
 					<li class="prepend field">
 						<_span data-translateable="true" class="adjoined narrow">Your E-Mail address</_span>
@@ -23,11 +23,11 @@
 					</li>
 					<li class="prepend field">
 						<_span data-translateable="true" class="adjoined narrow">Your new password</_span>
-						<input class="wide input" data-bind="value: password" type="password" required="required" data-translateable="true" _placeholder="Input new password" name="password" />
+						<input class="wide input" data-bind="value: cloudPassword" type="password" required="required" data-translateable="true" _placeholder="Input new password" name="password" />
 					</li>
 					<li class="prepend field">
 						<_span data-translateable="true" class="adjoined narrow">Confirm new password</_span>
-						<input class="wide input" data-bind="value: passwordConfirm" type="password" required="required" data-translateable="true" _placeholder="Confirm new password" name="password_confirm" />
+						<input class="wide input" data-bind="value: cloudPasswordConfirm" type="password" required="required" data-translateable="true" _placeholder="Confirm new password" name="password_confirm" />
 					</li>
 				</ul>
 				<div class="medium primary btn"><input type="submit" data-translateable="true" _value="Register Cloud account" /></div>
@@ -39,20 +39,20 @@
 <div class="row ">
 	<div class="twelve columns">
 		<_h2 data-translateable="true">Cloud Activation</_h2>
-		<div>
-			<form method="post" data-bind="attr: {'action': cloudActivate }">
+		<div id="cloudActivation">
+			<form data-bind="submit: cloudActivate">
 				<ul>
 					<li class="prepend field">
 						<_span data-translateable="true" class="adjoined narrow">Your username</_span>
-						<input class="wide input" type="text" required="required" data-translateable="true" _placeholder="Input your username" name="username" />
+						<input class="wide input" data-bind="value: cloudUsername" type="text" required="required" data-translateable="true" _placeholder="Input your username" name="username" />
 					</li>
 					<li class="prepend field">
 						<_span data-translateable="true" class="adjoined narrow">Your password</_span>
-						<input class="wide input" data-bind="value: password" type="password" required="required" data-translateable="true" _placeholder="Input password" name="password" />
+						<input class="wide input" data-bind="value: cloudPassword" type="password" required="required" data-translateable="true" _placeholder="Input password" name="password" />
 					</li>
 					<li class="prepend field">
 						<_span data-translateable="true" class="adjoined narrow">Your PIN</_span>
-						<input class="wide input" data-bind="value: password" type="password" required="required" data-translateable="true" _placeholder="Input PIN" name="password" />
+						<input class="wide input" data-bind="value: cloudPIN" required="required" data-translateable="true" _placeholder="Input PIN" name="pin" />
 					</li>
 				</ul>
 				<div class="medium primary btn"><input type="submit" data-translateable="true" _value="Activate Cloud" /></div>

@@ -6,15 +6,16 @@
 function cloudConfig() {
     this.hasNavigation = ko.observable(true);
     this.cloudURL = ko.observable("");
-    this.cloudActivate = ko.observable("");
 
     var self = this;
 
-    this.password = ko.observable("");
-    this.passwordConfirm = ko.observable("");
+    this.cloudUsername = ko.observable("");
+    this.cloudPassword = ko.observable("");
+    this.cloudPasswordConfirm = ko.observable("");
+    this.cloudPIN = ko.observable("");
 
     this.checkPassWords = function() {
-	if (self.password() != self.passwordConfirm()) {
+	if (self.this.cloudPassword() != self.cloudPasswordConfirm()) {
 	    alert(document.getElementById("passwordError").innerHTML);
 	    return false;
 	}
@@ -22,6 +23,20 @@ function cloudConfig() {
     };
 
     this.cloudURL("https://cloud.agocontrol.com/cloudreg/" + systemvar.uuid + "/");
+
+    /* Cloud Activation */
+    self.cloudActivate = function() {
+	var cloudUsername = this.cloudUsername();
+	var cloudPassword = this.cloudPassword();
+	var cloudPIN = this.cloudPIN();
+	
+	var url = "/cgi-bin/activate.cgi?username=" + cloudUsername + "&password=" + cloudPassword + "&pin=" + cloudPIN;
+	$.ajax({
+		type : 'POST',
+		url : url,
+	});
+    }
+    
 }
 
 /**
