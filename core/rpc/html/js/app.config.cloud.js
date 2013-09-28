@@ -34,6 +34,10 @@ function cloudConfig() {
 	$.ajax({
 		type : 'POST',
 		url : url,
+		success : function(r) {
+			alert(r);
+		},
+		async: true
 	});
     }
     
