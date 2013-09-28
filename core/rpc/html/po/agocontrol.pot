@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-09-28 11:00+0200\n"
+"POT-Creation-Date: 2013-09-28 16:04+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -272,26 +272,42 @@ msgid "Register Cloud account"
 msgstr ""
 
 #: ../templates/configuration/cloud.xml.in.h:12
-msgid "Cloud Activation"
+msgid "Success, activation successful!"
 msgstr ""
 
 #: ../templates/configuration/cloud.xml.in.h:13
-msgid "Your password"
+msgid "Certificate read error!"
 msgstr ""
 
 #: ../templates/configuration/cloud.xml.in.h:14
-msgid "Input password"
+msgid "Wrong activation PIN!"
 msgstr ""
 
 #: ../templates/configuration/cloud.xml.in.h:15
-msgid "Your PIN"
+msgid "Cloud Activation"
 msgstr ""
 
 #: ../templates/configuration/cloud.xml.in.h:16
-msgid "Input PIN"
+msgid "Close"
 msgstr ""
 
 #: ../templates/configuration/cloud.xml.in.h:17
+msgid "Your password"
+msgstr ""
+
+#: ../templates/configuration/cloud.xml.in.h:18
+msgid "Input password"
+msgstr ""
+
+#: ../templates/configuration/cloud.xml.in.h:19
+msgid "Your PIN"
+msgstr ""
+
+#: ../templates/configuration/cloud.xml.in.h:20
+msgid "Input PIN"
+msgstr ""
+
+#: ../templates/configuration/cloud.xml.in.h:21
 msgid "Activate Cloud"
 msgstr ""
 

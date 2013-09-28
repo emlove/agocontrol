@@ -29,13 +29,27 @@ function cloudConfig() {
 	var cloudUsername = this.cloudUsername();
 	var cloudPassword = this.cloudPassword();
 	var cloudPIN = this.cloudPIN();
+	var buttons = {};
+	var closeButton = $("#closeButton").data("close"); 
+
+	buttons[closeButton] = function() {
+		$(self.openDialog).dialog("close");
+		self.openDialog = null;
+	};
 	
 	var url = "/cgi-bin/activate.cgi?action=activate&username=" + cloudUsername + "&password=" + cloudPassword + "&pin=" + cloudPIN;
 	$.ajax({
 		type : 'POST',
 		url : url,
-		success : function(r) {
-			alert(r);
+		success : function(res) {
+			var result = JSON.parse(res);
+			self.openDialog = "#cloudActivationResult_" + result.rc;
+			$(self.openDialog).dialog({
+				modal: true,
+				height: 180,
+				width: 500,
+				buttons: buttons
+			});
 		},
 		async: true
 	});
