@@ -10,7 +10,12 @@
 			<tbody data-bind="foreach: data">
 				<tr>
 					<td data-bind="text: name" />
-					<td data-bind="text: state" />
+					<ko opts="if: state == 'active'">
+						<td><span class="success alert" data-bind="text: state"/></td>
+					</ko>
+					<ko opts="if: state != 'active'">
+						<td><span class="warning alert" data-bind="text: state"/></td>
+					</ko>
 				</tr>
 			</tbody>
 		</table>
