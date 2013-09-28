@@ -577,6 +577,15 @@ function doShowDetails(device, template, environment) {
 		$("#end_date").datepicker("setDate", new Date());
 
 		renderGraph(device, environment ? environment : device.valueList()[0].name);
+
+		document.getElementsByName("displayType")[0].onchange = function() {
+		    renderGraph(device, environment ? environment : device.valueList()[0].name);
+		};
+
+		document.getElementsByName("displayType")[1].onchange = function() {
+		    renderGraph(device, environment ? environment : device.valueList()[0].name);
+		};
+
 		dialogWidth = 1000;
 		dialogHeight = 720;
 	    }
@@ -611,6 +620,11 @@ function doShowDetails(device, template, environment) {
  */
 function renderGraph(device, environment) {
 
+    var renderType = $($('input[name="displayType"]:checked')[0]).val();
+
+    $('#graph').show();
+    $('#dataList').hide();
+
     $('#graph').block({
 	message : '<div>Please wait ...</div>',
 	css : {
@@ -637,9 +651,45 @@ function renderGraph(device, environment) {
 	    return;
 	}
 
+	/* Get the unit */
+	var unit = "";
+	for ( var k = 0; k < device.valueList().length; k++) {
+	    if (device.valueList()[k].name == environment) {
+		unit = device.valueList()[k].unit;
+		break;
+	    }
+	}
+
 	/* Prepare the data */
 	var data = [];
 	var values = res.result.result.values;
+
+	if (renderType == "list") {
+	    values.sort(function(a, b) {
+		return b.time - a.time;
+	    });
+	    
+	    console.log(values);
+
+	    for ( var i = 0; i < values.length; i++) {
+		values[i].date = formatDate(new Date(values[i].time * 1000));
+		values[i].value = values[i].level + " " + unit;
+		delete values[i].level;
+	    }
+
+	    var tmp = function() {
+		this.data = ko.observableArray([]);
+	    };
+	    var obj = new tmp();
+	    obj.data(values);
+	    ko.renderTemplate("details/datalist", {
+		data : values
+	    }, {}, document.getElementById("dataList"));
+	    $('#graph').unblock();
+	    $("#graph").hide();
+	    $('#dataList').show();
+	    return;
+	}
 
 	/* Split the values into buckets */
 	var num_buckets = Math.max(1, Math.floor(values.length / max_ticks));
@@ -661,15 +711,6 @@ function renderGraph(device, environment) {
 	    }
 	    data.push([ i, value / k ]);
 	    i++;
-	}
-
-	/* Get the unit */
-	var unit = "";
-	for ( var k = 0; k < device.valueList().length; k++) {
-	    if (device.valueList()[k].name == environment) {
-		unit = device.valueList()[k].unit;
-		break;
-	    }
 	}
 
 	/* Render the graph */
