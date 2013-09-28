@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-09-28 16:24+0200\n"
+"POT-Creation-Date: 2013-09-28 17:39+0200\n"
 "PO-Revision-Date: 2013-09-22 12:28+0100\n"
 "Last-Translator: \n"
 "Language-Team: ago control <jaeger@agocontrol.com>\n"
@@ -23,32 +23,75 @@ msgid "Configuration"
 msgstr "Konfiguration"
 
 #: ../templates/configuration.xml.in.h:2
-msgid "Common Tasks"
-msgstr "Häufige Aufgaben"
+msgid "Welcome"
+msgstr "Willkommen"
+
+#: ../templates/configuration.xml.in.h:3
+msgid "Dashboard and Floorplans"
+msgstr "Übersicht und Raumpläne"
+
+#: ../templates/configuration.xml.in.h:4
+msgid "Rooms and Variables"
+msgstr "Räume und Variablen"
+
+#: ../templates/configuration.xml.in.h:5
+#: ../templates/navigation/configuration.xml.in.h:3
+msgid "Scenarios"
+msgstr "Szenarien"
+
+#: ../templates/configuration.xml.in.h:6
+#: ../templates/navigation/configuration.xml.in.h:4
+msgid "Events"
+msgstr "Ereignisse"
+
+#: ../templates/configuration.xml.in.h:7
+#: ../templates/navigation/configuration.xml.in.h:5
+msgid "Devices"
+msgstr "Geräte"
+
+#: ../templates/configuration.xml.in.h:8
+msgid "System and Cloud"
+msgstr "System und Cloud"
+
+#: ../templates/configuration.xml.in.h:9
+msgid ""
+"Welcome to the configuration page. You can find useful information and help "
+"for the configuration menu records in the left tabs."
+msgstr ""
+"Willkommen auf der Konfigurationsseite. In den linken Reitern findest Du "
+"eine kurze Anleitung zu den jeweiligen Menüpunkten."
+
+#: ../templates/configuration.xml.in.h:10
+msgid ""
+"You can easly design your Dashboard or add new floorplans which are shown in "
+"the left main menu. Easily drag and drop your devices from the device tree "
+"on the left side to the grid and save it. You also can have multiple pages "
+"on a single grid. If you want to reorder the devices on the grid you just "
+"drag and drop it on the grid."
+msgstr ""
+"In der Übersicht findest Du alle Geräte die einen Namen haben. Wenn ein "
+"Gerät keinen Namen hat, dann kannst Du diesen auf der Geräte Seite vergeben. "
+"Um einen neuen Raumplan zu erstellen klickst Du auf Raumpläne, vergibtst "
+"einen Namen und klickst dann auf Raumplan erstellen. Auf den neuen Raumplan "
+"oder auch auf vorhandene kann man Geräte aus dem Raum-Klappmenü links unten "
+"auf die einzelnen Felder ziehen. Um ein Gerät zu entfernen zieht man es "
+"zurück auf das Raum-Klappmenü. Wenn man ein Gerät auf einer anderen Position "
+"haben möchte, dann einfach am Symbol geklickt halten und auf eine andere "
+"Position ziehen. Mit einem Klick auf das Symbol von einem Gerät bekommst Du "
+"alle Details und Funtkionen."
+
+#: ../templates/configuration.xml.in.h:11
+#: ../templates/navigation/configuration.xml.in.h:1
+msgid "Floorplans"
+msgstr "Raumpläne"
 
 #: ../templates/dashboard.xml.in.h:1
 msgid "Search"
 msgstr "Suche"
 
-#: ../templates/navigation/configuration.xml.in.h:1
-msgid "Floorplans"
-msgstr "Raumpläne"
-
 #: ../templates/navigation/configuration.xml.in.h:2
 msgid "Rooms"
 msgstr "Räume"
-
-#: ../templates/navigation/configuration.xml.in.h:3
-msgid "Scenarios"
-msgstr "Szenarien"
-
-#: ../templates/navigation/configuration.xml.in.h:4
-msgid "Events"
-msgstr "Ereignisse"
-
-#: ../templates/navigation/configuration.xml.in.h:5
-msgid "Devices"
-msgstr "Geräte"
 
 #: ../templates/navigation/configuration.xml.in.h:6
 msgid "Variables"
@@ -401,3 +444,4 @@ msgstr "Interne ID"
 #: ../templates/configuration/devices.xml.in.h:10
 msgid "Details"
 msgstr "Details"
+

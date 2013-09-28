@@ -1,19 +1,84 @@
 <div class="container" id="contentarea" data-bind="initTabs: $root">
 	<div class="row">
-		<_h2 data-translateable="true">Configuration</_h2>
+		<_h3 data-translateable="true">Configuration</_h3>
 		<div class="row">
 			<div class="twelve columns">
 				<section class="vertical tabs">
-					<_h4 data-translateable="true" class="lead">Common Tasks</_h4>
 					<ul class="tab-nav four columns">
-						<li class="active"><a href="?configuration#">Device Setup</a></li>
-						<li><a href="?configuration#">Dashboard and Floorplans</a></li>
-						<li><a href="?configuration#">Scenario Editor</a></li>
-						<li><a href="?configuration#">Event Editor</a></li>
-						<li><a href="?configuration#">Developer Tools</a></li>
+						<li class="active"><_a data-translateable="true" href="?configuration#">Welcome</_a></li>
+						<li><_a data-translateable="true" href="?configuration#">Dashboard and Floorplans</_a></li>
+						<li><_a data-translateable="true" href="?configuration#">Rooms and Variables</_a></li>
+						<li><_a data-translateable="true"  href="?configuration#">Scenarios</_a></li>
+						<li><_a data-translateable="true"  href="?configuration#">Events</_a></li>
+						<li><_a data-translateable="true"  href="?configuration#">Devices</_a></li>
+						<li><_a data-translateable="true"  href="?configuration#">System and Cloud</_a></li>
 					</ul>
-					<!-- Device Setup begin -->
+					<!-- Welcome begin -->
 					<div class="tab-content eight columns active">
+						<img src="/img/agocontrol_logo_welcome.png" alt="" width="350" />
+						<_p data-translateable="true">Welcome to the configuration page. You can find useful information and help for the configuration menu records in the left tabs.</_p>
+						<h4>Help and Documentation</h4>
+						<a href="http://wiki.agocontrol.com/" target="_blank"><i class="icon-lifebuoy"></i>ago control Documentation</a><br />
+						<a href="http://www.agocontrol.com/forum/" target="_blank"><i class="icon-lifebuoy"></i>ago control Forum</a><br /><br />
+						<h4>Contribute</h4>
+						<p> If you want to join the development community or if you like ago control and want to help us with your donation!</p>
+						<a href="http://www.agocontrol.com/contribute/" target="_blank"><i class="icon-lifebuoy"></i>Contribute to ago control</a>
+					</div>
+					<!-- Welcome end -->
+					<!-- Dashboard and Floorplans begin -->
+					<div class="tab-content eight columns">
+						<_p data-translateable="true">You can easly design your Dashboard or add new floorplans
+							which are shown in the left main menu. Easily drag and drop your
+							devices from the device tree on the left side to the grid and
+							save it. You also can have multiple pages on a single grid. If
+							you want to reorder the devices on the grid you just drag and
+							drop it on the grid.</_p>
+						<br />
+						<div class="row">
+							<div class="medium primary btn six columns centered">
+								<_a data-translateable="true" href="/?floorplanConfig">Floorplans</_a>
+							</div>
+						</div>
+					</div>
+					<!-- Dashboard and Floorplans end -->
+					<!-- Rooms and Variables begin -->
+					<div class="tab-content eight columns">
+						<_p data-translateable="true">Welcome to the configuration page. You can find useful information and help for the configuration menu records in the left tabs.</_p>
+					</div>
+					<!-- Rooms and Variables end -->
+					<!-- Scenarios begin -->
+					<div class="tab-content eight columns">
+						<p>A scenario is a set of multiple commands which can fired by
+							a single command. For example you can create a scenario like "go
+							to bed" which turns off your TV, switch off lights, close drapes
+							and arm your security system.</p>
+						<br />
+						<div class="row">
+							<div class="medium primary btn six columns centered">
+								<a href="/?scenarioConfig">Open Scenario Editor</a>
+							</div>
+						</div>
+					</div>
+					<!-- Scenarios end -->
+					<!-- Events begin -->
+					<div class="tab-content eight columns">
+						<p>You can fire a command or even a scenario if some event
+							occours. For example you can create a event that is beeing
+							triggerd at sunrise and fires a command to open the drapes. You
+							can react on any event which is beeing sent by the system. Events
+							also can be nested if you need some event like "if daytime" and
+							"sensor brightness less 30" and "motion sensor trapped" then turn
+							on the outdoor-light.</p>
+						<br />
+						<div class="row">
+							<div class="medium primary btn six columns centered">
+								<a href="/?eventConfig">Open Event Editor</a>
+							</div>
+						</div>
+					</div>
+					<!-- Events end -->
+					<!-- Devices begin -->
+					<div class="tab-content eight columns">
 						<p>You can set custom setting for your installed devices or
 							hardware devices. Here you can set up for example the Z-Wave
 							controller options, associations and so on.</p>
@@ -23,75 +88,19 @@
 							</div>
 						</div>
 					</div>
-					<!-- Device Setup end -->
-					<!-- Dashboard and Floorplans begin -->
+					<!-- Devices end -->
+					<!-- Setup and Cloud begin -->
 					<div class="tab-content eight columns">
-						<p>You can easly design your Dashboard or add new floorplans
-							which are shown in the left main menu. Easily drag and drop your
-							devices from the device tree on the left side to the grid and
-							save it. You also can have multiple pages on a single grid. If
-							you want to reorder the devices on the grid you just drag and
-							drop it on the grid.</p>
-						<a href="?configuration#"><i class="icon-lifebuoy"></i> Watch
-							the video tutorial</a><br />
-						<br />
+						<p>You can set custom setting for your installed devices or
+							hardware devices. Here you can set up for example the Z-Wave
+							controller options, associations and so on.</p>
 						<div class="row">
 							<div class="medium primary btn six columns centered">
-								<a href="/?floorplanConfig">Open Floorplan Designer</a>
+								<a href="/?deviceConfig">Open Device Setup</a>
 							</div>
 						</div>
 					</div>
-					<!-- Dashboard and Floorplans end -->
-					<!-- Scenario Editor begin -->
-					<div class="tab-content eight columns">
-						<p>A scenario is a set of multiple commands which can fired by
-							a single command. For example you can create a scenario like "go
-							to bed" which turns off your TV, switch off lights, close drapes
-							and arm your security system.</p>
-						<a href="?configuration#"><i class="icon-lifebuoy"></i> Watch
-							the video tutorial</a><br />
-						<br />
-						<div class="row">
-							<div class="medium primary btn six columns centered">
-								<a href="/?scenarioConfig">Open Scenario Editor</a>
-							</div>
-						</div>
-					</div>
-					<!-- Scenario Editor end -->
-					<!-- Event Editor begin -->
-					<div class="tab-content eight columns">
-						<p>You can fire a command or even a scenario if some event
-							occours. For example you can create a event that is beeing
-							triggerd at sunrise and fires a command to open the drapes. You
-							can react on any event which is beeing sent by the system. Events
-							also can be nested if you need some event like "if daytime" and
-							"sensor brightness less 30" and "motion sensor trapped" then turn
-							on the outdoor-light.</p>
-						<a href="?configuration#"><i class="icon-lifebuoy"></i> Watch
-							the video tutorial</a><br />
-						<br />
-						<div class="row">
-							<div class="medium primary btn six columns centered">
-								<a href="/?eventConfig">Open Event Editor</a>
-							</div>
-						</div>
-					</div>
-					<!-- Event Editor end -->
-					<!-- Developer Tools begin -->
-					<div class="tab-content eight columns">
-						<p>
-							Information for Developes can be found at <a
-								href="http://www.agocontrol.com/contribute/">http://www.agocontrol.com/contribute/</a>
-							Here are some Quick Links:
-						</p>
-						<ul class="disc">
-							<li><a href="developer-drain.html">JS Drain - get all
-									Events in realtime</a></li>
-							<li><a href="#">View Schema</a></li>
-							<li><a href="#">View Inventory</a></li>
-						</ul>
-					</div>
-					<!-- Developer Tools end -->
+					<!-- Setup and Cloud end -->
 				</section>
 			</div>
 		</div>

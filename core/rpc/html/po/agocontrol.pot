@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-09-28 16:24+0200\n"
+"POT-Creation-Date: 2013-09-28 17:41+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,31 +23,62 @@ msgid "Configuration"
 msgstr ""
 
 #: ../templates/configuration.xml.in.h:2
-msgid "Common Tasks"
+msgid "Welcome"
+msgstr ""
+
+#: ../templates/configuration.xml.in.h:3
+msgid "Dashboard and Floorplans"
+msgstr ""
+
+#: ../templates/configuration.xml.in.h:4
+msgid "Rooms and Variables"
+msgstr ""
+
+#: ../templates/configuration.xml.in.h:5
+#: ../templates/navigation/configuration.xml.in.h:3
+msgid "Scenarios"
+msgstr ""
+
+#: ../templates/configuration.xml.in.h:6
+#: ../templates/navigation/configuration.xml.in.h:4
+msgid "Events"
+msgstr ""
+
+#: ../templates/configuration.xml.in.h:7
+#: ../templates/navigation/configuration.xml.in.h:5
+msgid "Devices"
+msgstr ""
+
+#: ../templates/configuration.xml.in.h:8
+msgid "System and Cloud"
+msgstr ""
+
+#: ../templates/configuration.xml.in.h:9
+msgid ""
+"Welcome to the configuration page. You can find useful information and help "
+"for the configuration menu records in the left tabs."
+msgstr ""
+
+#: ../templates/configuration.xml.in.h:10
+msgid ""
+"You can easly design your Dashboard or add new floorplans which are shown in "
+"the left main menu. Easily drag and drop your devices from the device tree "
+"on the left side to the grid and save it. You also can have multiple pages "
+"on a single grid. If you want to reorder the devices on the grid you just "
+"drag and drop it on the grid."
+msgstr ""
+
+#: ../templates/configuration.xml.in.h:11
+#: ../templates/navigation/configuration.xml.in.h:1
+msgid "Floorplans"
 msgstr ""
 
 #: ../templates/dashboard.xml.in.h:1
 msgid "Search"
 msgstr ""
 
-#: ../templates/navigation/configuration.xml.in.h:1
-msgid "Floorplans"
-msgstr ""
-
 #: ../templates/navigation/configuration.xml.in.h:2
 msgid "Rooms"
-msgstr ""
-
-#: ../templates/navigation/configuration.xml.in.h:3
-msgid "Scenarios"
-msgstr ""
-
-#: ../templates/navigation/configuration.xml.in.h:4
-msgid "Events"
-msgstr ""
-
-#: ../templates/navigation/configuration.xml.in.h:5
-msgid "Devices"
 msgstr ""
 
 #: ../templates/navigation/configuration.xml.in.h:6
