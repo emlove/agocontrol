@@ -1,0 +1,20 @@
+<div id="contentarea" class="container">
+<div class="row">
+	<div class="twelve columns">
+		<h2>System Status</h2>
+		<table style="width: 80%;margin-left: 10%">
+			<tr>
+				<th><strong>Service</strong></th>
+				<th><strong>State</strong></th>
+			</tr>
+			<tbody data-bind="foreach: data">
+				<tr>
+					<td data-bind="text: name" />
+					<td data-bind="text: state" />
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</div>
+
+</div>

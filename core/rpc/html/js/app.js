@@ -236,6 +236,8 @@ function initGUI() {
 	init_scenarioConfig();
     } else if (page == "inventoryView") {
 	deferredInit = init_inventoryView;
+    } else if (page == "systemStatus") {
+	init_systemStatus();
     }
 }
 
