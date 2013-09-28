@@ -98,15 +98,15 @@ var dataTableLang = JSON.parse($.ajax({
     type : "GET",
     url : getDataTableLangUrl(),
     async : false,
-}).responseText); 
+}).responseText);
 
 var dataTableLangBase = JSON.parse($.ajax({
     type : "GET",
     url : "cgi-bin/get_table_lang.cgi?lang=en",
     async : false,
-}).responseText); 
+}).responseText);
 
-for (var k in dataTableLangBase) {
+for ( var k in dataTableLangBase) {
     if (dataTableLang[k] == undefined) {
 	dataTableLang[k] = dataTableLangBase[k];
     }
@@ -116,5 +116,12 @@ for (var k in dataTableLangBase) {
 dataTableLang.sUrl = "";
 
 $.extend($.fn.dataTable.defaults, {
-    "oLanguage": dataTableLang,
+    "oLanguage" : dataTableLang,
+    "fnDrawCallback" : function(oSettings) {
+	if (oSettings._iDisplayLength > oSettings.fnRecordsDisplay()) {
+	    $(oSettings.nTableWrapper).find('.dataTables_paginate').hide();
+	} else {
+	    $(oSettings.nTableWrapper).find('.dataTables_paginate').show();
+	}
+    }
 });
