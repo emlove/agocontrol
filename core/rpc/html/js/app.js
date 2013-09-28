@@ -517,6 +517,9 @@ function showCommandList(container, device) {
     }
 
     commandSelect.onchange = function() {
+	if (commandSelect.options.length == 0) {
+	    return 0;
+	}
 	var cmd = schema.commands[commandSelect.options[commandSelect.selectedIndex].value];
 	commandParams.innerHTML = "";
 	if (cmd.parameters !== undefined) {
@@ -556,7 +559,7 @@ function doShowDetails(device, template, environment) {
 		showCommandList(document.getElementById('commandList'), device);
 	    }
 
-	    if (document.getElementById('graph') && device.valueList && device.valueList() && device.valueList().length) {
+	    if (document.getElementById('graph') && ((device.valueList && device.valueList() && device.valueList().length) || device.devicetype == "binarysensor")) {
 		/* Setup start date */
 		var start = new Date((new Date()).getTime() - 24 * 3600 * 1000);
 		$("#start_date").datepicker({
@@ -575,6 +578,10 @@ function doShowDetails(device, template, environment) {
 		    }
 		});
 		$("#end_date").datepicker("setDate", new Date());
+
+		if (device.devicetype == "binarysensor") {
+		    environment = "device.state";
+		}
 
 		renderGraph(device, environment ? environment : device.valueList()[0].name);
 
@@ -668,8 +675,6 @@ function renderGraph(device, environment) {
 	    values.sort(function(a, b) {
 		return b.time - a.time;
 	    });
-	    
-	    console.log(values);
 
 	    for ( var i = 0; i < values.length; i++) {
 		values[i].date = formatDate(new Date(values[i].time * 1000));
