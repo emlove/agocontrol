@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-09-28 10:24+0200\n"
+"POT-Creation-Date: 2013-09-28 10:27+0200\n"
 "PO-Revision-Date: 2013-09-22 12:28+0100\n"
 "Last-Translator: \n"
 "Language-Team: ago control <jaeger@agocontrol.com>\n"
@@ -95,14 +95,32 @@ msgid "Run"
 msgstr "Ausführen"
 
 #: ../templates/configuration/floorplan.xml.in.h:1
+msgid "Are you sure that you want to delete this floorplan?"
+msgstr "Sind Sie sicher das Sie diesen Raumplan löschen möchten?"
+
+#: ../templates/configuration/floorplan.xml.in.h:2
+#: ../templates/configuration/rooms.xml.in.h:2
+#: ../templates/configuration/scenarios.xml.in.h:2
+#: ../templates/configuration/variables.xml.in.h:2
+msgid "Yes"
+msgstr "Ja"
+
+#: ../templates/configuration/floorplan.xml.in.h:3
+#: ../templates/configuration/rooms.xml.in.h:3
+#: ../templates/configuration/scenarios.xml.in.h:3
+#: ../templates/configuration/variables.xml.in.h:3
+msgid "No"
+msgstr "Nein"
+
+#: ../templates/configuration/floorplan.xml.in.h:4
 msgid "Floorplan Configuration"
 msgstr "Raumplan Konfiguration"
 
-#: ../templates/configuration/floorplan.xml.in.h:2
+#: ../templates/configuration/floorplan.xml.in.h:5
 msgid "Floorplan Name"
 msgstr "Raumplan Name"
 
-#: ../templates/configuration/floorplan.xml.in.h:3
+#: ../templates/configuration/floorplan.xml.in.h:6
 #: ../templates/configuration/rooms.xml.in.h:6
 #: ../templates/configuration/scenarios.xml.in.h:7
 #: ../templates/configuration/events.xml.in.h:3
@@ -111,13 +129,13 @@ msgstr "Raumplan Name"
 msgid "Action"
 msgstr "Aktion"
 
-#: ../templates/configuration/floorplan.xml.in.h:4
+#: ../templates/configuration/floorplan.xml.in.h:7
 #: ../templates/configuration/scenarios.xml.in.h:9
 #: ../templates/configuration/events.xml.in.h:4
 msgid "edit"
 msgstr "Bearbeiten"
 
-#: ../templates/configuration/floorplan.xml.in.h:5
+#: ../templates/configuration/floorplan.xml.in.h:8
 #: ../templates/configuration/rooms.xml.in.h:7
 #: ../templates/configuration/scenarios.xml.in.h:10
 #: ../templates/configuration/events.xml.in.h:5
@@ -125,29 +143,17 @@ msgstr "Bearbeiten"
 msgid "delete"
 msgstr "Löschen"
 
-#: ../templates/configuration/floorplan.xml.in.h:6
+#: ../templates/configuration/floorplan.xml.in.h:9
 msgid "Create a new floorplan"
 msgstr "Neuen Raumplan erstellen"
 
-#: ../templates/configuration/floorplan.xml.in.h:7
+#: ../templates/configuration/floorplan.xml.in.h:10
 msgid "Create Floorplan"
 msgstr "Raumplan erstellen"
 
 #: ../templates/configuration/rooms.xml.in.h:1
 msgid "Are you sure that you want to delete this room?"
 msgstr "Sind Sie sicher das Sie diesen Raum löschen möchten?"
-
-#: ../templates/configuration/rooms.xml.in.h:2
-#: ../templates/configuration/scenarios.xml.in.h:2
-#: ../templates/configuration/variables.xml.in.h:2
-msgid "Yes"
-msgstr "Ja"
-
-#: ../templates/configuration/rooms.xml.in.h:3
-#: ../templates/configuration/scenarios.xml.in.h:3
-#: ../templates/configuration/variables.xml.in.h:3
-msgid "No"
-msgstr "Nein"
 
 #: ../templates/configuration/rooms.xml.in.h:4
 msgid "Room Configuration"

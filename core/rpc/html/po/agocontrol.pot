@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-09-28 10:24+0200\n"
+"POT-Creation-Date: 2013-09-28 10:27+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -95,14 +95,32 @@ msgid "Run"
 msgstr ""
 
 #: ../templates/configuration/floorplan.xml.in.h:1
-msgid "Floorplan Configuration"
+msgid "Are you sure that you want to delete this floorplan?"
 msgstr ""
 
 #: ../templates/configuration/floorplan.xml.in.h:2
-msgid "Floorplan Name"
+#: ../templates/configuration/rooms.xml.in.h:2
+#: ../templates/configuration/scenarios.xml.in.h:2
+#: ../templates/configuration/variables.xml.in.h:2
+msgid "Yes"
 msgstr ""
 
 #: ../templates/configuration/floorplan.xml.in.h:3
+#: ../templates/configuration/rooms.xml.in.h:3
+#: ../templates/configuration/scenarios.xml.in.h:3
+#: ../templates/configuration/variables.xml.in.h:3
+msgid "No"
+msgstr ""
+
+#: ../templates/configuration/floorplan.xml.in.h:4
+msgid "Floorplan Configuration"
+msgstr ""
+
+#: ../templates/configuration/floorplan.xml.in.h:5
+msgid "Floorplan Name"
+msgstr ""
+
+#: ../templates/configuration/floorplan.xml.in.h:6
 #: ../templates/configuration/rooms.xml.in.h:6
 #: ../templates/configuration/scenarios.xml.in.h:7
 #: ../templates/configuration/events.xml.in.h:3
@@ -111,13 +129,13 @@ msgstr ""
 msgid "Action"
 msgstr ""
 
-#: ../templates/configuration/floorplan.xml.in.h:4
+#: ../templates/configuration/floorplan.xml.in.h:7
 #: ../templates/configuration/scenarios.xml.in.h:9
 #: ../templates/configuration/events.xml.in.h:4
 msgid "edit"
 msgstr ""
 
-#: ../templates/configuration/floorplan.xml.in.h:5
+#: ../templates/configuration/floorplan.xml.in.h:8
 #: ../templates/configuration/rooms.xml.in.h:7
 #: ../templates/configuration/scenarios.xml.in.h:10
 #: ../templates/configuration/events.xml.in.h:5
@@ -125,28 +143,16 @@ msgstr ""
 msgid "delete"
 msgstr ""
 
-#: ../templates/configuration/floorplan.xml.in.h:6
+#: ../templates/configuration/floorplan.xml.in.h:9
 msgid "Create a new floorplan"
 msgstr ""
 
-#: ../templates/configuration/floorplan.xml.in.h:7
+#: ../templates/configuration/floorplan.xml.in.h:10
 msgid "Create Floorplan"
 msgstr ""
 
 #: ../templates/configuration/rooms.xml.in.h:1
 msgid "Are you sure that you want to delete this room?"
-msgstr ""
-
-#: ../templates/configuration/rooms.xml.in.h:2
-#: ../templates/configuration/scenarios.xml.in.h:2
-#: ../templates/configuration/variables.xml.in.h:2
-msgid "Yes"
-msgstr ""
-
-#: ../templates/configuration/rooms.xml.in.h:3
-#: ../templates/configuration/scenarios.xml.in.h:3
-#: ../templates/configuration/variables.xml.in.h:3
-msgid "No"
 msgstr ""
 
 #: ../templates/configuration/rooms.xml.in.h:4
