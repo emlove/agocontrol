@@ -55,7 +55,26 @@ function variablesConfig() {
 	});
     };
 
-    this.deleteVariable = function(item, event) {
+    this.deleteVariable  = function(item, event) {
+	var button_yes = $("#confirmDeleteButtons").data("yes");
+	var button_no = $("#confirmDeleteButtons").data("no");
+	var buttons = {};
+	buttons[button_no] = function() {
+	    $("#confirmDelete").dialog("close");
+	};
+	buttons[button_yes] = function() {
+	    self.doDeleteVariable(item, event);
+	    $("#confirmDelete").dialog("close");
+	};
+	$("#confirmDelete").dialog({
+	    modal: true,
+	    height: 180,
+	    width: 500,
+	    buttons: buttons
+	});
+    };
+    
+    this.doDeleteVariable = function(item, event) {
 	$('#configTable').block({
 	    message : '<div>Please wait ...</div>',
 	    css : {

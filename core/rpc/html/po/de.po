@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-09-28 10:19+0200\n"
+"POT-Creation-Date: 2013-09-28 10:24+0200\n"
 "PO-Revision-Date: 2013-09-22 12:28+0100\n"
 "Last-Translator: \n"
 "Language-Team: ago control <jaeger@agocontrol.com>\n"
@@ -106,7 +106,7 @@ msgstr "Raumplan Name"
 #: ../templates/configuration/rooms.xml.in.h:6
 #: ../templates/configuration/scenarios.xml.in.h:7
 #: ../templates/configuration/events.xml.in.h:3
-#: ../templates/configuration/variables.xml.in.h:4
+#: ../templates/configuration/variables.xml.in.h:7
 #: ../templates/configuration/devices.xml.in.h:9
 msgid "Action"
 msgstr "Aktion"
@@ -121,7 +121,7 @@ msgstr "Bearbeiten"
 #: ../templates/configuration/rooms.xml.in.h:7
 #: ../templates/configuration/scenarios.xml.in.h:10
 #: ../templates/configuration/events.xml.in.h:5
-#: ../templates/configuration/variables.xml.in.h:5
+#: ../templates/configuration/variables.xml.in.h:8
 msgid "delete"
 msgstr "Löschen"
 
@@ -139,11 +139,13 @@ msgstr "Sind Sie sicher das Sie diesen Raum löschen möchten?"
 
 #: ../templates/configuration/rooms.xml.in.h:2
 #: ../templates/configuration/scenarios.xml.in.h:2
+#: ../templates/configuration/variables.xml.in.h:2
 msgid "Yes"
 msgstr "Ja"
 
 #: ../templates/configuration/rooms.xml.in.h:3
 #: ../templates/configuration/scenarios.xml.in.h:3
+#: ../templates/configuration/variables.xml.in.h:3
 msgid "No"
 msgstr "Nein"
 
@@ -154,7 +156,7 @@ msgstr "Raum Konfiguration"
 #: ../templates/configuration/rooms.xml.in.h:5
 #: ../templates/configuration/scenarios.xml.in.h:5
 #: ../templates/configuration/events.xml.in.h:2
-#: ../templates/configuration/variables.xml.in.h:2
+#: ../templates/configuration/variables.xml.in.h:5
 msgid "Name"
 msgstr "Name"
 
@@ -313,22 +315,26 @@ msgid "Edit Event"
 msgstr "Ereignis bearbeiten"
 
 #: ../templates/configuration/variables.xml.in.h:1
+msgid "Are you sure that you want to delete this variable?"
+msgstr "Sind Sie sicher das Sie diese Variable löschen möchten?"
+
+#: ../templates/configuration/variables.xml.in.h:4
 msgid "Variables Configuration"
 msgstr "Konfiguration der Variablen"
 
-#: ../templates/configuration/variables.xml.in.h:3
+#: ../templates/configuration/variables.xml.in.h:6
 msgid "Value"
 msgstr "Wert"
 
-#: ../templates/configuration/variables.xml.in.h:6
+#: ../templates/configuration/variables.xml.in.h:9
 msgid "Add new variable"
 msgstr "Neue Variable hinzufügen"
 
-#: ../templates/configuration/variables.xml.in.h:7
+#: ../templates/configuration/variables.xml.in.h:10
 msgid "Input variable name"
 msgstr "Namen für Variable eingeben"
 
-#: ../templates/configuration/variables.xml.in.h:8
+#: ../templates/configuration/variables.xml.in.h:11
 msgid "Create variable"
 msgstr "Variable erstellen"
 
