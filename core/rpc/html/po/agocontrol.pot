@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-09-28 17:41+0200\n"
+"POT-Creation-Date: 2013-09-28 21:02+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,8 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 
 #: ../templates/configuration.xml.in.h:1
-#: ../templates/navigation/main.xml.in.h:3
-msgid "Configuration"
+msgid "ago control Configuration"
 msgstr ""
 
 #: ../templates/configuration.xml.in.h:2
@@ -99,6 +98,10 @@ msgstr ""
 
 #: ../templates/navigation/main.xml.in.h:2
 msgid "Dashboard"
+msgstr ""
+
+#: ../templates/navigation/main.xml.in.h:3
+msgid "Configuration"
 msgstr ""
 
 #: ../templates/details/default.xml.in.h:1
