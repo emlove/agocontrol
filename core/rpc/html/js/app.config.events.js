@@ -248,13 +248,29 @@ function eventConfig() {
 	});
     };
 
+    this.deleteEvent  = function(item, event) {
+	var button_yes = $("#confirmDeleteButtons").data("yes");
+	var button_no = $("#confirmDeleteButtons").data("no");
+	var buttons = {};
+	buttons[button_no] = function() {
+	    $("#confirmDelete").dialog("close");
+	};
+	buttons[button_yes] = function() {
+	    self.doDeleteEvent(item, event);
+	    $("#confirmDelete").dialog("close");
+	};
+	$("#confirmDelete").dialog({
+	    modal: true,
+	    height: 180,
+	    width: 500,
+	    buttons: buttons
+	});
+    };
+    
     /**
      * Sends the delete event command
      */
-    this.deleteEvent = function(item, event) {
-	if (!window.confirm("Are you sure that you want to delete this event?")) {
-	    return;
-	}
+    this.doDeleteEvent = function(item, event) {
 	$('#configTable').block({
 	    message : '<div>Please wait ...</div>',
 	    css : {
