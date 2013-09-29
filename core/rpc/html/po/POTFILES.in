@@ -10,3 +10,5 @@ templates/configuration/cloud.xml.in
 templates/configuration/events.xml.in
 templates/configuration/variables.xml.in
 templates/configuration/devices.xml.in
+templates/devices/multilevelsensor.xml.in
+templates/details/multilevelsensor.xml.in

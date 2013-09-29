@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-09-28 21:02+0200\n"
+"POT-Creation-Date: 2013-09-29 09:07+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -59,6 +59,32 @@ msgid ""
 msgstr ""
 
 #: ../templates/configuration.xml.in.h:10
+msgid "Help and Documentation"
+msgstr ""
+
+#: ../templates/configuration.xml.in.h:11
+msgid "ago control Documentation"
+msgstr ""
+
+#: ../templates/configuration.xml.in.h:12
+msgid "ago control Forum"
+msgstr ""
+
+#: ../templates/configuration.xml.in.h:13
+msgid "Contribute"
+msgstr ""
+
+#: ../templates/configuration.xml.in.h:14
+msgid ""
+"If you want to join the development community or if you like ago control and "
+"want to help us with your donation!"
+msgstr ""
+
+#: ../templates/configuration.xml.in.h:15
+msgid "Contribute to ago control"
+msgstr ""
+
+#: ../templates/configuration.xml.in.h:16
 msgid ""
 "You can easly design your Dashboard or add new floorplans which are shown in "
 "the left main menu. Easily drag and drop your devices from the device tree "
@@ -67,7 +93,7 @@ msgid ""
 "drag and drop it on the grid."
 msgstr ""
 
-#: ../templates/configuration.xml.in.h:11
+#: ../templates/configuration.xml.in.h:17
 #: ../templates/navigation/configuration.xml.in.h:1
 msgid "Floorplans"
 msgstr ""
@@ -105,6 +131,7 @@ msgid "Configuration"
 msgstr ""
 
 #: ../templates/details/default.xml.in.h:1
+#: ../templates/details/multilevelsensor.xml.in.h:1
 msgid "Room:"
 msgstr ""
 
@@ -113,10 +140,12 @@ msgid "State:"
 msgstr ""
 
 #: ../templates/details/default.xml.in.h:3
+#: ../templates/details/multilevelsensor.xml.in.h:2
 msgid "Type:"
 msgstr ""
 
 #: ../templates/details/default.xml.in.h:4
+#: ../templates/details/multilevelsensor.xml.in.h:3
 msgid "Lastseen:"
 msgstr ""
 
@@ -427,4 +456,28 @@ msgstr ""
 
 #: ../templates/configuration/devices.xml.in.h:10
 msgid "Details"
+msgstr ""
+
+#: ../templates/devices/multilevelsensor.xml.in.h:1
+msgid "GRAPH"
+msgstr ""
+
+#: ../templates/details/multilevelsensor.xml.in.h:4
+msgid "Show as:"
+msgstr ""
+
+#: ../templates/details/multilevelsensor.xml.in.h:5
+msgid "Graph"
+msgstr ""
+
+#: ../templates/details/multilevelsensor.xml.in.h:6
+msgid "List"
+msgstr ""
+
+#: ../templates/details/multilevelsensor.xml.in.h:7
+msgid "From:"
+msgstr ""
+
+#: ../templates/details/multilevelsensor.xml.in.h:8
+msgid "To:"
 msgstr ""
