@@ -252,8 +252,30 @@ function handleEvent(response) {
 	    deviceMap[i].timeStamp(formatDate(new Date()));
 	    if (response.result.quantity) {
 		var values = deviceMap[i].values();
+		/* We have no values so reload from inventory */
 		if (values[response.result.quantity] === undefined) {
-		    console.log("BROKEN DEVICE [" + response.result.uuid + "]");
+		    var request = {};
+		    request.method = "message";
+		    request.params = {};
+		    request.params.content = {};
+		    request.params.content.command = "inventory";
+		    request.id = 1;
+		    request.jsonrpc = "2.0";
+
+		    $.ajax({
+			type : 'POST',
+			url : url,
+			data : JSON.stringify(request),
+			success : function(inv) {
+			    if (inv.result.inventory[response.result.uuid] !== undefined) {
+				if (inv.result.inventory[response.result.uuid].values) {
+				    deviceMap[i].values(inv.result.inventory[response.result.uuid].values);
+				}
+			    }
+			},
+			dataType : "json",
+			async : true
+		    });
 		    break;
 		}
 		values[response.result.quantity].level = response.result.level;
