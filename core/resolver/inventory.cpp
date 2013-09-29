@@ -45,6 +45,11 @@ string Inventory::getdeviceroom (string uuid) {
 }
 
 int Inventory::setdevicename (string uuid, string name) {
+	if (name == "") {
+		string query = "delete from devices where uuid = '" + uuid + "'";
+		getfirst(query.c_str());
+		return 0;
+	}
         if (getdevicename(uuid) == "") { // does not exist, create
                 string query = "insert into devices (name, uuid) VALUES ('" + name + "','" + uuid + "')";
                 printf("creating device: %s\n", query.c_str());
