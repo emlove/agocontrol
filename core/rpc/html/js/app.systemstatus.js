@@ -4,7 +4,6 @@
  * @returns {systemStatus}
  */
 function systemStatus(states) {
-    var self = this;
     this.hasNavigation = ko.observable(false);
     this.data = ko.observableArray([]);
     this.data(states);
@@ -30,6 +29,16 @@ function init_systemStatus() {
 	    }.bind(model);
 
 	    ko.applyBindings(model);
+
+	    window.setInterval(function() {
+		$.ajax({
+		    type : "GET",
+		    url : "/cgi-bin/system.cgi",
+		    success : function(res) {
+			model.data(JSON.parse(res));
+		    }
+		});
+	    }, 2000);
 	},
 	async : true
     });
