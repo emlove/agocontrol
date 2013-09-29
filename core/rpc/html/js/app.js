@@ -678,13 +678,9 @@ function renderGraph(device, environment) {
 		delete values[i].level;
 	    }
 
-	    var tmp = function() {
-		this.data = ko.observableArray([]);
-	    };
-	    var obj = new tmp();
-	    obj.data(values);
 	    ko.renderTemplate("details/datalist", {
-		data : values
+		data : values,
+		environment: environment
 	    }, {}, document.getElementById("dataList"));
 	    $('#graph').unblock();
 	    $("#graph").hide();
