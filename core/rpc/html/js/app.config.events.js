@@ -94,6 +94,9 @@ function eventConfig() {
     this.getCriteriaIdx = function(str) {
 	var regex = /.+([0-9]).+/g;
 	var matches = regex.exec(str);
+	if (!matches) {
+	    return false;
+	}
 	return matches[1];
     };
 
@@ -118,7 +121,10 @@ function eventConfig() {
 		sub.push(self.parseGroup($.trim(next).replace(/(^\()|(\)$)/g, ""), criteria));
 		break;
 	    }
-	    sub.push(criteria[self.getCriteriaIdx(tmp)]);
+	    var idx = self.getCriteriaIdx(tmp);
+	    if (idx !== false) {
+		sub.push(criteria[idx]);
+	    }
 	}
 
 	return {
@@ -176,19 +182,19 @@ function eventConfig() {
 
 	    // Open the dialog
 	    if (document.getElementById("editEventDialogTitle")) {
-	        $("#editEventDialog").dialog({
-                    title : document.getElementById("editEventDialogTitle").innerHTML,
+		$("#editEventDialog").dialog({
+		    title : document.getElementById("editEventDialogTitle").innerHTML,
 		    modal : true,
 		    width : 900,
 		    height : 600,
 		    close : function() {
-		        // Done, restore stuff
-		        document.getElementById("eventBuilderEdit").className = "";
-		        document.getElementById("eventBuilder").className = "eventBuilder";
-		        self.initBuilder();
-		        self.openEvent = null;
+			// Done, restore stuff
+			document.getElementById("eventBuilderEdit").className = "";
+			document.getElementById("eventBuilder").className = "eventBuilder";
+			self.initBuilder();
+			self.openEvent = null;
 		    }
-	        });
+		});
 	    }
 	});
     };
@@ -248,7 +254,7 @@ function eventConfig() {
 	});
     };
 
-    this.deleteEvent  = function(item, event) {
+    this.deleteEvent = function(item, event) {
 	var button_yes = $("#confirmDeleteButtons").data("yes");
 	var button_no = $("#confirmDeleteButtons").data("no");
 	var buttons = {};
@@ -260,13 +266,13 @@ function eventConfig() {
 	    $("#confirmDelete").dialog("close");
 	};
 	$("#confirmDelete").dialog({
-	    modal: true,
-	    height: 180,
-	    width: 500,
-	    buttons: buttons
+	    modal : true,
+	    height : 180,
+	    width : 500,
+	    buttons : buttons
 	});
     };
-    
+
     /**
      * Sends the delete event command
      */
@@ -322,6 +328,10 @@ function eventConfig() {
 	    } else {
 		nesting += " " + element.type + " (" + self.parseElement(obj) + ")";
 	    }
+	}
+
+	if (nesting == "") {
+	    return "(True)";
 	}
 
 	return nesting + ")";
