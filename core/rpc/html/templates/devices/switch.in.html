@@ -18,18 +18,18 @@
 	<div class="row grid-item-controls">
 		<div class="six columns">
 		    <ko opts="if: state ">
-                <div class="cmd-btn pretty medium default btn btn-full grid-command" data-bind="click: turnOn" data-value="on">ON</div>
+                <_div data-translateable="true" class="cmd-btn pretty medium default btn btn-full grid-command" data-bind="click: turnOn" data-value="on">ON</_div>
             </ko>
             <ko opts="ifnot: state ">
-                <div class="cmd-btn pretty medium primary btn btn-full grid-command" data-bind="click: turnOn" data-value="on">ON</div>
+                <_div data-translateable="true" class="cmd-btn pretty medium primary btn btn-full grid-command" data-bind="click: turnOn" data-value="on">ON</_div>
             </ko>
 		</div>
 		<div class="six columns">
 		    <ko opts="if: state ">
-		        <div class="cmd-btn pretty medium primary btn btn-full grid-command" data-bind="click: turnOff" data-value="off">OFF</div>
+		        <_div data-translateable="true" class="cmd-btn pretty medium primary btn btn-full grid-command" data-bind="click: turnOff" data-value="off">OFF</_div>
 		    </ko>
             <ko opts="ifnot: state ">
-                <div class="cmd-btn pretty medium default btn btn-full grid-command" data-bind="click: turnOff" data-value="off">OFF</div>
+                <_div data-translateable="true" class="cmd-btn pretty medium default btn btn-full grid-command" data-bind="click: turnOff" data-value="off">OFF</_div>
             </ko> 
 		</div>
 	</div>

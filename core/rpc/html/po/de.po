@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-09-29 09:07+0200\n"
+"POT-Creation-Date: 2013-09-29 09:25+0200\n"
 "PO-Revision-Date: 2013-09-22 12:28+0100\n"
 "Last-Translator: \n"
 "Language-Team: ago control <jaeger@agocontrol.com>\n"
@@ -80,7 +80,9 @@ msgstr "Mitarbeiten"
 msgid ""
 "If you want to join the development community or if you like ago control and "
 "want to help us with your donation!"
-msgstr "Wenn Du zur Entwickler Gemeinschaft beitreten willst oder wenn Dir ago control gefällt und Du uns mit einer Spende unterstützen willst!"
+msgstr ""
+"Wenn Du zur Entwickler Gemeinschaft beitreten willst oder wenn Dir ago "
+"control gefällt und Du uns mit einer Spende unterstützen willst!"
 
 #: ../templates/configuration.xml.in.h:15
 msgid "Contribute to ago control"
@@ -500,3 +502,11 @@ msgstr "Von:"
 #: ../templates/details/multilevelsensor.xml.in.h:8
 msgid "To:"
 msgstr "Bis:"
+
+#: ../templates/devices/switch.xml.in.h:1
+msgid "ON"
+msgstr "EIN"
+
+#: ../templates/devices/switch.xml.in.h:2
+msgid "OFF"
+msgstr "AUS"
