@@ -11,10 +11,8 @@ $(BUILDDIRS):
 
 install: $(INSTALLDIRS) all
 	$(INSTALL_DIR) $(BINDIR)
-	$(INSTALL) messagesend.py $(BINDIR)
 	$(INSTALL) agodrain.py $(BINDIR)
 	$(INSTALL) myavahi.py $(BINDIR)
-	$(INSTALL) agodatalogger.py $(BINDIR)
 	$(INSTALL) agoctrl.sh $(BINDIR)
 
 $(INSTALLDIRS): 
