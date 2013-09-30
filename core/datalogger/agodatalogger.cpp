@@ -37,20 +37,25 @@ void eventHandler(std::string subject, qpid::types::Variant::Map content) {
 	string uuid = uuidToName(content["uuid"].asString());
 	cout << subject << " " << content << endl;
 	if (subject != "" && content["level"].asString() != "") {
-		string environment = subject; // todo: replacements
+		string environment = subject;
 		replaceString(subject, "event.environment.", "");
 		replaceString(subject, "changed", "");
+		replaceString(subject, "event,", "");
 		cout << "environment: " << environment << endl;
 		string level = content["level"].asString();
-		stringstream timestring;
-		timestring << time(NULL);
-		string query = "INSERT INTO data VALUES(null," + uuid + "," + environment + "," + level + "," + timestring.str() + ")";
 
+		string query = "INSERT INTO data VALUES(null, ?, ?, ?, ?)";
 		rc = sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, NULL);
 		if(rc!=SQLITE_OK) {
 			fprintf(stderr, "sql error #%d: %s\n", rc,sqlite3_errmsg(db));
 			return;
 		}
+		
+		sqlite3_bind_text(stmt, 1, uuid.c_str(), -1, NULL);
+		sqlite3_bind_text(stmt, 2, environment.c_str(), -1, NULL);
+		sqlite3_bind_text(stmt, 3, level.c_str(), -1, NULL);
+		sqlite3_bind_int(stmt, 4, time(NULL));
+		
 		rc = sqlite3_step(stmt);
 		switch(rc) {
 			case SQLITE_ERROR:
@@ -70,8 +75,9 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 	std::string internalid = content["internalid"].asString();
 	if (internalid == "dataloggercontroller") {
 		if (content["command"] == "getloggergraph") {
+		
 			// start, end, env, deviceid
-                } else if (content["command"] == "getdevieenvironments") {
+        } else if (content["command"] == "getdevieenvironments") {
 
 
 		}
@@ -80,10 +86,18 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 }
 
 int main(int argc, char **argv) {
+    int rc = sqlite3_open(DBFILE, &db);
+	if( rc != SQLITE_OK ){
+		fprintf(stderr, "Can't open database: %s\n", sqlite3_errmsg(db));
+		sqlite3_close(db);
+		return 1;
+	}
 	agoConnection = new AgoConnection("datalogger");	
 	agoConnection->addDevice("dataloggercontroller", "dataloggercontroller");
 	agoConnection->addHandler(commandHandler);
 	agoConnection->addEventHandler(eventHandler);
 	inventory = agoConnection->getInventory();
 	agoConnection->run();
+
+	return 0;
 }
