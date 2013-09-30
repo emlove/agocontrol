@@ -83,14 +83,24 @@ void eventHandler(std::string subject, qpid::types::Variant::Map content) {
 	// iterate event map and match for event name
 	qpid::types::Variant::Map inventory = agoConnection->getInventory();
 	for (qpid::types::Variant::Map::const_iterator it = eventmap.begin(); it!=eventmap.end(); it++) { 
-		qpid::types::Variant::Map event = it->second.asMap();
+		qpid::types::Variant::Map event;
+		if (!(it->second.isVoid())) {
+			event = it->second.asMap();
+		} else {
+			cout << "ERROR: eventmap entry is void" << endl;
+		}
 		if (event["event"] == subject) {
 			cout << "found matching event: " << event << endl;
 			qpid::types::Variant::Map criteria; // this holds the criteria evaluation results for each criteria
 			std::string nesting = event["nesting"].asString();
 			if (!event["criteria"].isVoid()) for (qpid::types::Variant::Map::const_iterator crit = event["criteria"].asMap().begin(); crit!= event["criteria"].asMap().end(); crit++) {
 				cout << "criteria[" << crit->first << "] - " << crit->second << endl;
-				qpid::types::Variant::Map element = crit->second.asMap();
+				qpid::types::Variant::Map element;
+				if (!(crit->second.isVoid())) {
+					element = crit->second.asMap();
+				} else {
+					cout << "ERROR: criteria element is void" << endl;
+				}
 				try {
 					cout << "LVAL: " << element["lval"] << endl;
 					qpid::types::Variant::Map lvalmap;
