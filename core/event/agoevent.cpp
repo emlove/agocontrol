@@ -80,6 +80,8 @@ qpid::types::Variant operator>(qpid::types::Variant a, qpid::types::Variant b) {
 
 
 void eventHandler(std::string subject, qpid::types::Variant::Map content) {
+	// ignore device announce events
+	if (subject == "event.device.announce") return;
 	// iterate event map and match for event name
 	qpid::types::Variant::Map inventory = agoConnection->getInventory();
 	for (qpid::types::Variant::Map::const_iterator it = eventmap.begin(); it!=eventmap.end(); it++) { 
