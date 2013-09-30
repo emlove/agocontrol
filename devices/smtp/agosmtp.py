@@ -11,6 +11,9 @@ client = agoclient.AgoConnection("smtp")
 smtpserver = agoclient.getConfigOption("smtp", "server", "mx.mail.com")
 smtpport = agoclient.getConfigOption("smtp", "port", "25")
 smtpfrom = agoclient.getConfigOption("smtp", "from", "agoman@agocontrol.com")
+smtpauthrequired = agoclient.getConfigOption("smtp", "authrequired", "0")
+smtpuser = agoclient.getConfigOption("smtp", "user", "")
+smtppassword = agoclient.getConfigOption("smtp", "password", "")
 
 def messageHandler(internalid, content):
 	if "command" in content:
@@ -31,6 +34,11 @@ def messageHandler(internalid, content):
 				), "\r\n")
 			try:
 				server = smtplib.SMTP(smtpserver, smtpport)
+				server.ehlo()
+				server.starttls()
+				server.ehlo()
+				if smtpauthrequired == "1":
+					server.login(smtpuser, smtppassword)
 				server.sendmail(smtpfrom,[content["to"]], body)
 				return 0
 			except:
