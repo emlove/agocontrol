@@ -34,6 +34,7 @@ def messageHandler(internalid, content):
 				), "\r\n")
 			try:
 				server = smtplib.SMTP(smtpserver, smtpport)
+				server.set_debuglevel(1)
 				server.ehlo()
 				server.starttls()
 				server.ehlo()
