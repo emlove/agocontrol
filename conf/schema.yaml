@@ -185,7 +185,23 @@ commands:
       type: boolean
   getepg:
     name: get electronic program guide
+  sendmail:
+    name: send an email
+    parameters:
+      to:
+        name: recipient
+        type: string
+      body:
+        name: message body
+        type: string
+      subject:
+        name: message subject
+        type: string
 devicetypes:
+  smtpgateway:
+    name: mail gateway
+    description: used to send emails
+    commands: [sendmail]
   agocontroller:
     name: resolver controller
     description: internal device to control the resolver
