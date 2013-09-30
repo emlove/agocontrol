@@ -136,15 +136,19 @@ Variant::Map Inventory::getrooms() {
 	return result;
 } 
 int Inventory::deleteroom (string uuid) {
+	getfirst("BEGIN");
 	string query = "update devices set room = '' where room = '" + uuid + "'";
 	getfirst(query.c_str());
 	query = "delete from rooms where uuid = '" + uuid + "'";
 	getfirst(query.c_str());
 	if (getroomname(uuid) == "") {
+		getfirst("ROLLBACK");
 		return 0;
 	} else {
+		getfirst("COMMIT");
 		return 1;
 	}
+	getfirst("ROLLBACK");
 	return 0;
 }
 string Inventory::getfirst(const char *query) {
@@ -214,15 +218,19 @@ int Inventory::setdevicefloorplan(std::string deviceuuid, std::string floorplanu
 }
 
 int Inventory::deletefloorplan(std::string uuid) {
+	getfirst("BEGIN");
 	string query = "delete from devicesfloorplan where floorplan = '" + uuid + "'";
 	getfirst(query.c_str());
 	query = "delete from floorplans where uuid = '" + uuid + "'";
 	getfirst(query.c_str());
 	if (getroomname(uuid) == "") {
+	    getfirst("ROLLBACK");
 		return 0;
 	} else {
+	    getfirst("COMMIT");
 		return 1;
 	}
+	getfirst("ROLLBACK");
 	return 0;
 }
 
