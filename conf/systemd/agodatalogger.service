@@ -2,8 +2,7 @@
 Description=ago control Data Logger
 
 [Service]
-Environment=MPLCONFIGDIR=/etc/opt/agocontrol/
-ExecStart=/opt/agocontrol/bin/agodatalogger.py
+ExecStart=/opt/agocontrol/bin/agodatalogger
 WorkingDirectory=/opt/agocontrol/bin
 StandardOutput=syslog
 StandardError=syslog
