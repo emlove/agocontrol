@@ -113,7 +113,7 @@ void eventHandler(std::string subject, qpid::types::Variant::Map content) {
 
 					} else if (lvalmap["type"] == "device") {
 						std::string uuid = lvalmap["uuid"].asString();
-						qpid::types::Variant::Map devices = inventory["inventory"].asMap();
+						qpid::types::Variant::Map devices = inventory["devices"].asMap();
 						qpid::types::Variant::Map device = devices[uuid].asMap();
 						if (lvalmap["parameter"] == "state") {
 							lval = device["state"];

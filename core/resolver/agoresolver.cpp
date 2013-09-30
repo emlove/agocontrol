@@ -46,6 +46,9 @@
 #define VARIABLESMAPFILE "/etc/opt/agocontrol/maps/variablesmap.json"
 #endif
 
+#ifndef DEVICESMAPFILE
+#define DEVICESMAPFILE "/etc/opt/agocontrol/maps/devices.json"
+#endif
 
 #include "schema.h"
 #include "inventory.h"
@@ -64,6 +67,16 @@ Variant::Map variables; // holds global variables
 
 Inventory *inv;
 int discoverdelay;
+bool persistence = true;
+
+bool saveDevicemap() {
+	if (persistence) return variantMapToJSONFile(inventory, DEVICESMAPFILE);
+	return true;
+}
+
+void loadDevicemap() {
+	inventory = jsonFileToVariantMap(DEVICESMAPFILE);
+}
 
 void get_sysinfo() {
 	struct sysinfo s_info;
@@ -126,6 +139,7 @@ void handleEvent(Variant::Map *device, string subject, Variant::Map *content) {
 		(*values)["state"] = (*content)["level"];
 		(*device)["state"]  = (*content)["level"];
 		(*device)["state"].setEncoding("utf8");
+		saveDevicemap();
 		// (*device)["state"]  = valuesToString(values);
 	} else if ((subject.find("event.environment.") != std::string::npos) && (subject.find("changed")!= std::string::npos)) {
 		Variant::Map value;
@@ -139,6 +153,7 @@ void handleEvent(Variant::Map *device, string subject, Variant::Map *content) {
 		timestamp << time(NULL);
 		value["timestamp"] = timestamp.str();
 		(*values)[quantity] = value;
+		saveDevicemap();
 	}
 }
 
@@ -179,6 +194,7 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 					device = &inventory[uuid].asMap();
 					(*device)["name"]= name;
 				}
+				saveDevicemap();
 				emitNameEvent(content["device"].asString().c_str(), "event.system.devicenamechanged", content["name"].asString().c_str());
 			} else {
 				reply["returncode"] = -1;
@@ -252,10 +268,11 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 					if (time(NULL) - (*device)["lastseen"].asUint64() > 2*discoverdelay) {
 						// cout << "Stale device: " << it->first << endl;
 						(*device)["stale"] = 1;
+						saveDevicemap();
 					}
 				}
 			}
-			reply["inventory"] = inventory;
+			reply["devices"] = inventory;
 			reply["schema"] = schema;	
 			reply["rooms"] = inv->getrooms();
 			reply["floorplans"] = inv->getfloorplans();
@@ -308,6 +325,7 @@ void eventHandler(std::string subject, qpid::types::Variant::Map content) {
 				
 			// clog << agocontrol::kLogDebug << "adding device: uuid="  << uuid  << " type: " << device["devicetype"].asString() << std::endl;
 			inventory[uuid] = device;
+			saveDevicemap();
 		}
 	} else if (subject == "event.device.remove") {
 		string uuid = content["uuid"];
@@ -316,6 +334,7 @@ void eventHandler(std::string subject, qpid::types::Variant::Map content) {
 			Variant::Map::iterator it = inventory.find(uuid);
 			if (it != inventory.end()) {
 				inventory.erase(it);
+				saveDevicemap();
 			}
 		}
 	} else {
@@ -354,6 +373,7 @@ int main(int argc, char **argv) {
 
 	schemafile=getConfigOption("system", "schema", "/etc/opt/agocontrol/schema.yaml");
 	discoverdelay=atoi(getConfigOption("system", "discoverdelay", "300").c_str());
+	if (atoi(getConfigOption("system","devicepersistence", "1").c_str()) != 1) persistence=false;
 
 	systeminfo["uuid"] = getConfigOption("system", "uuid", "00000000-0000-0000-000000000000");
 	systeminfo["version"] = AGOCONTROL_VERSION;
@@ -365,6 +385,7 @@ int main(int argc, char **argv) {
 	inv = new Inventory("/etc/opt/agocontrol/db/inventory.db");
 
 	variables = jsonFileToVariantMap(VARIABLESMAPFILE);
+	if (persistence) loadDevicemap();
 
 	agoConnection->addDevice("agocontroller","agocontroller");
 

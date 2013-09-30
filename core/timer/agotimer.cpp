@@ -117,7 +117,7 @@ int main(int argc, char** argv) {
 	openlog(NULL, LOG_PID & LOG_CONS, LOG_DAEMON);
 	agoConnection = new AgoConnection("timer");
 	qpid::types::Variant::Map inventory = agoConnection->getInventory();
-	qpid::types::Variant::Map devices = inventory["inventory"].asMap();
+	qpid::types::Variant::Map devices = inventory["devices"].asMap();
 	qpid::types::Variant::Map::const_iterator it;
 	for (it = devices.begin(); it != devices.end(); it++) {
 		qpid::types::Variant::Map device = it->second.asMap();

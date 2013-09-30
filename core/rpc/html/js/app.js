@@ -312,7 +312,7 @@ function handleInventory(response) {
 	}
     }
 
-    var inventory = response.result.inventory;
+    var inventory = response.result.devices;
     for ( var uuid in inventory) {
 	if (inventory[uuid].room !== undefined && inventory[uuid].room) {
 	    inventory[uuid].roomUID = inventory[uuid].room;
