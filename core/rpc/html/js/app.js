@@ -258,8 +258,8 @@ function handleEvent(response) {
 		    content.command = "inventory";
 		    sendCommand(content, function(inv) {
 			if (inv.result.inventory[response.result.uuid] !== undefined) {
-			    if (inv.result.inventory[response.result.uuid].values) {
-				deviceMap[i].values(inv.result.inventory[response.result.uuid].values);
+			    if (inv.result.devices[response.result.uuid].values) {
+				deviceMap[i].values(inv.result.devices[response.result.uuid].values);
 			    }
 			}
 		    });
