@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-09-29 09:25+0200\n"
+"POT-Creation-Date: 2013-09-30 18:56+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -483,9 +483,9 @@ msgid "To:"
 msgstr ""
 
 #: ../templates/devices/switch.xml.in.h:1
-msgid "ON"
+msgid "OFF"
 msgstr ""
 
 #: ../templates/devices/switch.xml.in.h:2
-msgid "OFF"
+msgid "ON"
 msgstr ""
