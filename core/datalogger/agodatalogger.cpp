@@ -138,9 +138,29 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 	if (internalid == "dataloggercontroller") {
 		if (content["command"] == "getloggergraph") {
 		    GetGraphData(content, returnval);
-        } else if (content["command"] == "getdevieenvironments") {
-
-
+        } else if (content["command"] == "getdeviceenvironments") {
+            sqlite3_stmt *stmt;
+            int rc;
+            rc = sqlite3_prepare_v2(db, "SELECT distinct uuid, environment FROM data", -1, &stmt, NULL);
+	        if(rc != SQLITE_OK) {
+		        fprintf(stderr, "sql error #%d: %s\n", rc,sqlite3_errmsg(db));
+		        return returnval;
+	        }
+	        
+	        do {
+                rc = sqlite3_step(stmt);
+                switch(rc) {
+			        case SQLITE_ERROR:
+				        fprintf(stderr, "step error: %s\n",sqlite3_errmsg(db));
+				        break;
+			        case SQLITE_ROW:
+			            returnval[string((const char*)sqlite3_column_text(stmt, 0))] = string((const char*)sqlite3_column_text(stmt, 1));
+				        break;
+		        }
+            }
+            while (rc == SQLITE_ROW);
+            
+            sqlite3_finalize(stmt);
 		}
 	}
 	return returnval;
