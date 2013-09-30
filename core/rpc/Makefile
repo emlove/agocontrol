@@ -5,13 +5,15 @@ LD = $(CXX)
 %.o : %.cpp
 	$(CXX) -c $(CFLAGS) $(INCLUDES) -o $@ $<
 
-all: agorpc cgi
+all: agorpc html cgi
 
 agorpc: agorpc.o mongoose.o
 	$(LD) -o $@ $(LDFLAGS) $^ -lqpidmessaging -lqpidtypes -luuid -ljsoncpp -lagoclient
 
-cgi:
+html: $(wildcard html/templates/*.in.html) $(wildcard html/templates/details/*.in.html) $(wildcard html/templates/devices/*.in.html) $(wildcard html/templates/configuration/*.in.html) $(wildcard html/templates/navigation/*.in.html)
 	( cd html ; ./mergetranslations.sh )
+
+cgi:  get_table_lang.cpp
 	$(CXX) $(CFLAGS) -o html/cgi-bin/get_table_lang.cgi get_table_lang.cpp
 
 clean:
