@@ -19,19 +19,23 @@ function eventConfig() {
 	if (self.events().length > 0) {
 	    return;
 	}
+	var tmp = [];
 	for ( var i = 0; i < self.devices().length; i++) {
 	    var dev = self.devices()[i];
 	    if (dev.devicetype == "event") {
-		self.events.push(dev);
+		tmp.push(dev);
 	    }
 	}
 	/* No events add a dummy to trigger afterRender */
-	if (self.events().length == 0) {
-	    self.events.push({
+	if (tmp.length == 0) {
+	    tmp.push({
 		name : "dummy",
 		uuid : "0"
 	    });
 	}
+	
+	self.events(tmp);
+	
 	self.eventMap = schema.events;
 	self.deviceList = deviceMap;
     });
