@@ -40,7 +40,8 @@ void eventHandler(std::string subject, qpid::types::Variant::Map content) {
 	sqlite3_stmt *stmt;
 	int rc;
 	string result;
-	string uuid = uuidToName(content["uuid"].asString());
+	// string devicename = uuidToName(content["uuid"].asString());
+	string uuid = content["uuid"].asString();
 	cout << subject << " " << content << endl;
 	if (subject != "" && content["level"].asString() != "") {
 		string environment = subject;
