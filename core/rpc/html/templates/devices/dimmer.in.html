@@ -16,7 +16,14 @@
 				<ko opts="if: room ">
 					<p class="room"><i class="icon-location"></i><span data-bind="text: room"></span></p>
 				</ko>
-				<p class="info"><i class="icon-info"></i><span data-bind="text: state"></span></p>
+                                <p class="info">
+                                        <ko opts="if: state() == 0">
+                                                <i class="icon-info"></i><_span data-translateable="true">OFF</_span>
+                                        </ko>
+                                        <ko opts="if: state() == 255">
+                                                <i class="icon-info"></i><_span data-translateable="true">ON</_span>
+                                        </ko>
+                                </p>
 			</div>
 		</div>
 	</div>
