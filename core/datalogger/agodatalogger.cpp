@@ -44,11 +44,10 @@ void eventHandler(std::string subject, qpid::types::Variant::Map content) {
 	string uuid = content["uuid"].asString();
 	cout << subject << " " << content << endl;
 	if (subject != "" && content["level"].asString() != "") {
-		string environment = subject;
 		replaceString(subject, "event.environment.", "");
 		replaceString(subject, "changed", "");
-		replaceString(subject, "event,", "");
-		cout << "environment: " << environment << endl;
+		replaceString(subject, "event.", "");
+		cout << "environment: " << subject << endl;
 		string level = content["level"].asString();
 
 		string query = "INSERT INTO data VALUES(null, ?, ?, ?, ?)";
@@ -59,7 +58,7 @@ void eventHandler(std::string subject, qpid::types::Variant::Map content) {
 		}
 		
 		sqlite3_bind_text(stmt, 1, uuid.c_str(), -1, NULL);
-		sqlite3_bind_text(stmt, 2, environment.c_str(), -1, NULL);
+		sqlite3_bind_text(stmt, 2, subject.c_str(), -1, NULL);
 		sqlite3_bind_text(stmt, 3, level.c_str(), -1, NULL);
 		sqlite3_bind_int(stmt, 4, time(NULL));
 		
