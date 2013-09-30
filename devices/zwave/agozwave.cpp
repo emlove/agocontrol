@@ -601,7 +601,6 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 					result = Manager::Get()->SetValue(*tmpValueID , false);
 				}
 			} else if(devicetype == "dimmer") {
-				if (tmpValueID == NULL) { returnval["result"] = -1;  return returnval; }
 				if (content["command"] == "on" ) {
 					tmpValueID = device->getValueID("Switch");
 					if (tmpValueID == NULL) { returnval["result"] = -1;  return returnval; }
