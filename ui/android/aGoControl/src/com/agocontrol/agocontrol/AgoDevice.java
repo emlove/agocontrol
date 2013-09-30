@@ -1,5 +1,6 @@
 package com.agocontrol.agocontrol;
 
+import java.util.Comparator;
 import java.util.UUID;
 
 public class AgoDevice {
@@ -9,6 +10,8 @@ public class AgoDevice {
 	int status;
 	AgoConnection connection;
 
+
+	
 	public AgoDevice(UUID _uuid) {
 		name = "";
 		uuid = _uuid;
