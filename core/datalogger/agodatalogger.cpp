@@ -93,11 +93,8 @@ void GetGraphData(qpid::types::Variant::Map content, qpid::types::Variant::Map &
     
     boost::posix_time::ptime base(boost::gregorian::date(1970, 1, 1));
     boost::posix_time::time_duration start = boost::posix_time::from_iso_string(startDate) - base;
-    printf("%d\n", start.total_seconds());
-    
     boost::posix_time::time_duration end = boost::posix_time::from_iso_string(endDate) - base;
-    printf("%d\n", end.total_seconds());
-    
+
     rc = sqlite3_prepare_v2(db, "SELECT timestamp, level FROM data WHERE timestamp BETWEEN ? AND ?  AND environment = ? AND uuid = ? ORDER BY timestamp", -1, &stmt, NULL);
 	if(rc != SQLITE_OK) {
 		fprintf(stderr, "sql error #%d: %s\n", rc,sqlite3_errmsg(db));
