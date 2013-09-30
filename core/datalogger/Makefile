@@ -7,7 +7,7 @@ INCLUDES ?= -I../../shared
 all: agodatalogger
 
 agodatalogger: agodatalogger.o
-	$(LD) -o $@ $(LDFLAGS) $^ -lqpidmessaging -lqpidtypes -luuid -lagoclient -lsqlite3
+	$(LD) -o $@ $(LDFLAGS) $^ -lqpidmessaging -lqpidtypes -luuid -lagoclient -lsqlite3 -lboost_date_time
 
 clean:
 	rm -f agodatalogger agodatalogger.o

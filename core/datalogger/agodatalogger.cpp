@@ -11,6 +11,10 @@
 
 #include <sqlite3.h>
 
+#include <boost/date_time/posix_time/time_parsers.hpp>
+#include <boost/date_time/posix_time/posix_time_types.hpp>
+
+
 #include "agoclient.h"
 
 #ifndef DBFILE
@@ -70,12 +74,23 @@ void eventHandler(std::string subject, qpid::types::Variant::Map content) {
 	}
 }
 
+void GetGraphData(qpid::types::Variant::Map content, qpid::types::Variant::Map &result) {
+    printf("start is: %s\n", content["start"].asString().c_str());
+    boost::posix_time::ptime base(boost::gregorian::date(1970, 1, 1));
+    boost::posix_time::time_duration start = boost::posix_time::time_from_string(content["start"].asString()) - base;
+    printf("%d\n", start.total_seconds());
+    
+    
+}
+
 qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 	qpid::types::Variant::Map returnval;
 	std::string internalid = content["internalid"].asString();
+	printf("WTF!!!"); // FIXME: Never gets called?!?
+	std::cout <<  content["internalid"].asString() << std::endl;
 	if (internalid == "dataloggercontroller") {
 		if (content["command"] == "getloggergraph") {
-		
+		    GetGraphData(content, returnval);
 			// start, end, env, deviceid
         } else if (content["command"] == "getdevieenvironments") {
 
