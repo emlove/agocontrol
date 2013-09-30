@@ -601,20 +601,16 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 					result = Manager::Get()->SetValue(*tmpValueID , false);
 				}
 			} else if(devicetype == "dimmer") {
+				tmpValueID = device->getValueID("Level");
+				if (tmpValueID == NULL) { returnval["result"] = -1;  return returnval; }
 				if (content["command"] == "on" ) {
-					tmpValueID = device->getValueID("Switch");
-					if (tmpValueID == NULL) { returnval["result"] = -1;  return returnval; }
-					result = Manager::Get()->SetValue(*tmpValueID , true);
+					result = Manager::Get()->SetValue(*tmpValueID , (uint8) 255);
 				} else if (content["command"] == "setlevel") {
-					tmpValueID = device->getValueID("Level");
-					if (tmpValueID == NULL) { returnval["result"] = -1;  return returnval; }
 					uint8 level = atoi(content["level"].asString().c_str());
 					if (level > 99) level=99;
 					result = Manager::Get()->SetValue(*tmpValueID, level);
 				} else {
-					tmpValueID = device->getValueID("Switch");
-					if (tmpValueID == NULL) { returnval["result"] = -1;  return returnval; }
-					result = Manager::Get()->SetValue(*tmpValueID , false);
+					result = Manager::Get()->SetValue(*tmpValueID , (uint8) 0);
 				}
 			} else if (devicetype == "drapes") {
 				if (content["command"] == "on") {
