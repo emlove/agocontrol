@@ -2,7 +2,7 @@ LD = $(CXX)
 INCLUDES ?= -I../../shared
 
 %.o : %.cpp
-	$(CXX) -c $(CFLAGS) $(INCLUDES) -o $@ $<
+	$(CXX) -O2 -pipe -c $(CFLAGS) $(INCLUDES) -o $@ $<
 
 all: agodatalogger
 
