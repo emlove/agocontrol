@@ -130,12 +130,13 @@ string valuesToString(Variant::Map *values) {
 
 void handleEvent(Variant::Map *device, string subject, Variant::Map *content) {
 	Variant::Map *values;
+	Variant::Map *localdevice;
 	if ((*device)["values"].isVoid())  {
 		cout << "error, device[values] is empty in handleEvent()" << endl;
 		return;
 	}
 	values = &(*device)["values"].asMap();
-	if (subject == "event.device.statechanged") {// event.device.statechange
+	if ((subject == "event.device.statechanged") || (subject == "event.security.sensortriggered")) {
 		(*values)["state"] = (*content)["level"];
 		(*device)["state"]  = (*content)["level"];
 		(*device)["state"].setEncoding("utf8");
