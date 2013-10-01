@@ -198,6 +198,22 @@ commands:
         name: message subject
         type: string
 devicetypes:
+  dataloggercontroller:
+    name: datalogger controller
+    description: internal device to control the datalogger
+    commands: [delvariable]
+  dataloggercontroller:
+    name: datalogger controller
+    description: internal device to control the datalogger
+    commands: [getdata, getdeviceenvironments]
+  eventcontroller:
+    name: event controller
+    description: internal device to control the events
+    commands: [setevent, getevent, delevent]
+  scenariocontroller:
+    name: scenario controller
+    description: internal device to control the scenarios
+    commands: [setscenario, getscenario, delscenario, run]
   smtpgateway:
     name: mail gateway
     description: used to send emails

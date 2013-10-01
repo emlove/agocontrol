@@ -133,7 +133,7 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 	qpid::types::Variant::Map returnval;
 	std::string internalid = content["internalid"].asString();
 	if (internalid == "dataloggercontroller") {
-		if (content["command"] == "getloggergraph") {
+		if (content["command"] == "getdata") {
 		    GetGraphData(content, returnval);
         } else if (content["command"] == "getdeviceenvironments") {
             sqlite3_stmt *stmt;
