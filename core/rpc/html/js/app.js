@@ -313,7 +313,11 @@ function handleInventory(response) {
     }
 
     var inventory = response.result.devices;
+    console.log(inventory);
     for ( var uuid in inventory) {
+	if (inventory[uuid] == null) {
+	    continue; // SHOULD NEVER HAPPEN!!!
+	}
 	if (inventory[uuid].room !== undefined && inventory[uuid].room) {
 	    inventory[uuid].roomUID = inventory[uuid].room;
 	    if (rooms[inventory[uuid].room] !== undefined) {
