@@ -197,6 +197,29 @@ commands:
       subject:
         name: message subject
         type: string
+  getdata:
+    name: get data from datalogger
+    parameters:
+      startdate:
+        name: start date
+        type: string
+      enddate:
+        name: end date
+        type: string
+  getdeviceenvironments:
+    name: get environments for device from datalogger
+  setevent:
+    name: create new event
+  getevent:
+    name: get event
+  delevent:
+    name: delete event
+  setscenario:
+    name: create scenario
+  getscenario:
+    name: get scenario
+  delscenario:
+    name: delete scenario
 devicetypes:
   dataloggercontroller:
     name: datalogger controller
