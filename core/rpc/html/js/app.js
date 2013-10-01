@@ -257,9 +257,10 @@ function handleEvent(response) {
 		    var content = {};
 		    content.command = "inventory";
 		    sendCommand(content, function(inv) {
-			if (inv.result.inventory[response.result.uuid] !== undefined) {
-			    if (inv.result.devices[response.result.uuid].values) {
-				deviceMap[i].values(inv.result.devices[response.result.uuid].values);
+			var tmpInv = cleanInventory(inv.result.devices);
+			if (tmpInv[response.result.uuid] !== undefined) {
+			    if (tmpInv[response.result.uuid].values) {
+				deviceMap[i].values(tmpInv[response.result.uuid].values);
 			    }
 			}
 		    });
@@ -287,6 +288,16 @@ function getEvent() {
     $.post(url, JSON.stringify(request), handleEvent, "json");
 }
 
+function cleanInventory(data) {
+    for ( var k in data) {
+	if (!data[k]) {
+	    delete data[k];
+	}
+    }
+
+    return data;
+}
+
 function handleInventory(response) {
     rooms = response.result.rooms;
     systemvar = response.result.system;
@@ -312,7 +323,7 @@ function handleInventory(response) {
 	}
     }
 
-    var inventory = response.result.devices;
+    var inventory = cleanInventory(response.result.devices);
     for ( var uuid in inventory) {
 	if (inventory[uuid].room !== undefined && inventory[uuid].room) {
 	    inventory[uuid].roomUID = inventory[uuid].room;
@@ -680,7 +691,7 @@ function renderGraph(device, environment) {
 
 	    ko.renderTemplate("details/datalist", {
 		data : values,
-		environment: environment
+		environment : environment
 	    }, {}, document.getElementById("dataList"));
 	    $('#graph').unblock();
 	    $("#graph").hide();
