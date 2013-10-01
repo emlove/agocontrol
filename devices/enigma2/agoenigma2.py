@@ -25,6 +25,17 @@ syslog.openlog(sys.argv[0], syslog.LOG_PID, syslog.LOG_DAEMON)
 client = agoclient.AgoConnection("enigma2")
 
 syslog.syslog(syslog.LOG_NOTICE, "agoenigma2.py startup")
+
+hostsconfig = agoclient.getConfigOption("enigma2", "hosts", "")
+
+try:
+	hosts = map(str, hostsconfig.split(','))
+except:
+	syslog.syslog(syslog.LOG_NOTICE, 'no static hosts defined')
+else:
+	for host in hosts:
+		client.addDevice(host, "settopbox")
+
 syslog.syslog(syslog.LOG_NOTICE, "discovering devices")
 
 def mycallback(name, host, port):
