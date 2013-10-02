@@ -42,7 +42,7 @@
 			</ko>
 		        <td data-bind="text: devicetype"></td>
 		        <td data-bind="text: handledBy"></td>
-		        <td data-bind="text: internalid"></td>
+		        <td data-bind="attr: {'title': internalid }, text: internalid" style="white-space: nowrap; overflow:hidden; max-width:180px; text-overflow: ellipsis;"></td>
 				<td style="min-width: 240px; text-align:center">
 					<div class="pretty medium default btn">
 						<_a data-translateable="true" href="#" data-bind="click: function(data, event) { showDetails(data) }">Details</_a>
