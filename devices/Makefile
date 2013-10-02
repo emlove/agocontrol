@@ -1,4 +1,4 @@
-DIRS = agoEnOcean blinkm chromoflex firmata i2c irtrans_ethernet kwikwai mediaproxy rain8net zwave 1wire syslog enigma2 asterisk agoapc agojointspace raspiGPIO raspi1wGPIO raspiMCP3xxxGPIO gc100 onkyo x10
+DIRS = agoEnOcean blinkm chromoflex firmata i2c irtrans_ethernet kwikwai mediaproxy rain8net zwave 1wire syslog enigma2 asterisk agoapc agojointspace raspiGPIO raspi1wGPIO raspiMCP3xxxGPIO gc100 onkyo x10 webcam
 
 ifdef BUILDEXTRA
 DIRS += agodmx knx 
