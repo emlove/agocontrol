@@ -197,7 +197,46 @@ commands:
       subject:
         name: message subject
         type: string
+  getdata:
+    name: get data from datalogger
+    parameters:
+      startdate:
+        name: start date
+        type: string
+      enddate:
+        name: end date
+        type: string
+  getdeviceenvironments:
+    name: get environments for device from datalogger
+  setevent:
+    name: create new event
+  getevent:
+    name: get event
+  delevent:
+    name: delete event
+  setscenario:
+    name: create scenario
+  getscenario:
+    name: get scenario
+  delscenario:
+    name: delete scenario
 devicetypes:
+  dataloggercontroller:
+    name: datalogger controller
+    description: internal device to control the datalogger
+    commands: [delvariable]
+  dataloggercontroller:
+    name: datalogger controller
+    description: internal device to control the datalogger
+    commands: [getdata, getdeviceenvironments]
+  eventcontroller:
+    name: event controller
+    description: internal device to control the events
+    commands: [setevent, getevent, delevent]
+  scenariocontroller:
+    name: scenario controller
+    description: internal device to control the scenarios
+    commands: [setscenario, getscenario, delscenario, run]
   smtpgateway:
     name: mail gateway
     description: used to send emails

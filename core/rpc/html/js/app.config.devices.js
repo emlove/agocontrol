@@ -167,6 +167,67 @@ function deviceConfig() {
 
 	$.unblockUI();
     };
+
+    this.deleteDevice = function(item, event) {
+	var button_yes = $("#confirmDeleteButtons").data("yes");
+	var button_no = $("#confirmDeleteButtons").data("no");
+	var buttons = {};
+	buttons[button_no] = function() {
+	    $("#confirmDelete").dialog("close");
+	};
+	buttons[button_yes] = function() {
+	    self.doDeleteDevice(item, event);
+	    $("#confirmDelete").dialog("close");
+	};
+	$("#confirmDelete").dialog({
+	    modal : true,
+	    height : 180,
+	    width : 500,
+	    buttons : buttons
+	});
+    };
+
+    this.doDeleteDevice = function(item, event) {
+	$('#configTable').block({
+	    message : '<div>Please wait ...</div>',
+	    css : {
+		border : '3px solid #a00'
+	    }
+	});
+
+	var request = {};
+	request.method = "message";
+	request.params = {};
+	request.params.content = {
+	    uuid : item.uuid
+	};
+	request.params.subject = "event.device.remove";
+	request.id = 1;
+	request.jsonrpc = "2.0";
+
+	$.ajax({
+	    type : 'POST',
+	    url : url,
+	    data : JSON.stringify(request),
+	    success : function() {
+		var content = {};
+		content.device = item.uuid;
+		content.uuid = agoController;
+		content.command = "setdevicename";
+		content.name = "";
+		sendCommand(content, function() {
+		    self.devices.remove(function(e) {
+			return e.uuid == item.uuid;
+		    });
+		    $("#configTable").dataTable().fnDeleteRow(event.target.parentNode.parentNode);
+		    $("#configTable").dataTable().fnDraw();
+		    $('#configTable').unblock();
+		});
+	    },
+	    dataType : "json",
+	    async : true
+	});
+    };
 }
 
 /**

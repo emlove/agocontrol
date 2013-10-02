@@ -1,9 +1,0 @@
-lib/systemd/system/agoadmin.service
-admin/*.py opt/agocontrol/admin/
-admin/mod opt/agocontrol/admin/mod
-admin/tpl/* opt/agocontrol/admin/tpl
-admin/static/static/css/*.css opt/agocontrol/admin/static/static/css
-admin/static/static/css/cupertino/*.css opt/agocontrol/admin/static/static/css/cupertino
-admin/static/static/css/cupertino/images/*.png opt/agocontrol/admin/static/static/css/cupertino/images
-admin/static/static/js/* opt/agocontrol/admin/static/static/js
-admin/static/static/images/* opt/agocontrol/admin/static/static/images

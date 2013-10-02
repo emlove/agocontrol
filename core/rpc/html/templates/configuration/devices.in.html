@@ -1,4 +1,6 @@
 <div class="container" id="contentarea">
+	<_div data-translateable="true" id="confirmDelete" style="display:none">Are you sure that you want to delete this device?</_div>
+	<_div data-translateable="true" id="confirmDeleteButtons" style="display:none" _data-yes="Yes" _data-no="No" />
 	<_h3 data-translateable="true">Device Configuration</_h3>
 	<div style="width:100%; margin-top: 15px;">
 		<_strong data-translateable="true">Rooms:</_strong>
@@ -40,9 +42,15 @@
 			</ko>
 		        <td data-bind="text: devicetype"></td>
 		        <td data-bind="text: handledBy"></td>
-		        <td data-bind="text: internalid"></td>
-				<td style="min-width: 120px;" class="pretty medium default btn">
-				<_a data-translateable="true" href="#" data-bind="click: function(data, event) { showDetails(data) }">Details</_a></td>
+		        <td data-bind="attr: {'title': internalid }, text: internalid" style="white-space: nowrap; overflow:hidden; max-width:180px; text-overflow: ellipsis;"></td>
+				<td style="min-width: 240px; text-align:center">
+					<div class="pretty medium default btn">
+						<_a data-translateable="true" href="#" data-bind="click: function(data, event) { showDetails(data) }">Details</_a>
+					</div>
+					<div class="pretty medium default btn">
+						<_a data-translateable="true" href="#" data-bind="click: $parent.deleteDevice">delete</_a>
+					</div>
+				</td>
 		    </tr>
 		</tbody>
 	</table>

@@ -192,6 +192,20 @@ function device(obj, uuid) {
 	});
     };
 
+    if (this.devicetype == "camera") {
+	this.getVideoFrame = function() {
+	    var content = {};
+	    content.command = "getvideoframe";
+	    content.uuid = self.uuid;
+	    sendCommand(content, function(r) {
+		if (r.result.result.image && document.getElementById("camIMG")) {
+		    document.getElementById("camIMG").src = "data:image/png;base64," + r.result.result.image;
+		    $("#camIMG").show();
+		}
+	    });
+	};
+    }
+
 }
 
 function buildfloorPlanList(model) {
@@ -257,9 +271,10 @@ function handleEvent(response) {
 		    var content = {};
 		    content.command = "inventory";
 		    sendCommand(content, function(inv) {
-			if (inv.result.inventory[response.result.uuid] !== undefined) {
-			    if (inv.result.devices[response.result.uuid].values) {
-				deviceMap[i].values(inv.result.devices[response.result.uuid].values);
+			var tmpInv = cleanInventory(inv.result.devices);
+			if (tmpInv[response.result.uuid] !== undefined) {
+			    if (tmpInv[response.result.uuid].values) {
+				deviceMap[i].values(tmpInv[response.result.uuid].values);
 			    }
 			}
 		    });
@@ -287,6 +302,16 @@ function getEvent() {
     $.post(url, JSON.stringify(request), handleEvent, "json");
 }
 
+function cleanInventory(data) {
+    for ( var k in data) {
+	if (!data[k]) {
+	    delete data[k];
+	}
+    }
+
+    return data;
+}
+
 function handleInventory(response) {
     rooms = response.result.rooms;
     systemvar = response.result.system;
@@ -312,7 +337,7 @@ function handleInventory(response) {
 	}
     }
 
-    var inventory = response.result.devices;
+    var inventory = cleanInventory(response.result.devices);
     for ( var uuid in inventory) {
 	if (inventory[uuid].room !== undefined && inventory[uuid].room) {
 	    inventory[uuid].roomUID = inventory[uuid].room;
@@ -555,6 +580,11 @@ function doShowDetails(device, template, environment) {
 		showCommandList(document.getElementById('commandList'), device);
 	    }
 
+	    if (device.devicetype == "camera") {
+		dialogHeight = 620;
+		device.getVideoFrame();
+	    }
+
 	    if (document.getElementById('graph') && ((device.valueList && device.valueList() && device.valueList().length) || device.devicetype == "binarysensor")) {
 		/* Setup start date */
 		var start = new Date((new Date()).getTime() - 24 * 3600 * 1000);
@@ -641,7 +671,7 @@ function renderGraph(device, environment) {
 
     var content = {};
     content.uuid = dataLoggerController;
-    content.command = "getloggergraph";
+    content.command = "getdata";
     content.deviceid = device.uuid;
     content.start = $("#start_date").datepicker("getDate").toISOString();
     content.end = endDate.toISOString();
@@ -680,7 +710,7 @@ function renderGraph(device, environment) {
 
 	    ko.renderTemplate("details/datalist", {
 		data : values,
-		environment: environment
+		environment : environment
 	    }, {}, document.getElementById("dataList"));
 	    $('#graph').unblock();
 	    $("#graph").hide();

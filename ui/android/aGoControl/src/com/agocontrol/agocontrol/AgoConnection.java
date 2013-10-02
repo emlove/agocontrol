@@ -30,7 +30,8 @@ public class AgoConnection {
 	JSONRPCClient client;
 	public static String SCHEMA = "schema";
 	public static String SCHEMA_VERSION = "version";
-	public static String DEVICES = "inventory"; // TODO needs to be fixed in the resolver, should be devices
+	public static String DEVICES = "devices";
+	public static String ROOMS = "rooms";
 	public static String DEVICE_TYPE = "devicetype";
 	public static String DEVICE_ROOM = "room";
 	public static String DEVICE_STATE = "state";
@@ -67,16 +68,35 @@ public class AgoConnection {
 		      Iterator<?> iter = devices.keys();
 		      while (iter.hasNext()) {
 		    	  String deviceUuid = (String)iter.next();
-		    	  System.out.println("UUid: " + deviceUuid);
+		    	  // System.out.println("UUid: " + deviceUuid);
 		    	  JSONObject device = devices.getJSONObject(deviceUuid);
 		    	  String deviceType = device.getString(DEVICE_TYPE);
 		    	  String deviceName = device.getString(DEVICE_NAME);
-		    	  System.out.println(deviceType);
-		    	  UUID tmpUuid = UUID.fromString(deviceUuid);
-		    	  AgoDevice newDevice = new AgoDevice(tmpUuid, deviceType);
-		    	  if (deviceName != null) newDevice.setName(deviceName);
-		    	  newDevice.setConnection(this);
-		    	  deviceList.add(newDevice);
+		    	  String deviceRoom = device.getString(DEVICE_ROOM);
+		    	  
+		    	  if (deviceName != null && deviceName.length() > 0 && !deviceType.equals("event")) {
+		    		  String roomName = null;
+		    		  JSONObject rooms = inv.getJSONObject(ROOMS);
+		    		  Iterator<?> roomit = rooms.keys();
+		    		  
+		    		  while (roomit.hasNext()) {
+		    			  	String roomUuid = (String)roomit.next();
+		    			  	if (roomUuid.equals(deviceRoom)) {
+		    			  		// System.out.println("matched room");
+		    			  		JSONObject room = rooms.getJSONObject(roomUuid);
+		    			  		roomName = room.getString(DEVICE_NAME);
+		    			  	}
+		    		  }
+		    		  UUID tmpUuid = UUID.fromString(deviceUuid);
+		    		  AgoDevice newDevice = new AgoDevice(tmpUuid, deviceType);
+		    		  if (roomName != null && roomName.length() > 0) {
+		    			  newDevice.setName(roomName + " - " + deviceName);
+		    		  } else {
+		    			  newDevice.setName(deviceName);
+		    		  }
+		    		  newDevice.setConnection(this);
+		    		  deviceList.add(newDevice);
+		    	  }
 		      }
 		     
 		    } catch (Exception e) {

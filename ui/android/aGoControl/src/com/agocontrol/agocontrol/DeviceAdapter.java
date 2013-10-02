@@ -1,6 +1,8 @@
 package com.agocontrol.agocontrol;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -18,6 +20,12 @@ public class DeviceAdapter extends BaseAdapter {
 	protected ArrayList<AgoDevice> mDevices;
 	protected LayoutInflater mInflater;
 	
+	Comparator<AgoDevice> deviceComparator = new Comparator<AgoDevice>() {
+		public int compare(AgoDevice obj1, AgoDevice obj2) {
+			return obj1.getName().compareToIgnoreCase(obj2.getName());
+		}
+	};
+	
 	public DeviceAdapter() {
 		super();
 	}
@@ -26,6 +34,7 @@ public class DeviceAdapter extends BaseAdapter {
 		super();
 		mContext = context;
 		mDevices = devices;
+		Collections.sort(devices, deviceComparator);
 		mInflater = LayoutInflater.from(context);
 	}
 	
@@ -83,4 +92,5 @@ public class DeviceAdapter extends BaseAdapter {
 		public ImageView deviceType;
 	}
 
+	
 }
