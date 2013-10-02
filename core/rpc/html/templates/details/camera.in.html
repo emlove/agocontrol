@@ -1,0 +1,27 @@
+<div>
+<ko opts="ifnot: name">
+<span id="detailsTitle">Details</span>
+</ko>
+<ko opts="if: name">
+<span id="detailsTitle" data-bind="text: name">Details</span>
+</ko>
+<p>
+	<ko opts="if: room">
+		<_strong data-translateable="true">Room:</_strong> <span data-bind="text: room"></span><br />
+	</ko>
+	<strong>UUID:</strong> <span data-bind="text: uuid"></span><br />
+	<_strong data-translateable="true">Type: </_strong> <span data-bind="text: devicetype"></span><br />
+	<_strong data-translateable="true">Lastseen: </_strong> <span data-bind="text: timeStamp"></span><br />
+</p>
+
+<div style="tmax-width: 100%; max-height: 480px; overflow: auto; text-align: center">
+	<img src="" alt="webcam" id="camIMG" style="display: none"/>
+</div>
+<form>
+	<button data-bind="click: getVideoFrame">Refresh</button>
+</form>
+
+<form style="display:none">
+	<_strong data-translateable="true">Command:</_strong> <div style="display: inline" id="commandList"></div><_button data-translateable="true" data-bind="click: execCommand">Run</_button>
+</form>
+</div>

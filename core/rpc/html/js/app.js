@@ -192,6 +192,20 @@ function device(obj, uuid) {
 	});
     };
 
+    if (this.devicetype == "camera") {
+	this.getVideoFrame = function() {
+	    var content = {};
+	    content.command = "getvideoframe";
+	    content.uuid = self.uuid;
+	    sendCommand(content, function(r) {
+		if (r.result.result.image && document.getElementById("camIMG")) {
+		    document.getElementById("camIMG").src = "data:image/png;base64," + r.result.result.image;
+		    $("#camIMG").show();
+		}
+	    });
+	};
+    }
+
 }
 
 function buildfloorPlanList(model) {
@@ -564,6 +578,11 @@ function doShowDetails(device, template, environment) {
 
 	    if (document.getElementById('commandList')) {
 		showCommandList(document.getElementById('commandList'), device);
+	    }
+
+	    if (device.devicetype == "camera") {
+		dialogHeight = 620;
+		device.getVideoFrame();
 	    }
 
 	    if (document.getElementById('graph') && ((device.valueList && device.valueList() && device.valueList().length) || device.devicetype == "binarysensor")) {
