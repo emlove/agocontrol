@@ -204,6 +204,7 @@ bool CDataFile::Load(t_Str szFileName)
 // must set the m_szFileName variable before calling save.
 bool CDataFile::Save()
 {
+	return true; //TODO: FIX this broken piece of software (CDatafile)
 	if ( KeyCount() == 0 && SectionCount() == 0 )
 	{
 		// no point in saving
