@@ -33,6 +33,11 @@ Architecture: all
 Depends: ${shlibs:Depends}, ${misc:Depends}, python-ow, python-agoclient
 Description: 1wire device
 
+Package: agocontrol-webcam
+Architecture: all
+Depends: ${shlibs:Depends}, ${misc:Depends}, python-agoclient
+Description: webcam device
+
 Package: agocontrol-x10
 Architecture: all
 Depends: ${shlibs:Depends}, ${misc:Depends}, python-agoclient

@@ -1,0 +1,2 @@
+lib/systemd/system/agowebcam.service
+opt/agocontrol/bin/agowebcam.py
