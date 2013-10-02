@@ -64,7 +64,7 @@ class readBus(threading.Thread):
 					temp = round(float(sensor.temperature),1)
 					if sensor._path in sensors:
 						if 'temp' in sensors[sensor._path]:
-							if abs(sensors[sensor._path]['temp'] - temp) > 0.2:
+							if abs(sensors[sensor._path]['temp'] - temp) > 0.5:
 								client.emitEvent( sensor._path, "event.environment.temperaturechanged", temp, "degC")
 								sensors[sensor._path]['temp'] = temp
 					else:
@@ -79,7 +79,7 @@ class readBus(threading.Thread):
 								rawvalue = 0
 							lightlevel = int(round(20*rawvalue))
 							if 'light' in sensors[sensor._path]:
-								if abs(sensors[sensor._path]['light'] - lightlevel) > 2:
+								if abs(sensors[sensor._path]['light'] - lightlevel) > 5:
 									client.emitEvent( sensor._path, "event.environment.brightnesschanged", lightlevel, "percent")
 									sensors[sensor._path]['light'] = lightlevel
 							else:
@@ -90,7 +90,7 @@ class readBus(threading.Thread):
 							humraw = ow.owfs_get('/uncached%s/humidity' % sensor._path )
 							humidity = round(float(humraw))
 							if 'hum' in sensors[sensor._path]:
-								if abs(sensors[sensor._path]['hum'] - humidity) > 1:
+								if abs(sensors[sensor._path]['hum'] - humidity) > 2:
 									client.emitEvent( sensor._path, "event.environment.humiditychanged", humidity, "percent")
 									sensors[sensor._path]['hum'] = humidity
 							else:
