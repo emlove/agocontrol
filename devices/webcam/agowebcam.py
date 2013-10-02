@@ -18,10 +18,35 @@ def messageHandler(internalid, content):
 	if "command" in content:
 		if content['command'] == 'getvideoframe':
 			print "getting video frame"
-			u = urllib2.urlopen(internalid)	
-			buffer = u.read()
-			result["image"] = base64.b64encode(buffer)
-			result["result"] = 0;
+
+			try:
+				protocol, urldata = internalid.split("://")
+				if "@" in  urldata:
+					logindata, urlpart = urldata.split("@")
+					username, password = logindata.split(":")
+				else:
+					urlpart = urldata
+					username = ''
+					password = ''
+
+				url = protocol + "://" + urlpart				
+				if password != '' and username != '':
+					authmgr = urllib2.HTTPPasswordMgrWithDefaultRealm()
+					authmgr.add_password(None, url, username, password)
+					handler = urllib2.HTTPBasicAuthHandler(authmgr)
+					opener = urllib2.build_opener(handler)
+					urllib2.install_opener(opener)
+					u = urllib2.urlopen(url)
+				else:
+					u = urllib2.urlopen(url)	
+			
+				buffer = u.read()
+				result["image"] = base64.b64encode(buffer)
+				result["result"] = 0;
+
+			except urllib2.URLError, e:
+				print ('Error opening URL %s' % (url) + ' - Reason: ' + e.reason)
+
 	return result
 
 client.addHandler(messageHandler)
