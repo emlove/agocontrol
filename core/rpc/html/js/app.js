@@ -199,7 +199,7 @@ function device(obj, uuid) {
 	    content.uuid = self.uuid;
 	    sendCommand(content, function(r) {
 		if (r.result.result.image && document.getElementById("camIMG")) {
-		    document.getElementById("camIMG").src = "data:image/png;base64," + r.result.result.image;
+		    document.getElementById("camIMG").src = "data:image/jpeg;base64," + r.result.result.image;
 		    $("#camIMG").show();
 		}
 	    });
