@@ -18,6 +18,7 @@
 #include <stdio.h>
 
 #include "agoclient.h"
+#include "esp3.h"
 
 using namespace std;
 using namespace agocontrol;
@@ -41,5 +42,10 @@ int main(int argc, char **argv) {
 	printf("connection to agocontrol established\n");
 
 	agoConnection->addHandler(commandHandler);
+
+	esp3::init(devicefile);
+	uint8_t *buf;
+	while (true) esp3::readFrame(buf);
+
 	agoConnection->run();	
 }
