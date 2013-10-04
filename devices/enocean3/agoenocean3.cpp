@@ -34,7 +34,7 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 
 int main(int argc, char **argv) {
 	std::string devicefile;
-	devicefile=getConfigOption("enocean3", "device", "/dev/usbenocean");
+	devicefile=getConfigOption("enocean3", "device", "/dev/ttyAMA0");
 
 	AgoConnection _agoConnection = AgoConnection("enocean3");
 	agoConnection = &_agoConnection;

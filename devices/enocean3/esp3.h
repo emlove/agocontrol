@@ -149,8 +149,7 @@ typedef enum
 
 
 bool init(std::string devicefile);
-size_t readFrame(uint8_t *buffer);
-RETURN_TYPE parseFrame(uint8_t *buffer, size_t size);
+bool readFrame();
 
 }
 
