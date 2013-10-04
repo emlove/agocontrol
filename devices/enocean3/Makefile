@@ -7,7 +7,7 @@ INCLUDES ?= -I../../shared
 
 all: agoenocean3
 
-agoenocean3: agoenocean3.o
+agoenocean3: agoenocean3.o esp3.o
 	$(LD) -o $@ $(LDFLAGS) $^ -lagoclient
 
 clean:
