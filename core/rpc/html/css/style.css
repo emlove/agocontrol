@@ -2071,3 +2071,5 @@ ago control Styles
     content: "}";
     font-weight: bold;
 }
+
+.btn i { cursor: pointer; }

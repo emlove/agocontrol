@@ -43,12 +43,12 @@
 		        <td data-bind="text: devicetype"></td>
 		        <td data-bind="text: handledBy"></td>
 		        <td data-bind="attr: {'title': internalid }, text: internalid" style="white-space: nowrap; overflow:hidden; max-width:180px; text-overflow: ellipsis;"></td>
-				<td style="min-width: 240px; text-align:center">
+				<td style="max-width: 120px; white-space: nowrap; text-align:center">
 					<div class="pretty medium default btn">
-						<_a data-translateable="true" href="#" data-bind="click: function(data, event) { showDetails(data) }">Details</_a>
+						<i class="icon-popup"  data-translateable="true" _alt="Details" _title="Details" data-bind="click: function(data, event) { showDetails(data) }"></i>
 					</div>
 					<div class="pretty medium default btn">
-						<_a data-translateable="true" href="#" data-bind="click: $parent.deleteDevice">delete</_a>
+						<i class="icon-cancel"  data-translateable="true" _alt="Delte" _title="Delete" data-bind="click: $parent.deleteDevice"></i>
 					</div>
 				</td>
 		    </tr>
