@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-10-05 21:39+0200\n"
+"POT-Creation-Date: 2013-10-05 22:16+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -199,12 +199,15 @@ msgstr ""
 
 #: ../templates/configuration/floorplan.xml.in.h:7
 #: ../templates/configuration/scenarios.xml.in.h:10
+#: ../templates/configuration/events.xml.in.h:7
 msgid "Edit"
 msgstr ""
 
 #: ../templates/configuration/floorplan.xml.in.h:8
 #: ../templates/configuration/rooms.xml.in.h:8
 #: ../templates/configuration/scenarios.xml.in.h:11
+#: ../templates/configuration/events.xml.in.h:8
+#: ../templates/configuration/variables.xml.in.h:8
 #: ../templates/configuration/devices.xml.in.h:14
 msgid "Delete"
 msgstr ""
@@ -386,15 +389,6 @@ msgstr ""
 
 #: ../templates/configuration/events.xml.in.h:4
 msgid "Event Configuration"
-msgstr ""
-
-#: ../templates/configuration/events.xml.in.h:7
-msgid "edit"
-msgstr ""
-
-#: ../templates/configuration/events.xml.in.h:8
-#: ../templates/configuration/variables.xml.in.h:8
-msgid "delete"
 msgstr ""
 
 #: ../templates/configuration/events.xml.in.h:9

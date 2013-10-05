@@ -7,14 +7,18 @@
                     <tr>
                         <_th data-translateable="true" style="font-weight: 700">Name</_th>
                         <_th data-translateable="true" style="font-weight: 700">Value</_th>
-                        <_th data-translateable="true" style="font-weight: 700">Action</_th>
+                        <_th data-translateable="true" style="font-weight: 700; max-width: 120px">Action</_th>
                     </tr>
                 </thead>
                 <tbody data-bind="foreach: { data: variables, afterRender: makeEditable }">
                     <tr>
                         <td data-bind="text: variable"></td>
                         <td class="edit_var" data-bind="attr: {'data-variable': variable}, text: value"></td>
-                        <td class="delete_var"><_div data-translateable="true" class="cmd-btn pretty medium default btn btn-full grid-command" data-bind="click: $parent.deleteVariable">delete</_div></td>
+                        <td class="delete_var" style="max-width: 120px; white-space: nowrap; text-align:center">
+				<div class="pretty medium default btn">
+					<i class="icon-cancel"  data-translateable="true" _alt="Delete" _title="Delete" data-bind="click: $parent.deleteVariable"></i>
+				</div>
+			</td>
                     </tr>
                 </tbody>
         </table>

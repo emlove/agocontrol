@@ -8,16 +8,20 @@
                 <thead>
                     <tr>
                         <_th data-translateable="true" style="font-weight: 700">Name</_th>
-                        <_th data-translateable="true" style="font-weight: 700">Action</_th>
+                        <_th data-translateable="true" style="font-weight: 700; max-width: 120px">Action</_th>
                     </tr>
                 </thead>
                 <tbody data-bind="foreach: { data: events, afterRender: makeEditable }">
                 	<ko opts="if: uuid != '0'">
                     <tr>
                         <td class="edit_event" data-bind="attr: {'data-uuid': uuid}, text: name"></td>
-                        <td style="text-align: center">
-                        	<_div data-translateable="true" style="width: 48%;" class="cmd-btn pretty medium default btn" data-bind="attr: {'data-uuid': uuid}, click: $parent.editEvent">edit</_div>
-                        	<_div data-translateable="true" style="width: 48%;" class="cmd-btn pretty medium default btn" data-bind="attr: {'data-uuid': uuid}, click: $parent.deleteEvent">delete</_div>
+                        <td style="max-width: 120px; white-space: nowrap; text-align: center">
+				<div class="pretty medium default btn">
+					<i class="icon-pencil"  data-translateable="true" _alt="Edit" _title="Edit" data-bind="attr: {'data-uuid': uuid}, click: $parent.editEvent"></i>
+				</div>	
+				<div class="pretty medium default btn">
+					<i class="icon-cancel"  data-translateable="true" _alt="Delete" _title="Delete" data-bind="attr: {'data-uuid': uuid}, click: $parent.deleteEvent"></i>
+				</div>	
                         </td>
                     </tr>
                     </ko>
