@@ -10,7 +10,7 @@
 					<tr>
 						<_th data-translateable="true" style="font-weight: 700">Name</_th>
 						<_th data-translateable="true" style="font-weight: 700">Room</_th>
-						<_th data-translateable="true" style="font-weight: 700">Action</_th>
+						<_th data-translateable="true" style="font-weight: 700; max-width: 180px">Action</_th>
 					</tr>
 				</thead>
 				<tbody
@@ -22,25 +22,25 @@
 							data-bind="attr: {'data-uuid': uuid}, text: name"></td>
 						</ko>
 						<ko opts="ifnot: name">
-						<td class="edit_device" data-bind="attr: {'data-uuid': uuid}">unset</td>
+						<_td data-translateable="true" class="edit_device" data-bind="attr: {'data-uuid': uuid}">unset</_td>
 						</ko>
 						<ko opts="if: room">
-						<td class="select_room"
+						<td class="select_room" style="white-space: nowrap; overflow:hidden; max-width:300px; text-overflow: ellipsis;"
 							data-bind="attr: {'data-uuid': uuid}, text: room"></td>
 						</ko>
 						<ko opts="ifnot: room">
-						<td class="select_room" data-bind="attr: {'data-uuid': uuid}">unset</td>
+						<_td data-translateable="true" class="select_room" style="white-space: nowrap; overflow:hidden; max-width:300px; text-overflow: ellipsis;" data-bind="attr: {'data-uuid': uuid}">unset</_td>
 						</ko>
-						<td style="text-align: center">
-							<_div data-translateable="true" style="width: 32%;"
-								class="cmd-btn pretty medium default btn"
-								data-bind="attr: {'data-uuid': uuid}, click: $parent.runScenario">run</_div>
-							<_div data-translateable="true" style="width: 32%;"
-								class="cmd-btn pretty medium default btn"
-								data-bind="attr: {'data-uuid': uuid}, click: $parent.editScenario">edit</_div>
-							<_div data-translateable="true" style="width: 32%;"
-								class="cmd-btn pretty medium default btn"
-								data-bind="attr: {'data-uuid': uuid}, click: $parent.deleteScenario">delete</_div>
+						<td style="max-width: 180px; white-space: nowrap; text-align: center;">
+							<div class="pretty medium default btn">
+								<i class="icon-play" data-translateable="true" _alt="Run" _title="Run" data-bind="click: $parent.runScenario"></i>
+							</div>
+							<div class="pretty medium default btn">
+								<i class="icon-pencil" data-translateable="true" _alt="Edit" _title="Edit" data-bind="click: $parent.editScenario"></i>
+							</div>
+							<div class="pretty medium default btn">
+								<i class="icon-cancel" data-translateable="true" _alt="Delete" _title="Delete" data-bind="click: $parent.deleteScenario"></i>
+							</div>
 						</td>
 					</tr>
 					</ko>

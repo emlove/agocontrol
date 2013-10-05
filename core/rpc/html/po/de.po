@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-10-05 21:04+0200\n"
+"POT-Creation-Date: 2013-10-05 21:39+0200\n"
 "PO-Revision-Date: 2013-10-01 18:04+0100\n"
 "Last-Translator: \n"
 "Language-Team: ago control <jaeger@agocontrol.com>\n"
@@ -168,6 +168,7 @@ msgid "Command:"
 msgstr "Befehl:"
 
 #: ../templates/details/default.xml.in.h:6
+#: ../templates/configuration/scenarios.xml.in.h:9
 msgid "Run"
 msgstr "Ausführen"
 
@@ -211,10 +212,13 @@ msgid "Action"
 msgstr "Aktion"
 
 #: ../templates/configuration/floorplan.xml.in.h:7
+#: ../templates/configuration/scenarios.xml.in.h:10
 msgid "Edit"
 msgstr "Bearbeiten"
 
 #: ../templates/configuration/floorplan.xml.in.h:8
+#: ../templates/configuration/rooms.xml.in.h:8
+#: ../templates/configuration/scenarios.xml.in.h:11
 #: ../templates/configuration/devices.xml.in.h:14
 msgid "Delete"
 msgstr "Löschen"
@@ -224,6 +228,10 @@ msgid "Create a new floorplan"
 msgstr "Neuen Raumplan erstellen"
 
 #: ../templates/configuration/floorplan.xml.in.h:10
+msgid "New floorplan name"
+msgstr "Name vom neuen Raumplan"
+
+#: ../templates/configuration/floorplan.xml.in.h:11
 msgid "Create Floorplan"
 msgstr "Raumplan erstellen"
 
@@ -243,21 +251,19 @@ msgid "Name"
 msgstr "Name"
 
 #: ../templates/configuration/rooms.xml.in.h:7
-#: ../templates/configuration/scenarios.xml.in.h:10
-#: ../templates/configuration/events.xml.in.h:8
-#: ../templates/configuration/variables.xml.in.h:8
-msgid "delete"
-msgstr "Löschen"
+#: ../templates/configuration/scenarios.xml.in.h:8
+msgid "unset"
+msgstr "nicht gewählt"
 
-#: ../templates/configuration/rooms.xml.in.h:8
+#: ../templates/configuration/rooms.xml.in.h:9
 msgid "Create a new room"
 msgstr "Neuen Raum erstellen"
 
-#: ../templates/configuration/rooms.xml.in.h:9
+#: ../templates/configuration/rooms.xml.in.h:10
 msgid "New room name"
 msgstr "Neuer Raumname"
 
-#: ../templates/configuration/rooms.xml.in.h:10
+#: ../templates/configuration/rooms.xml.in.h:11
 msgid "Create Room"
 msgstr "Neuen Raum erstellen"
 
@@ -273,20 +279,11 @@ msgstr "Szenario Konfiguration"
 msgid "Room"
 msgstr "Raum"
 
-#: ../templates/configuration/scenarios.xml.in.h:8
-msgid "run"
-msgstr "Ausführen"
-
-#: ../templates/configuration/scenarios.xml.in.h:9
-#: ../templates/configuration/events.xml.in.h:7
-msgid "edit"
-msgstr "Bearbeiten"
-
-#: ../templates/configuration/scenarios.xml.in.h:11
+#: ../templates/configuration/scenarios.xml.in.h:12
 msgid "Create Scenario"
 msgstr "Szenario erstellen"
 
-#: ../templates/configuration/scenarios.xml.in.h:12
+#: ../templates/configuration/scenarios.xml.in.h:13
 msgid ""
 "To create a scenario press the \"Add Command\" button to add commands. After "
 "you need to give a name and press \"Create Scenario\"."
@@ -294,19 +291,19 @@ msgstr ""
 "Um ein Szenario zu erstellen verwenden Sie bitte den \"Befehl hinzufügen\" "
 "Knopf. Danach ein Name vergeben und dann auf \"Szenario erstellen\" drücken."
 
-#: ../templates/configuration/scenarios.xml.in.h:13
+#: ../templates/configuration/scenarios.xml.in.h:14
 msgid "Add Command"
 msgstr "Befehl hinzufügen"
 
-#: ../templates/configuration/scenarios.xml.in.h:14
+#: ../templates/configuration/scenarios.xml.in.h:15
 msgid "Input scenario name"
 msgstr "Namen für Szenario eingeben"
 
-#: ../templates/configuration/scenarios.xml.in.h:15
+#: ../templates/configuration/scenarios.xml.in.h:16
 msgid "Edit Scenario"
 msgstr "Szenario bearbeiten"
 
-#: ../templates/configuration/scenarios.xml.in.h:16
+#: ../templates/configuration/scenarios.xml.in.h:17
 #: ../templates/configuration/events.xml.in.h:13
 msgid "Save"
 msgstr "Speichern"
@@ -411,6 +408,15 @@ msgstr "Sind Sie sicher das Sie dieses Ereignis löschen möchten?"
 #: ../templates/configuration/events.xml.in.h:4
 msgid "Event Configuration"
 msgstr "Ereignis Konfiguration"
+
+#: ../templates/configuration/events.xml.in.h:7
+msgid "edit"
+msgstr "Bearbeiten"
+
+#: ../templates/configuration/events.xml.in.h:8
+#: ../templates/configuration/variables.xml.in.h:8
+msgid "delete"
+msgstr "Löschen"
 
 #: ../templates/configuration/events.xml.in.h:9
 msgid "Create Event"
@@ -523,3 +529,6 @@ msgstr "AUS"
 #: ../templates/devices/switch.xml.in.h:2
 msgid "ON"
 msgstr "EIN"
+
+#~ msgid "run"
+#~ msgstr "Ausführen"

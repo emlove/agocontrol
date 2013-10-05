@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-10-05 21:04+0200\n"
+"POT-Creation-Date: 2013-10-05 21:39+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -154,6 +154,7 @@ msgid "Command:"
 msgstr ""
 
 #: ../templates/details/default.xml.in.h:6
+#: ../templates/configuration/scenarios.xml.in.h:9
 msgid "Run"
 msgstr ""
 
@@ -197,10 +198,13 @@ msgid "Action"
 msgstr ""
 
 #: ../templates/configuration/floorplan.xml.in.h:7
+#: ../templates/configuration/scenarios.xml.in.h:10
 msgid "Edit"
 msgstr ""
 
 #: ../templates/configuration/floorplan.xml.in.h:8
+#: ../templates/configuration/rooms.xml.in.h:8
+#: ../templates/configuration/scenarios.xml.in.h:11
 #: ../templates/configuration/devices.xml.in.h:14
 msgid "Delete"
 msgstr ""
@@ -210,6 +214,10 @@ msgid "Create a new floorplan"
 msgstr ""
 
 #: ../templates/configuration/floorplan.xml.in.h:10
+msgid "New floorplan name"
+msgstr ""
+
+#: ../templates/configuration/floorplan.xml.in.h:11
 msgid "Create Floorplan"
 msgstr ""
 
@@ -229,21 +237,19 @@ msgid "Name"
 msgstr ""
 
 #: ../templates/configuration/rooms.xml.in.h:7
-#: ../templates/configuration/scenarios.xml.in.h:10
-#: ../templates/configuration/events.xml.in.h:8
-#: ../templates/configuration/variables.xml.in.h:8
-msgid "delete"
-msgstr ""
-
-#: ../templates/configuration/rooms.xml.in.h:8
-msgid "Create a new room"
+#: ../templates/configuration/scenarios.xml.in.h:8
+msgid "unset"
 msgstr ""
 
 #: ../templates/configuration/rooms.xml.in.h:9
-msgid "New room name"
+msgid "Create a new room"
 msgstr ""
 
 #: ../templates/configuration/rooms.xml.in.h:10
+msgid "New room name"
+msgstr ""
+
+#: ../templates/configuration/rooms.xml.in.h:11
 msgid "Create Room"
 msgstr ""
 
@@ -259,38 +265,29 @@ msgstr ""
 msgid "Room"
 msgstr ""
 
-#: ../templates/configuration/scenarios.xml.in.h:8
-msgid "run"
-msgstr ""
-
-#: ../templates/configuration/scenarios.xml.in.h:9
-#: ../templates/configuration/events.xml.in.h:7
-msgid "edit"
-msgstr ""
-
-#: ../templates/configuration/scenarios.xml.in.h:11
+#: ../templates/configuration/scenarios.xml.in.h:12
 msgid "Create Scenario"
 msgstr ""
 
-#: ../templates/configuration/scenarios.xml.in.h:12
+#: ../templates/configuration/scenarios.xml.in.h:13
 msgid ""
 "To create a scenario press the \"Add Command\" button to add commands. After "
 "you need to give a name and press \"Create Scenario\"."
 msgstr ""
 
-#: ../templates/configuration/scenarios.xml.in.h:13
+#: ../templates/configuration/scenarios.xml.in.h:14
 msgid "Add Command"
 msgstr ""
 
-#: ../templates/configuration/scenarios.xml.in.h:14
+#: ../templates/configuration/scenarios.xml.in.h:15
 msgid "Input scenario name"
 msgstr ""
 
-#: ../templates/configuration/scenarios.xml.in.h:15
+#: ../templates/configuration/scenarios.xml.in.h:16
 msgid "Edit Scenario"
 msgstr ""
 
-#: ../templates/configuration/scenarios.xml.in.h:16
+#: ../templates/configuration/scenarios.xml.in.h:17
 #: ../templates/configuration/events.xml.in.h:13
 msgid "Save"
 msgstr ""
@@ -389,6 +386,15 @@ msgstr ""
 
 #: ../templates/configuration/events.xml.in.h:4
 msgid "Event Configuration"
+msgstr ""
+
+#: ../templates/configuration/events.xml.in.h:7
+msgid "edit"
+msgstr ""
+
+#: ../templates/configuration/events.xml.in.h:8
+#: ../templates/configuration/variables.xml.in.h:8
+msgid "delete"
 msgstr ""
 
 #: ../templates/configuration/events.xml.in.h:9
