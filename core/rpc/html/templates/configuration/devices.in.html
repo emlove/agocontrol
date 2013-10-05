@@ -3,12 +3,12 @@
 	<_div data-translateable="true" id="confirmDeleteButtons" style="display:none" _data-yes="Yes" _data-no="No" />
 	<_h3 data-translateable="true">Device Configuration</_h3>
 	<div style="width:100%; margin-top: 15px;">
-		<_strong data-translateable="true">Rooms:</_strong>
+		<_span data-translateable="true">Filter rooms:</_span>
 		<ko opts="foreach: { data: roomFilters}">
 			<button data-bind="attr: {'class': className }, text: value, click: $parent.addFilter"></button>
 		</ko>
 		<br />
-		<_strong data-translateable="true">Devicetypes:</_strong>
+		<_span data-translateable="true">Filter devicetypes:</_span>
 		<ko opts="foreach: { data: deviceTypeFilters }">
 			<button data-bind="attr: {'class': className }, text: value, click: $parent.addFilter"></button>
 		</ko>
@@ -17,11 +17,11 @@
 	<table id="configTable" style="width:100%; margin-top: 15px; margin-bottom: 5px;">
 		<thead>
 		    <tr>
-		        <_th data-translateable="true" style="font-weight: 700">Device Name</_th>
+		        <_th data-translateable="true" style="font-weight: 700; min-width: 240px">Device Name</_th>
 		        <_th data-translateable="true" style="font-weight: 700; min-width: 140px">Room Name</_th>
 		        <_th data-translateable="true" style="font-weight: 700">Device Type</_th>
 		        <_th data-translateable="true" style="font-weight: 700">Handler</_th>
-		        <_th data-translateable="true" style="font-weight: 700">IntID</_th>
+		        <_th data-translateable="true" style="font-weight: 700; max-width:160px">IntID</_th>
 		        <_th data-translateable="true" style="font-weight: 700">Action</_th>
 		    </tr>
 		</thead>
@@ -31,18 +31,18 @@
 		        	<td class="edit_device" data-bind="attr: {'data-uuid': uuid}, text: name"></td>
 			</ko>
 			<ko opts="ifnot: name">
-		        	<td class="edit_device" data-bind="attr: {'data-uuid': uuid}">unset</td>
+		        	<_td data-translateable="true" class="edit_device" data-bind="attr: {'data-uuid': uuid}">unset</_td>
 			</ko>
 		
 			<ko opts="if: room">
 		        	<td class="select_device_room" data-bind="attr: {'data-uuid': uuid}, text: room"></td>
 			</ko>
 			<ko opts="ifnot: room">
-		        	<td class="select_device_room" data-bind="attr: {'data-uuid': uuid}" >unset</td>
+		        	<_td data-translateable="true" class="select_device_room" data-bind="attr: {'data-uuid': uuid}" >unset</_td>
 			</ko>
 		        <td data-bind="text: devicetype"></td>
 		        <td data-bind="text: handledBy"></td>
-		        <td data-bind="attr: {'title': internalid }, text: internalid" style="white-space: nowrap; overflow:hidden; max-width:180px; text-overflow: ellipsis;"></td>
+		        <td data-bind="attr: {'title': internalid }, text: internalid" style="white-space: nowrap; overflow:hidden; max-width:160px; text-overflow: ellipsis;"></td>
 				<td style="max-width: 120px; white-space: nowrap; text-align:center">
 					<div class="pretty medium default btn">
 						<i class="icon-popup"  data-translateable="true" _alt="Details" _title="Details" data-bind="click: function(data, event) { showDetails(data) }"></i>
