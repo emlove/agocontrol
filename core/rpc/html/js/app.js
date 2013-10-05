@@ -194,15 +194,16 @@ function device(obj, uuid) {
 
     if (this.devicetype == "camera") {
 	this.getVideoFrame = function() {
-	    var content = {};
-	    content.command = "getvideoframe";
-	    content.uuid = self.uuid;
-	    sendCommand(content, function(r) {
-		if (r.result.result.image && document.getElementById("camIMG")) {
-		    document.getElementById("camIMG").src = "data:image/jpeg;base64," + r.result.result.image;
-		    $("#camIMG").show();
-		}
-	    });
+	    // FIXME: Workaround for base64 transfer bug
+	    document.getElementById("camIMG").src = self.internalid + "?" + (new Date()).getTime();
+	    $("#camIMG").show();
+	    /*
+	     * var content = {}; content.command = "getvideoframe"; content.uuid =
+	     * self.uuid; sendCommand(content, function(r) { console.log(r); if
+	     * (r.result.result.image && document.getElementById("camIMG")) {
+	     * document.getElementById("camIMG").src = "data:image/jpeg;base64," +
+	     * r.result.result.image; $("#camIMG").show(); } }, 90);
+	     */
 	};
     }
 
