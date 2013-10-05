@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-10-05 19:42+0200\n"
+"POT-Creation-Date: 2013-10-05 21:04+0200\n"
 "PO-Revision-Date: 2013-10-01 18:04+0100\n"
 "Last-Translator: \n"
 "Language-Team: ago control <jaeger@agocontrol.com>\n"
@@ -211,17 +211,12 @@ msgid "Action"
 msgstr "Aktion"
 
 #: ../templates/configuration/floorplan.xml.in.h:7
-#: ../templates/configuration/scenarios.xml.in.h:9
-#: ../templates/configuration/events.xml.in.h:7
-msgid "edit"
+msgid "Edit"
 msgstr "Bearbeiten"
 
 #: ../templates/configuration/floorplan.xml.in.h:8
-#: ../templates/configuration/rooms.xml.in.h:7
-#: ../templates/configuration/scenarios.xml.in.h:10
-#: ../templates/configuration/events.xml.in.h:8
-#: ../templates/configuration/variables.xml.in.h:8
-msgid "delete"
+#: ../templates/configuration/devices.xml.in.h:14
+msgid "Delete"
 msgstr "Löschen"
 
 #: ../templates/configuration/floorplan.xml.in.h:9
@@ -246,6 +241,13 @@ msgstr "Raum Konfiguration"
 #: ../templates/configuration/variables.xml.in.h:5
 msgid "Name"
 msgstr "Name"
+
+#: ../templates/configuration/rooms.xml.in.h:7
+#: ../templates/configuration/scenarios.xml.in.h:10
+#: ../templates/configuration/events.xml.in.h:8
+#: ../templates/configuration/variables.xml.in.h:8
+msgid "delete"
+msgstr "Löschen"
 
 #: ../templates/configuration/rooms.xml.in.h:8
 msgid "Create a new room"
@@ -274,6 +276,11 @@ msgstr "Raum"
 #: ../templates/configuration/scenarios.xml.in.h:8
 msgid "run"
 msgstr "Ausführen"
+
+#: ../templates/configuration/scenarios.xml.in.h:9
+#: ../templates/configuration/events.xml.in.h:7
+msgid "edit"
+msgstr "Bearbeiten"
 
 #: ../templates/configuration/scenarios.xml.in.h:11
 msgid "Create Scenario"
@@ -484,14 +491,6 @@ msgstr "Interne ID"
 #: ../templates/configuration/devices.xml.in.h:13
 msgid "Details"
 msgstr "Details"
-
-#: ../templates/configuration/devices.xml.in.h:14
-msgid "Delete"
-msgstr "Löschen"
-
-#: ../templates/configuration/devices.xml.in.h:15
-msgid "Delte"
-msgstr ""
 
 #: ../templates/devices/multilevelsensor.xml.in.h:1
 msgid "GRAPH"
