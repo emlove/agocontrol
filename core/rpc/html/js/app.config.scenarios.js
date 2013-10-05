@@ -46,7 +46,7 @@ function scenarioConfig() {
 
 	eTable.$('td.select_room').editable(function(value, settings) {
 	    var content = {};
-	    content.device = $(this).parent().data('uuid');
+	    content.device = $(this).data('uuid');
 	    content.uuid = agoController;
 	    content.command = "setdeviceroom";
 	    content.room = value == "unset" ? "" : value;
