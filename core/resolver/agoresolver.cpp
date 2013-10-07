@@ -339,11 +339,11 @@ void eventHandler(std::string subject, qpid::types::Variant::Map content) {
 			}
 		}
 	} else if (subject == "event.environment.timechanged") {
-		variables["hour"] = (*content)["hour"].asString();
-		variables["day"] = (*content)["day"].asString();
-		variables["weekday"] = (*content)["weekday"].asString();
-		variables["minute"] = (*content)["minute"].asString();
-		variables["month"] = (*content)["month"].asString();
+		variables["hour"] = content["hour"].asString();
+		variables["day"] = content["day"].asString();
+		variables["weekday"] = content["weekday"].asString();
+		variables["minute"] = content["minute"].asString();
+		variables["month"] = content["month"].asString();
 	} else {
 		if (content["uuid"].asString() != "") {
 			string uuid = content["uuid"];
