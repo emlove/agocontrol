@@ -613,16 +613,17 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 			int mytarget = content["target"];
 			printf("adding association: %i %i %i\n",mynode,mygroup,mytarget);
 			Manager::Get()->AddAssociation(g_homeId, mynode, mygroup, mytarget);
-		} else if (content["command"] == "getassociation") {
+		} else if (content["command"] == "getassociations") {
+			qpid::types::Variant::Map associationsmap;
 			int mygroup = content["group"];
 			int mynode = content["node"];
 			uint8_t **associations;
 			uint32_t numassoc = Manager::Get()->GetAssociations(g_homeId, mynode, mygroup, associations);
 			for (int assoc = 0; assoc < numassoc; assoc++) {
-
-
+				associationsmap[int2str(assoc)] = associations[assoc];
 			}
 			if (numassoc >0) delete associations;
+			returnval["associations"] = associationsmap;
 		} else if (content["command"] == "removeassociation") {
 			Manager::Get()->RemoveAssociation(g_homeId, content["node"], content["group"], content["target"]);
 		} else if (content["command"] == "setconfigparam") {
