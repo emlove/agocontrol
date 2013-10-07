@@ -617,8 +617,8 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 			qpid::types::Variant::Map associationsmap;
 			int mygroup = content["group"];
 			int mynode = content["node"];
-			uint8_t **associations;
-			uint32_t numassoc = Manager::Get()->GetAssociations(g_homeId, mynode, mygroup, associations);
+			uint8_t *associations;
+			uint32_t numassoc = Manager::Get()->GetAssociations(g_homeId, mynode, mygroup, &associations);
 			for (int assoc = 0; assoc < numassoc; assoc++) {
 				associationsmap[int2str(assoc)] = associations[assoc];
 			}
