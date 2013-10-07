@@ -155,6 +155,12 @@ void handleEvent(Variant::Map *device, string subject, Variant::Map *content) {
 		value["timestamp"] = timestamp.str();
 		(*values)[quantity] = value;
 		saveDevicemap();
+	} else if (subject == "event.environment.timechanged") {
+		variables["hour"] = (*content)["hour"].asString();
+		variables["day"] = (*content)["day"].asString();
+		variables["weekday"] = (*content)["weekday"].asString();
+		variables["minute"] = (*content)["minute"].asString();
+		variables["month"] = (*content)["month"].asString();
 	}
 }
 
