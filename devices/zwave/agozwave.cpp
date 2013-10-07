@@ -102,44 +102,81 @@ const char *controllerErrorStr (Driver::ControllerError err)
 
 void controller_update(Driver::ControllerState state,  Driver::ControllerError err, void *context) {
 	printf("controller state update:");
+	qpid::types::Variant::Map eventmap;
+	eventmap["statecode"]=state;
 	switch(state) {
 		case Driver::ControllerState_Normal:
 			printf("no command in progress");
+			eventmap["state"]="normal";
+			eventmap["description"]="Normal: No command in progress";
+			agoConnection->emitEvent("zwavecontroller", "event.zwave.controllerstate", eventmap);
 			// nothing to do
 			break;
 		case Driver::ControllerState_Waiting:
 			printf("waiting for user action");
+			eventmap["state"]="awaitaction";
+			eventmap["description"]="Waiting for user action";
+			agoConnection->emitEvent("zwavecontroller", "event.zwave.controllerstate", eventmap);
 			// waiting for user action
 			break;
 		case Driver::ControllerState_Cancel:
 			printf("command was cancelled");
+			eventmap["state"]="cancel";
+			eventmap["description"]="Command was cancelled";
+			agoConnection->emitEvent("zwavecontroller", "event.zwave.controllerstate", eventmap);
 			break;
 		case Driver::ControllerState_Error:
 			printf("command returned error");
+			eventmap["state"]="error";
+			eventmap["description"]="Command returned error";
+			eventmap["error"] = err;
+			eventmap["errorstring"] = controllerErrorStr(err);
+			agoConnection->emitEvent("zwavecontroller", "event.zwave.controllerstate", eventmap);
 			break;
 		case Driver::ControllerState_Sleeping:
 			printf("device went to sleep");
+			eventmap["state"]="sleep";
+			eventmap["description"]="Device went to sleep";
+			agoConnection->emitEvent("zwavecontroller", "event.zwave.controllerstate", eventmap);
 			break;
 
 		case Driver::ControllerState_InProgress:
 			printf("communicating with other device");
+			eventmap["state"]="inprogress";
+			eventmap["description"]="Communication in progress";
+			agoConnection->emitEvent("zwavecontroller", "event.zwave.controllerstate", eventmap);
 			// communicating with device
 			break;
 		case Driver::ControllerState_Completed:
 			printf("command has completed successfully");
+			eventmap["state"]="success";
+			eventmap["description"]="Command completed";
+			agoConnection->emitEvent("zwavecontroller", "event.zwave.controllerstate", eventmap);
 			break;
 		case Driver::ControllerState_Failed:
 			printf("command has failed");
+			eventmap["state"]="failed";
+			eventmap["description"]="Command failed";
+			agoConnection->emitEvent("zwavecontroller", "event.zwave.controllerstate", eventmap);
 			// houston..
 			break;
 		case Driver::ControllerState_NodeOK:
 			printf("node ok");
+			eventmap["state"]="nodeok";
+			eventmap["description"]="Node OK";
+			agoConnection->emitEvent("zwavecontroller", "event.zwave.controllerstate", eventmap);
 			break;
 		case Driver::ControllerState_NodeFailed:
 			printf("node failed");
+			eventmap["state"]="nodefailed";
+			eventmap["description"]="Node failed";
+			agoConnection->emitEvent("zwavecontroller", "event.zwave.controllerstate", eventmap);
 			break;
 		default:
 			printf("unknown response");
+			eventmap["state"]="unknown";
+			eventmap["description"]="Unknown response";
+			agoConnection->emitEvent("zwavecontroller", "event.zwave.controllerstate", eventmap);
 			break;
 	}
 	printf("\n");
@@ -205,6 +242,7 @@ void OnNotification
 	void* _context
 )
 {
+	qpid::types::Variant::Map eventmap;
 	// Must do this inside a critical section to avoid conflicts with the main thread
 	pthread_mutex_lock( &g_criticalSection );
 
@@ -430,6 +468,11 @@ void OnNotification
 				// One of the node's association groups has changed
 				// TBD...
 				nodeInfo = nodeInfo;
+				eventmap["description"]="Node association added";
+				eventmap["state"]="associationchanged";
+				eventmap["nodeid"] = _notification->GetNodeId();
+				eventmap["homeid"] = _notification->GetHomeId();
+				agoConnection->emitEvent("zwavecontroller", "event.zwave.associationchanged", eventmap);
 			}
 			break;
 		}
@@ -444,6 +487,11 @@ void OnNotification
 			g_nodes.push_back( nodeInfo );
 
 			// todo: announce node
+			eventmap["description"]="Node added";
+			eventmap["state"]="nodeadded";
+			eventmap["nodeid"] = _notification->GetNodeId();
+			eventmap["homeid"] = _notification->GetHomeId();
+			agoConnection->emitEvent("zwavecontroller", "event.zwave.networkchanged", eventmap);
 			break;
 		}
 
@@ -452,6 +500,11 @@ void OnNotification
 			// Remove the node from our list
 			uint32 const homeId = _notification->GetHomeId();
 			uint8 const nodeId = _notification->GetNodeId();
+			eventmap["description"]="Node removed";
+			eventmap["state"]="noderemoved";
+			eventmap["nodeid"] = _notification->GetNodeId();
+			eventmap["homeid"] = _notification->GetHomeId();
+			agoConnection->emitEvent("zwavecontroller", "event.zwave.networkchanged", eventmap);
 			for( list<NodeInfo*>::iterator it = g_nodes.begin(); it != g_nodes.end(); ++it )
 			{
 				NodeInfo* nodeInfo = *it;
@@ -560,6 +613,16 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 			int mytarget = content["target"];
 			printf("adding association: %i %i %i\n",mynode,mygroup,mytarget);
 			Manager::Get()->AddAssociation(g_homeId, mynode, mygroup, mytarget);
+		} else if (content["command"] == "getassociation") {
+			int mygroup = content["group"];
+			int mynode = content["node"];
+			uint8_t **associations;
+			uint32_t numassoc = Manager::Get()->GetAssociations(g_homeId, mynode, mygroup, associations);
+			for (int assoc = 0; assoc < numassoc; assoc++) {
+
+
+			}
+			if (numassoc >0) delete associations;
 		} else if (content["command"] == "removeassociation") {
 			Manager::Get()->RemoveAssociation(g_homeId, content["node"], content["group"], content["target"]);
 		} else if (content["command"] == "setconfigparam") {
