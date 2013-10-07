@@ -27,6 +27,18 @@ void agocontrol::replaceString(std::string& subject, const std::string& search, 
         }
 }
 
+std::string agocontrol::int2str(int i) {
+	stringstream sstream;
+	sstream << i;
+	return sstream.str();
+}
+
+std::string agocontrol::float2str(float f) {
+	stringstream sstream;
+	sstream << f;
+	return sstream.str();
+}
+
 bool agocontrol::variantMapToJSONFile(qpid::types::Variant::Map map, std::string filename) {
 	ofstream mapfile;
 	try { 

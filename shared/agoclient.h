@@ -39,6 +39,10 @@ namespace agocontrol {
 	// fetch a value from the config file
 	std::string getConfigOption(const char *section, const char *option, const char *defaultvalue);
 
+	// string helpers
+	std::string int2str(int i);
+	std::string float2str(float f);
+
 	// connection class
 	class AgoConnection {
 		protected:
