@@ -537,7 +537,7 @@ bool agocontrol::AgoConnection::emitEvent(const char *internalId, const char *ev
 
 bool agocontrol::AgoConnection::emitEvent(const char *internalId, const char *eventType, qpid::types::Variant::Map _content) {
 	Variant::Map content;
-	if (!_content.isVoid()) content = _content.asMap();
+	content = _content;
 	content["uuid"] = internalIdToUuid(internalId);
 	return sendMessage(eventType, content);
 }
