@@ -44,8 +44,7 @@ int main(int argc, char **argv) {
 	agoConnection->addHandler(commandHandler);
 
 	esp3::init(devicefile);
-	uint8_t *buf;
-	while (true) esp3::readFrame(buf);
+	while (true) esp3::readFrame();
 
 	agoConnection->run();	
 }
