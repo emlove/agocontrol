@@ -535,6 +535,12 @@ bool agocontrol::AgoConnection::emitEvent(const char *internalId, const char *ev
 	return sendMessage(eventType, content);
 }
 
+bool agocontrol::AgoConnection::emitEvent(const char *internalId, const char *eventType, qpid::types::Variant::Map _content) {
+	Variant::Map content;
+	if (!_content.isVoid()) content = _content.asMap();
+	content["uuid"] = internalIdToUuid(internalId);
+	return sendMessage(eventType, content);
+}
 
 string agocontrol::AgoConnection::getDeviceType(const char *internalId) {
 	string uuid = internalIdToUuid(internalId);
