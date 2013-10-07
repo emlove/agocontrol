@@ -72,6 +72,7 @@ RETURN_TYPE parse_radio(uint8_t *buf, size_t len, size_t optlen) {
 	switch (buf[0]) {
 		case RORG_4BS: // 4 byte communication
 			cout << "4BS data" << endl;
+			printf("Sender id: 0x%02x%02x%02x%02x Status: %02x Data: %02x\n",buf[5],buf[6],buf[7],buf[8],buf[9],buf[3]);
 			break;
 		case RORG_RPS: // repeated switch communication
 			cout << "RPS data" << endl;
