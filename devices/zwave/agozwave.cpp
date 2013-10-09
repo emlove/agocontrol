@@ -45,6 +45,7 @@ using namespace agocontrol;
 using namespace OpenZWave;
 
 bool debug = true;
+int unitsystem = 0; // 0 == SI, 1 == US
 
 AgoConnection *agoConnection;
 
@@ -428,6 +429,13 @@ void OnNotification
 					}
 					if (label == "Temperature") {
 						eventtype="event.environment.temperaturechanged";
+						if (units=="F" && unitsystem==0) {
+							units="C";
+							str = float2str((atof(str.c_str())-32)*5/9);
+						} else if (units =="C" && unitsystem==1) {
+							units="F";
+							str = float2str(atof(str.c_str())*9/5 + 32);
+						}
 					}
 					if (label == "Relative Humidity") {
 						eventtype="event.environment.humiditychanged";
@@ -731,6 +739,7 @@ int main(int argc, char **argv) {
 	std::string device;
 
 	device=getConfigOption("zwave", "device", "/dev/usbzwave");
+	if (getConfigOption("system", "units", "SI")!="SI") unitsystem=1;
 
 
 	pthread_mutexattr_t mutexattr;
