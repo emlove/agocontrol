@@ -432,9 +432,11 @@ void OnNotification
 						if (units=="F" && unitsystem==0) {
 							units="C";
 							str = float2str((atof(str.c_str())-32)*5/9);
+							level = str;
 						} else if (units =="C" && unitsystem==1) {
 							units="F";
 							str = float2str(atof(str.c_str())*9/5 + 32);
+							level = str;
 						}
 					}
 					if (label == "Relative Humidity") {
