@@ -792,12 +792,15 @@ function eventConfig() {
 		    var i = 0;
 		    for ( var k in dev.values()) {
 			params.options[i + 1] = new Option(k, k);
+			if (defaultValues && k == defaultValues.param.parameter) {
+			    params.options[i + 1].selected = true;
+			}
 			i++;
 		    }
 		}
 	    };
 
-	    _buildParamList(self.deviceList[0]);
+	    _buildParamList(self.deviceList[deviceSelect.options.selectedIndex]);
 
 	    deviceSelect.onchange = function() {
 		var selectedUuid = deviceSelect.options[deviceSelect.selectedIndex].value;
