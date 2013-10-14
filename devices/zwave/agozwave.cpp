@@ -616,7 +616,12 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 		if (content["command"] == "addnode") {
 			Manager::Get()->BeginControllerCommand(g_homeId, Driver::ControllerCommand_AddDevice, controller_update, NULL, true);
 		} else if (content["command"] == "removenode") {
-			Manager::Get()->BeginControllerCommand(g_homeId, Driver::ControllerCommand_RemoveDevice, controller_update, NULL, true);
+			if (content["node"].isVoid()) {
+				int mynode = content["node"];
+				Manager::Get()->BeginControllerCommand(g_homeId, Driver::ControllerCommand_RemoveFailedNode, controller_update, NULL, true, mynode);
+			} else {
+				Manager::Get()->BeginControllerCommand(g_homeId, Driver::ControllerCommand_RemoveDevice, controller_update, NULL, true);
+			}
 		} else if (content["command"] == "addassociation") {
 			int mynode = content["node"];
 			int mygroup = content["group"];
