@@ -34,7 +34,7 @@ commands:
         name: temperature to set
         type: float
       mode:
-        mode: setpoint mode
+        name: setpoint mode
         type: option
         options: ["auto", "cool", "heat"]
   setthermostatmode:
