@@ -33,6 +33,10 @@ commands:
       temperature:
         name: temperature to set
         type: float
+      mode:
+        mode: setpoint mode
+        type: option
+        options: ["auto", "cool", "heat"]
   setthermostatmode:
     name: adjust thermostat mode
     parameters:
