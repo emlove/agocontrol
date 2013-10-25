@@ -13,5 +13,5 @@ clean:
 	rm -f agoman agoman.o
 
 install:
-	$(INSTALL_DIR) $(BINDIR)
-	$(INSTALL_PROGRAM) agoman $(BINDIR)
+	$(INSTALL_DIR) $(DESTDIR)$(BINDIR)
+	$(INSTALL_PROGRAM) agoman $(DESTDIR)$(BINDIR)

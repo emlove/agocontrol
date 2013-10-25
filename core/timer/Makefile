@@ -15,5 +15,5 @@ clean:
 	rm -f agotimer.o sunrise.o agotimer
 
 install:
-	$(INSTALL_DIR) $(BINDIR)
-	$(INSTALL_PROGRAM) agotimer $(BINDIR)
+	$(INSTALL_DIR) $(DESTDIR)$(BINDIR)
+	$(INSTALL_PROGRAM) agotimer $(DESTDIR)$(BINDIR)

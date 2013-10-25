@@ -17,6 +17,5 @@ clean:
 	rm -f agoonvif *.o | tee
 
 install:
-	$(INSTALL_DIR) $(BINDIR)
-	$(INSTALL_PROGRAM) agoonvif $(BINDIR)
-
+	$(INSTALL_DIR) $(DESTDIR)$(BINDIR)
+	$(INSTALL_PROGRAM) agoonvif $(DESTDIR)$(BINDIR)

@@ -17,5 +17,5 @@ clean:
 	rm -f agoenocean3 agoenocean3.o esp3.o test.o
 
 install:
-	$(INSTALL_DIR) $(BINDIR)
-	$(INSTALL_PROGRAM) agoenocean3 $(BINDIR)
+	$(INSTALL_DIR) $(DESTDIR)$(BINDIR)
+	$(INSTALL_PROGRAM) agoenocean3 $(DESTDIR)$(BINDIR)

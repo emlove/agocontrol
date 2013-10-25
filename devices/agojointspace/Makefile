@@ -1,10 +1,10 @@
 all:
 
 install:
-	$(INSTALL_DIR) $(BINDIR)
-	$(INSTALL_PROGRAM) agojointspace.py $(BINDIR)
-	$(INSTALL_DIR) $(CONFDIR)
-	$(INSTALL_DIR) $(CONFDIR)/jointspace
+	$(INSTALL_DIR) $(DESTDIR)$(BINDIR)
+	$(INSTALL_PROGRAM) agojointspace.py $(DESTDIR)$(BINDIR)
+	$(INSTALL_DIR) $(DESTDIR)$(CONFDIR)
+	$(INSTALL_DIR) $(DESTDIR)$(CONFDIR)/jointspace
 
 
 clean:

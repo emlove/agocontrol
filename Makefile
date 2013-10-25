@@ -10,11 +10,11 @@ export INSTALL_FILE    = $(INSTALL) -p    -o root -g root  -m  644
 
 export INCLUDES = -I../../shared
 
-export BINDIR = $(DESTDIR)/opt/agocontrol/bin
-export ETCDIR = $(DESTDIR)/etc
-export LIBDIR = $(DESTDIR)/usr/lib
+export BINDIR = /opt/agocontrol/bin
+export ETCDIR = /etc
+export LIBDIR = /usr/lib
 export CONFDIR = $(ETCDIR)/opt/agocontrol
-export INCDIR = $(DESTDIR)/usr/include/agocontrol
+export INCDIR = /usr/include/agocontrol
 
 ifdef DEB_BUILD_OPTIONS
 export BUILDEXTRA=yes
@@ -48,35 +48,35 @@ $(CLEANDIRS):
 
 install: $(INSTALLDIRS)
 	@echo Installing
-	install -d $(ETCDIR)
-	install -d $(BINDIR)
-	install -d $(INCDIR)
-	install -d $(LIBDIR)
+	install -d $(DESTDIR)$(ETCDIR)
+	install -d $(DESTDIR)$(BINDIR)
+	install -d $(DESTDIR)$(INCDIR)
+	install -d $(DESTDIR)$(LIBDIR)
 	install -d $(DESTDIR)/var/opt/agocontrol
-	install -d $(CONFDIR)/db
-	install -d $(CONFDIR)/conf.d
-	install -d $(CONFDIR)/old
-	install -d $(CONFDIR)/rpc
-	install -d $(CONFDIR)/uuidmap
-	install -d $(CONFDIR)/maps
+	install -d $(DESTDIR)$(CONFDIR)/db
+	install -d $(DESTDIR)$(CONFDIR)/conf.d
+	install -d $(DESTDIR)$(CONFDIR)/old
+	install -d $(DESTDIR)$(CONFDIR)/rpc
+	install -d $(DESTDIR)$(CONFDIR)/uuidmap
+	install -d $(DESTDIR)$(CONFDIR)/maps
 	install -d $(DESTDIR)/lib/systemd/system
-	install -d $(ETCDIR)/sysctl.d
-	install -d $(ETCDIR)/security/limits.d
+	install -d $(DESTDIR)$(ETCDIR)/sysctl.d
+	install -d $(DESTDIR)$(ETCDIR)/security/limits.d
 	install -d $(DESTDIR)/var/crash
-	install conf/security-limits.conf $(ETCDIR)/security/limits.d/agocontrol.conf
-	install conf/sysctl.conf $(ETCDIR)/sysctl.d/agocontrol.conf
-	install conf/conf.d/*.conf $(CONFDIR)/conf.d
-	install conf/schema.yaml $(CONFDIR)
-	install conf/rpc_cert.pem $(CONFDIR)/rpc
+	install conf/security-limits.conf $(DESTDIR)$(ETCDIR)/security/limits.d/agocontrol.conf
+	install conf/sysctl.conf $(DESTDIR)$(ETCDIR)/sysctl.d/agocontrol.conf
+	install conf/conf.d/*.conf $(DESTDIR)$(CONFDIR)/conf.d
+	install conf/schema.yaml $(DESTDIR)$(CONFDIR)
+	install conf/rpc_cert.pem $(DESTDIR)$(CONFDIR)/rpc
 	install conf/systemd/*.service $(DESTDIR)/lib/systemd/system
 	install data/inventory.sql $(DESTDIR)/var/opt/agocontrol
 	install data/datalogger.sql $(DESTDIR)/var/opt/agocontrol
-	install gateways/agomeloware.py $(BINDIR)
-	install scripts/agososreport.sh $(BINDIR)
-	install scripts/convert-zwave-uuid.py $(BINDIR)
-	install scripts/convert-scenario.py $(BINDIR)
-	install scripts/convert-event.py $(BINDIR)
-	install scripts/convert-config.py $(BINDIR)
+	install gateways/agomeloware.py $(DESTDIR)$(BINDIR)
+	install scripts/agososreport.sh $(DESTDIR)$(BINDIR)
+	install scripts/convert-zwave-uuid.py $(DESTDIR)$(BINDIR)
+	install scripts/convert-scenario.py $(DESTDIR)$(BINDIR)
+	install scripts/convert-event.py $(DESTDIR)$(BINDIR)
+	install scripts/convert-config.py $(DESTDIR)$(BINDIR)
 
 $(INSTALLDIRS):
 	$(MAKE) -C $(@:install-%=%) install

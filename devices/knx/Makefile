@@ -14,5 +14,5 @@ clean:
 	rm -f agoknx agoknx.o Telegram.o
 
 install:
-	$(INSTALL_DIR) $(BINDIR)
-	$(INSTALL_PROGRAM) agoknx $(BINDIR)
+	$(INSTALL_DIR) $(DESTDIR)$(BINDIR)
+	$(INSTALL_PROGRAM) agoknx $(DESTDIR)$(BINDIR)

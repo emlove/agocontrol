@@ -16,9 +16,9 @@ clean:
 	rm -f agoclient.o CDataFile.o libagoclient.so*
 
 install:
-	$(INSTALL) -d $(LIBDIR)
-	$(INSTALL) -d $(BINDIR)
-	$(INSTALL) -d $(INCDIR)
-	$(INSTALL) libagoclient.so.1 $(LIBDIR)
-	$(INSTALL) agoclient.py $(BINDIR)
-	$(INSTALL) agoclient.h $(INCDIR)
+	$(INSTALL) -d $(DESTDIR)$(LIBDIR)
+	$(INSTALL) -d $(DESTDIR)$(BINDIR)
+	$(INSTALL) -d $(DESTDIR)$(INCDIR)
+	$(INSTALL) libagoclient.so.1 $(DESTDIR)$(LIBDIR)
+	$(INSTALL) agoclient.py $(DESTDIR)$(BINDIR)
+	$(INSTALL) agoclient.h $(DESTDIR)$(INCDIR)

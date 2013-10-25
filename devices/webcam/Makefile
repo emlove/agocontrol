@@ -1,8 +1,8 @@
 all:
 
 install:
-	$(INSTALL_DIR) $(BINDIR)
-	$(INSTALL_PROGRAM) agowebcam.py $(BINDIR)
-	$(INSTALL_DIR) $(CONFDIR)
+	$(INSTALL_DIR) $(DESTDIR)$(BINDIR)
+	$(INSTALL_PROGRAM) agowebcam.py $(DESTDIR)$(BINDIR)
+	$(INSTALL_DIR) $(DESTDIR)$(CONFDIR)
 
 clean:

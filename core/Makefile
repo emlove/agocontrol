@@ -10,10 +10,10 @@ $(BUILDDIRS):
 	$(MAKE) -C $(@:build-%=%)
 
 install: $(INSTALLDIRS) all
-	$(INSTALL_DIR) $(BINDIR)
-	$(INSTALL) agodrain.py $(BINDIR)
-	$(INSTALL) myavahi.py $(BINDIR)
-	$(INSTALL) agoctrl.sh $(BINDIR)
+	$(INSTALL_DIR) $(DESTDIR)$(BINDIR)
+	$(INSTALL) agodrain.py $(DESTDIR)$(BINDIR)
+	$(INSTALL) myavahi.py $(DESTDIR)$(BINDIR)
+	$(INSTALL) agoctrl.sh $(DESTDIR)$(BINDIR)
 
 $(INSTALLDIRS): 
 	$(MAKE) -C $(@:install-%=%) install

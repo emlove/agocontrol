@@ -13,5 +13,5 @@ clean:
 	rm -f agoevent agoevent.o
 
 install:
-	$(INSTALL_DIR) $(BINDIR)
-	$(INSTALL_PROGRAM) agoevent $(BINDIR)
+	$(INSTALL_DIR) $(DESTDIR)$(BINDIR)
+	$(INSTALL_PROGRAM) agoevent $(DESTDIR)$(BINDIR)

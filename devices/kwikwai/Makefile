@@ -13,5 +13,5 @@ clean:
 	rm -f agokwikwai agokwikwai.o kwikwai.o
 
 install:
-	$(INSTALL_DIR) $(BINDIR)
-	$(INSTALL_PROGRAM) agokwikwai $(BINDIR)
+	$(INSTALL_DIR) $(DESTDIR)$(BINDIR)
+	$(INSTALL_PROGRAM) agokwikwai $(DESTDIR)$(BINDIR)
