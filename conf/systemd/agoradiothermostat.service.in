@@ -1,0 +1,15 @@
+[Unit]
+Description=ago control radio thermostat device
+
+[Service]
+ExecStart=@BINDIR/agoradiothermostat.py
+WorkingDirectory=@BINDIR
+StandardOutput=syslog
+StandardError=syslog
+Restart=always
+RestartSec=2
+User=agocontrol
+
+[Install]
+WantedBy=multi-user.target
+

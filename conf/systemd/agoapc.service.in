@@ -1,0 +1,12 @@
+[Unit]
+Description=ago control APC Device
+
+[Service]
+ExecStart=@BINDIR/agoapc.py
+WorkingDirectory=@BINDIR
+Restart=always
+RestartSec=2
+User=agocontrol
+
+[Install]
+WantedBy=multi-user.target

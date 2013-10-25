@@ -1,0 +1,12 @@
+[Unit]
+Description=ago control Arduino Firmata Device
+
+[Service]
+ExecStart=@BINDIR/agofirmata
+WorkingDirectory=@BINDIR
+Restart=always
+RestartSec=2
+User=agocontrol
+
+[Install]
+WantedBy=multi-user.target

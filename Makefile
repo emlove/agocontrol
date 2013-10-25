@@ -28,7 +28,7 @@ MAKEFLAGS += -j4
 endif
 export MAKEFLAGS
 
-DIRS = shared core devices
+DIRS = shared core devices conf
 
 BUILDDIRS = $(DIRS:%=build-%)
 INSTALLDIRS = $(DIRS:%=install-%)
@@ -59,7 +59,6 @@ install: $(INSTALLDIRS)
 	install -d $(DESTDIR)$(CONFDIR)/rpc
 	install -d $(DESTDIR)$(CONFDIR)/uuidmap
 	install -d $(DESTDIR)$(CONFDIR)/maps
-	install -d $(DESTDIR)/lib/systemd/system
 	install -d $(DESTDIR)$(ETCDIR)/sysctl.d
 	install -d $(DESTDIR)$(ETCDIR)/security/limits.d
 	install -d $(DESTDIR)/var/crash
@@ -68,7 +67,6 @@ install: $(INSTALLDIRS)
 	install conf/conf.d/*.conf $(DESTDIR)$(CONFDIR)/conf.d
 	install conf/schema.yaml $(DESTDIR)$(CONFDIR)
 	install conf/rpc_cert.pem $(DESTDIR)$(CONFDIR)/rpc
-	install conf/systemd/*.service $(DESTDIR)/lib/systemd/system
 	install data/inventory.sql $(DESTDIR)/var/opt/agocontrol
 	install data/datalogger.sql $(DESTDIR)/var/opt/agocontrol
 	install gateways/agomeloware.py $(DESTDIR)$(BINDIR)
