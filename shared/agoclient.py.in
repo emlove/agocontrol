@@ -9,11 +9,13 @@ from qpid.log import enable, DEBUG, WARN
 
 syslog.openlog(sys.argv[0], syslog.LOG_PID, syslog.LOG_DAEMON)
 
+CONFDIR = '@CONFDIR@'
 
 def getConfigOption(section, option, default):
 	config = ConfigParser.ConfigParser()
 	try:
-		config.read('/etc/opt/agocontrol/conf.d/' + section + '.conf')
+		config.read(CONFDIR + '/conf.d/' + section + '.conf')
+        echo CONFDIR
 		value = config.get(section,option)
 	except:
 		value = default
@@ -55,12 +57,12 @@ class AgoConnection:
 			return None
 
 	def storeUuidMap(self):
-		with open('/etc/opt/agocontrol/uuidmap/' + self.instance + '.json' , 'w') as outfile:
+		with open(CONFDIR + '/uuidmap/' + self.instance + '.json' , 'w') as outfile:
 			simplejson.dump(self.uuids, outfile)
 
 	def loadUuidMap(self):
 		try:
-			with open('/etc/opt/agocontrol/uuidmap/' + self.instance + '.json' , 'r') as infile:
+			with open(CONFDIR + '/uuidmap/' + self.instance + '.json' , 'r') as infile:
 				self.uuids = simplejson.load(infile)
 		except:
 			pass

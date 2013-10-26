@@ -6,14 +6,20 @@ LDFLAGS += -shared -Wl,-soname,libagoclient.so$(LIB_VER)
 %.o : %.cpp
 	$(CXX) -c $(CFLAGS) -o $@ $<
 
-all: libagoclient.so
+all: libagoclient.so agoclient.py
 
-libagoclient.so: agoclient.o CDataFile.o
+libagoclient.so: agoclient.h agoclient.o CDataFile.o
 	$(LD) -o $(@)$(LIB_VER) $(LDFLAGS) $^ -lqpidmessaging -lqpidtypes -luuid -ljsoncpp
 	test -h $(@) || ln -s $(@)$(LIB_VER) $(@)
 
+agoclient.py: agoclient.py.in
+	sed -e 's|@CONFDIR@|$(CONFDIR)|g' $< > $@
+
+agoclient.h: agoclient.h.in
+	sed -e 's|@CONFDIR@|$(CONFDIR)|g' $< > $@
+
 clean:
-	rm -f agoclient.o CDataFile.o libagoclient.so*
+	rm -f agoclient.h agoclient.o CDataFile.o libagoclient.so* agoclient.py
 
 install:
 	$(INSTALL) -d $(DESTDIR)$(LIBDIR)

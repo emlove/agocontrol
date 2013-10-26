@@ -19,7 +19,8 @@
 
 #include "CDataFile.h"
 
-#define CONFIG_FILE_PATH "/etc/opt/agocontrol/conf.d"
+#define CONFDIR "@CONFDIR@"
+#define CONFIG_FILE_PATH CONFDIR "/conf.d"
 
 namespace agocontrol {
 
