@@ -11,4 +11,4 @@ install:
 	$(INSTALL_FILE) *.service $(DESTDIR)/lib/systemd/system
 
 clean:
-	-rm *.service
+	-rm $(FILES)
