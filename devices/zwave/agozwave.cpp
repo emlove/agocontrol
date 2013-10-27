@@ -365,7 +365,8 @@ void OnNotification
 					//	}
 					break;
 					case COMMAND_CLASS_THERMOSTAT_SETPOINT:
-						printf("adding ago device thermostat value id: %s\n", tempstring.c_str());
+					case COMMAND_CLASS_THERMOSTAT_MODE:
+						// printf("adding ago device thermostat value id: %s\n", tempstring.c_str());
 						if ((device = devices.findId(nodeinstance)) != NULL) {
 							device->addValue(label, id);
 							device->setDevicetype("thermostat");
@@ -730,8 +731,22 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 						float temp = content["temperature"];
 						result = Manager::Get()->SetValue(*tmpValueID , temp);
 					}
+				} else if (content["command"] == "setthermostatmode") {
+					string mode = content["mode"].asString();
+					tmpValueID = device->getValueID("Mode");
+					if (tmpValueID == NULL) { returnval["result"] = -1;  return returnval; }
+					if (mode=="heat") {
+						result = Manager::Get()->SetValue(*tmpValueID , 1);
+					} else if (mode=="cool") {
+						result = Manager::Get()->SetValue(*tmpValueID , 2);
+					} else if (mode == "off")  {
+						result = Manager::Get()->SetValue(*tmpValueID , 0);
+					} else if (mode == "auxheat")  {
+						result = Manager::Get()->SetValue(*tmpValueID , 4);
+					} else {
+						result = Manager::Get()->SetValue(*tmpValueID , 3);
+					}
 				}
-
 			}
 
 		}
