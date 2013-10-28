@@ -461,6 +461,12 @@ void OnNotification
 					if (label == "Power") {
 						eventtype="event.environment.powerchanged";
 					}
+					if (label == "Mode") {
+						eventtype="event.environment.modechanged";
+					}
+					if (label == "Fan Mode") {
+						eventtype="event.environment.fanmodechanged";
+					}
 					if (eventtype != "") {	
 						ZWaveNode *device = devices.findValue(id);
 						if (device != NULL) {
