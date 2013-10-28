@@ -736,15 +736,15 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 					tmpValueID = device->getValueID("Mode");
 					if (tmpValueID == NULL) { returnval["result"] = -1;  return returnval; }
 					if (mode=="heat") {
-						result = Manager::Get()->SetValue(*tmpValueID , "Heat");
+						result = Manager::Get()->SetValueListSelection(*tmpValueID , "Heat");
 					} else if (mode=="cool") {
-						result = Manager::Get()->SetValue(*tmpValueID , "Cool");
+						result = Manager::Get()->SetValueListSelection(*tmpValueID , "Cool");
 					} else if (mode == "off")  {
-						result = Manager::Get()->SetValue(*tmpValueID , "Off");
+						result = Manager::Get()->SetValueListSelection(*tmpValueID , "Off");
 					} else if (mode == "auxheat")  {
-						result = Manager::Get()->SetValue(*tmpValueID , "Aux Heat");
+						result = Manager::Get()->SetValueListSelection(*tmpValueID , "Aux Heat");
 					} else {
-						result = Manager::Get()->SetValue(*tmpValueID , "Auto");
+						result = Manager::Get()->SetValueListSelection(*tmpValueID , "Auto");
 					}
 				}
 			}
