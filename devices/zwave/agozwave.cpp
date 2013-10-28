@@ -366,7 +366,7 @@ void OnNotification
 					break;
 					case COMMAND_CLASS_THERMOSTAT_SETPOINT:
 					case COMMAND_CLASS_THERMOSTAT_MODE:
-						// printf("adding ago device thermostat value id: %s\n", tempstring.c_str());
+					case COMMAND_CLASS_THERMOSTAT_FAN_MODE:
 						if ((device = devices.findId(nodeinstance)) != NULL) {
 							device->addValue(label, id);
 							device->setDevicetype("thermostat");
@@ -746,6 +746,22 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 					} else {
 						result = Manager::Get()->SetValueListSelection(*tmpValueID , "Auto");
 					}
+				} else if (content["command"] == "setthermostatfanmode") {
+					string mode = content["mode"].asString();
+					tmpValueID = device->getValueID("Fan Mode");
+					if (tmpValueID == NULL) { returnval["result"] = -1;  return returnval; }
+					if (mode=="circulate") {
+						result = Manager::Get()->SetValueListSelection(*tmpValueID , "Circulate");
+					} else if (mode=="on" || mode=="onlow") {
+						result = Manager::Get()->SetValueListSelection(*tmpValueID , "On Low");
+					} else if (mode=="onhigh") {
+						result = Manager::Get()->SetValueListSelection(*tmpValueID , "On High");
+					} else if (mode=="autohigh") {
+						result = Manager::Get()->SetValueListSelection(*tmpValueID , "Auto High");
+					} else {
+						result = Manager::Get()->SetValueListSelection(*tmpValueID , "Auto Low");
+					}
+
 				}
 			}
 
