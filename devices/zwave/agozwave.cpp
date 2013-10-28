@@ -467,6 +467,15 @@ void OnNotification
 					if (label == "Fan Mode") {
 						eventtype="event.environment.fanmodechanged";
 					}
+					if (label == "Cooling 1") {
+						eventtype="event.environment.coolsetpointchanged";
+					}
+					if (label == "Heating 1") {
+						eventtype="event.environment.fanmodechanged";
+					}
+					if (label == "Fan State") {
+						eventtype="event.environment.fanstatechanged";
+					}
 					if (eventtype != "") {	
 						ZWaveNode *device = devices.findValue(id);
 						if (device != NULL) {
