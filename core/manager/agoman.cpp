@@ -160,7 +160,7 @@ int main(int argc, char **argv) {
 	    list_iter != services.end(); list_iter++)
 	{
 		std::cout<< "Starting: " << *list_iter<<endl;
-		string service = "/opt/agocontrol/bin/" + *list_iter;
+		string service = BINDIR "/" + *list_iter;
 		int pipefd;
 		int pid = spawnProcess(service.c_str(), &pipefd);
 		pids[*list_iter] = pid;

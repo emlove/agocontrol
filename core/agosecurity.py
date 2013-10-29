@@ -8,6 +8,8 @@ import optparse
 import ConfigParser
 import uuid
 
+import agoclient
+
 from array import array
 
 from qpid.messaging import *
@@ -15,7 +17,7 @@ from qpid.util import URL
 from qpid.log import enable, DEBUG, WARN
 
 config = ConfigParser.ConfigParser()
-config.read('/etc/opt/agocontrol/config.ini')
+config.read(agoclient.CONFDIR + '/config.ini')
 
 try:
 	username = config.get("system","username")
@@ -70,7 +72,7 @@ syslog.openlog(sys.argv[0], syslog.LOG_PID, syslog.LOG_DAEMON)
 # sys.stderr = LogErr()
 
 try:
-	securitymapfile = open("/etc/opt/agocontrol/security.pck","r")
+	securitymapfile = open(agoclient.CONFDIR + "/security.pck","r")
 	securitymap = pickle.load(securitymapfile)
 	securitymapfile.close()
 except IOError, e:
@@ -84,7 +86,7 @@ sender = session.sender("agocontrol; {create: always, node: {type: topic}}")
 
 def savemap():
 	try:
-		securitymapfile = open("/etc/opt/agocontrol/security.pck","w")
+		securitymapfile = open(agoclient.CONFDIR + "/security.pck","w")
 		pickle.dump(securitymap, securitymapfile)
 		securitymapfile.close()
 	except IOError, e:

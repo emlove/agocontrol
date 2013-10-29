@@ -15,6 +15,9 @@ export ETCDIR = /etc
 export LIBDIR = /usr/lib
 export CONFDIR = $(ETCDIR)/opt/agocontrol
 export INCDIR = /usr/include/agocontrol
+export DATADIR = /var/opt/agocontrol
+export LOCALSTATEDIR = /var/opt/agocontrol
+export HTMLDIR = /opt/agocontrol/html
 
 ifdef DEB_BUILD_OPTIONS
 export BUILDEXTRA=yes
@@ -52,7 +55,8 @@ install: $(INSTALLDIRS)
 	install -d $(DESTDIR)$(BINDIR)
 	install -d $(DESTDIR)$(INCDIR)
 	install -d $(DESTDIR)$(LIBDIR)
-	install -d $(DESTDIR)/var/opt/agocontrol
+	install -d $(DESTDIR)$(LOCALSTATEDIR)
+	install -d $(DESTDIR)$(DATADIR)
 	install -d $(DESTDIR)$(CONFDIR)/db
 	install -d $(DESTDIR)$(CONFDIR)/conf.d
 	install -d $(DESTDIR)$(CONFDIR)/old
@@ -67,8 +71,8 @@ install: $(INSTALLDIRS)
 	install conf/conf.d/*.conf $(DESTDIR)$(CONFDIR)/conf.d
 	install conf/schema.yaml $(DESTDIR)$(CONFDIR)
 	install conf/rpc_cert.pem $(DESTDIR)$(CONFDIR)/rpc
-	install data/inventory.sql $(DESTDIR)/var/opt/agocontrol
-	install data/datalogger.sql $(DESTDIR)/var/opt/agocontrol
+	install data/inventory.sql $(DESTDIR)$(DATADIR)
+	install data/datalogger.sql $(DESTDIR)$(DATADIR)
 	install gateways/agomeloware.py $(DESTDIR)$(BINDIR)
 	install scripts/agososreport.sh $(DESTDIR)$(BINDIR)
 	install scripts/convert-zwave-uuid.py $(DESTDIR)$(BINDIR)

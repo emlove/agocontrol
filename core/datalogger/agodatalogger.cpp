@@ -17,7 +17,7 @@
 #include "agoclient.h"
 
 #ifndef DBFILE
-#define DBFILE "/var/opt/agocontrol/datalogger.db"
+#define DBFILE LOCALSTATEDIR "/datalogger.db"
 #endif
 
 using namespace std;

@@ -1,6 +1,6 @@
 #!/usr/bin/python
 import sys
-sys.path.append('/opt/agocontrol/bin')
+sys.path.append('@BINDIR@')
 import agoclient
 
 import cgi
@@ -16,7 +16,7 @@ import nss.ssl as ssl
 
 cgitb.enable()
 
-certdir = '/etc/opt/agocontrol/cloud'
+certdir = agoclient.CONFDIR + '/cloud'
 
 def password_callback(slot, retry, password):
 	with open (certdir + "pwfile", "r") as pwfile:
@@ -47,7 +47,7 @@ def getP12(SYSTEM_UUID, username, password, pin):
 		f = open(file_name, 'wb')
 		f.write(buffer)
 		f.close()
-		ret = subprocess.call(["/opt/agocontrol/bin/agocloud-import.sh", file_name, pin])
+		ret = subprocess.call([agoclient.BINDIR + "/agocloud-import.sh", file_name, pin])
 		if ret == 0:
 		    return True
 

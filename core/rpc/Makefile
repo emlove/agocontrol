@@ -17,10 +17,12 @@ html: $(patsubst %.in.html,%.html,$(wildcard html/templates/*.in.html) $(wildcar
 
 cgi:  get_table_lang.cpp
 	$(CXX) $(CFLAGS) -o html/cgi-bin/get_table_lang.cgi get_table_lang.cpp
+	sed -e 's|@BINDIR@|$(BINDIR)|g' activate.cgi.in > html/cgi-bin/activate.cgi
 
 clean:
 	rm -f agorpc agorpc.o mongoose.o
 	rm -f html/cgi-bin/get_table_lang.cgi
+	rm -f html/cgi-cin/activate.cgi
 	find html/templates -name "*.html" | grep -v in.html | while read file ; do rm -v $$file ; done
 
 install:

@@ -12,7 +12,7 @@
 #include "agoclient.h"
 
 #ifndef SCENARIOMAPFILE
-#define SCENARIOMAPFILE "/etc/opt/agocontrol/maps/scenariomap.json"
+#define SCENARIOMAPFILE CONFDIR "/maps/scenariomap.json"
 #endif
 
 using namespace std;
