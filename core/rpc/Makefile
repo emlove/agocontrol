@@ -22,7 +22,7 @@ cgi:  get_table_lang.cpp
 clean:
 	rm -f agorpc agorpc.o mongoose.o
 	rm -f html/cgi-bin/get_table_lang.cgi
-	rm -f html/cgi-cin/activate.cgi
+	rm -f html/cgi-bin/activate.cgi
 	find html/templates -name "*.html" | grep -v in.html | while read file ; do rm -v $$file ; done
 
 install:

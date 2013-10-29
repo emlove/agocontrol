@@ -1,4 +1,4 @@
-DIRS = systemd
+DIRS = systemd conf.d
 
 # Generate a list of all .init files that need to be created
 FILES = $(patsubst %.init.in, %.init, $(wildcard *.init.in))
@@ -17,6 +17,17 @@ $(BUILDDIRS):
 
 install: $(INSTALLDIRS) all
 $(INSTALLDIRS): 
+	install -d $(DESTDIR)$(CONFDIR)/db
+	install -d $(DESTDIR)$(CONFDIR)/old
+	install -d $(DESTDIR)$(CONFDIR)/rpc
+	install -d $(DESTDIR)$(CONFDIR)/uuidmap
+	install -d $(DESTDIR)$(CONFDIR)/maps
+	install -d $(DESTDIR)$(ETCDIR)/sysctl.d
+	install -d $(DESTDIR)$(ETCDIR)/security/limits.d
+	install security-limits.conf $(DESTDIR)$(ETCDIR)/security/limits.d/agocontrol.conf
+	install sysctl.conf $(DESTDIR)$(ETCDIR)/sysctl.d/agocontrol.conf
+	install schema.yaml $(DESTDIR)$(CONFDIR)
+	install rpc_cert.pem $(DESTDIR)$(CONFDIR)/rpc
 	$(MAKE) -C $(@:install-%=%) install
 
 clean: $(CLEANDIRS)

@@ -57,20 +57,7 @@ install: $(INSTALLDIRS)
 	install -d $(DESTDIR)$(LIBDIR)
 	install -d $(DESTDIR)$(LOCALSTATEDIR)
 	install -d $(DESTDIR)$(DATADIR)
-	install -d $(DESTDIR)$(CONFDIR)/db
-	install -d $(DESTDIR)$(CONFDIR)/conf.d
-	install -d $(DESTDIR)$(CONFDIR)/old
-	install -d $(DESTDIR)$(CONFDIR)/rpc
-	install -d $(DESTDIR)$(CONFDIR)/uuidmap
-	install -d $(DESTDIR)$(CONFDIR)/maps
-	install -d $(DESTDIR)$(ETCDIR)/sysctl.d
-	install -d $(DESTDIR)$(ETCDIR)/security/limits.d
 	install -d $(DESTDIR)/var/crash
-	install conf/security-limits.conf $(DESTDIR)$(ETCDIR)/security/limits.d/agocontrol.conf
-	install conf/sysctl.conf $(DESTDIR)$(ETCDIR)/sysctl.d/agocontrol.conf
-	install conf/conf.d/*.conf $(DESTDIR)$(CONFDIR)/conf.d
-	install conf/schema.yaml $(DESTDIR)$(CONFDIR)
-	install conf/rpc_cert.pem $(DESTDIR)$(CONFDIR)/rpc
 	install data/inventory.sql $(DESTDIR)$(DATADIR)
 	install data/datalogger.sql $(DESTDIR)$(DATADIR)
 	install gateways/agomeloware.py $(DESTDIR)$(BINDIR)
