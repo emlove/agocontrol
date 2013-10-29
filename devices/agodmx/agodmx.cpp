@@ -234,7 +234,7 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map command) {
 int main(int argc, char **argv) {
         std::string channelsFile, ola_server;
 
-        channelsFile=getConfigOption("dmx", "channelsfile", "/etc/opt/agocontrol/dmx/channels.xml");
+        channelsFile=getConfigOption("dmx", "channelsfile", CONFDIR "/dmx/channels.xml");
         ola_server=getConfigOption("dmx", "url", "ip:127.0.0.1");
 
 	// load xml file into map

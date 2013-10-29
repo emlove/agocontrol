@@ -48,12 +48,13 @@ from qpid.log import enable, DEBUG, WARN
 
 import events
 
+import agoclient
 
 xevent = events.xbmcEvents()
 
 opts = {}
 opts = ConfigParser.ConfigParser()
-opts.read('/etc/opt/agocontrol/config.ini')
+opts.read(agoclient.CONFDIR + '/config.ini')
 
 #try:
 #	opts.username = agoevents.getSetting('broker_username')

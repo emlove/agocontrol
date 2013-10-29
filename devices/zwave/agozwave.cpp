@@ -765,7 +765,7 @@ int main(int argc, char **argv) {
 	printf("connection to agocontrol established\n");
 
 	// init open zwave
-	Options::Create( "/etc/openzwave/config/", "/etc/opt/agocontrol/ozw/", "" );
+	Options::Create( "/etc/openzwave/config/", CONFDIR "/ozw/", "" );
 	Options::Get()->AddOptionBool("PerformReturnRoutes", false );
 	Options::Get()->AddOptionBool("ConsoleOutput", false ); 
 
