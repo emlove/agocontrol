@@ -365,7 +365,8 @@ void OnNotification
 					//	}
 					break;
 					case COMMAND_CLASS_THERMOSTAT_SETPOINT:
-						printf("adding ago device thermostat value id: %s\n", tempstring.c_str());
+					case COMMAND_CLASS_THERMOSTAT_MODE:
+					case COMMAND_CLASS_THERMOSTAT_FAN_MODE:
 						if ((device = devices.findId(nodeinstance)) != NULL) {
 							device->addValue(label, id);
 							device->setDevicetype("thermostat");
@@ -459,6 +460,21 @@ void OnNotification
 					}
 					if (label == "Power") {
 						eventtype="event.environment.powerchanged";
+					}
+					if (label == "Mode") {
+						eventtype="event.environment.modechanged";
+					}
+					if (label == "Fan Mode") {
+						eventtype="event.environment.fanmodechanged";
+					}
+					if (label == "Cooling 1") {
+						eventtype="event.environment.coolsetpointchanged";
+					}
+					if (label == "Heating 1") {
+						eventtype="event.environment.fanmodechanged";
+					}
+					if (label == "Fan State") {
+						eventtype="event.environment.fanstatechanged";
 					}
 					if (eventtype != "") {	
 						ZWaveNode *device = devices.findValue(id);
@@ -730,8 +746,38 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 						float temp = content["temperature"];
 						result = Manager::Get()->SetValue(*tmpValueID , temp);
 					}
-				}
+				} else if (content["command"] == "setthermostatmode") {
+					string mode = content["mode"].asString();
+					tmpValueID = device->getValueID("Mode");
+					if (tmpValueID == NULL) { returnval["result"] = -1;  return returnval; }
+					if (mode=="heat") {
+						result = Manager::Get()->SetValueListSelection(*tmpValueID , "Heat");
+					} else if (mode=="cool") {
+						result = Manager::Get()->SetValueListSelection(*tmpValueID , "Cool");
+					} else if (mode == "off")  {
+						result = Manager::Get()->SetValueListSelection(*tmpValueID , "Off");
+					} else if (mode == "auxheat")  {
+						result = Manager::Get()->SetValueListSelection(*tmpValueID , "Aux Heat");
+					} else {
+						result = Manager::Get()->SetValueListSelection(*tmpValueID , "Auto");
+					}
+				} else if (content["command"] == "setthermostatfanmode") {
+					string mode = content["mode"].asString();
+					tmpValueID = device->getValueID("Fan Mode");
+					if (tmpValueID == NULL) { returnval["result"] = -1;  return returnval; }
+					if (mode=="circulate") {
+						result = Manager::Get()->SetValueListSelection(*tmpValueID , "Circulate");
+					} else if (mode=="on" || mode=="onlow") {
+						result = Manager::Get()->SetValueListSelection(*tmpValueID , "On Low");
+					} else if (mode=="onhigh") {
+						result = Manager::Get()->SetValueListSelection(*tmpValueID , "On High");
+					} else if (mode=="autohigh") {
+						result = Manager::Get()->SetValueListSelection(*tmpValueID , "Auto High");
+					} else {
+						result = Manager::Get()->SetValueListSelection(*tmpValueID , "Auto Low");
+					}
 
+				}
 			}
 
 		}
