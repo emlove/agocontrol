@@ -4,10 +4,12 @@ BUILDDIRS = $(DIRS:%=build-%)
 INSTALLDIRS = $(DIRS:%=install-%)
 CLEANDIRS = $(DIRS:%=clean-%)
 
+BUILDFILES = agocontrol-init-script.sh
+
 agocontrol-init-script.sh: agocontrol-init-script.sh.in
 	sed -e 's|@BINDIR@|$(BINDIR)|g' $< > $@
 
-all: agocontrol-init-script.sh $(BUILDDIRS)
+all: $(BUILDDIRS) $(BUILDFILES)
 $(DIRS): $(BUILDDIRS)
 $(BUILDDIRS):
 	$(MAKE) -C $(@:build-%=%)
@@ -22,7 +24,7 @@ $(INSTALLDIRS):
 	$(MAKE) -C $(@:install-%=%) install
 
 clean: $(CLEANDIRS)
-	rm agocontrol-init-script.sh
+	rm $(BUILDFILES)
 
 $(CLEANDIRS): 
 	$(MAKE) -C $(@:clean-%=%) clean
