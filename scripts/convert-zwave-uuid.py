@@ -4,13 +4,15 @@ import simplejson
 import sys
 import os
 
+import agoclient
+
 if len(sys.argv) < 2:
 	sys.exit('Usage: %s <OZW zwcfg file>' % sys.argv[0])
 
 if not os.path.exists(sys.argv[1]):
 	sys.exit('ERROR: OZW config file %s was not found!' % sys.argv[1])
 
-if os.path.exists('/etc/opt/agocontrol/uuidmap/zwave.json'):
+if os.path.exists(agoclient.CONFDIR + '/uuidmap/zwave.json'):
 	sys.exit('ERROR: Mapping file already exist!')
 
 try:
@@ -30,6 +32,6 @@ for node in dom.getElementsByTagName('Node'):
 	except KeyError, e:
 		pass
 
-with open('/etc/opt/agocontrol/uuidmap/zwave.json' , 'w') as outfile:
+with open(agoclient.CONFDIR + '/uuidmap/zwave.json' , 'w') as outfile:
 	simplejson.dump(uuidmap, outfile)
 outfile.close()

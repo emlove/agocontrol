@@ -31,7 +31,7 @@ MAKEFLAGS += -j4
 endif
 export MAKEFLAGS
 
-DIRS = shared core devices conf
+DIRS = shared core devices conf scripts
 
 BUILDDIRS = $(DIRS:%=build-%)
 INSTALLDIRS = $(DIRS:%=install-%)
@@ -61,11 +61,6 @@ install: $(INSTALLDIRS)
 	install data/inventory.sql $(DESTDIR)$(DATADIR)
 	install data/datalogger.sql $(DESTDIR)$(DATADIR)
 	install gateways/agomeloware.py $(DESTDIR)$(BINDIR)
-	install scripts/agososreport.sh $(DESTDIR)$(BINDIR)
-	install scripts/convert-zwave-uuid.py $(DESTDIR)$(BINDIR)
-	install scripts/convert-scenario.py $(DESTDIR)$(BINDIR)
-	install scripts/convert-event.py $(DESTDIR)$(BINDIR)
-	install scripts/convert-config.py $(DESTDIR)$(BINDIR)
 
 $(INSTALLDIRS):
 	$(MAKE) -C $(@:install-%=%) install

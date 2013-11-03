@@ -4,16 +4,18 @@ import sys
 import os
 import pickle
 
+import agoclient
+
 eventmap = {}
 
 # read persistent uuid mapping from file
 try:
-	eventmapfile = open("/etc/opt/agocontrol/events.pck","r")
+	eventmapfile = open(agoclient.CONFDIR + "/events.pck","r")
 	eventmap = pickle.load(eventmapfile)
 	eventmapfile.close()
 except IOError, e:
 	print "error"
 
-with open('/etc/opt/agocontrol/maps/eventmap.json' , 'w') as outfile:
+with open(agoclient.CONFDIR + '/maps/eventmap.json' , 'w') as outfile:
 	simplejson.dump(eventmap, outfile, indent='\t')
 outfile.close()
