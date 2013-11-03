@@ -26,8 +26,8 @@ DESC="ago control core services"
 do_start()
 {
 	echo -n "Starting $DESC:"
-	/usr/bin/screen -d -S agoresolver -m /opt/agocontrol/bin/agoresolver
-	/usr/bin/screen -d -S agoadmin -m /opt/agocontrol/bin/agoadmin.py
+	/usr/bin/screen -d -S agoresolver -m @BINDIR@/agoresolver
+	/usr/bin/screen -d -S agoadmin -m @BINDIR@/agoadmin.py
 	echo "."
 }
 
