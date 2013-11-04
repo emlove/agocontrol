@@ -46,6 +46,10 @@ class x10send(threading.Thread):
 		x10lock.release()
                 client.emitEvent(self.id, "event.device.statechanged", "0", "")
 
+	if self.functioncommand == "setlevel":
+		print "Dimming: " + self.id
+
+
 def messageHandler(internalid, content):
         if "command" in content:
 		# spawn into background
@@ -61,7 +65,7 @@ readSwitches = agoclient.getConfigOption("x10", "switches", "A2,A3,A9,B3,B4,B5,B
 switches = map(str, readSwitches.split(',')) 
 for switch in switches: 
 	client.addDevice(switch, "switch")
-readDimmers = agoclient.getConfigOption("x10", "dimmers", "") 
+readDimmers = agoclient.getConfigOption("x10", "dimmers", "D1") 
 dimmers = map(str, readDimmers.split(',')) 
 for dimmer in dimmers: 
 	client.addDevice(dimmer, "dimmer")
@@ -90,30 +94,39 @@ class readX10(threading.Thread):
                                 # The first byte send tells how many bytes to expect
                                 first=dev.read()
                                 first="%x"%(first)
+				first=int(first)
 
-                                # Second tells how many total address and functions to expect
-                                second=dev.read()
-                                second="%x"%(second)
+				received =[]
+				for i in range(first):
+					readvalue = dev.read()
+					received.append(readvalue)
 
-                                # This should probably read in some sort of array but for now this is device address (ie B2
-                                third=dev.read()
-                                third= "%x"%(third)
-                                # This is another value.  For now this is the function (ie ON)
-                                fourth=dev.read()
-                                fourth = "%x"%(fourth)
+
+				# From the list we read how many elements we expect
+				totalexpected="%x"%(received[0])
+
+				#  device address (ie B2)
+				receivedaddress="%x"%(received[1])
+
+				#  function (ie ON)
+				receivedfunction="%x"%(received[2])
+
 				x10lock.release()
 
-                                # Print values (debug)
-                                print x10_house[third [:1]] + x10_device[third [1:]] + " " + x10_funct[fourth [1:]];
+                                # Make sure that we are only handling on/off requests
+				if (totalexpected == '2'):
+					#print x10_house[receivedaddress [:1]] + x10_device[receivedaddress [1:]] + " " + x10_funct[receivedfunction [1:]];
 
-                                # Look up values in dicitionaries and assign variables
-                                send_x10_address = x10_house[third [:1]] + x10_device[third [1:]];
-                                send_x10_command = x10_funct[fourth [1:]];
+					# Look up values in dicitionaries and assign variables
+					send_x10_address = x10_house[receivedaddress [:1]] + x10_device[receivedaddress [1:]];
+	                                send_x10_command = x10_funct[receivedfunction [1:]];
 
-                                # Use these values to change device states in Ago Control
-                                print "here they are: " + send_x10_address + send_x10_command;
-                                if (send_x10_command == "0") or (send_x10_command == "255"):
-                                        client.emitEvent(send_x10_address , "event.device.statechanged", send_x10_command , "");
+					# Use these values to change device states in Ago Control
+                                	if (send_x10_command == "0") or (send_x10_command == "255"):
+						client.emitEvent(send_x10_address , "event.device.statechanged", send_x10_command , "");
+
+				else:
+					#print "Unknown command received"
 
 background = readX10()
 background.setDaemon(True)
