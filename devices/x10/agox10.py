@@ -5,9 +5,19 @@ import threading
 import time
 import logging
 
-from x10.controllers.cm11 import CM11
+readInterface = agoclient.getConfigOption("x10","interface","CM11")
+readPort = agoclient.getConfigOption("x10", "device", "/dev/ttyUSB1")
 
-dev = CM11(agoclient.getConfigOption("x10", "device", "/dev/ttyUSB1"))
+if (readInterface == "CM11"):
+	from x10.controllers.cm11 import CM11
+	dev = CM11(readPort)
+elif (readInterface == "CM15"):
+	from x10.controllers.cm15 import CM15
+	dev = CM15(readPort)
+elif (readInterface == "CM17a"):
+	from x10.controllers.cm17a import CM17a
+	dev = CM17A(readPort)
+
 dev.open()
 
 #  Dictionaries to decrypt hex values sent from CM11A to house/device codes as well as function on/off
