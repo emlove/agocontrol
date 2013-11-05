@@ -58,9 +58,10 @@ class x10send(threading.Thread):
 			client.emitEvent(self.id, "event.device.statechanged", "0", "")
 
 		if self.functioncommand == "setlevel":
-			print "Dimming: " + self.id
+			x10level=int(self.level * 2.55)	
+			print "Dimming: " + self.id + " " + str(x10level) + "%"
 			x10lock.acquire()
-			dev.actuator(self.id).dim(self.level)
+			dev.actuator(self.id).dim(x10level)
 			x10lock.release()
 			client.emitEvent(self.id, "event.device.statechanged", self.level, "")
 
