@@ -14,7 +14,7 @@ booltest:
 	$(LD) -o $@ $(LDFLAGS) booltest.o -l:libboost_system.so.1.49.0 
 
 clean:
-	rm -f agoevent agoevent.o booltest booltest.o
+	rm -f agoevent agoevent.o booltest booltest.o bool.o
 
 install:
 	$(INSTALL_DIR) $(BINDIR)

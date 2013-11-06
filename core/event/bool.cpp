@@ -2,6 +2,8 @@
    taken from http://stackoverflow.com/questions/8706356/boolean-expression-grammar-parser-in-c
 */
 
+#include <assert.h>
+
 #include <boost/spirit/include/qi.hpp>
 #include <boost/spirit/include/phoenix.hpp>
 #include <boost/spirit/include/phoenix_operator.hpp>
