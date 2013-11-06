@@ -7,7 +7,7 @@ INCLUDES ?= -I../../shared
 all: agoevent
 
 agoevent: agoevent.o bool.o
-	$(LD) -o $@ $(LDFLAGS) $^ -lqpidmessaging -lqpidtypes -luuid -lagoclient
+	$(LD) -o $@ $(LDFLAGS) $^ -lboost_system -lqpidmessaging -lqpidtypes -luuid -lagoclient
 
 booltest:
 	$(CXX) -c $(CFLAGS) $(INCLUDES) -DBOOLTEST -o booltest.o bool.cpp

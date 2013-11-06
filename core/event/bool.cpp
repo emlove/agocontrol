@@ -8,6 +8,8 @@
 #include <boost/variant/recursive_wrapper.hpp>
 #include <boost/lexical_cast.hpp>
 
+#include <iostream>
+
 namespace qi    = boost::spirit::qi;
 namespace phx   = boost::phoenix;
 
@@ -44,10 +46,14 @@ struct eval : boost::static_visitor<bool>
     //
     bool operator()(const var& v) const 
     { 
-        if (v=="T" || v=="t" || v=="true" || v=="True")
+        if (v=="T" || v=="t" || v=="true" || v=="True") {
+	    // std::cout << " true ";
             return true;
-        else if (v=="F" || v=="f" || v=="false" || v=="False")
+	} else if (v=="F" || v=="f" || v=="false" || v=="False") {
+	    // std::cout << " false ";
             return false;
+	}
+	// std::cout << " lexcast ";
         return boost::lexical_cast<bool>(v); 
     }
 
@@ -150,9 +156,11 @@ bool evaluateNesting(std::string nesting) {
 		if (!ok)
 			std::cerr << "invalid input\n";
 		else {
-			std::cout << "result:\t" << result << "\n";
-			std::cout << "evaluated:\t" << evaluate(result) << "\n";
-			return evaluate(result); 
+			std::cout << "result: " << result << "\n";
+			bool boolresult = evaluate(result);	
+			std::cout << "evaluated: " << boolresult << "\n";
+			assert (boolresult == true || boolresult == false);
+			return boolresult; 
 		}
         } catch (const qi::expectation_failure<It>& e) {
 		std::cerr << "expectation_failure at '" << std::string(e.first, e.last) << "'\n";
