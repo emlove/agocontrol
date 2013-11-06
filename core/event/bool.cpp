@@ -61,11 +61,11 @@ struct eval : boost::static_visitor<bool>
 
     bool operator()(const binop<op_and>& b) const
     {
-        recurse(b.oper1) && recurse(b.oper2);
+        return recurse(b.oper1) && recurse(b.oper2);
     }
     bool operator()(const binop<op_or>& b) const
     {
-        recurse(b.oper1) || recurse(b.oper2);
+        return recurse(b.oper1) || recurse(b.oper2);
     }
     bool operator()(const unop<op_not>& u) const
     {
