@@ -61,6 +61,9 @@ typedef struct
 }NodeInfo;
 
 static list<NodeInfo*> g_nodes;
+
+static map<ValueID, qpid::types::Variant> valueCache;
+
 static pthread_mutex_t g_criticalSection;
 static pthread_cond_t  initCond  = PTHREAD_COND_INITIALIZER;
 static pthread_mutex_t initMutex = PTHREAD_MUTEX_INITIALIZER;
@@ -413,6 +416,9 @@ void OnNotification
 				string str;
 				printf("Notification: Value Changed Home 0x%08x Node %d Genre %d Class %d Instance %d Index %d Type %d\n", _notification->GetHomeId(), _notification->GetNodeId(), id.GetGenre(), id.GetCommandClassId(), id.GetInstance(), id.GetIndex(), id.GetType());
 			      if (Manager::Get()->GetValueAsString(id, &str)) {
+					qpid::types::Variant cachedValue;
+					cachedValue.parse(str);
+					valueCache[id] = cachedValue;
 					string label = Manager::Get()->GetValueLabel(id);
 					string units = Manager::Get()->GetValueUnits(id);
 
@@ -737,7 +743,24 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 					if ((mode == "auto") || (mode == "cool")) {
 						tmpValueID = device->getValueID("Cooling 1");
 						if (tmpValueID == NULL) { returnval["result"] = -1;  return returnval; }
-						float temp = content["temperature"];
+						float temp = 0.0;
+						if (content["temperature"] == "-1") {
+							try {
+								temp = valueCache[*tmpValueID];
+								temp = temp - 1.0;
+							} catch (...) {
+								returnval["result"] = -1; return returnval;
+							}
+						} else if (content["temperature"] == "+1") {
+							try {
+								temp = valueCache[*tmpValueID];
+								temp = temp + 1.0;
+							} catch (...) {
+								returnval["result"] = -1; return returnval;
+							}
+						} else {
+							temp = content["temperature"];
+						}
 						result = Manager::Get()->SetValue(*tmpValueID , temp);
 					}
 					if ((mode == "auto") || (mode == "heat")) {
