@@ -132,31 +132,32 @@ class AgoConnection:
 								if message.content['uuid'] in self.devices:
 									#this is for one of our children
 									myid = self.uuidToInternalId(message.content["uuid"])
-									if myid != None and message.reply_to and self.handler:
+									if myid != None and self.handler:
 										replydata = {}
 										replydata["result"] = self.handler(myid, message.content)
-										replysession = self.connection.session()
-										try:
-											replysender = replysession.sender(message.reply_to)
+										if message.reply_to:
+											replysession = self.connection.session()
 											try:
-												response = Message(replydata)
+												replysender = replysession.sender(message.reply_to)
+												try:
+													response = Message(replydata)
+												except:
+													syslog.syslog(syslog.LOG_ERR, "can't encode reply")
+													print "Can't encode reply\n"
+													response = Message({})
+												try:
+													response.subject = self.instance
+													replysender.send(response)
+												except SendError, e:
+													syslog.syslog(syslog.LOG_ERR, "can't send reply: " + e)
+													print "Can't send reply\n"
+												except AttributeError, e:
+													syslog.syslog(syslog.LOG_ERR, "can't send reply: " + e)
+													print "Can't send reply\n"
 											except:
-												syslog.syslog(syslog.LOG_ERR, "can't encode reply")
-												print "Can't encode reply\n"
-												response = Message({})
-											try:
-												response.subject = self.instance
-												replysender.send(response)
-											except SendError, e:
-												syslog.syslog(syslog.LOG_ERR, "can't send reply: " + e)
+												syslog.syslog(syslog.LOG_ERR, "can't send reply")
 												print "Can't send reply\n"
-											except AttributeError, e:
-												syslog.syslog(syslog.LOG_ERR, "can't send reply: " + e)
-												print "Can't send reply\n"
-										except:
-											syslog.syslog(syslog.LOG_ERR, "can't send reply")
-											print "Can't send reply\n"
-										replysession.close()
+											replysession.close()
 				if message.subject:
 					if 'event' in message.subject and self.eventhandler:
 						self.eventhandler(message.subject, message.content)
