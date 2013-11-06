@@ -161,7 +161,7 @@ bool evaluateNesting(std::string nesting) {
 			std::cout << "result: " << result << "\n";
 			bool boolresult = evaluate(result);	
 			std::cout << "evaluated: " << boolresult << "\n";
-			assert (boolresult == true || boolresult == false);
+			assert (boolresult == 1 || boolresult == 0);
 			return boolresult; 
 		}
         } catch (const qi::expectation_failure<It>& e) {
