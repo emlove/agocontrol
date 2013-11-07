@@ -281,7 +281,7 @@ void OnNotification
 								devices.add(device);
 								agoConnection->addDevice(device->getId().c_str(), device->getDevicetype().c_str());
 							}
-						
+							Manager::Get()->EnablePoll(id);
 						}
 					break;
 					case COMMAND_CLASS_SWITCH_BINARY:
@@ -294,6 +294,7 @@ void OnNotification
 								devices.add(device);
 								agoConnection->addDevice(device->getId().c_str(), device->getDevicetype().c_str());
 							}
+							Manager::Get()->EnablePoll(id);
 						}
 					break;
 					case COMMAND_CLASS_SENSOR_BINARY:
@@ -306,6 +307,7 @@ void OnNotification
 								devices.add(device);
 								agoConnection->addDevice(device->getId().c_str(), device->getDevicetype().c_str());
 							}
+							Manager::Get()->EnablePoll(id);
 						}
 					break;
 					case COMMAND_CLASS_SENSOR_MULTILEVEL:
@@ -330,6 +332,7 @@ void OnNotification
 								agoConnection->addDevice(device->getId().c_str(), device->getDevicetype().c_str());
 							}
 						}
+						Manager::Get()->EnablePoll(id);
 					break;
 					case COMMAND_CLASS_METER:
 						if (label == "Power") {
@@ -353,6 +356,7 @@ void OnNotification
 								agoConnection->addDevice(device->getId().c_str(), device->getDevicetype().c_str());
 							}
 						}
+						Manager::Get()->EnablePoll(id);
 					break;
 					case COMMAND_CLASS_BASIC_WINDOW_COVERING:
 						// if (label == "Open") {
@@ -365,6 +369,7 @@ void OnNotification
 								devices.add(device);
 								agoConnection->addDevice(device->getId().c_str(), device->getDevicetype().c_str());
 							}
+							Manager::Get()->EnablePoll(id);
 					//	}
 					break;
 					case COMMAND_CLASS_THERMOSTAT_SETPOINT:
@@ -379,6 +384,7 @@ void OnNotification
 							devices.add(device);
 							agoConnection->addDevice(device->getId().c_str(), device->getDevicetype().c_str());
 						}
+						Manager::Get()->EnablePoll(id);
 					break;
 					default:
 						printf("Notification: Unassigned Value Added Home 0x%08x Node %d Genre %d Class %x Instance %d Index %d Type %d - Label: %s\n", _notification->GetHomeId(), _notification->GetNodeId(), id.GetGenre(), id.GetCommandClassId(), id.GetInstance(), id.GetIndex(), id.GetType(),label.c_str());
@@ -746,6 +752,7 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 						float temp = 0.0;
 						if (content["temperature"] == "-1") {
 							try {
+								cout << "rel temp -1:" << valueCache[*tmpValueID] << endl;
 								temp = valueCache[*tmpValueID];
 								temp = temp - 1.0;
 							} catch (...) {
@@ -753,6 +760,7 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 							}
 						} else if (content["temperature"] == "+1") {
 							try {
+								cout << "rel temp +1: " << valueCache[*tmpValueID] << endl;
 								temp = valueCache[*tmpValueID];
 								temp = temp + 1.0;
 							} catch (...) {
