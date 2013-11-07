@@ -753,22 +753,25 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 						if (content["temperature"] == "-1") {
 							try {
 								cout << "rel temp -1:" << valueCache[*tmpValueID] << endl;
-								temp = valueCache[*tmpValueID];
+								temp = atof(valueCache[*tmpValueID].asString().c_str());
 								temp = temp - 1.0;
 							} catch (...) {
+								cout << "can't determine current value for relative temperature change" << endl;
 								returnval["result"] = -1; return returnval;
 							}
 						} else if (content["temperature"] == "+1") {
 							try {
 								cout << "rel temp +1: " << valueCache[*tmpValueID] << endl;
-								temp = valueCache[*tmpValueID];
+								temp = atof(valueCache[*tmpValueID].asString().c_str());
 								temp = temp + 1.0;
 							} catch (...) {
+								cout << "can't determine current value for relative temperature change" << endl;
 								returnval["result"] = -1; return returnval;
 							}
 						} else {
 							temp = content["temperature"];
 						}
+						cout << "setting temperature: " << temp << endl;
 						result = Manager::Get()->SetValue(*tmpValueID , temp);
 					}
 					if ((mode == "auto") || (mode == "heat")) {
