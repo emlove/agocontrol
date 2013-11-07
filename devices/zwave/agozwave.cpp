@@ -746,40 +746,36 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 				if (content["command"] == "settemperature") {
 					string mode = content["mode"].asString();
 					if  (mode == "") mode = "auto";
-					if ((mode == "auto") || (mode == "cool")) {
+					if (mode == "cool") {
 						tmpValueID = device->getValueID("Cooling 1");
-						if (tmpValueID == NULL) { returnval["result"] = -1;  return returnval; }
-						float temp = 0.0;
-						if (content["temperature"] == "-1") {
-							try {
-								cout << "rel temp -1:" << valueCache[*tmpValueID] << endl;
-								temp = atof(valueCache[*tmpValueID].asString().c_str());
-								temp = temp - 1.0;
-							} catch (...) {
-								cout << "can't determine current value for relative temperature change" << endl;
-								returnval["result"] = -1; return returnval;
-							}
-						} else if (content["temperature"] == "+1") {
-							try {
-								cout << "rel temp +1: " << valueCache[*tmpValueID] << endl;
-								temp = atof(valueCache[*tmpValueID].asString().c_str());
-								temp = temp + 1.0;
-							} catch (...) {
-								cout << "can't determine current value for relative temperature change" << endl;
-								returnval["result"] = -1; return returnval;
-							}
-						} else {
-							temp = content["temperature"];
-						}
-						cout << "setting temperature: " << temp << endl;
-						result = Manager::Get()->SetValue(*tmpValueID , temp);
-					}
-					if ((mode == "auto") || (mode == "heat")) {
+					} else if ((mode == "auto") || (mode == "heat")) {
 						tmpValueID = device->getValueID("Heating 1");
-						if (tmpValueID == NULL) { returnval["result"] = -1;  return returnval; }
-						float temp = content["temperature"];
-						result = Manager::Get()->SetValue(*tmpValueID , temp);
 					}
+					if (tmpValueID == NULL) { returnval["result"] = -1;  return returnval; }
+					float temp = 0.0;
+					if (content["temperature"] == "-1") {
+						try {
+							cout << "rel temp -1:" << valueCache[*tmpValueID] << endl;
+							temp = atof(valueCache[*tmpValueID].asString().c_str());
+							temp = temp - 1.0;
+						} catch (...) {
+							cout << "can't determine current value for relative temperature change" << endl;
+							returnval["result"] = -1; return returnval;
+						}
+					} else if (content["temperature"] == "+1") {
+						try {
+							cout << "rel temp +1: " << valueCache[*tmpValueID] << endl;
+							temp = atof(valueCache[*tmpValueID].asString().c_str());
+							temp = temp + 1.0;
+						} catch (...) {
+							cout << "can't determine current value for relative temperature change" << endl;
+							returnval["result"] = -1; return returnval;
+						}
+					} else {
+						temp = content["temperature"];
+					}
+					cout << "setting temperature: " << temp << endl;
+					result = Manager::Get()->SetValue(*tmpValueID , temp);
 				} else if (content["command"] == "setthermostatmode") {
 					string mode = content["mode"].asString();
 					tmpValueID = device->getValueID("Mode");
