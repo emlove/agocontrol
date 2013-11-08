@@ -19,6 +19,22 @@ Iter next(Iter iter)
     return ++iter;
 }
 
+bool agocontrol::nameval(const std::string& in, std::string& name, std::string& value) {
+	std::string::size_type i = in.find("=");
+        if (i == std::string::npos) {
+		name = in;
+		return false;
+        } else {
+		name = in.substr(0, i);
+		if (i+1 < in.size()) {
+			value = in.substr(i+1);
+			return true;
+		} else {
+			return false;
+		}
+        }
+}
+
 void agocontrol::replaceString(std::string& subject, const std::string& search, const std::string& replace) {
         size_t pos = 0;
         while ((pos = subject.find(search, pos)) != std::string::npos) {
