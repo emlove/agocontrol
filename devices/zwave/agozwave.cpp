@@ -332,7 +332,7 @@ void OnNotification
 								agoConnection->addDevice(device->getId().c_str(), device->getDevicetype().c_str());
 							}
 						}
-						Manager::Get()->EnablePoll(id);
+						// Manager::Get()->EnablePoll(id);
 					break;
 					case COMMAND_CLASS_METER:
 						if (label == "Power") {
@@ -356,7 +356,7 @@ void OnNotification
 								agoConnection->addDevice(device->getId().c_str(), device->getDevicetype().c_str());
 							}
 						}
-						Manager::Get()->EnablePoll(id);
+						// Manager::Get()->EnablePoll(id);
 					break;
 					case COMMAND_CLASS_BASIC_WINDOW_COVERING:
 						// if (label == "Open") {
@@ -483,7 +483,7 @@ void OnNotification
 						eventtype="event.environment.coolsetpointchanged";
 					}
 					if (label == "Heating 1") {
-						eventtype="event.environment.fanmodechanged";
+						eventtype="event.environment.heatsetpointchanged";
 					}
 					if (label == "Fan State") {
 						eventtype="event.environment.fanstatechanged";
