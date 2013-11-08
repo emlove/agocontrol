@@ -62,8 +62,8 @@ int luaSendMessage(lua_State *l) {
 	return 1;
 }
 
-bool runScript(qpid::types::Variant::Map content) {
-	cout << "running script" << endl;
+bool runScript(qpid::types::Variant::Map content, const char *script) {
+	cout << "running script " << script <<  endl;
 	L = luaL_newstate();
 	const luaL_Reg *lib = lualibs;
 	for(; lib->func != NULL; lib++) {
@@ -72,6 +72,7 @@ bool runScript(qpid::types::Variant::Map content) {
 	}
 
 	lua_register(L, "sendMessage", luaSendMessage);
+	lua_register(L, "addDevice", luaAddDevice);
 
 	lua_createtable(L, 0, 0);
 	for (qpid::types::Variant::Map::const_iterator it=content.begin(); it!=content.end(); it++) {
@@ -117,12 +118,12 @@ bool runScript(qpid::types::Variant::Map content) {
 	}	
 	lua_setglobal(L, "content");
 
-	int status = luaL_loadfile(L, "command.lua");
+	int status = luaL_loadfile(L, script);
 	int result = 0;
 	if(status == LUA_OK) {
 		result = lua_pcall(L, 0, LUA_MULTRET, 0);
 	} else {
-		std::cout << " Could not load the script." << std::endl;
+		std::cout << " Could not load the script " script << << std::endl;
 	}
 	if ( status!=0 ) {
 		std::cerr << "-- " << lua_tostring(L, -1) << std::endl;
@@ -139,14 +140,14 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 	if (internalid == "luacontroller") {
 		return returnval;
 	} else {
-		runScript(content);
+		runScript(content, "command.lua");
 	}
 	return returnval;
 }
 
 void eventHandler(std::string subject, qpid::types::Variant::Map content) {
 	content["subject"]=subject;
-	runScript(content);
+	runScript(content, "command.lua");
 }
 
 int main(int argc, char **argv) {
