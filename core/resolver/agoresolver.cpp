@@ -67,7 +67,7 @@ Variant::Map variables; // holds global variables
 
 Inventory *inv;
 int discoverdelay;
-bool persistence = true;
+bool persistence = false;
 
 bool saveDevicemap() {
 	if (persistence) return variantMapToJSONFile(inventory, DEVICESMAPFILE);
@@ -380,7 +380,7 @@ int main(int argc, char **argv) {
 
 	schemafile=getConfigOption("system", "schema", "/etc/opt/agocontrol/schema.yaml");
 	discoverdelay=atoi(getConfigOption("system", "discoverdelay", "300").c_str());
-	if (atoi(getConfigOption("system","devicepersistence", "1").c_str()) != 1) persistence=false;
+	if (atoi(getConfigOption("system","devicepersistence", "0").c_str()) != 1) persistence=false;
 
 	systeminfo["uuid"] = getConfigOption("system", "uuid", "00000000-0000-0000-000000000000");
 	systeminfo["version"] = AGOCONTROL_VERSION;
