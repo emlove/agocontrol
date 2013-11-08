@@ -848,6 +848,7 @@ int main(int argc, char **argv) {
 	Options::Get()->Lock();
 	Manager::Create();
 	Manager::Get()->AddWatcher( OnNotification, NULL );
+	Manager::Get()->SetPollInterval(atoi(getConfigOption("zwave", "pollinterval", "30000").c_str()),true);
 	Manager::Get()->AddDriver(device);
 
 	// Now we just wait for the driver to become ready
