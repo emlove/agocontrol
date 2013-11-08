@@ -25,8 +25,39 @@ static const luaL_Reg lualibs[] =
 
 AgoConnection *agoConnection;
 
+int luaAddDevice(lua_State *l) {
+	int argc = lua_gettop(l);
+	if (argc != 2) return 0;
+
+	std::string internalid = lua_tostring(l, lua_gettop(l));
+	lua_pop(l, 1);
+	std::string devicetype = lua_tostring(l, lua_gettop(l));
+	lua_pop(l, 1);
+
+	agoConnection->addDevice(internalid.c_str(), devicetype.c_str());
+	return 0;
+}
+
 int luaSendMessage(lua_State *l) {
-	cout << "called from lua" << endl;
+	qpid::types::Variant::Map content;
+	std::string subject;
+	// number of input arguments
+	int argc = lua_gettop(l);
+
+	// print input arguments
+	for(int i=0; i<argc; i++) {
+		string name, value;
+		if (nameval(string(lua_tostring(l, lua_gettop(l))),name, value)) {
+			if (name == "subject") {
+				subject = value;
+			} else {
+				content[name]=value;
+			}
+		}
+		lua_pop(l, 1);
+	}
+	cout << "Sending message: " << subject << " " << content << endl;
+	qpid::types::Variant::Map replyMap = agoConnection->sendMessageReply(subject.c_str(), content);	 
 	lua_pushnumber(l, 0);
 	return 1;
 }
@@ -47,16 +78,34 @@ bool runScript(qpid::types::Variant::Map content) {
 		lua_pushstring(L,it->first.c_str());
 		switch (it->second.getType()) {
 			case qpid::types::VAR_INT8:
+				lua_pushnumber(L,it->second.asInt8());
+				break;
 			case qpid::types::VAR_INT16:
+				lua_pushnumber(L,it->second.asInt16());
+				break;
 			case qpid::types::VAR_INT32:
+				lua_pushnumber(L,it->second.asInt32());
+				break;
 			case qpid::types::VAR_INT64:
+				lua_pushnumber(L,it->second.asInt64());
+				break;
 			case qpid::types::VAR_UINT8:
+				lua_pushnumber(L,it->second.asUint8());
+				break;
 			case qpid::types::VAR_UINT16:
+				lua_pushnumber(L,it->second.asUint16());
+				break;
 			case qpid::types::VAR_UINT32:
+				lua_pushnumber(L,it->second.asUint32());
+				break;
 			case qpid::types::VAR_UINT64:
+				lua_pushnumber(L,it->second.asUint64());
+				break;
 			case qpid::types::VAR_FLOAT:
-			case qpid::types::VAR_DOUBLE:
 				lua_pushnumber(L,it->second.asFloat());
+				break;
+			case qpid::types::VAR_DOUBLE:
+				lua_pushnumber(L,it->second.asDouble());
 				break;
 			case qpid::types::VAR_STRING:
 				lua_pushstring(L,it->second.asString().c_str());
@@ -90,7 +139,7 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 	if (internalid == "luacontroller") {
 		return returnval;
 	} else {
-
+		runScript(content);
 	}
 	return returnval;
 }
@@ -105,7 +154,6 @@ int main(int argc, char **argv) {
 	agoConnection = new AgoConnection("lua");
 	agoConnection->addDevice("luacontroller", "luacontroller");
 	agoConnection->addHandler(commandHandler);
-	agoConnection->setFilter(false);
 	agoConnection->addEventHandler(eventHandler);
 
 	agoConnection->run();
