@@ -45,6 +45,8 @@ using namespace agocontrol;
 using namespace OpenZWave;
 
 bool debug = true;
+bool polling = false;
+
 int unitsystem = 0; // 0 == SI, 1 == US
 
 AgoConnection *agoConnection;
@@ -281,7 +283,7 @@ void OnNotification
 								devices.add(device);
 								agoConnection->addDevice(device->getId().c_str(), device->getDevicetype().c_str());
 							}
-							Manager::Get()->EnablePoll(id);
+							// Manager::Get()->EnablePoll(id);
 						}
 					break;
 					case COMMAND_CLASS_SWITCH_BINARY:
@@ -294,7 +296,7 @@ void OnNotification
 								devices.add(device);
 								agoConnection->addDevice(device->getId().c_str(), device->getDevicetype().c_str());
 							}
-							Manager::Get()->EnablePoll(id);
+							// Manager::Get()->EnablePoll(id);
 						}
 					break;
 					case COMMAND_CLASS_SENSOR_BINARY:
@@ -307,7 +309,7 @@ void OnNotification
 								devices.add(device);
 								agoConnection->addDevice(device->getId().c_str(), device->getDevicetype().c_str());
 							}
-							Manager::Get()->EnablePoll(id);
+							// Manager::Get()->EnablePoll(id);
 						}
 					break;
 					case COMMAND_CLASS_SENSOR_MULTILEVEL:
@@ -369,7 +371,7 @@ void OnNotification
 								devices.add(device);
 								agoConnection->addDevice(device->getId().c_str(), device->getDevicetype().c_str());
 							}
-							Manager::Get()->EnablePoll(id);
+							// Manager::Get()->EnablePoll(id);
 					//	}
 					break;
 					case COMMAND_CLASS_THERMOSTAT_SETPOINT:
@@ -384,7 +386,7 @@ void OnNotification
 							devices.add(device);
 							agoConnection->addDevice(device->getId().c_str(), device->getDevicetype().c_str());
 						}
-						Manager::Get()->EnablePoll(id);
+						if (polling) Manager::Get()->EnablePoll(id);
 					break;
 					default:
 						printf("Notification: Unassigned Value Added Home 0x%08x Node %d Genre %d Class %x Instance %d Index %d Type %d - Label: %s\n", _notification->GetHomeId(), _notification->GetNodeId(), id.GetGenre(), id.GetCommandClassId(), id.GetInstance(), id.GetIndex(), id.GetType(),label.c_str());
@@ -848,7 +850,8 @@ int main(int argc, char **argv) {
 	Options::Get()->Lock();
 	Manager::Create();
 	Manager::Get()->AddWatcher( OnNotification, NULL );
-	Manager::Get()->SetPollInterval(atoi(getConfigOption("zwave", "pollinterval", "30000").c_str()),true);
+	// Manager::Get()->SetPollInterval(atoi(getConfigOption("zwave", "pollinterval", "300000").c_str()),true);
+	if (getConfigOption("zwave", "polling", "0") == "1") polling=true;
 	Manager::Get()->AddDriver(device);
 
 	// Now we just wait for the driver to become ready
