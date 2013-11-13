@@ -123,7 +123,7 @@ bool runScript(qpid::types::Variant::Map content, const char *script) {
 	if(status == LUA_OK) {
 		result = lua_pcall(L, 0, LUA_MULTRET, 0);
 	} else {
-		std::cout << " Could not load the script " script << << std::endl;
+		std::cout << " Could not load the script " << script << std::endl;
 	}
 	if ( status!=0 ) {
 		std::cerr << "-- " << lua_tostring(L, -1) << std::endl;

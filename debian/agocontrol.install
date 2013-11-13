@@ -21,6 +21,7 @@ opt/agocontrol/bin/agologger.py
 opt/agocontrol/bin/agoresolver
 opt/agocontrol/bin/agoscenario
 opt/agocontrol/bin/agoevent
+opt/agocontrol/bin/agolua
 opt/agocontrol/bin/myavahi.py
 opt/agocontrol/bin/agodrain.py
 opt/agocontrol/bin/messagesend
