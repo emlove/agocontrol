@@ -481,6 +481,12 @@ void OnNotification
 					if (label == "Fan Mode") {
 						eventtype="event.environment.fanmodechanged";
 					}
+					if (label == "Fan State") {
+						eventtype="event.environment.fanstatechanged";
+					}
+					if (label == "Operating State") {
+						eventtype="event.environment.operatingstatechanged";
+					}
 					if (label == "Cooling 1") {
 						eventtype="event.environment.coolsetpointchanged";
 					}
