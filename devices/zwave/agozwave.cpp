@@ -260,6 +260,8 @@ void OnNotification
 			{
 				// Add the new value to our list
 				nodeInfo->m_values.push_back( _notification->GetValueID() );
+				uint8 generic = Manager::Get()->GetNodeGeneric(_notification->GetHomeId(),_notification->GetNodeId());
+				uint8 specific = Manager::Get()->GetNodeSpecific(_notification->GetHomeId(),_notification->GetNodeId());
 				ValueID id = _notification->GetValueID();
 				string label = Manager::Get()->GetValueLabel(id);
 				stringstream tempstream;
@@ -319,10 +321,21 @@ void OnNotification
 							devices.add(device);
 							agoConnection->addDevice(device->getId().c_str(), device->getDevicetype().c_str());
 						} else if (label == "Temperature") {
-							device = new ZWaveNode(tempstring, "temperaturesensor");	
-							device->addValue(label, id);
-							devices.add(device);
-							agoConnection->addDevice(device->getId().c_str(), device->getDevicetype().c_str());
+							if (generic == GENERIC_TYPE_THERMOSTAT) {
+								if ((device = devices.findId(nodeinstance)) != NULL) {
+									device->addValue(label, id);
+								} else {
+									device = new ZWaveNode(nodeinstance, "thermostat");	
+									device->addValue(label, id);
+									devices.add(device);
+									agoConnection->addDevice(device->getId().c_str(), device->getDevicetype().c_str());
+								}
+							} else {
+								device = new ZWaveNode(tempstring, "temperaturesensor");	
+								device->addValue(label, id);
+								devices.add(device);
+								agoConnection->addDevice(device->getId().c_str(), device->getDevicetype().c_str());
+							}
 						} else {
 							printf("WARNING: unhandled label for SENSOR_MULTILEVEL: %s - adding generic multilevelsensor\n",label.c_str());
 							if ((device = devices.findId(nodeinstance)) != NULL) {
@@ -375,6 +388,7 @@ void OnNotification
 					//	}
 					break;
 					case COMMAND_CLASS_THERMOSTAT_SETPOINT:
+						if (polling) Manager::Get()->EnablePoll(id);
 					case COMMAND_CLASS_THERMOSTAT_MODE:
 					case COMMAND_CLASS_THERMOSTAT_FAN_MODE:
 						if ((device = devices.findId(nodeinstance)) != NULL) {
@@ -386,7 +400,6 @@ void OnNotification
 							devices.add(device);
 							agoConnection->addDevice(device->getId().c_str(), device->getDevicetype().c_str());
 						}
-						if (polling) Manager::Get()->EnablePoll(id);
 					break;
 					default:
 						printf("Notification: Unassigned Value Added Home 0x%08x Node %d Genre %d Class %x Instance %d Index %d Type %d - Label: %s\n", _notification->GetHomeId(), _notification->GetNodeId(), id.GetGenre(), id.GetCommandClassId(), id.GetInstance(), id.GetIndex(), id.GetType(),label.c_str());
