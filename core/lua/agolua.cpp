@@ -16,6 +16,8 @@ using namespace agocontrol;
 
 #include "lua5.2/lua.hpp"
 
+qpid::types::Variant::Map inventory;
+
 lua_State *L;    
 static const luaL_Reg lualibs[] =
 {
@@ -62,6 +64,78 @@ int luaSendMessage(lua_State *l) {
 	return 1;
 }
 
+void pushTableFromMap(lua_State *l, qpid::types::Variant::Map content) {
+	lua_createtable(L, 0, 0);
+	for (qpid::types::Variant::Map::const_iterator it=content.begin(); it!=content.end(); it++) {
+		switch (it->second.getType()) {
+			case qpid::types::VAR_INT8:
+				lua_pushstring(L,it->first.c_str());
+				lua_pushnumber(L,it->second.asInt8());
+				lua_settable(L, -3);
+				break;
+			case qpid::types::VAR_INT16:
+				lua_pushstring(L,it->first.c_str());
+				lua_pushnumber(L,it->second.asInt16());
+				lua_settable(L, -3);
+				break;
+			case qpid::types::VAR_INT32:
+				lua_pushstring(L,it->first.c_str());
+				lua_pushnumber(L,it->second.asInt32());
+				lua_settable(L, -3);
+				break;
+			case qpid::types::VAR_INT64:
+				lua_pushstring(L,it->first.c_str());
+				lua_pushnumber(L,it->second.asInt64());
+				lua_settable(L, -3);
+				break;
+			case qpid::types::VAR_UINT8:
+				lua_pushstring(L,it->first.c_str());
+				lua_pushnumber(L,it->second.asUint8());
+				lua_settable(L, -3);
+				break;
+			case qpid::types::VAR_UINT16:
+				lua_pushstring(L,it->first.c_str());
+				lua_pushnumber(L,it->second.asUint16());
+				lua_settable(L, -3);
+				break;
+			case qpid::types::VAR_UINT32:
+				lua_pushstring(L,it->first.c_str());
+				lua_pushnumber(L,it->second.asUint32());
+				lua_settable(L, -3);
+				break;
+			case qpid::types::VAR_UINT64:
+				lua_pushstring(L,it->first.c_str());
+				lua_pushnumber(L,it->second.asUint64());
+				lua_settable(L, -3);
+				break;
+			case qpid::types::VAR_FLOAT:
+				lua_pushstring(L,it->first.c_str());
+				lua_pushnumber(L,it->second.asFloat());
+				lua_settable(L, -3);
+				break;
+			case qpid::types::VAR_DOUBLE:
+				lua_pushstring(L,it->first.c_str());
+				lua_pushnumber(L,it->second.asDouble());
+				lua_settable(L, -3);
+				break;
+			case qpid::types::VAR_STRING:
+				lua_pushstring(L,it->first.c_str());
+				lua_pushstring(L,it->second.asString().c_str());
+				lua_settable(L, -3);
+				break;
+			case qpid::types::VAR_MAP:
+				lua_pushstring(L,it->first.c_str());
+				pushTableFromMap(L,it->second.asMap());
+				lua_settable(L, -3);
+				break;
+			default:
+				lua_pushstring(L,it->first.c_str());
+				lua_pushstring(L,"unhandled");
+				lua_settable(L, -3);
+		}
+	}	
+}
+
 bool runScript(qpid::types::Variant::Map content, const char *script) {
 	cout << "running script " << script <<  endl;
 	L = luaL_newstate();
@@ -74,49 +148,10 @@ bool runScript(qpid::types::Variant::Map content, const char *script) {
 	lua_register(L, "sendMessage", luaSendMessage);
 	lua_register(L, "addDevice", luaAddDevice);
 
-	lua_createtable(L, 0, 0);
-	for (qpid::types::Variant::Map::const_iterator it=content.begin(); it!=content.end(); it++) {
-		lua_pushstring(L,it->first.c_str());
-		switch (it->second.getType()) {
-			case qpid::types::VAR_INT8:
-				lua_pushnumber(L,it->second.asInt8());
-				break;
-			case qpid::types::VAR_INT16:
-				lua_pushnumber(L,it->second.asInt16());
-				break;
-			case qpid::types::VAR_INT32:
-				lua_pushnumber(L,it->second.asInt32());
-				break;
-			case qpid::types::VAR_INT64:
-				lua_pushnumber(L,it->second.asInt64());
-				break;
-			case qpid::types::VAR_UINT8:
-				lua_pushnumber(L,it->second.asUint8());
-				break;
-			case qpid::types::VAR_UINT16:
-				lua_pushnumber(L,it->second.asUint16());
-				break;
-			case qpid::types::VAR_UINT32:
-				lua_pushnumber(L,it->second.asUint32());
-				break;
-			case qpid::types::VAR_UINT64:
-				lua_pushnumber(L,it->second.asUint64());
-				break;
-			case qpid::types::VAR_FLOAT:
-				lua_pushnumber(L,it->second.asFloat());
-				break;
-			case qpid::types::VAR_DOUBLE:
-				lua_pushnumber(L,it->second.asDouble());
-				break;
-			case qpid::types::VAR_STRING:
-				lua_pushstring(L,it->second.asString().c_str());
-				break;
-			default:
-				lua_pushstring(L,"unhandled");
-		}
-		lua_settable(L, -3);
-	}	
+	pushTableFromMap(L, content);
 	lua_setglobal(L, "content");
+	pushTableFromMap(L, inventory);
+	lua_setglobal(L, "inventory");
 
 	int status = luaL_loadfile(L, script);
 	int result = 0;
@@ -156,6 +191,10 @@ int main(int argc, char **argv) {
 	agoConnection->addDevice("luacontroller", "luacontroller");
 	agoConnection->addHandler(commandHandler);
 	agoConnection->addEventHandler(eventHandler);
+	// sleep(5);
+	inventory = agoConnection->getInventory();
+	// for (qpid::types::Variant::Map::const_iterator it = eventmap.begin(); it!=eventmap.end(); it++) { 
+
 
 	agoConnection->run();
 
