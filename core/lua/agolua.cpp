@@ -139,10 +139,11 @@ void pushTableFromMap(lua_State *L, qpid::types::Variant::Map content) {
 				pushTableFromMap(L,it->second.asMap());
 				lua_settable(L, -3);
 				break;
-			default:
-				lua_pushstring(L,it->first.c_str());
-				lua_pushstring(L,"unhandled");
-				lua_settable(L, -3);
+			//default:
+				//lua_pushstring(L,it->first.c_str());
+				//lua_pushstring(L,"unhandled");
+				//cout << "undhandled type: " << it->second.getType() << endl;
+				//lua_settable(L, -3);
 		}
 	}	
 }
@@ -195,7 +196,7 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 			fs::recursive_directory_iterator it(scriptdir);
 			fs::recursive_directory_iterator endit;
 			while (it != endit) {
-				if (fs::is_regular_file(*it) && (it->path().extension().string() == ".lua")) {
+				if (fs::is_regular_file(*it) && (it->path().extension().string() == ".lua") && (it->path().filename().string() != "helper.lua")) {
 					runScript(content, it->path().c_str());
 				}
 				++it;

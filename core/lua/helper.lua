@@ -10,3 +10,12 @@ function tprint (tbl, indent)
     end
   end
 end
+
+function getdevicename (deviceuuid)
+  for k, v in pairs(inventory.devices) do
+    if k == deviceuuid then
+      return v.name
+    end
+  end
+end
+

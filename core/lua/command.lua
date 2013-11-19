@@ -1,4 +1,4 @@
--- dofile("helper.lua")
+dofile("/etc/opt/agcontrol/lua/helper.lua")
 
 for key,value in pairs(content) do print(key,value) end
 -- for key,value in pairs(inventory.devices) do
@@ -12,6 +12,8 @@ for key,value in pairs(content) do print(key,value) end
 -- end
 
 -- tprint(inventory.variables,2)
+
+print (getdevicename(content.uuid))
 
 if content.subject == "event.environment.timechanged" then
 	if content.hour == 0 and content.minute == 39 then
