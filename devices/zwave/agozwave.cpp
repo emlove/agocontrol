@@ -391,6 +391,8 @@ void OnNotification
 						if (polling) Manager::Get()->EnablePoll(id);
 					case COMMAND_CLASS_THERMOSTAT_MODE:
 					case COMMAND_CLASS_THERMOSTAT_FAN_MODE:
+					case COMMAND_CLASS_THERMOSTAT_FAN_STATE:
+					case COMMAND_CLASS_THERMOSTAT_OPERATING_STATE:
 						if ((device = devices.findId(nodeinstance)) != NULL) {
 							device->addValue(label, id);
 							device->setDevicetype("thermostat");
