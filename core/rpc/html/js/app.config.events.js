@@ -375,6 +375,12 @@ function eventConfig() {
 	self.map.action.command = document.getElementById("commandSelect").options[document.getElementById("commandSelect").selectedIndex].value;
 	self.map.action.uuid = self.deviceList[document.getElementById("deviceListSelect").options[document.getElementById("deviceListSelect").selectedIndex].value].uuid;
 
+	var paramList = document.getElementsByClassName("cmdParam");
+	if (paramList) {
+	    for (var i = 0; i < paramList.length; i++) {
+		self.map.action[paramList[i].id] = paramList[i].value;
+	    }
+	}
     };
 
     /**
@@ -990,6 +996,9 @@ function eventConfig() {
 		    input.name = cmd.parameters[param].name;
 		    input.id = cmd.parameters[param].name;
 		    input.className = "cmdParam";
+		    if (defaults[cmd.parameters[param].name]) {
+			input.value = defaults[cmd.parameters[param].name];
+		    }
 		    commandParams.appendChild(input);
 
 		    var br = document.createElement("br");
