@@ -8,7 +8,7 @@ INCLUDES ?= -I../../shared
 all: agotimer
 
 agotimer: sunrise.o agotimer.o ../../shared/CDataFile.o
-	$(LD) -o $@ $(LDFLAGS) $^ -lqpidmessaging -lqpidtypes -lagoclient
+	$(LD) -o $@ $(LDFLAGS) $^ -lqpidmessaging -lqpidtypes -lagoclient -lhdate
 
 .PHONY: clean
 clean:
