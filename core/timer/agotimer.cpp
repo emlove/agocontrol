@@ -113,17 +113,25 @@ void *suntimer(void *param) {
 
 int main(int argc, char** argv) {
 	latlon_struct latlon;
+	agocontroller = "";
 
 	openlog(NULL, LOG_PID & LOG_CONS, LOG_DAEMON);
 	agoConnection = new AgoConnection("timer");
-	qpid::types::Variant::Map inventory = agoConnection->getInventory();
-	qpid::types::Variant::Map devices = inventory["devices"].asMap();
-	qpid::types::Variant::Map::const_iterator it;
-	for (it = devices.begin(); it != devices.end(); it++) {
-		qpid::types::Variant::Map device = it->second.asMap();
-		if (device["devicetype"] == "agocontroller") {
-			cout << "Agocontroller: " << it->first << endl;
-			agocontroller = it->first;
+
+	while(agocontroller=="") {
+		qpid::types::Variant::Map inventory = agoConnection->getInventory();
+		if (!(inventory["devices"].isVoid())) {
+			qpid::types::Variant::Map devices = inventory["devices"].asMap();
+			qpid::types::Variant::Map::const_iterator it;
+			for (it = devices.begin(); it != devices.end(); it++) {
+				if (!(it->second.isVoid())) {
+					qpid::types::Variant::Map device = it->second.asMap();
+					if (device["devicetype"] == "agocontroller") {
+						cout << "Agocontroller: " << it->first << endl;
+						agocontroller = it->first;
+					}
+				}
+			}
 		}
 	}
 
