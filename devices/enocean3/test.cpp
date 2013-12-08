@@ -13,7 +13,7 @@
 
 int main(int argc, char **argv) {
        esp3::init("/dev/ttyAMA0");
-	esp3::sendFrame();
+	esp3::readIdBase();
         while (true) {
 		esp3::readFrame();
  	}

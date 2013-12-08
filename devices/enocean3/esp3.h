@@ -152,7 +152,9 @@ typedef enum
 
 bool init(std::string devicefile);
 bool readFrame();
-bool sendFrame();
+bool sendFrame(uint8_t frametype, uint8_t *databuf, uint16_t datalen, uint8_t *optdata, uint8_t optdatalen);
+bool readIdBase();
+
 
 }
 

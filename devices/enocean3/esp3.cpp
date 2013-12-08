@@ -99,32 +99,40 @@ RETURN_TYPE parse_radio(uint8_t *buf, size_t len, size_t optlen) {
 	return OK;
 }
 
-bool esp3::sendFrame() {
+bool esp3::sendFrame(uint8_t frametype, uint8_t *databuf, uint16_t datalen, uint8_t *optdata, uint8_t optdatalen) {
+        uint8_t crc=0;
 	uint8_t buf[1024];
-	uint8_t crc=0;
+        int len=0;
 
-	int len=0;
 	buf[len++]=SER_SYNCH_CODE;
-	buf[len++]=0x0; // len
-	buf[len++]=0x1; // len
-	buf[len++]=0x0; // optlen
-	buf[len++]=0x5; // COMMON_COMMAND
+	buf[len++]=(datalen >> 8) & 0xff; // len
+	buf[len++]=datalen & 0xff;
+	buf[len++]=optdatalen;
+	buf[len++]=frametype;
         crc = proc_crc8(crc, buf[1]);
         crc = proc_crc8(crc, buf[2]);
         crc = proc_crc8(crc, buf[3]);
         crc = proc_crc8(crc, buf[4]);
-	buf[len++]=crc; // shold be 0x70
-	cout << "crcH: " << crc << endl;
-	buf[len++]=0x8;
-	crc=0;
-	crc=proc_crc8(crc, buf[6]);
+	buf[len++]=crc;
+	crc = 0;
+	for (int i=0;i<datalen;i++) {
+		buf[len]=databuf[i];
+		crc=proc_crc8(crc, buf[len++]);
+	}
+	for (int i=0;i<optdatalen;i++) {
+		buf[len]=optdata[i];
+		crc=proc_crc8(crc, buf[len++]);
+	}
 	buf[len++]=crc; // should be 0x38
-	cout << "crcD: " << crc << endl;
-	writebuf(fd,buf,len);
-
-	return true;
+	return writebuf(fd,buf,len) == len ? true : false;
 }
 
+bool esp3::readIdBase() {
+	uint8_t buf[1];
+	buf[0] = CO_RD_IDBASE;
+	sendFrame(PACKET_COMMON_COMMAND,buf,1,NULL,0);
+	return true;
+}
 bool esp3::readFrame() {
 	uint8_t buf[65536];
 	size_t len =0;
