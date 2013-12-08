@@ -14,6 +14,7 @@ using namespace esp3;
 using namespace std;
 
 int fd;
+uint32_t id_base;
 
 size_t readbuf(int fd, uint8_t *buf, size_t size) {
 	size_t _size = 0;
@@ -44,6 +45,7 @@ size_t writebuf(int fd, uint8_t *buf, size_t size) {
 }
 
 bool esp3::init(std::string devicefile) {
+	id_base = 0;
 	fd = open(devicefile.c_str(), O_RDWR);
 	struct termios tio;
 	if (tcgetattr(fd, &tio) != 0) {
@@ -128,20 +130,36 @@ bool esp3::sendFrame(uint8_t frametype, uint8_t *databuf, uint16_t datalen, uint
 }
 
 bool esp3::readIdBase() {
-	uint8_t buf[1];
+	uint8_t buf[65536];
 	buf[0] = CO_RD_IDBASE;
 	sendFrame(PACKET_COMMON_COMMAND,buf,1,NULL,0);
+	int len, optlen;
+	if (readFrame(buf, len, optlen) < 11) {
+		cout << "ERROR: invalid length in CO_RD_IDBASE reply" << endl;
+		return false;
+	}
+	if (buf[4] != PACKET_RESPONSE) {
+		cout << "ERROR: invalid packet type in CO_RD_IDBASE reply" << endl;
+		return false;
+	}
+	if (buf[6] != RET_OK) {
+		cout << "ERROR: return code not OK in CO_RD_IDBASE reply" << endl;
+		return false;
+	}
+	printf("Received ID Base: 0x%02x%02x%02x%02x\n", buf[7],buf[8],buf[9],buf[10]);
+	/* for (uint32_t i=0;i<len+optlen+6;i++) {
+		printf("%02x ",buf[i]);
+	} */
+	id_base = (buf[7] << 24) + (buf[8] << 16) + (buf[9] << 8) + buf[10];
 	return true;
 }
-bool esp3::readFrame() {
-	uint8_t buf[65536];
+int esp3::readFrame(uint8_t *buf, int &datalen, int &optdatalen) {
 	size_t len =0;
 	uint32_t packetsize =0;
 	uint32_t datasize =0 ;
 	uint32_t optionaldatasize =0 ;
 	uint8_t crc = 0;
 
-	cout << "reading frame:";
 	do { // search for the sync code
 		readbuf(fd,buf,1);
 	} while (buf[0] != SER_SYNCH_CODE);
@@ -188,7 +206,12 @@ bool esp3::readFrame() {
 		cout << endl;
 		return -1;
 	}
+	datalen = datasize;
+	optdatalen = optionaldatasize;
+	return 6 + datasize + optionaldatasize;
+}
 
+void esp3::parseFrame(uint8_t *buf, int datasize, int optionaldatasize) {
 	switch (buf[4]) {
 		case PACKET_RADIO:
 			cout << "RADIO Frame" << endl;
@@ -227,5 +250,4 @@ bool esp3::readFrame() {
 			cout << "Unknown frame type" << endl;
 			break;
 	}
-	return true;
 }
