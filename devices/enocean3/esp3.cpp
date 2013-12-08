@@ -101,15 +101,25 @@ RETURN_TYPE parse_radio(uint8_t *buf, size_t len, size_t optlen) {
 
 bool esp3::sendFrame() {
 	uint8_t buf[1024];
+	uint8_t crc=0;
+
 	int len=0;
 	buf[len++]=SER_SYNCH_CODE;
-	buf[len++]=0x0;
-	buf[len++]=0x1;
-	buf[len++]=0x0;
-	buf[len++]=0x5;
-	buf[len++]=0x70;
+	buf[len++]=0x0; // len
+	buf[len++]=0x1; // len
+	buf[len++]=0x0; // optlen
+	buf[len++]=0x5; // COMMON_COMMAND
+        crc = proc_crc8(crc, buf[1]);
+        crc = proc_crc8(crc, buf[2]);
+        crc = proc_crc8(crc, buf[3]);
+        crc = proc_crc8(crc, buf[4]);
+	buf[len++]=crc; // shold be 0x70
+	cout << "crcH: " << crc << endl;
 	buf[len++]=0x8;
-	buf[len++]=0x38;
+	crc=0;
+	crc=proc_crc8(crc, buf[6]);
+	buf[len++]=crc; // should be 0x38
+	cout << "crcD: " << crc << endl;
 	writebuf(fd,buf,len);
 
 	return true;
