@@ -52,7 +52,9 @@ typedef enum
 	PACKET_SMART_ACK_COMMAND	= 0x06,	//! Smart Ack command
 	PACKET_REMOTE_MAN_COMMAND	= 0x07,	//! Remote management command
 	PACKET_PRODUCTION_COMMAND	= 0x08,	//! Production command
-	PACKET_RADIO_MESSAGE		= 0x09	//! Radio message (chained radio telegrams)
+	PACKET_RADIO_MESSAGE		= 0x09,	//! Radio message (chained radio telegrams)
+	PACKET_RADIO_ADVANCED		= 0x0a  //! Advanced Protocol radio telegram
+
 } PACKET_TYPE;
 
 //! Response type
@@ -150,6 +152,7 @@ typedef enum
 
 bool init(std::string devicefile);
 bool readFrame();
+bool sendFrame();
 
 }
 

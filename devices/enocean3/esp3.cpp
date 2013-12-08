@@ -29,6 +29,19 @@ size_t readbuf(int fd, uint8_t *buf, size_t size) {
 	return _size;
 }
 
+size_t writebuf(int fd, uint8_t *buf, size_t size) {
+	size_t _size = 0;
+	do {
+		int numwrite = write(fd, buf+_size, size - _size);
+		if (numwrite == -1) {
+			cerr << "ERROR: can't write to device: " << errno << " - " << strerror(errno) << endl;
+			return -1;
+		}
+		_size += numwrite;
+	} while (_size < size);
+	return _size;
+
+}
 
 bool esp3::init(std::string devicefile) {
 	fd = open(devicefile.c_str(), O_RDWR);
@@ -64,18 +77,18 @@ RETURN_TYPE parse_radio(uint8_t *buf, size_t len, size_t optlen) {
 	}
 	cout << endl;
 	if (optlen == 7) {
-		printf("destination: 0x%02x%02x%02x%02x\n",buf[len+1],buf[len+2],buf[len+3],buf[len+4]);
-		printf("RSSI: %i\n",buf[len+5]);
+		printf("destination: 0x%02x%02x%02x%02x ",buf[len+1],buf[len+2],buf[len+3],buf[len+4]);
+		printf("RSSI: %i ",buf[len+5]);
 	} else {
 		cout << "Optional data size:" << optlen << endl;
 	}
 	switch (buf[0]) {
 		case RORG_4BS: // 4 byte communication
-			cout << "4BS data" << endl;
+			cout << "4BS data: ";
 			printf("Sender id: 0x%02x%02x%02x%02x Status: %02x Data: %02x\n",buf[5],buf[6],buf[7],buf[8],buf[9],buf[3]);
 			break;
 		case RORG_RPS: // repeated switch communication
-			cout << "RPS data" << endl;
+			cout << "RPS data: ";
 			printf("Sender id: 0x%02x%02x%02x%02x Status: %02x Data: %02x\n",buf[2],buf[3],buf[4],buf[5],buf[6],buf[1]);
 			if (buf[6] & (1 << 2)) cout << "T21" << endl;
 			break;	
@@ -86,6 +99,21 @@ RETURN_TYPE parse_radio(uint8_t *buf, size_t len, size_t optlen) {
 	return OK;
 }
 
+bool esp3::sendFrame() {
+	uint8_t buf[1024];
+	int len=0;
+	buf[len++]=SER_SYNCH_CODE;
+	buf[len++]=0x0;
+	buf[len++]=0x1;
+	buf[len++]=0x0;
+	buf[len++]=0x5;
+	buf[len++]=0x70;
+	buf[len++]=0x8;
+	buf[len++]=0x38;
+	writebuf(fd,buf,len);
+
+	return true;
+}
 
 bool esp3::readFrame() {
 	uint8_t buf[65536];
@@ -95,7 +123,7 @@ bool esp3::readFrame() {
 	uint32_t optionaldatasize =0 ;
 	uint8_t crc = 0;
 
-	cout << "reading frame" << endl;
+	cout << "reading frame:";
 	do { // search for the sync code
 		readbuf(fd,buf,1);
 	} while (buf[0] != SER_SYNCH_CODE);
@@ -112,7 +140,10 @@ bool esp3::readFrame() {
 	crc = proc_crc8(crc, buf[4]);
 	if (crc != buf[5]) {
 		cout << "ERROR: header crc checksum invalid!" << endl;
-		cout << "crc: " << crc << " buf[5]: " << buf[5] << endl;
+		printf("crc calc: %02x crc frame: %02x\n",crc,buf[5]);
+		for (uint32_t i=0;i<6;i++) {
+			printf("%02x ",buf[i]);
+		}
 		return -1;
 	}
 
@@ -132,7 +163,11 @@ bool esp3::readFrame() {
 	}
 	if (crc != buf[packetsize-1]) {
 		cout << "ERROR: data crc checksum invalid!" << endl;
-		cout << "crc: " << crc << " buf[packetsize-1]: " << buf[packetsize-1] << endl;
+		printf("crc calc: %02x crc frame: %02x\n",crc,buf[packetsize-1]);
+		for (uint32_t i=0;i<datasize+optionaldatasize+6+1;i++) {
+			printf("%02x ",buf[i]);
+		}
+		cout << endl;
 		return -1;
 	}
 
@@ -143,6 +178,11 @@ bool esp3::readFrame() {
 			break;
 		case PACKET_RESPONSE:
 			cout << "RESPONSE Frame" << endl;
+			cout << "content: ";
+			for (uint32_t i=0;i<datasize+optionaldatasize+6;i++) {
+				printf("%02x ",buf[i]);
+			}
+			cout << endl;
 			break;
 		case PACKET_RADIO_SUB_TEL:
 			cout << "RADIO_SUB_TEL Frame" << endl;
@@ -158,6 +198,12 @@ bool esp3::readFrame() {
 			break;
 		case PACKET_REMOTE_MAN_COMMAND:
 			cout << "REMOTE_MAN_COMMAND Frame" << endl;
+			break;
+		case PACKET_RADIO_MESSAGE:
+			cout << "RADIO_MESSAGE Frame" << endl;
+			break;
+		case PACKET_RADIO_ADVANCED:
+			cout << "RADIO_ADVANCED Frame" << endl;
 			break;
 		default:
 			cout << "Unknown frame type" << endl;
