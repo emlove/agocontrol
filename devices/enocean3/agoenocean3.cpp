@@ -10,6 +10,7 @@
 */
 
 #include <iostream>
+#include <sstream>
 #include <uuid/uuid.h>
 #include <stdlib.h>
 
@@ -20,14 +21,27 @@
 #include "agoclient.h"
 #include "esp3.h"
 
+
 using namespace std;
 using namespace agocontrol;
+
+esp3::ESP3 *myESP3;
 
 AgoConnection *agoConnection;
 
 qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 	qpid::types::Variant::Map returnval;
 	std::string internalid = content["internalid"].asString();
+	int rid = 0; rid = atol(internalid.c_str());
+	if (content["command"] == "on") {
+		myESP3->fourbsCentralCommandDimLevel(rid,0x64,1);
+	} else if (content["command"] == "off") {
+		myESP3->fourbsCentralCommandDimOff(rid);
+	} else if (content["command"] == "setlevel") {
+		uint8_t level = 0;
+		level = content["level"];
+		myESP3->fourbsCentralCommandDimLevel(rid,level,1);
+	}
 	returnval["result"] = 0;
 	return returnval;
 }
@@ -35,6 +49,8 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 int main(int argc, char **argv) {
 	std::string devicefile;
 	devicefile=getConfigOption("enocean3", "device", "/dev/ttyAMA0");
+	myESP3 = new esp3::ESP3(devicefile);
+	myESP3->init();
 
 	AgoConnection _agoConnection = AgoConnection("enocean3");
 	agoConnection = &_agoConnection;
@@ -43,8 +59,12 @@ int main(int argc, char **argv) {
 
 	agoConnection->addHandler(commandHandler);
 
-	esp3::init(devicefile);
-	esp3::readIdBase();
+	stringstream dimmers(getConfigOption("enocean3", "dimmers", "1"));
+	string dimmer;
+	while (getline(dimmers, dimmer, ',')) {
+		agoConnection->addDevice(dimmer.c_str(), "dimmer");
+		cout << "adding rid " << dimmer << " as dimmer" << endl;
+	} 
 
 	agoConnection->run();	
 }

@@ -10,11 +10,13 @@
 
 #include "esp3.h"
 
+void *start(void *object) {
+	((esp3::ESP3 *)object)->readerFunction();
+	return NULL;
+}
+
 using namespace esp3;
 using namespace std;
-
-int fd;
-uint32_t id_base;
 
 size_t readbuf(int fd, uint8_t *buf, size_t size) {
 	size_t _size = 0;
@@ -44,8 +46,42 @@ size_t writebuf(int fd, uint8_t *buf, size_t size) {
 
 }
 
-bool esp3::init(std::string devicefile) {
-	id_base = 0;
+size_t numbytes(int fd) {
+	struct timeval tv;
+        fd_set fs;
+        int bytes = 0;
+
+	FD_ZERO (&fs);
+	FD_SET (fd,&fs);
+	tv.tv_sec = 0;
+	tv.tv_usec = 50000;
+	bytes = select (FD_SETSIZE,&fs,NULL,NULL,&tv);
+	return bytes;
+}
+
+
+
+void *esp3::ESP3::readerFunction() {
+	int len=0, optlen=0;
+	uint8_t buf[65535];
+	while (true) {
+		int size=0;
+		pthread_mutex_lock (&serialMutex);
+		if (numbytes(fd) >0) {
+			size = readFrame(buf, len, optlen);
+		}
+		pthread_mutex_unlock (&serialMutex);
+		if (size > 0) parseFrame(buf,len,optlen);
+	}
+}
+esp3::ESP3::ESP3(std::string _devicefile) {
+	devicefile = _devicefile;
+	idBase = 0;
+	pthread_mutex_init(&serialMutex, NULL);
+
+}
+
+bool esp3::ESP3::init() {
 	fd = open(devicefile.c_str(), O_RDWR);
 	struct termios tio;
 	if (tcgetattr(fd, &tio) != 0) {
@@ -68,6 +104,13 @@ bool esp3::init(std::string devicefile) {
 
 	tcflush(fd, TCIFLUSH);
 	tcsetattr(fd,TCSANOW,&tio);
+	if (!readIdBase()) return false; // read the id base
+
+	pthread_t _eventThread;
+	//pthread_create(&_eventThread, NULL, start, NULL);
+	//readerFunction();
+	// start((void*)this);
+	pthread_create(&_eventThread, NULL, start, (void*)this);
 	return true;
 }
 
@@ -101,7 +144,7 @@ RETURN_TYPE parse_radio(uint8_t *buf, size_t len, size_t optlen) {
 	return OK;
 }
 
-bool esp3::sendFrame(uint8_t frametype, uint8_t *databuf, uint16_t datalen, uint8_t *optdata, uint8_t optdatalen) {
+bool esp3::ESP3::sendFrame(uint8_t frametype, uint8_t *databuf, uint16_t datalen, uint8_t *optdata, uint8_t optdatalen) {
         uint8_t crc=0;
 	uint8_t buf[1024];
         int len=0;
@@ -129,12 +172,16 @@ bool esp3::sendFrame(uint8_t frametype, uint8_t *databuf, uint16_t datalen, uint
 	return writebuf(fd,buf,len) == len ? true : false;
 }
 
-bool esp3::readIdBase() {
+bool esp3::ESP3::readIdBase() {
 	uint8_t buf[65536];
 	buf[0] = CO_RD_IDBASE;
+	int size, len, optlen;
+
+	pthread_mutex_lock (&serialMutex);
 	sendFrame(PACKET_COMMON_COMMAND,buf,1,NULL,0);
-	int len, optlen;
-	if (readFrame(buf, len, optlen) < 11) {
+	size = readFrame(buf, len, optlen);
+	pthread_mutex_unlock (&serialMutex);
+	if (size < 11) {
 		cout << "ERROR: invalid length in CO_RD_IDBASE reply" << endl;
 		return false;
 	}
@@ -150,10 +197,15 @@ bool esp3::readIdBase() {
 	/* for (uint32_t i=0;i<len+optlen+6;i++) {
 		printf("%02x ",buf[i]);
 	} */
-	id_base = (buf[7] << 24) + (buf[8] << 16) + (buf[9] << 8) + buf[10];
+	idBase = (buf[7] << 24) + (buf[8] << 16) + (buf[9] << 8) + buf[10];
 	return true;
 }
-int esp3::readFrame(uint8_t *buf, int &datalen, int &optdatalen) {
+
+uint32_t esp3::ESP3::getIdBase() {
+	return idBase;
+}
+
+int esp3::ESP3::readFrame(uint8_t *buf, int &datalen, int &optdatalen) {
 	size_t len =0;
 	uint32_t packetsize =0;
 	uint32_t datasize =0 ;
@@ -211,7 +263,7 @@ int esp3::readFrame(uint8_t *buf, int &datalen, int &optdatalen) {
 	return 6 + datasize + optionaldatasize;
 }
 
-void esp3::parseFrame(uint8_t *buf, int datasize, int optionaldatasize) {
+void esp3::ESP3::parseFrame(uint8_t *buf, int datasize, int optionaldatasize) {
 	switch (buf[4]) {
 		case PACKET_RADIO:
 			cout << "RADIO Frame" << endl;
@@ -251,3 +303,92 @@ void esp3::parseFrame(uint8_t *buf, int datasize, int optionaldatasize) {
 			break;
 	}
 }
+
+bool esp3::ESP3::fourbsCentralCommandDimLevel(uint16_t rid, uint8_t level, uint8_t speed) {
+	uint8_t buf[65535];
+	uint32_t addr = idBase + rid;
+
+	buf[0]=0xa5;
+	buf[1]=0x2;
+	buf[2]=level;
+	buf[3]=speed;
+	buf[4]=0x09; // DB0.0=1 & DB0.3=1
+	buf[5]=(addr >> 24) & 0xff;
+	buf[6]=(addr >> 16) & 0xff;
+	buf[7]=(addr >> 8) & 0xff;
+	buf[8]=addr & 0xff;
+	buf[9]=0x30; // status
+
+	int size, len, optlen;
+	pthread_mutex_lock (&serialMutex);
+	sendFrame(PACKET_RADIO,buf,10,NULL,0);
+	size = readFrame(buf, len, optlen);
+	pthread_mutex_unlock (&serialMutex);
+	if (size>0) parseFrame(buf,len,optlen);
+
+	if (size != 7) {
+		cout << "ERROR: invalid length in reply" << endl;
+		return false;
+	}
+	if (buf[4] != PACKET_RESPONSE) {
+		cout << "ERROR: invalid packet type in reply" << endl;
+		return false;
+	}
+	if (buf[6] != RET_OK) {
+		cout << "ERROR: return code not OK" << endl;
+		return false;
+	}
+	return true;
+}
+
+bool esp3::ESP3::fourbsCentralCommandDimOff(uint16_t rid) {
+	uint8_t buf[65535];
+	uint32_t addr = idBase + rid;
+
+	buf[0]=0xa5;
+	buf[1]=0x2;
+	buf[2]=0;
+	buf[3]=0;
+	buf[4]=0x08; // DB0.3=1
+	buf[5]=(addr >> 24) & 0xff;
+	buf[6]=(addr >> 16) & 0xff;
+	buf[7]=(addr >> 8) & 0xff;
+	buf[8]=addr & 0xff;
+	buf[9]=0x30; // status
+
+	int size, len, optlen;
+	pthread_mutex_lock (&serialMutex);
+	sendFrame(PACKET_RADIO,buf,10,NULL,0);
+	size = readFrame(buf, len, optlen);
+	pthread_mutex_unlock (&serialMutex);
+	if (size>0) parseFrame(buf,len,optlen);
+
+	return false;
+}
+
+bool esp3::ESP3::fourbsCentralCommandDimTeachin(uint16_t rid) {
+	uint8_t buf[65535];
+	uint32_t addr = idBase + rid;
+
+	buf[0]=0xa5;
+	buf[1]=0x2;
+	buf[2]=0;
+	buf[3]=0;
+	buf[4]=0x0; // DB0.3=0 -> teach in
+	buf[5]=(addr >> 24) & 0xff;
+	buf[6]=(addr >> 16) & 0xff;
+	buf[7]=(addr >> 8) & 0xff;
+	buf[8]=addr & 0xff;
+	buf[9]=0x30; // status
+
+	int size, len, optlen;
+	pthread_mutex_lock (&serialMutex);
+	sendFrame(PACKET_RADIO,buf,10,NULL,0);
+	size = readFrame(buf, len, optlen);
+	pthread_mutex_unlock (&serialMutex);
+	if (size>0) parseFrame(buf,len,optlen);
+
+	return false;
+	return false;
+}
+
