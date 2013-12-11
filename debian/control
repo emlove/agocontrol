@@ -118,6 +118,11 @@ Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, libagoclient1.0, libssl1.0.0, libuuid1
 Description: ONVIF interface driver
 
+Package: agocontrol-enocean
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, libagoclient1.0
+Description: EnOcean ESP3 interface driver
+
 Package: agocontrol-dmx
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, libagoclient1.0, ola

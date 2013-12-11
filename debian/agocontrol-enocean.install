@@ -1,0 +1,2 @@
+lib/systemd/system/agoenocean3.service
+opt/agocontrol/bin/agoenocean3
