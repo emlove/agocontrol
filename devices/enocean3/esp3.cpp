@@ -324,7 +324,6 @@ bool esp3::ESP3::fourbsCentralCommandDimLevel(uint16_t rid, uint8_t level, uint8
 	sendFrame(PACKET_RADIO,buf,10,NULL,0);
 	size = readFrame(buf, len, optlen);
 	pthread_mutex_unlock (&serialMutex);
-	if (size>0) parseFrame(buf,len,optlen);
 
 	if (size != 7) {
 		cout << "ERROR: invalid length in reply" << endl;
@@ -363,7 +362,19 @@ bool esp3::ESP3::fourbsCentralCommandDimOff(uint16_t rid) {
 	pthread_mutex_unlock (&serialMutex);
 	if (size>0) parseFrame(buf,len,optlen);
 
-	return false;
+	if (size != 7) {
+		cout << "ERROR: invalid length in reply" << endl;
+		return false;
+	}
+	if (buf[4] != PACKET_RESPONSE) {
+		cout << "ERROR: invalid packet type in reply" << endl;
+		return false;
+	}
+	if (buf[6] != RET_OK) {
+		cout << "ERROR: return code not OK" << endl;
+		return false;
+	}
+	return true;
 }
 
 bool esp3::ESP3::fourbsCentralCommandDimTeachin(uint16_t rid) {
@@ -388,7 +399,6 @@ bool esp3::ESP3::fourbsCentralCommandDimTeachin(uint16_t rid) {
 	pthread_mutex_unlock (&serialMutex);
 	if (size>0) parseFrame(buf,len,optlen);
 
-	return false;
 	return false;
 }
 

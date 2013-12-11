@@ -50,7 +50,10 @@ int main(int argc, char **argv) {
 	std::string devicefile;
 	devicefile=getConfigOption("enocean3", "device", "/dev/ttyAMA0");
 	myESP3 = new esp3::ESP3(devicefile);
-	myESP3->init();
+	if (!myESP3->init()) {
+		cerr << "ERROR, cannot initalize enocean ESP3 protocol on device " << devicefile << endl;
+		exit(-1);
+	}
 
 	AgoConnection _agoConnection = AgoConnection("enocean3");
 	agoConnection = &_agoConnection;
