@@ -215,11 +215,19 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 	if (content["command"] == "on") {
 		string destGA = device["onoff"];
 		dest = Telegram::stringtogaddr(destGA);
-		tg->setShortUserData(1);
+		if (device["devicetype"]=="drapes") {
+			tg->setShortUserData(0);
+		} else {
+			tg->setShortUserData(1);
+		}
 	} else if (content["command"] == "off") {
 		string destGA = device["onoff"];
 		dest = Telegram::stringtogaddr(destGA);
-		tg->setShortUserData(0);
+		if (device["devicetype"]=="drapes") {
+			tg->setShortUserData(1);
+		} else {
+			tg->setShortUserData(0);
+		}
 	} else if (content["command"] == "stop") {
 		string destGA = device["stop"];
 		dest = Telegram::stringtogaddr(destGA);
