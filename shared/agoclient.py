@@ -126,7 +126,7 @@ class AgoConnection:
 		while (True):
 			try:
 				message = self.receiver.fetch()
-				session.acknowledge()
+				self.session.acknowledge()
 				if message.content:
 					if 'command' in message.content:
 						if message.content['command'] == 'discover':
