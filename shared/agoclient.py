@@ -37,6 +37,9 @@ class AgoConnection:
 		self.eventhandler = None
 		self.loadUuidMap()
 
+	def __del__(self):
+		self.connection.close()
+
 	def addHandler(self, handler):
 		self.handler = handler
 		
