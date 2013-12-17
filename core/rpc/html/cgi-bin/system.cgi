@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+import dbus
 import json
 import psutil
 from os.path import basename
