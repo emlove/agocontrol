@@ -2,7 +2,7 @@
 # the default python module space.
 from distutils.core import setup
 setup(name='agoclient',
-  version='1.0',
+  version='1.02',
   description='agocontrol client library',
   author='Harald Klein',
   author_email='hari@vt100.at',
