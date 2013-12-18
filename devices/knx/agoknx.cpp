@@ -241,8 +241,24 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 		string destGA = device["setlevel"];
 		dest = Telegram::stringtogaddr(destGA);
 		level = atoi(content["level"].asString().c_str());
-		printf("GOT LEVEL: %d\n", level);
 		tg->setDataFromChar(level);
+	} else if (content["command"] == "setcolor") {
+		int level=0;
+		Telegram *tg2 = new Telegram();
+		Telegram *tg3 = new Telegram();
+		tg->setDataFromChar(atoi(content["red"].asString().c_str()));
+		tg->setGroupAddress(Telegram::stringtogaddr(device["red"].asString()));
+		tg2->setDataFromChar(atoi(content["green"].asString().c_str()));
+		tg2->setGroupAddress(Telegram::stringtogaddr(device["green"].asString()));
+		tg3->setDataFromChar(atoi(content["blue"].asString().c_str()));
+		tg3->setGroupAddress(Telegram::stringtogaddr(device["blue"].asString()));
+		pthread_mutex_lock (&mutexCon);
+		printf("sending telegram\n");
+		tg2->sendTo(eibcon);
+		printf("sending telegram\n");
+		tg3->sendTo(eibcon);
+		pthread_mutex_unlock (&mutexCon);
+
 	} else {
 		handled=false;
 	}
