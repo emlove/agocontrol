@@ -140,6 +140,7 @@ static void update (struct mg_connection *conn, const struct mg_request_info *re
 	while(true) {
 		try {
 			Message receiveMessage = myReceiver.fetch(Duration::SECOND * 3);
+			session.acknowledge(receiveMessage);
 			if (receiveMessage.getContentSize() > 3) {	
 				Variant::Map receiveMap;
 				decode(receiveMessage,receiveMap);
@@ -177,6 +178,7 @@ static void command (struct mg_connection *conn, const struct mg_request_info *r
 	mg_printf(conn, "%s", "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n\r\n");
 	try {
 		Message response = responseReceiver.fetch(Duration::SECOND * 3);
+		session.acknowledge(response);
 		if (response.getContentSize() > 3) {	
 			Variant::Map responseMap;
 			decode(response,responseMap);
@@ -448,7 +450,7 @@ int main(int argc, char **argv) {
 			Variant::Map content;
 			string subject;
 			Message message = receiver.fetch(Duration::SECOND * 3);
-			session.acknowledge();
+			session.acknowledge(message);
 
 			subject = message.getSubject();
 
@@ -476,6 +478,9 @@ int main(int argc, char **argv) {
 					if (it->second.queue.size() > 100) {
 						// this subscription seems to be abandoned, let's remove it to save resources
 						printf("removing subscription %s as the queue size exceeds limits\n", it->first.c_str());
+						Subscriber *sub = &(it->second);
+						delete &(sub->queue);
+						delete sub;
 						subscriptions.erase(it++);
 					} else {
 						it->second.queue.push_back(content);
