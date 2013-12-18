@@ -247,7 +247,7 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 		Telegram *tg2 = new Telegram();
 		Telegram *tg3 = new Telegram();
 		tg->setDataFromChar(atoi(content["red"].asString().c_str()));
-		tg->setGroupAddress(Telegram::stringtogaddr(device["red"].asString()));
+		dest = Telegram::stringtogaddr(device["red"].asString());
 		tg2->setDataFromChar(atoi(content["green"].asString().c_str()));
 		tg2->setGroupAddress(Telegram::stringtogaddr(device["green"].asString()));
 		tg3->setDataFromChar(atoi(content["blue"].asString().c_str()));
