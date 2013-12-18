@@ -295,7 +295,13 @@ bool jsonrpcRequestHandler(struct mg_connection *conn, Json::Value request, bool
 				if (content.isString()) {
 					cout << "removing subscription: " << content.asString() << endl;
 					pthread_mutex_lock(&mutexSubscriptions);	
-					subscriptions.erase(content.asString());
+					map<string,Subscriber>::iterator it = subscriptions.find(content.asString());
+					if (it != subscriptions.end()) {
+						Subscriber *sub = &(it->second);
+						delete &(sub->queue);
+						delete sub;
+						subscriptions.erase(content.asString());
+					}
 					pthread_mutex_unlock(&mutexSubscriptions);	
 					mg_printf(conn, "{\"jsonrpc\": \"2.0\", \"result\": \"success\", \"id\": %s}",myId.c_str());
 				} else {
