@@ -12,7 +12,7 @@
 
 BIN_PATH=/opt/agocontrol/bin/
 PID_PATH=/var/run/
-APPS="agorpc agodatalogger agoevent agoresolver agoscenario agotimer"
+APPS="agorpc agodatalogger agoevent agoresolver agoscenario agotimer agosqueezebox"
 
 DESC="agocontrol"
 start_module() {

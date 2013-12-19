@@ -75,7 +75,7 @@ var dataLoggerController = null;
 var scenarioController = null;
 
 var supported_devices = [ "switch", "dimmer", "binarysensor", "dimmerrgb", "multilevelsensor", , "scenario", "drapes", "brightnesssensor", "powermeter", "energysensor", "humiditysensor", "phone",
-	"pushbutton", "placeholder", "temperaturesensor", "energymeter" ];
+	"pushbutton", "placeholder", "temperaturesensor", "energymeter", "squeezebox" ];
 
 function device(obj, uuid) {
     var self = this;
@@ -148,6 +148,30 @@ function device(obj, uuid) {
 	    }
 	    return result;
 	});
+    }
+
+    //all mediaplayer device type
+    if( this.devicetype=="squeezebox" ) {
+        this.play = function() {
+            var content = {};
+            content.uuid = uuid;
+            content.command = 'play';
+            sendCommand(content);
+        }
+
+        this.pause = function() {
+            var content = {};
+            content.uuid = uuid;
+            content.command = 'pause';
+            sendCommand(content);
+        }
+
+        this.stop = function() {
+            var content = {};
+            content.uuid = uuid;
+            content.command = 'stop';
+            sendCommand(content);
+        }
     }
 
     this.turnOn = function() {
