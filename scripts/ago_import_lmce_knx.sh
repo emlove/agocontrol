@@ -29,6 +29,8 @@ DT_Light_OnOff=37
 DT_Light_Dimmer=38
 DT_Light_RGB=1993
 DT_Drapes=68
+DT_Thermometer=1744
+DT_WallOutlet=1897
 DD_FloorplanObjectType=11
 DD_Channel=12
 
@@ -39,7 +41,7 @@ DD_Channel=12
 # Get installation ID
 LMCE_GetInstallationID()
 {
-	qry="SELECT PK_Installation FROM Installation;"
+	qry="SELECT PK_Installation FROM Installation LIMIT 1;"
 	InstallationID=$($mysql_cmd "use $MySqlDB; $qry;" )
 }
 
@@ -173,7 +175,7 @@ ImportBlinds()
     		array+=("$line")
 	done < <($mysql_cmd "use $MySqlDB; $qry;")
 	
-	# write light by light into xml file
+	# write device by device into xml file
 	for row in "${array[@]}"; do
 		id=`echo "$row"| cut -f1`;
 		description=`echo "$row"| cut -f2`;
@@ -201,6 +203,62 @@ ImportBlinds()
 		fi
 	done
 }
+
+# Import blinds, shutters and drapes
+ImportClimate()
+{
+	echo "Importing climate devices"
+	array=()
+	
+	qry="SELECT Device.PK_Device, Device.Description, Device.FK_DeviceTemplate, DD12.IK_DeviceData, Room.Description AS room \
+	FROM Device \
+	INNER JOIN DeviceTemplate ON FK_DeviceTemplate=PK_DeviceTemplate \
+	LEFT JOIN Device_DeviceData AS DD12 ON DD12.FK_Device=PK_Device \
+	LEFT JOIN Room ON PK_Room=FK_Room \
+	WHERE FK_DeviceTemplate IN ($DT_Thermometer, $DT_WallOutlet) \
+	AND FK_Device_ControlledVia IN ($KNXDeviceID) \
+	AND DD12.FK_DeviceData=$DD_Channel \
+	AND Device.FK_Installation=$InstallationID \
+	ORDER BY room ASC"
+echo $qry
+	# read all lights into array
+	while read -r line; do
+    		array+=("$line")
+	done < <($mysql_cmd "use $MySqlDB; $qry;")
+	
+	# write device by device into xml file
+	for row in "${array[@]}"; do
+		id=`echo "$row"| cut -f1`;
+		description=`echo "$row"| cut -f2`;
+		template=`echo "$row"| cut -f3`;
+		port=`echo "$row"| cut -f4`;		
+		room=`echo "$row"| cut -f5`;		
+		echo "	$room: $description"
+
+		RoomUUID=$(AGO_GetOrCreateRoom "$room")
+		DeviceUUID=$(AGO_GetOrCreateDevice "$description" "$RoomUUID")
+		#echo "	<!-- $room: $description (lmce:$id) -->" >> $XML_File
+
+		# Thermometers
+		if [[ $template -eq $DT_Thermometer ]]; then
+			temperature=`echo "$port"| cut -d"|" -f1`;
+			echo "	<device uuid=\"$DeviceUUID\" type=\"multilevelsensor\">" >> $XML_File
+			echo "		<ga type=\"temperature\">$temperature</ga>" >> $XML_File
+			echo "	</device>" >> $XML_File		
+		fi
+
+		# Wall Outlets
+		if [[ $template -eq $DT_WallOutlet ]]; then
+			onoff=`echo "$port"| cut -d"|" -f1`;
+			status=`echo "$port"| cut -d"|" -f2`;
+			echo "	<device uuid=\"$DeviceUUID\" type=\"switch\">" >> $XML_File
+			echo "		<ga type=\"onoff\">$onoff</ga>" >> $XML_File
+			echo "		<ga type=\"onoffstatus\">$status</ga>" >> $XML_File
+			echo "	</device>" >> $XML_File		
+		fi
+	done
+}
+
 
 #
 # Main worker spaghetti
@@ -231,12 +289,26 @@ fi
 uuidgen=$(which uuidgen)
 if [[ -z "$uuidgen" ]]; then
 	echo "*** ERROR: uuidgen binary not found."
-	echo "	I'm trying to install it. If successfull restart this script afterwards. If not try to install mysql-client manually"
+	echo "	I'm trying to install it. If successfull restart this script afterwards. If not try to install uuid-runtime manually"
 	echo ""
 	apt-get -y install uuid-runtime
 	exit 1
 else
 	echo "UUIDGEN: binary found -> $uuidgen"
+fi
+
+systemctl=$(which systemctl)
+if [[ -z "$systemctl" ]]; then
+	echo "*** ERROR: systemctl binary not found."
+	echo "	This scripts only supports stoping and starting services using systemctl. Please stop agoknx and agoresolver before launching this script"
+	echo
+	read -p "Continue script (y/n) ?" -n 1 -r
+	echo
+	if [[ $REPLY =~ ^[nN]$ ]]; then
+    		exit 1	
+	fi
+else
+	echo "SYSTEMCTL: binary found -> $systemctl"
 fi
 
 echo ""
@@ -258,14 +330,16 @@ else
 fi
 
 # Do the job
-systemctl stop agoknx.service
-systemctl stop agoresolver.service
+if [[ -n "$systemctl" ]]; then
+	$systemctl stop agoknx.service
+	$systemctl stop agoresolver.service
+fi
 
 echo "<devices>" > $XML_File
 
 # Import lights
 echo
-read -p "Import lights ? " -n 1 -r
+read -p "Import lights (y/n) ?" -n 1 -r
 echo
 if [[ $REPLY =~ ^[Yy]$ ]]; then
     ImportLights
@@ -273,15 +347,25 @@ fi
 
 # Import blinds
 echo
-read -p "Import blinds / drapes / shutters ? " -n 1 -r
+read -p "Import blinds / drapes / shutters (y/n) ? " -n 1 -r
 echo
 if [[ $REPLY =~ ^[Yy]$ ]]; then
     ImportBlinds
 fi
 
+# Import climate devices
+echo
+read -p "Import climate devices (y/n) ? " -n 1 -r
+echo
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+    ImportClimate
+fi
+
 echo "</devices>" >> $XML_File
 
-systemctl start agoresolver.service
-systemctl start agoknx.service
+if [[ -n "$systemctl" ]]; then
+	$systemctl start agoresolver.service
+	$systemctl start agoknx.service
+fi
 
 exit 0
