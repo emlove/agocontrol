@@ -1,0 +1,6 @@
+lib/systemd/system/agosqueezebox.service
+opt/agocontrol/bin/agosqueezebox
+opt/agocontrol/bin/pylmsserver.py
+opt/agocontrol/bin/pylmsplaylist.py
+opt/agocontrol/bin/pylmsplayer.py
+opt/agocontrol/bin/pylmslibrary.py

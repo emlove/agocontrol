@@ -224,6 +224,18 @@ commands:
     name: get scenario
   delscenario:
     name: delete scenario
+  displaymessage:
+    name: display a message
+    parameters:
+      duration:
+        name: duration
+        type: integer
+      line2:
+        name: line2
+        type: string
+      line1:
+        name: line1
+        type: string
 devicetypes:
   dataloggercontroller:
     name: datalogger controller
@@ -332,7 +344,7 @@ devicetypes:
   squeezebox:
     name: Squeezebox Player
     description: Plays music
-    commands: ["on", "off", play, pause, stop]
+    commands: ["on", "off", play, pause, stop, displaymessage]
   settopbox:
     name: Set top box
     description: Receives TV Service
