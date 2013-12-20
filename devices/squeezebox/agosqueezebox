@@ -49,30 +49,32 @@ def quit(msg):
 #squeezebox callbacks
 def play_callback(player_id, track_title, playlist_index):
     #if player is off or player is already playing, kick this callback
-    if states.has_key(player_id) and states[player_id]!=STATE_OFF and states[player_id]!=STATE_PLAY:
+    if states.has_key(player_id) and states[player_id]!=STATE_OFF and states[player_id]!=STATE_PLAY and states[player_id]!=STATE_STREAM:
         logging.info('callback PLAY: %s' % player_id)
         states[player_id] = STATE_PLAY
         emit_play(player_id)
 def stop_callback(player_id):
     #if player is off, kick this callback
-    if states.has_key(player_id) and states[player_id]!=STATE_OFF:
+    if states.has_key(player_id) and states[player_id]!=STATE_OFF and states[player_id]!=STATE_STREAM:
         logging.info('callback STOP: %s' % player_id)
         states[player_id] = STATE_STOP
         emit_stop(player_id)
 def pause_callback(player_id):
     #if player is off, kick this callback
-    if states.has_key(player_id) and states[player_id]!=STATE_OFF:
+    if states.has_key(player_id) and states[player_id]!=STATE_OFF and states[player_id]!=STATE_STREAM:
         logging.info('callback PAUSE: %s' % player_id)
         states[player_id] = STATE_PAUSE
         emit_pause(player_id)
 def on_callback(player_id):
-    logging.info('callback ON: %s' % player_id)
-    states[player_id] = STATE_ON
-    emit_on(player_id)
+    if states[player_id]!=STATE_STREAM:
+        logging.info('callback ON: %s' % player_id)
+        states[player_id] = STATE_ON
+        emit_on(player_id)
 def off_callback(player_id):
-    logging.info('callback OFF: %s' % player_id)
-    states[player_id] = STATE_OFF
-    emit_off(player_id)
+    if states[player_id]!=STATE_STREAM:
+        logging.info('callback OFF: %s' % player_id)
+        states[player_id] = STATE_OFF
+        emit_off(player_id)
 
 
 #emit function
