@@ -148,6 +148,9 @@ def messageHandler(internalid, content):
         elif content["command"] == "stop":
             logging.info("Command STOP: %s" % internalid)
             player.stop()
+        elif content["command"] == "displaymessage":
+            logging.info("Command DISPLAYMESSAGE: %s" % internalid)
+            player.display(content['line1'], content['line2'], content['duration'])
 client.addHandler(messageHandler)
 
 #discover players
