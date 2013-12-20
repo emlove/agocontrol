@@ -220,7 +220,7 @@ ImportClimate()
 	AND DD12.FK_DeviceData=$DD_Channel \
 	AND Device.FK_Installation=$InstallationID \
 	ORDER BY room ASC"
-echo $qry
+
 	# read all lights into array
 	while read -r line; do
     		array+=("$line")
@@ -264,6 +264,33 @@ echo $qry
 # Main worker spaghetti
 #
 
+launch=1
+distro=unknown
+code=unknown
+
+# Verify Linux distribution and version
+lsb_release=$(which lsb_release)
+if [[ -z "$lsb_release" ]]; then
+	launch=0
+else
+	code=$($lsb_release -c|cut -f2)
+	if [[ "$code" != "wheezy" ]]; then
+		distro=$($lsb_release -i|cut -f2)
+		launch=0
+	fi	
+fi
+
+if [[ launch -eq "0" ]]; then
+	echo "*** This script was tested under Debian wheezy but you seem to run $distro $code !"
+	echo "*** While it should still work, you run this script @ your own risk !"
+	echo
+	read -p "Continue (y/n) ?" -n 1 -r
+	echo
+	if [[ $REPLY =~ ^[Nn]$ ]]; then
+    	exit 1
+    fi
+fi
+
 # Verify that sqlite binary exists
 sqlite=$(which sqlite3)
 if [[ -z "$sqlite" ]]; then
@@ -286,6 +313,7 @@ else
 	mysql_cmd="$mysql -f -h $MySqlHost -u$MySqlUser $PassParm -se"	
 fi
 
+# Verify that uuidgen binary exists
 uuidgen=$(which uuidgen)
 if [[ -z "$uuidgen" ]]; then
 	echo "*** ERROR: uuidgen binary not found."
@@ -297,10 +325,11 @@ else
 	echo "UUIDGEN: binary found -> $uuidgen"
 fi
 
+# Verify that systemctl binary exists
 systemctl=$(which systemctl)
 if [[ -z "$systemctl" ]]; then
 	echo "*** ERROR: systemctl binary not found."
-	echo "	This scripts only supports stoping and starting services using systemctl. Please stop agoknx and agoresolver before launching this script"
+	echo "	This scripts only supports stoping and starting services using systemctl. Please stop agoknx and agoresolver before launching this script !"
 	echo
 	read -p "Continue script (y/n) ?" -n 1 -r
 	echo
