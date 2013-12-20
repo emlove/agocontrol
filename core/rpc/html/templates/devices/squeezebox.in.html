@@ -15,6 +15,9 @@
                     <ko opts="if: state() == 0">
                         <span data-translateable="false">OFF</span>
                     </ko>
+                    <ko opts="if: state() == 25">
+                        <span data-translateable="false">STREAMING</span>
+                    </ko>
                     <ko opts="if: state() == 50">
                         <span data-translateable="false">PLAYING</span>
                     </ko>
@@ -32,6 +35,7 @@
 		</div>
 	</div>
 	<div class="row grid-item-controls">
+        <ko opts="if: state()!=25">
 		<div class="three columns">
 		    <ko opts="if: state() == 0">
                 <div data-value="on" data-translateable="true" data-bind="click: turnOn" class="cmd-btn pretty medium primary btn btn-full grid-command">ON</div>
@@ -64,5 +68,6 @@
                 <div data-value="pause" data-translateable="true" data-bind="click: pause" class="cmd-btn pretty medium default btn btn-full grid-command">PAUSE</div>
             </ko>
 		</div>
+        </ko>
 	</div>
 </div>

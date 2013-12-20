@@ -345,6 +345,10 @@ devicetypes:
     name: Squeezebox Player
     description: Plays music
     commands: ["on", "off", play, pause, stop, displaymessage]
+  squeezeboxserver:
+    name: Squeezebox Server
+    description: Squeezebox player manager
+    commands: ["allon", "alloff", displaymessage]
   settopbox:
     name: Set top box
     description: Receives TV Service
