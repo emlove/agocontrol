@@ -32,7 +32,7 @@ AgoConnection *agoConnection;
 qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 	qpid::types::Variant::Map returnval;
 	std::string internalid = content["internalid"].asString();
-	if (internalid == "enoeancontroller") {
+	if (internalid == "enoceancontroller") {
 		if (content["command"] == "teachframe") {
 			int channel = content["channel"];
 			std::string profile = content["profile"];
