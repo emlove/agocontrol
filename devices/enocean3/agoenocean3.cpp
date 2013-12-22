@@ -32,17 +32,32 @@ AgoConnection *agoConnection;
 qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 	qpid::types::Variant::Map returnval;
 	std::string internalid = content["internalid"].asString();
-	int rid = 0; rid = atol(internalid.c_str());
-	if (content["command"] == "on") {
-		myESP3->fourbsCentralCommandDimLevel(rid,0x64,1);
-	} else if (content["command"] == "off") {
-		myESP3->fourbsCentralCommandDimOff(rid);
-	} else if (content["command"] == "setlevel") {
-		uint8_t level = 0;
-		level = content["level"];
-		myESP3->fourbsCentralCommandDimLevel(rid,level,1);
+	if (internalid == "enoeancontroller") {
+		if (content["command"] == "teachframe") {
+			int channel = content["channel"];
+			std::string profile = content["profile"];
+			// if (profile == "central command dimming") {
+			myESP3->fourbsCentralCommandDimTeachin(channel);
+			// }
+			returnval["result"] = 0;
+		} else if (content["command"] == "setlearnmode") {
+			returnval["result"] = -1;
+		} else if (content["command"] == "setidbase") {
+			returnval["result"] = -1;
+		}
+	} else {
+		int rid = 0; rid = atol(internalid.c_str());
+		if (content["command"] == "on") {
+			myESP3->fourbsCentralCommandDimLevel(rid,0x64,1);
+		} else if (content["command"] == "off") {
+			myESP3->fourbsCentralCommandDimOff(rid);
+		} else if (content["command"] == "setlevel") {
+			uint8_t level = 0;
+			level = content["level"];
+			myESP3->fourbsCentralCommandDimLevel(rid,level,1);
+		}
+		returnval["result"] = 0;
 	}
-	returnval["result"] = 0;
 	return returnval;
 }
 
@@ -61,6 +76,7 @@ int main(int argc, char **argv) {
 	printf("connection to agocontrol established\n");
 
 	agoConnection->addHandler(commandHandler);
+	agoConnection->addDevice("enoceancontroller", "enoceancontroller");
 
 	stringstream dimmers(getConfigOption("enocean3", "dimmers", "1"));
 	string dimmer;
