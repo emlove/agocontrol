@@ -236,7 +236,34 @@ commands:
       line1:
         name: line1
         type: string
+  teachframe:
+    name: send a teach frame
+    parameters:
+      channel:
+        name: channel to use
+        type: integer
+      profile:
+        name: enocean profile to use
+        type: option
+        options: ["central command dimming"]
+  setlearnmode:
+    name: enter learn mode
+    parameters:
+      mode:
+        name: learn mode
+        type: option
+        options: ["start", "stop"]
+  setidbase:
+    name: set enocean id base
+    parameters:
+      idbase:
+        name: id base
+        type: integer
 devicetypes:
+  enoceancontroller:
+    name: enocean controller
+    description: internal device to manage the enocean network
+    commands: [teachframe, setlearnmode, setidbase]
   dataloggercontroller:
     name: datalogger controller
     description: internal device to control the datalogger
