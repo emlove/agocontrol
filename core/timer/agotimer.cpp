@@ -21,6 +21,9 @@ using namespace agocontrol;
 using std::stringstream;
 using std::string;
 
+int sunsetoffset=0;
+int sunriseoffset=0;
+
 AgoConnection *agoConnection;
 std::string agocontroller;
 
@@ -76,30 +79,30 @@ void *suntimer(void *param) {
 		std::string subject;
 		seconds = time(NULL);
 		if (GetSunriseSunset(sunrise,sunset,sunrise_tomorrow,sunset_tomorrow,lat,lon)) {
-			if (seconds < sunrise) {
+			if (seconds < (sunrise + sunriseoffset)) {
 				// it is night, we're waiting for the sunrise
 				// set global variable
 				setvariable["value"] = false;
 				agoConnection->sendMessage("", setvariable);
 				// now wait for sunrise
-				syslog(LOG_NOTICE, "minutes to wait for sunrise: %ld\n",(sunrise-seconds)/60);
-				// printf("minutes to wait for sunrise: %ld\n",(sunrise-seconds)/60);
+				syslog(LOG_NOTICE, "minutes to wait for sunrise: %ld\n",(sunrise-seconds + sunriseoffset)/60);
+				//printf("minutes to wait for sunrise: %ld\n",(sunrise-seconds)/60);
 				// printf("sunrise: %s\n",asctime(localtime(&sunrise)));
-				sleep(sunrise-seconds);
+				sleep(sunrise-seconds + sunriseoffset);
 				syslog(LOG_NOTICE, "sending sunrise event");
 				agoConnection->sendMessage("event.environment.sunrise", content);
-			} else if (seconds > sunset) {
+			} else if (seconds > (sunset + sunsetoffset)) {
 				setvariable["value"] = false;
 				agoConnection->sendMessage("", setvariable);
-				syslog(LOG_NOTICE, "minutes to wait for sunrise: %ld\n",(sunrise_tomorrow-seconds)/60);
-				sleep(sunrise_tomorrow-seconds);
+				syslog(LOG_NOTICE, "minutes to wait for sunrise: %ld\n",(sunrise_tomorrow-seconds + sunriseoffset)/60);
+				sleep(sunrise_tomorrow-seconds + sunriseoffset);
 				syslog(LOG_NOTICE, "sending sunrise event");
 				agoConnection->sendMessage("event.environment.sunrise", content);
 			} else {
 				setvariable["value"] = true;
 				agoConnection->sendMessage("", setvariable);
-				syslog(LOG_NOTICE, "minutes to wait for sunset: %ld\n",(sunset-seconds)/60);
-				sleep(sunset-seconds);
+				syslog(LOG_NOTICE, "minutes to wait for sunset: %ld\n",(sunset-seconds+ sunsetoffset)/60);
+				sleep(sunset-seconds+sunsetoffset);
 				syslog(LOG_NOTICE, "sending sunset event");
 				agoConnection->sendMessage("event.environment.sunset", content);
 			}
@@ -137,6 +140,8 @@ int main(int argc, char** argv) {
 
 	latlon.lat=atof(getConfigOption("system", "lat", "47.07").c_str());
 	latlon.lon=atof(getConfigOption("system", "lon", "15.42").c_str());
+	sunriseoffset=atoi(getConfigOption("system", "sunriseoffset", "0").c_str());
+	sunsetoffset=atoi(getConfigOption("system", "sunsetoffset", "0").c_str());
 
 	static pthread_t suntimerThread;
 	pthread_create(&suntimerThread,NULL,suntimer,&latlon);
