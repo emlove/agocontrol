@@ -92,11 +92,11 @@ void eventHandler(std::string subject, qpid::types::Variant::Map content) {
 			cout << "ERROR: eventmap entry is void" << endl;
 		}
 		if (event["event"] == subject) {
-			cout << "found matching event: " << event << endl;
+			// cout << "found matching event: " << event << endl;
 			qpid::types::Variant::Map criteria; // this holds the criteria evaluation results for each criteria
 			std::string nesting = event["nesting"].asString();
 			if (!event["criteria"].isVoid()) for (qpid::types::Variant::Map::const_iterator crit = event["criteria"].asMap().begin(); crit!= event["criteria"].asMap().end(); crit++) {
-				cout << "criteria[" << crit->first << "] - " << crit->second << endl;
+				// cout << "criteria[" << crit->first << "] - " << crit->second << endl;
 				qpid::types::Variant::Map element;
 				if (!(crit->second.isVoid())) {
 					element = crit->second.asMap();
@@ -104,7 +104,7 @@ void eventHandler(std::string subject, qpid::types::Variant::Map content) {
 					cout << "ERROR: criteria element is void" << endl;
 				}
 				try {
-					cout << "LVAL: " << element["lval"] << endl;
+					// cout << "LVAL: " << element["lval"] << endl;
 					qpid::types::Variant::Map lvalmap;
 					qpid::types::Variant lval;
 					if (!element["lval"].isVoid()) {
@@ -139,8 +139,8 @@ void eventHandler(std::string subject, qpid::types::Variant::Map content) {
 						lval = content[lvalmap["parameter"].asString()];
 					}
 					qpid::types::Variant rval = element["rval"];
-					cout << "lval: " << lval << " (" << getTypeName(lval.getType()) << ")" << endl;
-					cout << "rval: " << rval << " (" << getTypeName(rval.getType()) << ")" << endl;
+					// cout << "lval: " << lval << " (" << getTypeName(lval.getType()) << ")" << endl;
+					// cout << "rval: " << rval << " (" << getTypeName(rval.getType()) << ")" << endl;
 
 					if (element["comp"] == "eq") {
 						if (lval.getType()==qpid::types::VAR_STRING || rval.getType()==qpid::types::VAR_STRING) { // compare as string
@@ -174,7 +174,7 @@ void eventHandler(std::string subject, qpid::types::Variant::Map content) {
 			replaceString(nesting, "and", "&");
 			replaceString(nesting, "or", "|");
 			nesting += ";";
-			cout << "nesting prepared: " << nesting << endl;
+			// cout << "nesting prepared: " << nesting << endl;
 			if (evaluateNesting(nesting)) {
 				agoConnection->sendMessage(event["action"].asMap());
 			}
