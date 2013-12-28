@@ -36,9 +36,11 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 		if (content["command"] == "teachframe") {
 			int channel = content["channel"];
 			std::string profile = content["profile"];
-			// if (profile == "central command dimming") {
-			myESP3->fourbsCentralCommandDimTeachin(channel);
-			// }
+			if (profile == "central command dimming") {
+				myESP3->fourbsCentralCommandDimTeachin(channel);
+			} else {
+
+			}
 			returnval["result"] = 0;
 		} else if (content["command"] == "setlearnmode") {
 			returnval["result"] = -1;
@@ -48,9 +50,17 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 	} else {
 		int rid = 0; rid = atol(internalid.c_str());
 		if (content["command"] == "on") {
-			myESP3->fourbsCentralCommandDimLevel(rid,0x64,1);
+			if (agoConnection->getDeviceType(internalid.c_str())=="dimmer") {
+				myESP3->fourbsCentralCommandDimLevel(rid,0x64,1);
+			} else {
+				myESP3->fourbsCentralCommandSwitchOn(rid);
+			}
 		} else if (content["command"] == "off") {
-			myESP3->fourbsCentralCommandDimOff(rid);
+			if (agoConnection->getDeviceType(internalid.c_str())=="dimmer") {
+				myESP3->fourbsCentralCommandDimOff(rid);
+			} else {
+				myESP3->fourbsCentralCommandSwitchOff(rid);
+			}
 		} else if (content["command"] == "setlevel") {
 			uint8_t level = 0;
 			level = content["level"];
@@ -83,6 +93,12 @@ int main(int argc, char **argv) {
 	while (getline(dimmers, dimmer, ',')) {
 		agoConnection->addDevice(dimmer.c_str(), "dimmer");
 		cout << "adding rid " << dimmer << " as dimmer" << endl;
+	} 
+	stringstream switches(getConfigOption("enocean3", "switches", "2"));
+	string switchdevice;
+	while (getline(switches, switchdevice, ',')) {
+		agoConnection->addDevice(switchdevice.c_str(), "switch");
+		cout << "adding rid " << switchdevice << " as switch" << endl;
 	} 
 
 	agoConnection->run();	

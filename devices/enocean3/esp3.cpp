@@ -402,3 +402,100 @@ bool esp3::ESP3::fourbsCentralCommandDimTeachin(uint16_t rid) {
 	return false;
 }
 
+bool esp3::ESP3::fourbsCentralCommandSwitchOn(uint16_t rid) {
+	uint8_t buf[65535];
+	uint32_t addr = idBase + rid;
+
+	buf[0]=0xa5;
+	buf[1]=0x1;
+	buf[2]=0;
+	buf[3]=0;
+	buf[4]=0x09; // DB0.3=1
+	buf[5]=(addr >> 24) & 0xff;
+	buf[6]=(addr >> 16) & 0xff;
+	buf[7]=(addr >> 8) & 0xff;
+	buf[8]=addr & 0xff;
+	buf[9]=0x30; // status
+
+	int size, len, optlen;
+	pthread_mutex_lock (&serialMutex);
+	sendFrame(PACKET_RADIO,buf,10,NULL,0);
+	size = readFrame(buf, len, optlen);
+	pthread_mutex_unlock (&serialMutex);
+	if (size>0) parseFrame(buf,len,optlen);
+
+	if (size != 7) {
+		cout << "ERROR: invalid length in reply" << endl;
+		return false;
+	}
+	if (buf[4] != PACKET_RESPONSE) {
+		cout << "ERROR: invalid packet type in reply" << endl;
+		return false;
+	}
+	if (buf[6] != RET_OK) {
+		cout << "ERROR: return code not OK" << endl;
+		return false;
+	}
+	return true;
+}
+bool esp3::ESP3::fourbsCentralCommandSwitchOff(uint16_t rid) {
+	uint8_t buf[65535];
+	uint32_t addr = idBase + rid;
+
+	buf[0]=0xa5;
+	buf[1]=0x1;
+	buf[2]=0;
+	buf[3]=0;
+	buf[4]=0x08; // DB0.3=1
+	buf[5]=(addr >> 24) & 0xff;
+	buf[6]=(addr >> 16) & 0xff;
+	buf[7]=(addr >> 8) & 0xff;
+	buf[8]=addr & 0xff;
+	buf[9]=0x30; // status
+
+	int size, len, optlen;
+	pthread_mutex_lock (&serialMutex);
+	sendFrame(PACKET_RADIO,buf,10,NULL,0);
+	size = readFrame(buf, len, optlen);
+	pthread_mutex_unlock (&serialMutex);
+	if (size>0) parseFrame(buf,len,optlen);
+
+	if (size != 7) {
+		cout << "ERROR: invalid length in reply" << endl;
+		return false;
+	}
+	if (buf[4] != PACKET_RESPONSE) {
+		cout << "ERROR: invalid packet type in reply" << endl;
+		return false;
+	}
+	if (buf[6] != RET_OK) {
+		cout << "ERROR: return code not OK" << endl;
+		return false;
+	}
+	return true;
+}
+bool esp3::ESP3::fourbsCentralCommandSwitchTeachin(uint16_t rid) {
+	uint8_t buf[65535];
+	uint32_t addr = idBase + rid;
+
+	buf[0]=0xa5;
+	buf[1]=0x1;
+	buf[2]=0;
+	buf[3]=0;
+	buf[4]=0x0; // DB0.3=0 -> teach in
+	buf[5]=(addr >> 24) & 0xff;
+	buf[6]=(addr >> 16) & 0xff;
+	buf[7]=(addr >> 8) & 0xff;
+	buf[8]=addr & 0xff;
+	buf[9]=0x30; // status
+
+	int size, len, optlen;
+	pthread_mutex_lock (&serialMutex);
+	sendFrame(PACKET_RADIO,buf,10,NULL,0);
+	size = readFrame(buf, len, optlen);
+	pthread_mutex_unlock (&serialMutex);
+	if (size>0) parseFrame(buf,len,optlen);
+
+	return false;
+}
+

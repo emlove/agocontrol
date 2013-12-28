@@ -160,6 +160,9 @@ typedef enum
 			bool fourbsCentralCommandDimLevel(uint16_t rid, uint8_t level, uint8_t speed);
 			bool fourbsCentralCommandDimOff(uint16_t rid);
 			bool fourbsCentralCommandDimTeachin(uint16_t rid);
+			bool fourbsCentralCommandSwitchOn(uint16_t rid);
+			bool fourbsCentralCommandSwitchOff(uint16_t rid);
+			bool fourbsCentralCommandSwitchTeachin(uint16_t rid);
 		private:
 			int readFrame(uint8_t *buf, int &datasize, int &optdatasize);
 			void parseFrame(uint8_t *buf, int datasize, int optdatasize);
