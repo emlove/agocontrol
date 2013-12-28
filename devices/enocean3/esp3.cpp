@@ -406,7 +406,8 @@ bool esp3::ESP3::fourbsCentralCommandSwitchOn(uint16_t rid) {
 	uint8_t buf[65535];
 	uint32_t addr = idBase + rid;
 
-	buf[0]=0xa5;
+	buf[0]=0x7;
+	// buf[0]=0xa5;
 	buf[1]=0x1;
 	buf[2]=0;
 	buf[3]=0;
@@ -442,7 +443,8 @@ bool esp3::ESP3::fourbsCentralCommandSwitchOff(uint16_t rid) {
 	uint8_t buf[65535];
 	uint32_t addr = idBase + rid;
 
-	buf[0]=0xa5;
+	buf[0]=0x7;
+	// buf[0]=0xa5;
 	buf[1]=0x1;
 	buf[2]=0;
 	buf[3]=0;
@@ -478,7 +480,8 @@ bool esp3::ESP3::fourbsCentralCommandSwitchTeachin(uint16_t rid) {
 	uint8_t buf[65535];
 	uint32_t addr = idBase + rid;
 
-	buf[0]=0xa5;
+	buf[0]=0x7;
+	// buf[0]=0xa5;
 	buf[1]=0x1;
 	buf[2]=0;
 	buf[3]=0;
