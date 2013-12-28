@@ -39,7 +39,7 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 			if (profile == "central command dimming") {
 				myESP3->fourbsCentralCommandDimTeachin(channel);
 			} else {
-
+				myESP3->fourbsCentralCommandSwitchTeachin(channel);
 			}
 			returnval["result"] = 0;
 		} else if (content["command"] == "setlearnmode") {
@@ -94,7 +94,7 @@ int main(int argc, char **argv) {
 		agoConnection->addDevice(dimmer.c_str(), "dimmer");
 		cout << "adding rid " << dimmer << " as dimmer" << endl;
 	} 
-	stringstream switches(getConfigOption("enocean3", "switches", "2"));
+	stringstream switches(getConfigOption("enocean3", "switches", "20"));
 	string switchdevice;
 	while (getline(switches, switchdevice, ',')) {
 		agoConnection->addDevice(switchdevice.c_str(), "switch");
