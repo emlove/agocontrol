@@ -19,7 +19,9 @@
 #include <string.h>
 
 #include <termios.h>
+#ifndef __FreeBSD__
 #include <malloc.h>
+#endif
 #include <stdio.h>
 #include <unistd.h>
 #include <errno.h>

@@ -1,6 +1,8 @@
 #include <string>
 
+#ifndef __FreeBSD__
 #include <malloc.h>
+#endif
 #include <stdio.h>
 #include <unistd.h>
 #include <syslog.h>

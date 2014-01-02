@@ -18,13 +18,12 @@
 #include <string.h>
 
 #include <termios.h>
-#include <malloc.h>
-#include <stdio.h>
-#include <unistd.h>
 #include <errno.h>
 #include <stdlib.h>
 #include <pthread.h>
+#ifndef __FreeBSD__
 #include <sys/sysinfo.h>
+#endif
 
 #include <sstream>
 #include <map>
@@ -79,6 +78,10 @@ void loadDevicemap() {
 }
 
 void get_sysinfo() {
+#ifndef __FreeBSD__
+	/* Note on FreeBSD exclusion. Sysinfo.h does not exist, but the code below
+	 * does not really use it anyway.. so just skip it.
+	 */ 
 	struct sysinfo s_info;
 	int error;
 	error = sysinfo(&s_info);
@@ -94,6 +97,7 @@ void get_sysinfo() {
 		systeminfo["procs"] = s_info.procs;
 		*/
 	}
+#endif
 }
 
 bool emitNameEvent(const char *uuid, const char *eventType, const char *name) {
