@@ -67,7 +67,6 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 	qpid::types::Variant::Map returnval;
 	std::string internalid = content["internalid"].asString();
 	if (content["command"] == "getvideoframe") {
-		// returnval["image"] = base64 ...
 		ostringstream tmpostr;
 		if(CURLE_OK == curl_read(internalid, tmpostr, 2)) {
 			std::string s;
