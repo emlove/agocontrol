@@ -271,7 +271,7 @@ agocontrol::AgoConnection::AgoConnection(const char *interfacename) {
 	eventHandler = NULL;
 	instance = interfacename;
 
-	uuidMapFile = "/etc/opt/agocontrol/uuidmap/";
+	uuidMapFile = CONFIG_BASE_DIR "/uuidmap/";
 	uuidMapFile += interfacename;
 	uuidMapFile += ".json";
 	loadUuidMap();

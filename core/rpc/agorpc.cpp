@@ -419,7 +419,7 @@ int main(int argc, char **argv) {
 	connectionOptions["password"]=getConfigOption("system", "password", "letmein");
 	port=getConfigOption("rpc", "ports", "8008,8009s");
 	htdocs=getConfigOption("rpc", "htdocs", "/opt/agocontrol/html");
-	certificate=getConfigOption("rpc", "certificate", "/etc/opt/agocontrol/rpc/rpc_cert.pem");
+	certificate=getConfigOption("rpc", "certificate", CONFIG_BASE_DIR "/rpc/rpc_cert.pem");
 	numthreads=getConfigOption("rpc", "numthreads", "30");
 
 	static const char *options[] = {

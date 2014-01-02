@@ -19,7 +19,12 @@
 
 #include "CDataFile.h"
 
-#define CONFIG_FILE_PATH "/etc/opt/agocontrol/conf.d"
+#ifdef __FreeBSD__
+#define CONFIG_BASE_DIR "/usr/local/etc/agocontrol"
+#else
+#define CONFIG_BASE_DIR "/etc/opt/agocontrol"
+#endif
+#define CONFIG_FILE_PATH CONFIG_BASE_DIR "/conf.d"
 
 namespace agocontrol {
 
