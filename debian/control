@@ -7,7 +7,7 @@ Standards-Version: 3.9.2
 
 Package: agocontrol
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, python, uuid-runtime, sqlite3, python-pysqlite2, python-qpid, libqpidmessaging2, libqpidtypes1, sasl2-bin, libsasl2-2, libsasl2-modules, qpidd, python-yaml, python-pandas, libjsoncpp0, libyaml-cpp0.3, libsqlite3-0, libagoclient1.0, python-agoclient, libssl-dev, libboost-program-options1.49.0, libboost-filesystem1.49.0, libboost-system1.49.0, python-nss, libboost-date-time1.49.0, libhdate1, libcurl3
+Depends: ${shlibs:Depends}, ${misc:Depends}, python, uuid-runtime, sqlite3, python-pysqlite2, python-qpid, libqpidmessaging2, libqpidtypes1, sasl2-bin, libsasl2-2, libsasl2-modules, qpidd, python-yaml, python-pandas, libjsoncpp0, libyaml-cpp0.3, libsqlite3-0, libagoclient1.0, python-agoclient, libssl-dev, libboost-program-options1.49.0, libboost-filesystem1.49.0, libboost-system1.49.0, python-nss, libboost-date-time1.49.0, libhdate1, libcurl3, python-psutil
 Description: automation system
 
 Package: libagoclient1.0
