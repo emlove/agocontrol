@@ -1,3 +1,5 @@
+export uname_S := $(shell sh -c 'uname -s 2>/dev/null || echo not')
+
 export CC = gcc
 export CXX = g++
 export LD = g++ 
@@ -15,6 +17,11 @@ export ETCDIR = $(DESTDIR)/etc
 export LIBDIR = $(DESTDIR)/usr/lib
 export CONFDIR = $(ETCDIR)/opt/agocontrol
 export INCDIR = $(DESTDIR)/usr/include/agocontrol
+
+ifeq ($(uname_S),FreeBSD)
+LDFLAGS+=$(shell pkg-config uuid --libs)
+CFLAGS+=$(shell pkg-config uuid --cflags)
+endif
 
 ifdef DEB_BUILD_OPTIONS
 export BUILDEXTRA=yes
