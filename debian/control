@@ -2,12 +2,12 @@ Source: agocontrol
 Maintainer: Harald Klein <hari@vt100.at>
 Section: misc
 Priority: optional
-Build-Depends: debhelper (>= 8), python, libqpidmessaging2-dev, libqpidtypes1-dev, libqpidcommon2-dev, libudev-dev, libqpidclient2-dev, uuid-dev, libopenzwave1.0-dev, libjsoncpp-dev, libtinyxml2-dev, libyaml-cpp-dev, libsqlite3-dev, libi2c-dev, libssl-dev, libboost-dev, intltool, libboost-date-time-dev, realpath
+Build-Depends: debhelper (>= 8), python, libqpidmessaging2-dev, libqpidtypes1-dev, libqpidcommon2-dev, libudev-dev, libqpidclient2-dev, uuid-dev, libopenzwave1.0-dev, libjsoncpp-dev, libtinyxml2-dev, libyaml-cpp-dev, libsqlite3-dev, libi2c-dev, libssl-dev, libboost-dev, intltool, libboost-date-time-dev, realpath, libcurl4-openssl-dev
 Standards-Version: 3.9.2
 
 Package: agocontrol
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, python, uuid-runtime, sqlite3, python-pysqlite2, python-qpid, libqpidmessaging2, libqpidtypes1, sasl2-bin, libsasl2-2, libsasl2-modules, qpidd, python-yaml, python-pandas, libjsoncpp0, libyaml-cpp0.3, libsqlite3-0, libagoclient1.0, python-agoclient, libssl-dev, libboost-program-options1.49.0, libboost-filesystem1.49.0, libboost-system1.49.0, python-nss, libboost-date-time1.49.0, libhdate1
+Depends: ${shlibs:Depends}, ${misc:Depends}, python, uuid-runtime, sqlite3, python-pysqlite2, python-qpid, libqpidmessaging2, libqpidtypes1, sasl2-bin, libsasl2-2, libsasl2-modules, qpidd, python-yaml, python-pandas, libjsoncpp0, libyaml-cpp0.3, libsqlite3-0, libagoclient1.0, python-agoclient, libssl-dev, libboost-program-options1.49.0, libboost-filesystem1.49.0, libboost-system1.49.0, python-nss, libboost-date-time1.49.0, libhdate1, libcurl3
 Description: automation system
 
 Package: libagoclient1.0
