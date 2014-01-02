@@ -95,7 +95,7 @@ int main(int argc, char **argv) {
 		if (device.find("rtsp://") != string::npos) {
 			agoConnection->addDevice(device.c_str(), "onvifnvt"); // this is a helper for agoonvif for situations where the device can't be discovered (e.g. multicast issues)
 		} else {
-			agoConnection->addDevice(device.c_str(), "webcam");
+			agoConnection->addDevice(device.c_str(), "camera");
 		}
 	} 
 	agoConnection->run();	
