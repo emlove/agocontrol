@@ -2,7 +2,7 @@
 Description=ago control webcam device
 
 [Service]
-ExecStart=/opt/agocontrol/bin/agowebcam.py
+ExecStart=/opt/agocontrol/bin/agowebcam
 WorkingDirectory=/opt/agocontrol/bin
 StandardOutput=syslog
 StandardError=syslog
