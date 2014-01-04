@@ -223,8 +223,8 @@ function device(obj, uuid) {
 		content.uuid = self.uuid; 
 		sendCommand(content, function(r) { 
 			console.log(r);
-			if (r.result.result.image && document.getElementById("camIMG")) {
-				document.getElementById("camIMG").src = "data:image/jpeg;base64," + r.result.result.image; 
+			if (r.result.image && document.getElementById("camIMG")) {
+				document.getElementById("camIMG").src = "data:image/jpeg;base64," + r.result.image; 
 				$("#camIMG").show(); 
 			} 
 		}, 90);
