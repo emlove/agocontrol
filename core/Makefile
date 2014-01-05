@@ -1,4 +1,4 @@
-DIRS = resolver rpc messagesend timer scenario event manager datalogger lua
+DIRS = resolver rpc messagesend timer scenario event manager datalogger lua security
 
 BUILDDIRS = $(DIRS:%=build-%)
 INSTALLDIRS = $(DIRS:%=install-%)
