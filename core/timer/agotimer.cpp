@@ -53,8 +53,8 @@ void *timer(void *param) {
 		content["month"]=tms->tm_mon+1;
 		content["day"]=tms->tm_mday;
 		content["year"]=tms->tm_year+1900;
-		content["weekday"]=tms->tm_wday;
-		content["yday"]=tms->tm_yday;
+		content["weekday"]=tms->tm_wday+1;
+		content["yday"]=tms->tm_yday+1;
 		agoConnection->sendMessage("event.environment.timechanged", content);
 		sleep(2);
 	}
