@@ -1,0 +1,11 @@
+#!/bin/bash
+# agocontrol-webcam postinst script
+# creates a dummy configuration file as a blueprint
+# 
+mkdir -p /etc/opt/agocontrol/conf.d
+if [ ! -f /etc/opt/agocontrol/conf.d/webcam.conf ] ; then
+	echo "Creating sample configuration file for agocontrol-webcam"
+	echo "[webcam]
+# devices=http://<url-of-webcam-picture.jpg>" > /etc/opt/agocontrol/conf.d/webcam.conf
+	chown -R agocontrol:agocontrol /etc/opt/agocontrol/conf.d/webcam.conf
+fi
