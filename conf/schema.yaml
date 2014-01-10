@@ -97,6 +97,14 @@ commands:
         name: security pin
         type: integer
         range: [0, 999999]
+  triggerzone:
+    name: trigger security zone
+    parameters:
+      zone:
+        name: zone to trigger
+        type: string
+  setzones:
+    name: define zones
   sendir:
     name: send infrared remote code
     parameters:
@@ -308,10 +316,10 @@ devicetypes:
     name: z-wave interface
     description: z-wave interface from agozwave
     commands: [allon, alloff, addnode, removenode, addcontroller, removecontroller, addassociation, removeassociation, setconfigparam, downloadconfig, cancel, saveconfig, reset]
-  securitysystem:
+  securitycontroller:
     name: security system
     description: ago control security system module
-    commands: [sethousemode]
+    commands: [sethousemode, triggerzone, setzones]
   scenario:
     name: scene
     description: execute scenarios
