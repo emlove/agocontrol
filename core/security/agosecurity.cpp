@@ -40,6 +40,12 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 	}
 
 }
+
+void eventHandler(std::string subject, qpid::types::Variant::Map content) {
+	string uuid = content["uuid"].asString();
+	cout << subject << " " << content << endl;
+}
+
 int main(int argc, char** argv) {
 	agocontroller = "";
 
@@ -48,6 +54,7 @@ int main(int argc, char** argv) {
 
 	agoConnection->addDevice("securitycontroller", "securitycontroller");
 	agoConnection->addHandler(commandHandler);
+	agoConnection->addEventHandler(eventHandler);
 
 	while(agocontroller=="") {
 		qpid::types::Variant::Map inventory = agoConnection->getInventory();
