@@ -91,6 +91,8 @@ namespace agocontrol {
 			bool emitEvent(const char *internalId, const char *eventType, int level, const char *units);
 			bool emitEvent(const char *internalId, const char *eventType, qpid::types::Variant::Map content);
 			qpid::types::Variant::Map getInventory();
+			std::string getAgocontroller();
+			bool setGlobalVariable(std::string variable, qpid::types::Variant value);
 	};
 
 

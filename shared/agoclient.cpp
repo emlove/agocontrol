@@ -615,6 +615,45 @@ qpid::types::Variant::Map agocontrol::AgoConnection::getInventory() {
 	return responseMap;
 }
 
+std::string agocontrol::AgoConnection::getAgocontroller() {
+	std::string agocontroller;
+	int retry = 10;
+        while(agocontroller=="" && retry-- > 0) {
+                qpid::types::Variant::Map inventory = getInventory();
+                if (!(inventory["devices"].isVoid())) {
+                        qpid::types::Variant::Map devices = inventory["devices"].asMap();
+                        qpid::types::Variant::Map::const_iterator it;
+                        for (it = devices.begin(); it != devices.end(); it++) {
+                                if (!(it->second.isVoid())) {
+                                        qpid::types::Variant::Map device = it->second.asMap();
+                                        if (device["devicetype"] == "agocontroller") {
+                                                cout << "Agocontroller: " << it->first << endl;
+                                                agocontroller = it->first;
+                                        }
+                                }
+                        }
+                } else {
+			cout << "unable to resolve agocontroller, retrying" << endl;
+			sleep(1);
+		}
+        }
+	if (agocontroller == "") cout << "unable to resolve agocontroller, giving up" << endl;
+	return agocontroller;
+}
+
+bool agocontrol::AgoConnection::setGlobalVariable(std::string variable, qpid::types::Variant value) {
+	Variant::Map setvariable;
+	std::string agocontroller = getAgocontroller();
+	if (agocontroller != "") {
+		setvariable["uuid"] = agocontroller;
+		setvariable["command"] = "setvariable";
+		setvariable["variable"] = variable;
+		setvariable["value"] = value;
+		return sendMessage("", setvariable);
+	} 
+	return false;
+}
+
 agocontrol::Log::Log(std::string ident, int facility) {
     facility_ = facility;
     priority_ = LOG_DEBUG;
