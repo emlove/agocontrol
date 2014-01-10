@@ -280,7 +280,6 @@ agocontrol::AgoConnection::AgoConnection(const char *interfacename) {
 	try {
 		connection.open(); 
 		session = connection.createSession(); 
-		receiver = session.createReceiver("agocontrol; {create: always, node: {type: topic}}");
 		sender = session.createSender("agocontrol; {create: always, node: {type: topic}}"); 
 	} catch(const std::exception& error) {
 		std::cerr << error.what() << std::endl;
@@ -300,6 +299,13 @@ agocontrol::AgoConnection::~AgoConnection() {
 
 
 void agocontrol::AgoConnection::run() {
+	try {
+		receiver = session.createReceiver("agocontrol; {create: always, node: {type: topic}}");
+	} catch(const std::exception& error) {
+		std::cerr << error.what() << std::endl;
+		printf("could not create receiver when connecting to broker\n");
+		_exit(1);
+	}
 	// reportDevices(); // this is obsolete as it is handled by addDevice 
 	while( true ) {
 		try{

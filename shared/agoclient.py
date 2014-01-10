@@ -29,7 +29,6 @@ class AgoConnection:
 		self.connection = Connection(broker, username=username, password=password, reconnect=True)
 		self.connection.open()
 		self.session = self.connection.session()
-		self.receiver = self.session.receiver("agocontrol; {create: always, node: {type: topic}}")
 		self.sender = self.session.sender("agocontrol; {create: always, node: {type: topic}}")
 		self.devices = {}
 		self.uuids = {}
@@ -122,6 +121,7 @@ class AgoConnection:
 
 	def run(self):
 		# self.reportDevices() # - this is now handled by the addDevice
+		self.receiver = self.session.receiver("agocontrol; {create: always, node: {type: topic}}")
 		syslog.syslog(syslog.LOG_NOTICE, "startup complete, waiting for messages")
 		while (True):
 			try:
