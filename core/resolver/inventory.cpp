@@ -61,7 +61,7 @@ int Inventory::setdevicename (string uuid, string name) {
         if (getdevicename(uuid) == name) {
                 return 0;
         } else {
-                return 1;
+                return -1;
         }
 } 
 
@@ -82,7 +82,7 @@ int Inventory::setroomname (string uuid, string name) {
 	if (getroomname(uuid) == name) {
 		return 0;
 	} else {
-		return 1;
+		return -1;
 	}
 } 
 
@@ -92,7 +92,7 @@ int Inventory::setdeviceroom (string deviceuuid, string roomuuid) {
 	if (getdeviceroom(deviceuuid) == roomuuid) {
 		return 0;
 	} else {
-		return 1;
+		return -1;
 	}
 } 
 
@@ -141,15 +141,15 @@ int Inventory::deleteroom (string uuid) {
 	getfirst(query.c_str());
 	query = "delete from rooms where uuid = '" + uuid + "'";
 	getfirst(query.c_str());
-	if (getroomname(uuid) == "") {
+	if (getroomname(uuid) != "") {
 		getfirst("ROLLBACK");
-		return 0;
+		return -1;
 	} else {
 		getfirst("COMMIT");
-		return 1;
+		return 0;
 	}
 	getfirst("ROLLBACK");
-	return 0;
+	return -1;
 }
 string Inventory::getfirst(const char *query) {
 	sqlite3_stmt *stmt;
@@ -193,7 +193,7 @@ int Inventory::setfloorplanname(std::string uuid, std::string name) {
 	if (getfloorplanname(uuid) == name) {
 		return 0;
 	} else {
-		return 1;
+		return -1;
 	}
 }
 
@@ -223,15 +223,15 @@ int Inventory::deletefloorplan(std::string uuid) {
 	getfirst(query.c_str());
 	query = "delete from floorplans where uuid = '" + uuid + "'";
 	getfirst(query.c_str());
-	if (getroomname(uuid) == "") {
+	if (getfloorplanname(uuid) != "") {
 	    getfirst("ROLLBACK");
-		return 0;
+		return -1;
 	} else {
 	    getfirst("COMMIT");
-		return 1;
+		return 0;
 	}
 	getfirst("ROLLBACK");
-	return 0;
+	return -1;
 }
 
 Variant::Map Inventory::getfloorplans() {
@@ -307,7 +307,7 @@ int Inventory::setlocationname(string uuid, string name) {
         if (getlocationname(uuid) == name) {
                 return 0;
         } else {
-                return 1;
+                return -1;
         }
 
 }
@@ -316,9 +316,8 @@ int Inventory::setroomlocation(string roomuuid, string locationuuid) {
 	getfirst(query.c_str());
 	if (getroomlocation(roomuuid) == locationuuid) {
 		return 0;
-	} else {
-		return 1;
 	}
+	return -1;
 }
 int Inventory::deletelocation(string uuid) {
 	string query = "update rooms set location = '' where location = '" + uuid + "'";
@@ -327,10 +326,8 @@ int Inventory::deletelocation(string uuid) {
 	getfirst(query.c_str());
 	if (getlocationname(uuid) == "") {
 		return 0;
-	} else {
-		return 1;
 	}
-	return 0;
+	return -1;
 }
 Variant::Map Inventory::getlocations() {
 	Variant::Map result;

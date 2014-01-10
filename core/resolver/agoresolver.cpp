@@ -170,10 +170,13 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 			string uuid = content["room"];
 			// if no uuid is provided, we need to generate one for a new room
 			if (uuid == "") uuid = generateUuid();
-			inv->setroomname(uuid, content["name"]);
-			reply["uuid"] = uuid;
-			reply["returncode"] = 0;
-			emitNameEvent(uuid.c_str(), "event.system.roomnamechanged", content["name"].asString().c_str());
+			if (inv->setroomname(uuid, content["name"]) == 0) {
+				reply["uuid"] = uuid;
+				reply["returncode"] = 0;
+				emitNameEvent(uuid.c_str(), "event.system.roomnamechanged", content["name"].asString().c_str());
+			} else {
+				reply["returncode"] = -1;
+			}
 		} else if (content["command"] == "setdeviceroom") {
 			if ((content["device"].asString() != "") && (inv->setdeviceroom(content["device"], content["room"]) == 0)) {
 				reply["returncode"] = 0;
