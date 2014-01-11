@@ -2,6 +2,7 @@ import syslog
 import sys
 import ConfigParser
 import simplejson
+from threading import Lock
 
 from qpid.messaging import *
 from qpid.util import URL
@@ -9,15 +10,46 @@ from qpid.log import enable, DEBUG, WARN
 
 syslog.openlog(sys.argv[0], syslog.LOG_PID, syslog.LOG_DAEMON)
 
+CONFIG_LOCK = Lock()
 
-def getConfigOption(section, option, default):
-	config = ConfigParser.ConfigParser()
-	try:
-		config.read('/etc/opt/agocontrol/conf.d/' + section + '.conf')
-		value = config.get(section,option)
-	except:
-		value = default
-	return value
+def getConfigOption(section, option, default, file=None):
+        config = ConfigParser.ConfigParser()
+        try:
+                CONFIG_LOCK.acquire(True)
+                if file:
+                        config.read('/etc/opt/agocontrol/conf.d/' + file + '.conf')
+                else:
+                        config.read('/etc/opt/agocontrol/conf.d/' + section + '.conf')
+                value = config.get(section,option)
+                CONFIG_LOCK.release()
+        except:
+                value = default
+        return value
+
+def setConfigOption(section, option, value, file=None):
+        config = ConfigParser.ConfigParser()
+        result = False
+        try:
+                CONFIG_LOCK.acquire(True)
+                path = '/etc/opt/agocontrol/conf.d/' + section + '.conf'
+                if file:
+                        path = '/etc/opt/agocontrol/conf.d/' + file + '.conf'
+                #first of all read file
+                config.read(path)
+                #then update config
+                if not config.has_section(section):
+                    config.add_section(section)
+                config.set(section, option, str(value))
+                #then write new file
+                fpw = open(path, 'w')
+                config.write(fpw)
+                #finally close it
+                fpw.close()
+                result = True
+                CONFIG_LOCK.release()
+        except:
+                result = False
+        return result
 
 class AgoConnection:
 	def __init__(self, instance):
@@ -36,8 +68,10 @@ class AgoConnection:
 		self.eventhandler = None
 		self.loadUuidMap()
 
-	def __del__(self):
-		self.connection.close()
+        def __del__(self):
+                self.session.acknowledge()
+                self.session.close()
+                self.connection.close()
 
 	def addHandler(self, handler):
 		self.handler = handler

@@ -12,7 +12,7 @@
 
 BIN_PATH=/opt/agocontrol/bin/
 PID_PATH=/var/run/
-APPS="agorpc agodatalogger agoevent agoresolver agoscenario agotimer agosqueezebox"
+APPS="agorpc agodatalogger agoevent agoresolver agoscenario agotimer"
 
 DESC="agocontrol"
 start_module() {
@@ -27,7 +27,7 @@ start_module() {
 }
 
 start() {
-	log_daemon_msg "Starting $DESC...\n" ""
+	echo "Starting $DESC..."
 	for app in $APPS
     do
 		start_module "$app" "$BIN_PATH$app" "$PID_PATH$app.pid"
@@ -46,7 +46,7 @@ stop_module() {
 }
 
 stop() {
-	log_daemon_msg "Stopping $DESC...\n"
+    echo "Stopping $DESC..."
 	for app in $APPS
 	do
 		 stop_module "$app" "$BIN_PATH$app" "$PID_PATH$app.pid"
