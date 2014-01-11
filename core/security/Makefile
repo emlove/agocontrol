@@ -1,5 +1,4 @@
 LD = $(CXX)
-
 INCLUDES ?= -I../../shared
 
 %.o : %.cpp
@@ -12,7 +11,7 @@ agosecurity: agosecurity.o
 
 .PHONY: clean
 clean:
-	rm -f agosecurity.o agosecurity
+	rm -f agosecurity agosecurity.o
 
 install:
 	$(INSTALL_DIR) $(BINDIR)
