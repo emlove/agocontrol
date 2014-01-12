@@ -267,6 +267,150 @@ commands:
       idbase:
         name: id base
         type: integer
+  addipx800:
+    name: add IPX800 board
+    parameters:
+      ip:
+        name: IPX800 ip address
+        type: string
+  addswitch:
+    name: add switch (use 1 relay)
+    parameters:
+      relayid:
+        name: relay id
+        type: option
+        options: ['output1', 'output2', 'output3', 'output4', 'output5', 'output6', 'output7', 'output8']
+  addshutter:
+    name: add shutter (use 2 relays)
+    parameters:
+      relayopen:
+        name: relay open
+        type: option
+        options: ['output1', 'output2', 'output3', 'output4', 'output5', 'output6', 'output7', 'output8']
+      relayclose:
+        name: relay close
+        type: option
+        options: ['output1', 'output2', 'output3', 'output4', 'output5', 'output6', 'output7', 'output8']
+  addanalog:
+    name: add analog device (use 1 analog input)
+    parameters:
+      analogid:
+        name: analog id
+        type: option
+        options: ['analog1', 'analog2', 'analog3', 'analog4']
+      type:
+        name: analog type
+        type: option
+        options: ['temperature', 'humidity', 'volt', 'light']
+  addcounter:
+    name: add counter device (use 1 counter)
+    parameters:
+      counterid:
+        name: counter id
+        type: option
+        options: ['counter1', 'counter2', 'counter3']
+  open:
+    name: open
+  close:
+    name: close
+  allopen:
+    name: open all
+  allclose:
+    name: close all
+  forcestate:
+    name: force state
+    parameters:
+      state:
+        name: relay state
+        type: option
+        options: ['on/open', 'off/close']
+  resetcounter:
+    name: reset counter
+  twitterurl:
+    name: get twitter authorization url
+  twitteraccesscode:
+    name: set twitter access code
+    parameters:
+      code:
+        name: code
+        type: string
+  twittertest:
+    name: send test tweet
+  twittersend:
+    name: send tweet
+    parameters:
+      tweet:
+        name: tweet
+        type: string
+  mailconfig:
+    name: set mail config
+    parameters:
+      smtp:
+        name: smtp server
+        type: string
+      sender:
+        name: email of sender
+        type: string
+  mailtest:
+    name: send test email
+    parameters:
+      email:
+        name: your email
+        type: string
+  mailsend:
+    name: send email
+    parameters:
+      tos:
+        name: list of email recipient (coma separated)
+        type: string
+      subject:
+        name: email subject
+        type: string
+      content:
+        name: email content
+        type: string
+  smsconfig:
+    name: set SMS config
+    parameters:
+      username:
+        name: username
+        type: string
+      password:
+        name: password
+        type: string
+  smstest:
+    name: send test SMS
+  smssend:
+    name: send SMS
+    parameters:
+      to:
+        name: SMS recipient
+        type: string
+      text:
+        name: SMS message
+        type: string
+  gtalkconfig:
+    name: set GTalk config
+    parameters:
+      username:
+        name: username
+        type: string
+      password:
+        name: password
+        type: string
+  gtalktest:
+    name: send test message on GTalk
+  gtalksend:
+    name: send GTalk message
+    parameters:
+      to:
+        name: GTalk recipient
+        type: string
+      message:
+        name: GTalk message
+        type: string
+  alertstatus:
+    name: status of all alert modules
 devicetypes:
   enoceancontroller:
     name: enocean controller
@@ -388,6 +532,34 @@ devicetypes:
     name: Set top box
     description: Receives TV Service
     commands: ["on", "off", mute, unmute, mutetoggle, vol+, vol-, setlevel, setchannel, getepg]
+  ipx800controller:
+    name: IPX800 board controller
+    description: Internal device to control IPX800 boards
+    commands: [addipx800]
+  ipx800board:
+    name: IPX800
+    description: Ethernet relay board
+    commands: [addswitch, addshutter, addanalog, addcounter, allopen, allclose]
+  ipx800switch:
+    name: IPX800 switch
+    description: Control single relay on IPX800
+    commands: ["on", "off", forcestate]
+  ipx800shutter:
+    name: IPX800 shutter
+    description: Control 2 relays on IPX800
+    commands: [open, close, forcestate]
+  ipx800analog:
+    name: IPX800 analog
+    description: Get value of analog input
+    commands: []
+  ipx800counter:
+    name: IPX800 counter
+    description: Get value of board counter
+    commands: [resetcounter]
+  alertcontroller:
+    name: alert controller
+    description: internal device to control the alerts
+    commands: [twitterauthorizationurl, twitteraccesscode]
 values:
   level:
     name: level
@@ -458,6 +630,9 @@ events:
     parameters: [devicetype, uuid, product, internal-id]
   event.device.statechanged:
     description: announces a status change of a device
+    parameters: [level, uuid]
+  event.environment.counterchanged:
+    description: counter has changed
     parameters: [level, uuid]
   event.environment.temperaturechanged:
     description: temperature has changed

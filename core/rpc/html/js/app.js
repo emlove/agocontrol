@@ -73,9 +73,10 @@ var agoController = null;
 var eventController = null;
 var dataLoggerController = null;
 var scenarioController = null;
+var alertControler = null
 
 var supported_devices = [ "switch", "dimmer", "binarysensor", "dimmerrgb", "multilevelsensor", , "scenario", "drapes", "brightnesssensor", "powermeter", "energysensor", "humiditysensor", "phone",
-	"pushbutton", "placeholder", "temperaturesensor", "energymeter", "squeezebox" ];
+	"pushbutton", "placeholder", "temperaturesensor", "energymeter", "squeezebox", 'ipx800shutter', 'ipx800switch' ];
 
 function device(obj, uuid) {
     var self = this;
@@ -202,6 +203,20 @@ function device(obj, uuid) {
 	sendCommand(content);
     };
 
+    this.open = function() {
+        var content = {};
+        content.uuid = uuid;
+        content.command = 'open';
+        sendCommand(content);
+    };
+
+    this.close = function() {
+        var content = {};
+        content.uuid = uuid;
+        content.command = 'close';
+        sendCommand(content);
+    };
+
     this.execCommand = function() {
 	var command = document.getElementById("commandSelect").options[document.getElementById("commandSelect").selectedIndex].value;
 	var content = {};
@@ -215,6 +230,153 @@ function device(obj, uuid) {
 	    alert("Done");
 	});
     };
+
+    if (this.devicetype == "alertcontroller") {
+    	alertController = uuid;
+        self.gtalkstatus = ko.observable(self.gtalkstatus)
+        self.smsstatus = ko.observable(self.smsstatus)
+        self.mailstatus = ko.observable(self.mailstatus)
+        self.twitterstatus = ko.observable(self.twitterstatus)
+
+        //get current status
+        this.getAlertStatus = function() {
+            var content = {};
+            content.uuid = uuid;
+            content.command = 'alertstatus';
+            sendCommand(content, function(res) {
+                self.gtalkstatus(res.result.result.gtalk)
+                self.mailstatus(res.result.result.mail)
+                self.smsstatus(res.result.result.sms)
+                self.twitterstatus(res.result.result.twitter)
+            });
+        }
+        this.getAlertStatus();
+
+        this.gtalkstatusc = ko.computed(function() {
+            if( self.state()==10 ) self.gtalkstatus(0);
+            if( self.state()==11 ) self.gtalkstatus(1);
+        });
+        this.mailstatusc = ko.computed(function() {
+            if( self.state()==20 ) self.mailstatus(0);
+            if( self.state()==21 ) self.mailstatus(1);
+        });
+        this.smsstatusc = ko.computed(function() {
+            if( self.state()==30 ) self.smsstatus(0);
+            if( self.state()==31 ) self.smsstatus(1);
+        });
+        this.twitterstatusc = ko.computed(function() {
+            if( self.state()==40 ) self.twitterstatus(0);
+            if( self.state()==41 ) self.twitterstatus(1);
+        });
+
+        this.twitterUrl = function() {
+            el = document.getElementsByClassName("twitterUrl");
+            el[0].innerHTML = 'Generating url...';
+            //get authorization url
+            var content = {};
+            content.uuid = uuid;
+            content.command = 'twitterurl';
+            sendCommand(content, function(res) {
+                if( res.result.result.error==0 )
+                {
+                    //display link
+                    el[0].innerHTML = '<a href="'+res.result.result.url+'" target="_blank">authorization url</a>';
+                }
+                else
+                {
+                    alert('Unable to get Twitter url.');
+                }
+            });
+        }
+        this.twitterAccessCode = function() {
+            var content = {};
+            content.uuid = uuid;
+            content.command = 'twitteraccesscode';
+            content.code = document.getElementsByClassName("twitterCode")[0].value;
+            sendCommand(content, function(res) {
+                if( res.result.result.error==1 )
+                {
+                    alert(res.result.result.msg);
+                }
+            });
+        }
+        this.twitterTest = function() {
+            var content = {};
+            content.uuid = uuid;
+            content.command = 'twittertest';
+            sendCommand(content, function(res) {
+                alert( res.result.result.msg );
+            });
+        }
+        this.smsConfig = function() {
+            var content = {};
+            content.uuid = uuid;
+            content.command = 'smsconfig';
+            content.username = document.getElementsByClassName("smsUsername")[0].value;
+            content.password = document.getElementsByClassName("smsPassword")[0].value;
+            sendCommand(content, function(res) {
+                if( res.result.result.error==1 )
+                {
+                    alert(res.result.result.msg);
+                }
+            });
+        }
+        this.smsTest = function() {
+            var content = {};
+            content.uuid = uuid;
+            content.command = 'smstest';
+            sendCommand(content, function(res) {
+                alert( res.result.result.msg );
+            });
+        }
+        this.gtalkConfig = function() {
+            var content = {};
+            content.uuid = uuid;
+            content.command = 'gtalkconfig';
+            content.username = document.getElementsByClassName("gtalkUsername")[0].value;
+            content.password = document.getElementsByClassName("gtalkPassword")[0].value;
+            sendCommand(content, function(res) {
+                if( res.result.result.error==1 )
+                {
+                    alert(res.result.result.msg);
+                }
+            });
+        }
+        this.gtalkTest = function() {
+            var content = {};
+            content.uuid = uuid;
+            content.command = 'gtalktest';
+            sendCommand(content, function(res) {
+                if( res.result.result.error==1 )
+                {
+                    alert( res.result.result.msg );
+                }
+            });
+        }
+        this.mailConfig = function() {
+            var content = {};
+            content.uuid = uuid;
+            content.command = 'mailconfig';
+            content.smtp = document.getElementsByClassName("mailSmtp")[0].value;
+            content.sender = document.getElementsByClassName("mailSender")[0].value;
+            sendCommand(content, function(res) {
+                if( res.result.result.error==1 )
+                {
+                    alert(res.result.result.msg);
+                }
+            });
+        }
+        this.mailTest = function() {
+            var content = {};
+            content.uuid = uuid;
+            content.command = 'mailtest';
+            content.email = document.getElementsByClassName("mailEmail")[0].value;
+            sendCommand(content, function(res) {
+                alert( res.result.result.msg );
+            });
+        }
+
+    }
 
     if (this.devicetype == "camera") {
 	this.getVideoFrame = function() {
@@ -648,6 +810,12 @@ function doShowDetails(device, template, environment) {
 		dialogHeight = 720;
 	    }
 
+        if( device.devicetype=="alertcontroller" )
+        {
+            dialogWidth = 800;
+            dialogHeight = 600;
+        }
+
 	    if (document.getElementById("detailsTitle")) {
 		$("#detailsPage").dialog({
 		    title : document.getElementById("detailsTitle").innerHTML,
@@ -661,7 +829,10 @@ function doShowDetails(device, template, environment) {
 			}
 		    },
 		    open : function() {
-			$("#detailsPage").css("overflow", "visible");
+			    $("#detailsPage").css("overflow", "visible");
+                if( device.devicetype=="alertcontroller" ) {
+                    $("#tabs").tabs();
+                }
 		    }
 		});
 	    }
