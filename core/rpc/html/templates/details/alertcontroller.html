@@ -1,0 +1,120 @@
+<div>
+    <span id="detailsTitle">Details</span>
+    <strong>UUID: </strong><span style="color: darkorange" data-bind="text: uuid"/><br/>
+    <ko opts="if: name ">
+    <strong>Name: </strong><span style="color: darkorange" data-bind="text: name"/><br/>
+    </ko>
+    <strong>Type: </strong><span style="color: darkorange" data-bind="text: devicetype"/><br/>
+    <ko opts="if: room ">
+    <strong>Room: </strong><span style="color: darkorange" data-bind="text: room"/><br/>
+    </ko>
+    <strong>Lastseen: </strong><span style="color: darkorange" data-bind="text: timeStamp"/><br/>
+    <br/>
+    <!--<div id="contentarea" data-bind="initTabs: $root" class="container">-->
+    <!--<div class="row">-->
+    <div id="tabs">
+        <ul>
+            <li><a href="#tabs-twitter">Twitter</a></li>
+            <li><a href="#tabs-gtalk">GTalk</a></li>
+            <li><a href="#tabs-sms">SMS</a></li>
+            <li><a href="#tabs-mail">Mail</a></li>
+        </ul>
+        <div id="tabs-twitter">
+            <div><div style="float:left; margin-right:10px; margin-top:10px;"><i style="font-size:xx-large" class="icon-twitter"></i></div><div><h4 data-translateable="true">Twitter configuration</h4></div></div>
+            <span>Agocontrol needs to be authorized to post alerts on your Twitter account.</span>
+            <hr/>
+            <ko opts="if: twitterstatus() == 1"> 
+                <span style="color:#00CC00;">Twitter is configured</span>
+            </ko>
+            <ko opts="if: twitterstatus() == 0"> 
+                <span style="color:#CC0000;">Twitter is not configured</span>
+            </ko>
+            <br/>
+            <span>Follow instructions above to authorize this access:</span>
+            <br/>
+            <form>
+               <ol>
+                    <li>Click on button to generate an authorization url <button data-translateable="false" data-bind="click: twitterUrl">Generate</button></li>
+                    <li>Then click on generated link: <span class="twitterUrl" name="twitterUrl" style="color: darkorange"/></li>
+                    <li>Authorize access on Twitter</li>
+                    <li>Type given access code here: <input class="twitterCode" name="value" placeholder="Twitter code"/></li>
+                    <li>Finally click on button to save access code <button data-translateable="true" data-bind="click: twitterAccessCode">Save</button></li>
+                </ol>
+            </form>
+            <hr/>
+            <span>To send test tweet on your account, click on button: </span><button data-translateable="true" data-bind="click: twitterTest">Test</button>
+        </div>
+        <div id="tabs-gtalk">
+            <div><div style="float:left; margin-right:10px; margin-top:10px;"><i style="font-size:xx-large" class="icon-gplus"></i></div><div><h4 data-translateable="true">Google Talk configuration</h4></div></div>
+            <span>Agocontrol needs your Google credentials to connect GTalk and send alerts.</span>
+            <hr/>
+            <ko opts="if: gtalkstatus() == 1"> 
+                <span style="color:#00CC00;">GTalk is configured</span>
+            </ko>
+            <ko opts="if: gtalkstatus() == 0"> 
+                <span style="color:#CC0000;">GTalk is not configured</span>
+            </ko>
+            <br/>
+            <span>If you are using 2-Step verification, generate password <a href="https://www.google.com/settings/security" target="_blank">clicking here</a></span>
+            <br/>
+            <span>Otherwise use your usual Google credentials:</span>
+            <form>
+                <ul>
+                <li><span>Username: </span><input class="gtalkUsername" name="value" placeholder="Google username"/></li>
+                <li><span>Password: </span><input type="password" class="gtalkPassword" name="value" placeholder="Google password"/>
+                <button data-translateable="true" data-bind="click: gtalkConfig">Save</button></li>
+                </ul>
+            </form>
+            <hr/>
+            <span>To send you a test message on GTalk, click on button: </span><button data-translateable="true" data-bind="click: gtalkTest">Test</button>
+        </div>
+        <div id="tabs-sms">
+            <div><div style="float:left; margin-right:10px; margin-top:10px;"><i style="font-size:xx-large" class="icon-comment"></i></div><div><h4 data-translateable="true">SMS configuration</h4></div></div>
+            <span>Agocontrol uses <a href="https://www.12voip.com/" target="_blank">12voip</a> to send SMS alerts.</span>
+            <hr/>
+            <ko opts="if: smsstatus() == 1"> 
+                <span style="color:#00CC00;">SMS is configured</span>
+            </ko>
+            <ko opts="if: smsstatus() == 0"> 
+                <span style="color:#CC0000;">SMS is not yet configured</span>
+            </ko>
+            <br/>
+            <span>You need to create an account and add credits to send SMS (<a href="https://www.12voip.com/sms_rates" target="_blank">click here to view SMS rates</a>)</span>
+            <br/>
+            <span>12voip credentials:</span>
+            <form>
+                <ul>
+                <li><span>Username: </span><input class="smsUsername" name="value" placeholder="12voip username"/></li>
+                <li><span>Password: </span><input type="password" class="smsPassword" name="value" placeholder="12voip password"/>
+                <button data-translateable="true" data-bind="click: smsConfig">Save</button></li>
+                </ul>
+            </form>
+            <hr/>
+            <span>To send you a test SMS, click on button: </span><button data-translateable="true" data-bind="click: smsTest">Test</button>
+        </div>
+        <div id="tabs-mail">
+            <div><div style="float:left; margin-right:10px; margin-top:10px;"><i style="font-size:xx-large" class="icon-mail"></i></div><div><h4 data-translateable="true">Email configuration</h4></div></div>
+            <span>Agocontrol can send alert through email.</span>
+            <hr/>
+            <ko opts="if: mailstatus() == 1"> 
+                <span style="color:#00CC00;">Mail is configured</span>
+            </ko>
+            <ko opts="if: mailstatus() == 0"> 
+                <span style="color:#CC0000;">Mail is not yet configured</span>
+            </ko>
+            <br/>
+            <span>Specify your email SMTP server and a sender email address:</span>
+            <form>
+                <ul>
+                <li><span>SMTP server: </span><input class="mailSmtp" name="value" placeholder="smtp"/></li>
+                <li><span>Sender email: </span><input class="mailSender" name="value" placeholder="email"/>
+                <button data-translateable="true" data-bind="click: mailConfig">Save</button></li>
+                </ul>
+            </form>
+            <hr/>
+            <form>
+            <span>To send you a test email, type your email address and click on button: </span><input class="mailEmail" name="value" placeholder="email address"/><button data-translateable="true" data-bind="click: mailTest">Test</button>
+            </form>
+        </div>
+    </div>
+</div>

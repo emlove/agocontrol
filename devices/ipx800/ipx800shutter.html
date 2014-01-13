@@ -1,0 +1,49 @@
+<div data-bind="attr: {'data-uuid': uuid}" class="four columns grid-item device">
+	<div class="row">
+		<div class="three columns">
+			<div class="pretty large primary btn grid-item-icon handle">
+				<i data-bind="click: showDetails" class="icon-progress-2"/>
+			</div>
+		</div>
+		<div class="nine columns">
+			<div class="grid-item-header">
+				<h3 data-bind="text: name, if: name"/>
+				<ko opts="if: room ">
+					<p class="room"><i class="icon-location"/><span data-bind="text: room"/></p>
+				</ko>
+                                <p class="info"><i class="icon-info"/>
+                                        <ko opts="if: state()==3">
+                                                <span data-translateable="true">OPENED</span>
+                                        </ko>
+                                        <ko opts="if: state()==4">
+                                                <span data-translateable="true">CLOSED</span>
+                                        </ko>
+                                        <ko opts="if: state()==5">
+                                                <span data-translateable="true">OPENING</span>
+                                        </ko>
+                                        <ko opts="if: state()==6">
+                                                <span data-translateable="true">CLOSING</span>
+                                        </ko>
+                                </p>
+			</div>
+		</div>
+	</div>
+	<div class="row grid-item-controls">
+		<div class="six columns">
+		    <ko opts="if: state()==4">
+                <div data-value="on" data-translateable="false" data-bind="click: open" class="cmd-btn pretty medium primary btn btn-full grid-command">OPEN</div>
+            </ko>
+            <ko opts="if: state()!=4">
+                <div data-value="on" data-translateable="false" data-bind="click: open" class="cmd-btn pretty medium default btn btn-full grid-command">OPEN</div>
+            </ko>
+		</div>
+		<div class="six columns">
+		    <ko opts="if: state()==3">
+		        <div data-value="off" data-translateable="false" data-bind="click: close" class="cmd-btn pretty medium primary btn btn-full grid-command">CLOSE</div>
+		    </ko>
+            <ko opts="if: state()!=3">
+                <div data-value="off" data-translateable="false" data-bind="click: close" class="cmd-btn pretty medium default btn btn-full grid-command">CLOSE</div>
+            </ko> 
+		</div>
+	</div>
+</div>

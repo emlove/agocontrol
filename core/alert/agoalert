@@ -1,0 +1,608 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+# IPX800 relay board client
+# http://gce-electronics.com
+# copyright (c) 2013 tang
+ 
+import sys
+import agoclient
+import threading
+import time
+import logging
+from Queue import Queue
+#google hangout lib
+import xmpp
+#twitter lib
+import tweepy
+#mail lib
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+
+client = None
+twitter = None
+mail = None
+sms = None
+gtalk = None
+hangout = None
+
+#logging.basicConfig(filename='agosqueezebox.log', level=logging.INFO, format="%(asctime)s %(levelname)s : %(message)s")
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(name)s %(levelname)s : %(message)s")
+
+#=================================
+#classes
+#=================================
+class AgoAlert(threading.Thread):
+    """base class for agoalert message"""
+    def __init__(self):
+        threading.Thread.__init__(self)
+        self.__running = True
+        self.__queue = Queue()
+
+    def stop(self):
+        self.__running = False
+
+    def _addMessage(self, message):
+        """Queue specified message"""
+        self.__queue.put(message)
+
+    def configured(self):
+        """return if module is configured or not"""
+        raise NotImplementedError('configured method must be implemented')
+
+    def _sendMessage(self, message):
+        """send message"""
+        raise NotImplementedError('_sendMessage method must be implemented')
+
+    def run(self):
+        """main process"""
+        while self.__running:
+            if not self.__queue.empty():
+                #message to send
+                message = self.__queue.get()
+                logging.info('send message: %s' % str(message))
+                try:
+                    self._sendMessage(message)
+                except Exception as e:
+                    logging.error('Unable to send message: %s' % str(e))
+            #pause
+            time.sleep(0.25)
+
+class SMS12voip(AgoAlert):
+    """Class to send text message (SMS) using 12voip.com provider"""
+    def __init__(self, username, password):
+        """Contructor"""
+        AgoAlert.__init__(self)
+        self.username = username
+        self.password = password
+        if username and len(username)>0 and password and len(password)>0:
+            self.__configured = True
+            client.emitEvent('alertcontroller', "event.device.statechanged", "31", "")
+        else:
+            self.__configured = False
+            client.emitEvent('alertcontroller', "event.device.statechanged", "30", "")
+
+    def configured(self):
+        if self.__configured:
+            return 1
+        else:
+            return 0
+
+    def setConfig(self, username, password):
+        """Set config
+           @param username: 12voip username
+           @param password: 12voip password"""
+        if not username or len(username)==0 or not password or len(password)==0:
+            logging.error('SMS12voip: invalid parameters')
+            return False
+        if not agoclient.setConfigOption('12voip', 'username', username, 'alert') or not agoclient.setConfigOption('12voip', 'password', password, 'alert'):
+            logging.error('SMS12voip: unable to save config')
+            return False
+        self.username = username
+        self.password = password
+        self.__configured = True
+        client.emitEvent('alertcontroller', "event.device.statechanged", "31", "")
+        return True
+
+    def addSMS(self, to, text):
+        """Add SMS"""
+        if self.__configured:
+            #check parameters
+            if not to or not text or len(to)==0 or len(text)==0:
+                logging.error('SMS12voip: Unable to add SMS because all parameters are mandatory')
+                return False
+            if not to.startswith('+'):
+                logging.error('SMS12voip: Unable to add SMS because "to" number must be international number')
+                return False
+            if len(text)>160:
+                logging.warning('SMS12voip: SMS is too long, message will be truncated')
+                text = text[:159]
+            #queue sms
+            self._addMessage({'to':to, 'text':text})
+            return True
+        else:
+            logging.error('SMS12voip: unable to add SMS because not configured')
+            return False
+
+    def _sendMessage(self, message):
+        """url format:
+           https://www.12voip.com/myaccount/sendsms.php?username=xxxxxxxxxx&password=xxxxxxxxxx&from=xxxxxxxxxx&to=xxxxxxxxxx&text=xxxxxxxxxx""" 
+        params = {'username':self.username, 'password':self.password, 'from':self.username, 'to':message['to'], 'text':message['text']}
+        url = 'https://www.12voip.com/myaccount/sendsms.php?'
+        url += urllib.urlencode(params)
+        req = urllib2.urlopen(url)
+        lines = req.readlines()
+        req.close()
+        self.logger.debug(url)
+
+class GTalk(AgoAlert):
+    """Class for GTalk message sending"""
+    def __init__(self, username, password):
+        """constructor"""
+        AgoAlert.__init__(self)
+        self.username = username
+        self.password = password
+        if username and len(username)>0 and password and len(password)>0:
+            self.__configured = True
+            client.emitEvent('alertcontroller', "event.device.statechanged", "11", "")
+        else:
+            self.__configured = False
+            client.emitEvent('alertcontroller', "event.device.statechanged", "10", "")
+
+    def configured(self):
+        if self.__configured:
+            return 1
+        else:
+            return 0
+
+    def setConfig(self, username, password):
+        """set gtalk config
+           @param username: must be your google username (ending with @gmail.com)
+           @param password: your password or 2-step verification token
+           @info generate token here : https://www.google.com/settings/security""" 
+        if not username or len(username)==0 or not password or len(password)==0:
+            logging.error('GTalk: Unable to add SMS because all parameters are mandatory')
+            return False
+        if not agoclient.setConfigOption('gtalk', 'username', username, 'alert') or not agoclient.setConfigOption('gtalk', 'password', password, 'alert'):
+            logging.error('GTalk: unable to save config')
+            return False
+        self.username = username
+        self.password = password
+        self.__configured = True
+        client.emitEvent('alertcontroller', "event.device.statechanged", "11", "")
+        return True
+
+    def addMessage(self, to, message):
+        """Add GTalk message"""
+        if self.__configured:
+            #check parameters
+            if not to or len(to)==0 or not message or len(message)==0:
+                logging.error('GTalk: Unable to add message because all parameters are mandatory')
+                return False
+            #queue message
+            self._addMessage({'to':to, 'message':message})
+            return True
+        else:
+            logging.error('GTalk: unable to add message because not configured')
+            return False
+
+    def _sendMessage(self, message):
+       jid = xmpp.protocol.JID( self.username )
+       #connection = xmpp.Client('gmail.com')
+       connection = xmpp.Client('gmail.com', debug=[]) #no debug
+       connection.connect( ( 'talk.google.com', 5222 ) )
+       connection.auth( jid.getNode( ), self.password, 'agocontrol' )
+       connection.sendInitPresence()
+       connection.send( xmpp.protocol.Message( message['to'], message['message'], typ='chat' ) )
+       del connection
+
+class Twitter(AgoAlert):
+    """Class for tweet sending"""
+    def __init__(self, key, secret):
+        """constructor"""
+        AgoAlert.__init__(self)
+        global client
+        self.consumerKey = '8SwEenXApf9NNpufRk171g'
+        self.consumerSecret = 'VoVGMLU63VThwRBiC1uwN3asR5fqblHBQyn8EZq2Q'
+        self.__auth = None
+        self.key = key
+        self.secret = secret
+        if key and len(key)>0 and secret and len(secret)>0:
+            self.__configured = True
+            client.emitEvent('alertcontroller', "event.device.statechanged", "41", "")
+        else:
+            self.__configured = False
+            client.emitEvent('alertcontroller', "event.device.statechanged", "40", "")
+
+    def configured(self):
+        if self.__configured:
+            return 1
+        else:
+            return 0
+
+    def setAccessCode(self, code):
+        """Set twitter access code to get user key and secret
+           @param code: code provided by twitter """
+        if code and len(code)>0:
+            try:
+                if not self.__auth:
+                    self.__auth = tweepy.OAuthHandler(self.consumerKey, self.consumerSecret)
+                #get token
+                token = self.__auth.get_access_token(code)
+                #save token internally
+                self.key = token.key
+                self.secret = token.secret
+                #save token in config file
+                if agoclient.setConfigOption('twitter', 'key', self.key, 'alert') and agoclient.setConfigOption('twitter', 'secret', self.secret, 'alert'):
+                    self.__configured = True
+                    client.emitEvent('alertcontroller', "event.device.statechanged", "41", "")
+                    return {'error':0, 'msg':''}
+                else:
+                    return {'error':0, 'msg':'Unable to save Twitter token in config file.'}
+            except Exception as e:
+                logging.error('Twitter: config exception [%s]' % str(e))
+                return {'error':1, 'msg':'Internal error'}
+        else:
+            logging.error('Twitter: code is mandatory')
+            return {'error':1, 'msg':'Internal error'}
+
+    def getAuthorizationUrl(self):
+        """get twitter authorization url"""
+        global client
+        try:
+            if not self.__auth:
+                self.__auth = tweepy.OAuthHandler(self.consumerKey, self.consumerSecret)
+            url = self.__auth.get_authorization_url()
+            logging.debug('twitter url=%s' % url)
+            return {'error':0, 'url':url}
+        except Exception as e:
+            logging.error('Twitter: Unable to get Twitter authorization url [%s]' % str(e)) 
+            return {'error':1, 'url':''}
+
+    def addTweet(self, tweet):
+        """Add tweet"""
+        if self.__configured:
+            #check parameters
+            if not tweet and len(tweet)==0:
+                logging.error('Unable to add tweet: all parameters are mandatory')
+                return False
+            if len(tweet)>140:
+                logging.warning('Tweet is too long, message will be truncated')
+                tweet = tweet[:139]
+            #queue message
+            self._addMessage({'tweet':tweet})
+            return True
+        else:
+            logging.error('Twitter: unable to add tweet because not configured')
+            return False
+
+    def _sendMessage(self, message):
+        #connect using OAuth auth (basic auth deprecated)
+        auth = tweepy.OAuthHandler(self.consumerKey, self.consumerSecret)
+        logging.info('key=%s secret=%s' % (self.key, self.secret))
+        auth.set_access_token(self.key, self.secret)
+        api = tweepy.API(auth)
+        api.update_status(message['tweet'])
+
+class Mail(AgoAlert):
+    """Class for mail sending"""
+    def __init__(self, smtp, sender):
+        """Constructor"""
+        AgoAlert.__init__(self)
+        global client
+        self.smtp = smtp
+        self.sender = sender
+        if smtp and len(smtp)>0 and sender and len(sender)>0:
+            self.__configured = True
+            client.emitEvent('alertcontroller', "event.device.statechanged", "21", "")
+        else:
+            self.__configured = False
+            client.emitEvent('alertcontroller', "event.device.statechanged", "20", "")
+
+    def configured(self):
+        if self.__configured:
+            return 1
+        else:
+            return 0
+
+    def setConfig(self, smtp, sender):
+        """set config
+           @param smtp: smtp server address
+           @param sender: mail sender""" 
+        if not smtp or len(smtp)==0 or not sender or len(sender)==0:
+            logging.error('Mail: all parameters are mandatory')
+            return False
+        if not agoclient.setConfigOption('mail', 'smtp', smtp, 'alert') or not agoclient.setConfigOption('mail', 'sender', sender, 'alert'):
+            logging.error('Mail: unable to save config')
+            return False
+        self.smtp = smtp
+        self.sender = sender
+        self.__configured = True
+        client.emitEvent('alertcontroller', "event.device.statechanged", "21", "")
+        return True
+
+    def addMail(self, tos, subject, content):
+        """Add mail
+           @param subject: mail subject
+           @param tos: send mail to list of tos
+           @param content: mail content"""
+        if self.__configured:
+            #check params
+            if not subject or not tos or not content or len(tos)==0 or len(content)==0:
+                logging.error('Unable to add mail: all parameters are mandatory')
+                return False
+            if not subject:
+                subject = 'AgoControlAlert'
+            #queue mail
+            self._addMessage({'subject':subject, 'tos':tos, 'content':content})
+            return True
+        else:
+            logging.error('Mail: unable to add mail because not configured')
+            return False
+
+    def _sendMessage(self, message):
+        mails = smtplib.SMTP(self.smtp)
+        mail = MIMEMultipart('alternative')
+        mail['Subject'] = message['content']
+        mail['From'] = self.sender
+        mail['To'] = message['tos'][0]
+        text = """%s""" % (message['content'])
+        html  = "<html><head></head><body>%s</body>" % (message['content'])
+        part1 = MIMEText(text, 'plain')
+        part2 = MIMEText(html, 'html')
+        mail.attach(part1)
+        mail.attach(part2)
+        mails.sendmail(self.sender, message['tos'], mail.as_string())
+        mails.quit()
+
+
+#=================================
+#utils
+#=================================
+def quit(msg):
+    """Exit application"""
+    global sms, hangout, mail, twitter, gtalk
+    global client
+    if client:
+        del client
+        client = None
+    if sms:
+        sms.stop()
+        del sms
+        sms = None
+    if twitter:
+        twitter.stop()
+        del twitter
+        twitter = None
+    if hangout:
+        hangout.stop()
+        del hangout
+        hangout = None
+    if gtalk:
+        gtalk.stop()
+        del gtalk
+        gtalk = None
+    if mail:
+        mail.stop()
+        del mail
+        mail = None
+    logging.fatal(msg)
+    sys.exit(0)
+
+
+#=================================
+#functions
+#=================================
+def commandHandler(internalid, content):
+    """ago command handler"""
+    logging.info('commandHandler: %s, %s' % (internalid,content))
+    global twitter
+    global client
+    command = None
+
+    if content.has_key('command'):
+        command = content['command']
+    else:
+        logging.error('No command specified')
+        return None
+
+    if command=='alertstatus':
+        #return module status
+        try:
+            return {'error':0, 'msg':'', 'twitter':twitter.configured(), 'mail':mail.configured(), 'sms':sms.configured(), 'gtalk':gtalk.configured()}
+        except Exception as e:
+            logging.error('commandHandler: configured exception [%s]' % str(e))
+            return {'error':1, 'msg':'Internal error'}
+    elif command=='twitterurl':
+        #get authorization url
+        return twitter.getAuthorizationUrl()
+    elif command=='twitteraccesscode':
+        #set twitter config
+        if content.has_key('code'):
+            return twitter.setAccessCode(content['code'])
+        else:
+            logging.error('commandHandler: parameters missing for Twitter config')
+            return {'error':1, 'msg':'Internal error'}
+    elif command=='twittertest':
+        #twitter test
+        if twitter.addTweet('agocontrol test tweet @ %s' % time.strftime('%H:%M:%S')):
+            return {'error':0, 'msg':'Tweet successful'}
+        else:
+            logging.warning('CommandHandler: failed to tweet')
+            return {'error':1, 'msg':'Failed to tweet'}
+    elif command=='twittersend':
+        #send tweet
+        if content.has_key('tweet'):
+            if twitter.addTweet(content['tweet']):
+                return {'error':0, 'msg':''}
+            else:
+                logging.warning('CommandHandler: failed to tweet [%s]' % str(content['tweet']))
+                return {'error':1, 'msg':'Failed to tweet'}
+        else:
+            logging.error('commandHandler: parameters missing for Twitter tweet')
+            return {'error':1, 'msg':'Internal error'}
+    elif command=='smsconfig':
+        #set sms config
+        if content.has_key('username') and content.has_key('password'):
+            if sms.setConfig(content['username'], content['password']):
+                return {'error':0, 'msg':''}
+            else:
+                return {'error':1, 'msg':'Unable to save config'}
+        else:
+            logging.error('commandHandler: parameters missing for SMS config')
+            return {'error':1, 'msg':'Internal error'}
+    elif command=='smstest':
+        #test sms
+        if sms.addSMS(sms.username, 'agocontrol sms test'):
+            return {'error':0, 'msg':'SMS sent successfully'}
+        else:
+            logging.warning('CommandHandler: failed to send SMS [%s, %s]' % (str(content['to']), str(content['text'])))
+            return {'error':1, 'msg':'Failed to send SMS'}
+    elif command=='smssend':
+        #send sms
+        if content.has_key('to') and content.has_key('text'):
+            if sms.addSMS(content['to'], content['text']):
+                return {'error':0, 'msg':''}
+            else:
+                logging.warning('CommandHandler: failed to send SMS [%s, %s]' % (str(content['to']), str(content['text'])))
+                return {'error':1, 'msg':'Failed to send SMS'}
+        else:
+            logging.error('commandHandler: parameters missing for SMS')
+            return {'error':1, 'msg':'Internal error'}
+    elif command=='mailconfig':
+        #set mail config
+        if content.has_key('smtp') and content.has_key('sender'):
+            if mail.setConfig(content['smtp'], content['sender']):
+                return {'error':0, 'msg':''}
+            else:
+                return {'error':1, 'msg':'Unable to save config'}
+        else:
+            logging.error('commandHandler: parameters missing for Mail config')
+            return {'error':1, 'msg':'Internal error'}
+    elif command=='mailtest':
+        #mail test
+        if content.has_key('email'):
+            tos = content['email'].split(';')
+            if mail.addMail(tos, 'agocontrol mail test', 'If you receive this email it means agocontrol alert is working fine!'):
+                return {'error':0, 'msg':'Email sent successfully'}
+            else:
+                logging.warning('CommandHandler: failed to send email [%s, test]' % (str(tos)))
+                return {'error':1, 'msg':'Failed to send email'}
+        else:
+            logging.error('commandHandler: parameters missing for SMS')
+            return {'error':1, 'msg':'Internal error'}
+    elif command=='mailsend':
+        #send mail
+        if content.has_key('tos') and content.has_key('subject') and content.has_key('content'):
+            tos = content['tos'].split(';')
+            if mail.addMail(tos, content['subject'], content['content']):
+                return {'error':0, 'msg':''}
+            else:
+                logging.warning('CommandHandler: failed to send email [%s, %s, %s]' % (str(tos), str(content['subject']), str(content['content'])))
+                return {'error':1, 'msg':'Failed to send SMS'}
+        else:
+            logging.error('commandHandler: parameters missing for SMS')
+            return {'error':1, 'msg':'Internal error'}
+    elif command=='gtalkconfig':
+        #set gtalk config
+        if content.has_key('username') and content.has_key('password'):
+            if gtalk.setConfig(content['username'], content['password']):
+                return {'error':0, 'msg':''}
+            else:
+                return {'error':1, 'msg':'Unable to save config'}
+        else:
+            logging.error('commandHandler: parameters missing for GTalk config')
+            return {'error':1, 'msg':'Internal error'}
+    elif command=='gtalktest':
+        #test gtalk
+        if gtalk.addMessage(gtalk.username, 'agocontrol gtalk test'):
+            return {'error':0, 'msg':''}
+        else:
+            logging.warning('CommandHandler: failed to send GTalk message [test]')
+            return {'error':1, 'msg':'Failed to send GTalk message'}
+    elif command=='gtalksend':
+        #send gtalk message
+        if content.has_key('to') and content.has_key('message'):
+            if gtalk.addMessage(content['to'], content['message']):
+                return {'error':0, 'msg':''}
+            else:
+                logging.warning('CommandHandler: failed to send GTalk message [%s, %s]' % (str(content['to']), str(content['message'])))
+                return {'error':1, 'msg':'Failed to send GTalk message'}
+        else:
+            logging.error('commandHandler: parameters missing for GTalk')
+            return {'error':1, 'msg':'Internal error'}
+
+def eventHandler(event, content):
+    """ago event handler"""
+    #logging.info('eventHandler: %s, %s' % (event, content))
+    global client
+    uuid = None
+    internalid = None
+
+    #get uuid
+    if content.has_key('uuid'):
+        uuid = content['uuid']
+        internalid = client.uuidToInternalId(uuid)
+    
+    if uuid and uuid in client.uuids:
+        #uuid belongs to this handler
+        #TODO manage events here
+        pass
+
+
+#=================================
+#main
+#=================================
+#init
+try:
+    #connect agoclient
+    client = agoclient.AgoConnection('alert')
+
+    #load config
+    configMailSmtp = agoclient.getConfigOption("mail", "smtp", "", 'alert')
+    configMailSender = agoclient.getConfigOption("mail", "sender", "", 'alert')
+    configTwitterKey = agoclient.getConfigOption("twitter", "key", "", 'alert')
+    configTwitterSecret = agoclient.getConfigOption("twitter", "secret", "", 'alert')
+    configGTalkUsername = agoclient.getConfigOption("gtalk", "username", "", 'alert')
+    configGTalkPassword = agoclient.getConfigOption("gtalk", "password", "", 'alert')
+    configSmsUsername = agoclient.getConfigOption("12voip", "username", "", 'alert')
+    configSmsPassword = agoclient.getConfigOption("12voip", "password", "", 'alert')
+
+    #create objects
+    mail = Mail(configMailSmtp, configMailSender)
+    twitter = Twitter(configTwitterKey, configTwitterSecret)
+    sms = SMS12voip(configSmsUsername, configSmsPassword)
+    gtalk = GTalk(configGTalkUsername, configGTalkPassword)
+
+    #start services
+    mail.start()
+    twitter.start()
+    sms.start()
+    gtalk.start()
+
+    #add client handlers
+    client.addHandler(commandHandler)
+    client.addEventHandler(eventHandler)
+
+    #add controller
+    logging.info('Add controller')
+    client.addDevice('alertcontroller', 'alertcontroller')
+
+
+except Exception as e:
+    #init failed
+    quit('Init failed, exit now. (%s)' % str(e))
+
+#run agoclient
+try:
+    logging.info('Running agoclient...')
+    client.run()
+except KeyboardInterrupt:
+    #stopped by user
+    quit('agoalert stopped by user')
+except Exception as e:
+    logging.fatal('Exception on main: %s' % str(e))
+    #stop everything
+    quit('agoalert stopped')
+
