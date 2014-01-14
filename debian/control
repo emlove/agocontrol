@@ -11,9 +11,10 @@ Depends: ${shlibs:Depends}, ${misc:Depends}, python, uuid-runtime, sqlite3, pyth
 Description: automation system
 
 Package: agocontrol-dbg
-Section: devel
+Section: debug
 Architecture: any
-Depends: agocontrol (= ${Source-Version})
+Priority: extra
+Depends: agocontrol (= ${binary:Version}), ${misc:Depends}
 Description: debug info for agocontrol
 
 Package: libagoclient1.0

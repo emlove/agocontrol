@@ -1,6 +1,7 @@
 #!/usr/bin/make -f
 export DH_VERBOSE=1
 
+.PHONY: override_dh_strip
 override_dh_strip:
 	dh_strip --dbg-package=agocontrol-dbg
 %:
