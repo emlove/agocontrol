@@ -600,7 +600,28 @@ void OnNotification
 			}
 			break;
 		}
+		case Notification::Type_SceneEvent:
+		{
+			if( NodeInfo* nodeInfo = GetNodeInfo( _notification ) )
+			{
+				int scene = _notification->GetSceneId();
+				ValueID id = _notification->GetValueID();
+                                string label = Manager::Get()->GetValueLabel(id);
+                                stringstream tempstream;
+                                tempstream << (int) _notification->GetNodeId();
+                                tempstream << "/";
+                                tempstream << (int) id.GetInstance();
+                                string nodeinstance = tempstream.str();
+				string eventtype = "event.device.statechanged";
+				ZWaveNode *device;
+				if ((device = devices.findId(nodeinstance)) != NULL) {
+					if (debug) printf("Sending %s event from child %s\n",eventtype.c_str(), device->getId().c_str());
+					agoConnection->emitEvent(device->getId().c_str(), eventtype.c_str(), scene, "");	
+				}
 
+			}
+			break;
+		}
 		case Notification::Type_PollingDisabled:
 		{
 			if( NodeInfo* nodeInfo = GetNodeInfo( _notification ) )
@@ -640,14 +661,17 @@ void OnNotification
 			pthread_cond_broadcast(&initCond);
 			break;
 		}
-
 		case Notification::Type_DriverReset:
 		case Notification::Type_Notification:
 		case Notification::Type_NodeNaming:
 		case Notification::Type_NodeProtocolInfo:
 		case Notification::Type_NodeQueriesComplete:
+		{
+			break;
+		}
 		default:
 		{
+			cout << "WARNING: Unhandled OpenZWave Event: " << _notification->GetType() << endl;
 		}
 	}
 
