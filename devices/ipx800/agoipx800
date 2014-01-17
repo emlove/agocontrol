@@ -6,11 +6,12 @@
 # copyright (c) 2013 tang
  
 import sys
+import os
 import agoclient
 import threading
 import time
 import logging
-from pyipx800 import Ipx800
+from pyipx800v3 import Ipx800v3
 from qpid.datatypes import uuid4
 import simplejson
 
@@ -18,13 +19,14 @@ IPX_WEBSERVER_PORT = 8010
 STATE_UNKNOWN = 255
 STATE_ON = 1
 STATE_OFF = 2
-STATE_OPENED = 3
-STATE_CLOSED = 4
-STATE_OPENING = 5
-STATE_CLOSING = 6
+STATE_OPENED = 1
+STATE_CLOSED = 0
+STATE_OPENING = 50
+STATE_CLOSING = 100
+STATE_STOPPED = 150
 DEVICE_BOARD = ''
 DEVICE_SWITCH = 'switch'
-DEVICE_SHUTTER = 'shutter'
+DEVICE_DRAPES = 'drapes'
 DEVICE_ANALOG_TEMPERATURE = 'temperature'
 DEVICE_ANALOG_HUMIDITY = 'humidity'
 DEVICE_ANALOG_LIGHT = 'light'
@@ -33,8 +35,8 @@ DEVICE_COUNTER = 'counter'
 
 client = None
 devices = {}
-states = {}
-ipx800 = None
+durations = {}
+ipx800v3 = None
 units = 'SI'
 
 #logging.basicConfig(filename='agosqueezebox.log', level=logging.INFO, format="%(asctime)s %(levelname)s : %(message)s")
@@ -47,6 +49,7 @@ class Ipx800AgoConnection(agoclient.AgoConnection):
     """need to overwrite some functions to save device state"""
     def __init__(self, instance):
         self.states = {}
+        self.durations = {}
         self.__lock = threading.Lock()
         agoclient.AgoConnection.__init__(self, instance)
 
@@ -55,24 +58,35 @@ class Ipx800AgoConnection(agoclient.AgoConnection):
 
     def storeUuidMap(self):
         self.__lock.acquire(True)
-        with open('/etc/opt/agocontrol/uuidmap/' + self.instance + '.json' , 'w') as outfile:
-            items = {}
-            for uuid in self.uuids:
-                items[uuid] = {'internalid':self.uuids[uuid], 'state':self.states[uuid]}
-            simplejson.dump(items, outfile)
+        try:
+            with open('/etc/opt/agocontrol/uuidmap/' + self.instance + '.json' , 'w') as outfile:
+                items = {}
+                for uuid in self.uuids:
+                    items[uuid] = {'internalid':self.uuids[uuid], 'state':self.states[uuid], 'duration':self.durations[uuid]}
+                simplejson.dump(items, outfile)
+        except:
+            pass
         self.__lock.release()
 
     def loadUuidMap(self):
         self.__lock.acquire(True)
         try:
-            with open('/etc/opt/agocontrol/uuidmap/' + self.instance + '.json' , 'r') as infile:
-                items = simplejson.load(infile)
-                for item in items:
-                    self.uuids[item] = items[item]['internalid']
-                    self.states[item] = items[item]['state']
+            path = '/etc/opt/agocontrol/uuidmap/' + self.instance + '.json'
+            if os.path.exists(path):
+                with open(path , 'r') as infile:
+                    items = simplejson.load(infile)
+                    for item in items:
+                        self.uuids[item] = items[item]['internalid']
+                        self.states[item] = items[item]['state']
+                        if items[item].has_key('duration'):
+                            self.durations[item] = items[item]['duration']
+                        else:
+                            self.durations[item] = 0
+            else:
+                f = open(path, 'w')
+                f.close()
         except Exception as e:
-            logging.error(str(e))
-            pass
+            logging.exception('Exception on loadUuidMap:')
         self.__lock.release()
 
     def removeDevice(self, internalid):
@@ -90,11 +104,13 @@ class Ipx800AgoConnection(agoclient.AgoConnection):
             uuid = str(uuid4())
             self.uuids[uuid] = internalid
             self.states[uuid] = devicestate
+            self.durations[uuid] = 0
             self.storeUuidMap()
         device = {}
         device["devicetype"] = devicetype
         device["internalid"] = internalid
         device["state"] = devicestate
+        device["duration"] = 0
         self.devices[self.internalIdToUuid(internalid)] = device
         self.emitDeviceAnnounce(self.internalIdToUuid(internalid), device)
         if devicestate!=STATE_UNKNOWN:
@@ -108,10 +124,28 @@ class Ipx800AgoConnection(agoclient.AgoConnection):
             self.storeUuidMap()
             self.emitEvent(internalid, "event.device.statechanged", str(devicestate), "")
 
+    def updateDeviceDuration(self, internalid, deviceduration):
+        """update device duration
+           @param internalid: device internalid
+           @param deviceduration: {start:timestamp, stop:timestamp} """
+        uuid = self.internalIdToUuid(internalid)
+        if ( uuid!=None ):
+            dur = deviceduration['stop'] - deviceduration['start']
+            if dur!=self.durations[uuid]:
+                self.durations[uuid] = deviceduration['stop'] - deviceduration['start']
+                self.devices[uuid]['duration'] = self.durations[uuid]
+                self.storeUuidMap()
+
     def getDeviceState(self, internalid):
         uuid = self.internalIdToUuid(internalid)
         if ( uuid!=None ):
             return self.states[uuid]
+        return None
+
+    def getDeviceDuration(self, internalid):
+        uuid = self.internalIdToUuid(internalid)
+        if ( uuid!=None ):
+            return self.durations[uuid]
         return None
 
     def updateDeviceValue(self, internalid, devicetype, devicevalue):
@@ -119,7 +153,7 @@ class Ipx800AgoConnection(agoclient.AgoConnection):
         uuid = self.internalIdToUuid(internalid)
         if ( uuid!=None ):
             event = 'event.device.statechanged'
-            unit = ''
+            unit = '&nbsp;'
             if devicetype==DEVICE_ANALOG_TEMPERATURE:
                 event = 'event.environment.temperaturechanged'
                 if units=='SI':
@@ -141,7 +175,7 @@ class Ipx800AgoConnection(agoclient.AgoConnection):
                 unit = 'Lux'
             elif devicetype==DEVICE_COUNTER:
                 event = 'event.environment.counterchanged'
-                unit = '-'
+                unit = '&nbsp;'
             else:
                 event = 'event.device.statechanged'
                 unit = None
@@ -154,15 +188,15 @@ class Ipx800AgoConnection(agoclient.AgoConnection):
 #=================================
 def quit(msg):
     """Exit application"""
-    global ipx800
+    global ipx800v3
     global client
     if client:
         del client
         client = None
-    if ipx800:
-        ipx800.stop()
-        del ipx800
-        ipx800 = None
+    if ipx800v3:
+        ipx800v3.stop()
+        del ipx800v3
+        ipx800v3 = None
     logging.fatal(msg)
     sys.exit(0)
 
@@ -241,6 +275,19 @@ def buildDevicesList():
             count += 1
     logging.debug('%d devices in local devices list' % count)
 
+def getDevice(ipxIp, internalid):
+    """Return device identified by internalid on ipxIp board
+       @param ipxIp: ipx ip address
+       @param internalid: device internalid"""
+    global devices
+    if not devices.has_key(ipxIp):
+        logging.warning('Try to get a device of unknown IPX800 [%s]' % ipxIp)
+        return None
+    for device in devices[ipxIp]:
+        if device['internalid']==internalid:
+            return device
+    return None
+
 def getDeviceUsingOutput(ipxIp, outputId):
     """return device using specified outputId
        @param ipxIp: ip address of ipx 
@@ -251,8 +298,8 @@ def getDeviceUsingOutput(ipxIp, outputId):
         logging.warning('Try to get a device of unknown IPX800 [%s]' % ipxIp)
         return None
     for device in devices[ipxIp]:
-        if device['type']==DEVICE_SHUTTER:
-            #look at inputs id for shutter too
+        if device['type']==DEVICE_DRAPES:
+            #look at inputs id for drapes too
             logging.debug('search id %d in inputs "%s"' % (outputId, str(device['inputs'])))
             if outputId in device['inputs']:
                 return device
@@ -311,8 +358,9 @@ def getDeviceUsingCounter(ipxIp, counterId):
 def ipxCallback(ipxIp, content):
     """ipxCallback is called after IPX800 M2M call
        ipxDict: dict of inputs/outputs/counters/timer/... depending on IPX800 M2M config"""
-    logging.info('Callback received from ipx "%s": %s' % (ipxIp, str(content)))
+    logging.debug('Callback received from ipx "%s": %s' % (ipxIp, str(content)))
     global client
+    global durations
     #update device state
     for item in content:
         if item.startswith('out'):
@@ -334,37 +382,47 @@ def ipxCallback(ipxIp, content):
                                 client.updateDeviceState(device['internalid'], STATE_ON)
                         else:
                             logging.warning('Unknown value received for switch action [%s]' % str(content[item]))
-                    elif device['type']==DEVICE_SHUTTER:
+                    elif device['type']==DEVICE_DRAPES:
+                        if not durations.has_key(device['internalid']):
+                            durations[device['internalid']] = {'start':0, 'stop':0}
                         if outputid in device['inputs']:
                             #open action
                             if content[item]==0:
                                 if device['state']==STATE_OPENING:
-                                    #shutter opened
-                                    logging.info('Shutter "%s@%s" opened' % (ipxIp, device['internalid']))
+                                    #drapes opened
+                                    logging.info('Drapes "%s@%s" opened' % (ipxIp, device['internalid']))
                                     client.updateDeviceState(device['internalid'], STATE_OPENED)
+                                    durations[device['internalid']]['stop'] = int(time.time())
+                                    logging.debug('duration[%s]: start=%d stop=%d' % (device['internalid'], durations[device['internalid']]['start'], durations[device['internalid']]['stop']))
+                                    client.updateDeviceDuration(device['internalid'], durations[device['internalid']])
                             elif content[item]==1:
                                 if device['state']==STATE_CLOSED:
-                                    #shutter is opening
-                                    logging.info('Shutter "%s@%s" is opening' % (ipxIp, device['internalid']))
+                                    #drapes is opening
+                                    logging.info('Drapes "%s@%s" is opening' % (ipxIp, device['internalid']))
                                     client.updateDeviceState(device['internalid'], STATE_OPENING)
+                                    durations[device['internalid']]['start'] = int(time.time())
                             else:
                                 #unknown value
-                                logging.warning('Unknown value received for shutter open action [%s]' % str(content[item]))
+                                logging.warning('Unknown value received for drapes open action [%s]' % str(content[item]))
                         elif outputid in device['outputs']:
                             #close action
                             if content[item]==0:
                                 if device['state']==STATE_CLOSING:
-                                    #shutter closed
-                                    logging.info('Shutter "%s@%s" closed' % (ipxIp, device['internalid']))
+                                    #drapes closed
+                                    logging.info('Drapes "%s@%s" closed' % (ipxIp, device['internalid']))
                                     client.updateDeviceState(device['internalid'], STATE_CLOSED)
+                                    durations[device['internalid']]['stop'] = int(time.time())
+                                    logging.debug('duration[%s]: start=%d stop=%d' % (device['internalid'], durations[device['internalid']]['start'], durations[device['internalid']]['stop']))
+                                    client.updateDeviceDuration(device['internalid'], durations[device['internalid']])
                             elif content[item]==1:
                                 if device['state']==STATE_OPENED:
-                                    #shutter is closing
-                                    logging.info('Shutter "%s@%s" is closing' % (ipxIp, device['internalid']))
+                                    #Drapes is closing
+                                    logging.info('Drapes "%s@%s" is closing' % (ipxIp, device['internalid']))
                                     client.updateDeviceState(device['internalid'], STATE_CLOSING)
+                                    durations[device['internalid']]['start'] = int(time.time())
                             else:
                                 #unknown value
-                                logging.warning('Unknown value received for shutter close action [%s]' % str(content[item]))
+                                logging.warning('Unknown value received for drapes close action [%s]' % str(content[item]))
                     else:
                         #TODO manage new device using outputs here
                         pass
@@ -415,27 +473,27 @@ def ipxCallback(ipxIp, content):
     #update devices list after each callback
     buildDevicesList()
 
-def addIpx800Board(ipxIp):
-    """add ipx800 board"""
+def addIpx800v3Board(ipxIp):
+    """add ipx800v3 board"""
     global client
     if not devices.has_key(ipxIp):
-        #add new ipx800 board
+        #add new ipx800v3 board
         internalid = buildDeviceName(ipxIp, DEVICE_BOARD, [], [], [], [])
-        client.addDevice(internalid, 'ipx800board', STATE_UNKNOWN)
+        client.addDevice(internalid, 'ipx800v3board', STATE_UNKNOWN)
         #refresh devices list
         #buildDevicesList()
     else:
-        logging.error('addIpx800Board: ipx already registered!')
+        logging.error('addIpx800v3Board: ipx already registered!')
 
-def removeIpx800Board(ipxIp):
-    """remove ipx800 board"""
+def removeIpx800v3Board(ipxIp):
+    """remove ipx800v3 board"""
     global client
     if ipxIp and len(ipxIp)>0:
         client.removeDevice(ipxIp)
     else:
-        logging.error('removeIpx800Board: invalid ip address [%s]' % ipxIp)
+        logging.error('removeIpx800v3Board: invalid ip address [%s]' % ipxIp)
 
-def addIpx800Switch(ipxIp, outputId):
+def addSwitch(ipxIp, outputId):
     """add switch as virtual device
        @param name: name of switch
        @param output: used relay"""
@@ -451,19 +509,19 @@ def addIpx800Switch(ipxIp, outputId):
         #search device already using specified output
         device = getDeviceUsingOutput(ipxIp, outputId)
         if device:
-            logging.error('addIpx800Switch: output id %d is already used by device "%s"' % (outputId, device['internalid']))
+            logging.error('addSwitch: output id %d is already used by device "%s"' % (outputId, device['internalid']))
             return False
         #add device
         internalid = buildDeviceName(ipxIp, DEVICE_SWITCH, [], [outputId], [], [])
-        client.addDevice(internalid, 'ipx800switch', STATE_OFF)
+        client.addDevice(internalid, 'switch', STATE_OFF)
     else:
-        logging.error('addIpx800Switch: invalid parameters')
+        logging.error('addIpx800v3Switch: invalid parameters')
 
-def addIpx800Shutter(ipxIp, relayOpen, relayClose):
-    """add switch as virtual device
+def addDrapes(ipxIp, relayOpen, relayClose):
+    """add drapes as virtual device
        @param ipxIp: ipx ip address
-       @param relayOpen: relay used to open the shutter (saved in inputs list)
-       @param relayClose: relay used to close the shutter (saved in outputs list)"""
+       @param relayOpen: relay used to open the drapes (saved in inputs list)
+       @param relayClose: relay used to close the drapes (saved in outputs list)"""
     global client
     if ipxIp and len(ipxIp)>0:
         #make sure relayOpen and relayClose are integers
@@ -471,31 +529,31 @@ def addIpx800Shutter(ipxIp, relayOpen, relayClose):
             relayOpen = int(relayOpen)
             relayClose = int(relayClose)
         except:
-            logger.error('Unable to add shutter because invalid id [open=%s close=%s]' % (str(relayOpen), str(relayClose)))
+            logger.error('Unable to add drape because invalid id [open=%s close=%s]' % (str(relayOpen), str(relayClose)))
             return False
 
         #search device already using specified output
         device = getDeviceUsingOutput(ipxIp, relayOpen)
         if device:
-            logging.error('addIpx800Shutter: output id %d used to open shutter is already used by device "%s"' % (relayOpen, device['internalid']))
+            logging.error('addDrapes: output id %d used to open drapes is already used by device "%s"' % (relayOpen, device['internalid']))
             return False
         device = getDeviceUsingOutput(ipxIp, relayClose)
         if device:
-            logging.error('addIpx800Shutter: output id %d used to close shutter is already used by device "%s"' % (relayClose, device['internalid']))
+            logging.error('addDrapes: output id %d used to close drapes is already used by device "%s"' % (relayClose, device['internalid']))
             return False
         #add device
-        internalid = buildDeviceName(ipxIp, DEVICE_SHUTTER, [relayOpen], [relayClose], [], [])
-        client.addDevice(internalid, 'ipx800shutter', STATE_OPENED)
+        internalid = buildDeviceName(ipxIp, DEVICE_DRAPES, [relayOpen], [relayClose], [], [])
+        client.addDevice(internalid, 'drapes', STATE_OPENED)
     else:
-        logging.error('addIpx800Switch: invalid parameters')
+        logging.error('addDrapes: invalid parameters')
 
-def addIpx800Analog(ipxIp, analogId, deviceType):
+def addAnalog(ipxIp, deviceType, analogId):
     """add analog device
        @param ipxIp: ipx ip address
        @param analogId: analog id used
        @param deviceType: device type """
     global client
-    global ipx800
+    global ipx800v3
     if ipxIp and len(ipxIp)>0 and deviceType in (DEVICE_ANALOG_TEMPERATURE, DEVICE_ANALOG_HUMIDITY, DEVICE_ANALOG_VOLT, DEVICE_ANALOG_LIGHT):
         #make sure analogId is integer
         try:
@@ -507,11 +565,11 @@ def addIpx800Analog(ipxIp, analogId, deviceType):
         #search device already using specified analog
         device = getDeviceUsingAnalog(ipxIp, analogId)
         if device:
-            logging.error('addIpx800Analog: analog id %s is already used by device "%s"' % (str(analogId), device['internalid']))
+            logging.error('addAnalog: analog id %s is already used by device "%s"' % (str(analogId), device['internalid']))
             return False
 
         #get current analog value
-        status = ipx800.getStatus(ipxIp)
+        status = ipx800v3.getStatus(ipxIp)
         value = 0.0
         if status and len(status)>0:
             key = 'an%d' % analogId
@@ -530,18 +588,19 @@ def addIpx800Analog(ipxIp, analogId, deviceType):
             client.addDevice(internalid, 'brightnesssensor', STATE_UNKNOWN)
         client.updateDeviceValue(internalid, deviceType, value)
     else:
-        logging.error('addIpx800Analog: invalid parameters')
+        logging.error('addAnalog: invalid parameters')
         return False
 
     logging.info('Analog "%s@%s" added successfully with value "%s"' % (ipxIp, internalid, str(value)))
 
-def addIpx800Counter(ipxIp, counterId):
-    """add analog device
+def addCounter(ipxIp, counterId):
+    """add counter device
        @param ipxIp: ipx ip address
        @param counterId: counter id used"""
     global client
     if ipxIp and len(ipxIp)>0:
         #make sure counterId is integer
+        logging.info('1')
         try:
             counterId = int(counterId)
         except:
@@ -549,13 +608,15 @@ def addIpx800Counter(ipxIp, counterId):
             return False
 
         #search device already using specified output
+        logging.info('2')
         device = getDeviceUsingCounter(ipxIp, counterId)
         if device:
-            logging.error('addIpx800Counter: counter id %s is already used by device "%s"' % (str(counterId), device['internalid']))
+            logging.error('addCounter: counter id %s is already used by device "%s"' % (str(counterId), device['internalid']))
             return False
 
         #get current counter value
-        status = ipx800.getStatus(ipxIp)
+        logging.info('3')
+        status = ipx800v3.getStatus(ipxIp)
         value = 0
         if status and len(status)>0:
             key = 'cnt%d' % counterId
@@ -563,55 +624,92 @@ def addIpx800Counter(ipxIp, counterId):
                 value = status[key]
 
         #add device
+        logging.info('4')
         internalid = buildDeviceName(ipxIp, DEVICE_COUNTER, [], [], [], [counterId])
         client.addDevice(internalid, 'multilevelsensor', STATE_UNKNOWN)
         client.updateDeviceValue(internalid, DEVICE_COUNTER, value)
     else:
-        logging.error('addIpx800Counter: invalid parameters')
+        logging.error('addCounter: invalid parameters')
         return False
 
     logging.info('Counter "%s@%s" added successfully with value "%s"' % (ipxIp, internalid, str(value)))
 
-def openShutter(internalid, ipxIp, outputId):
-    """open shutter
+def openDrapes(internalid, ipxIp, outputId):
+    """open drapes
        @param internalid: internal id 
        @param ipxIp: ipx ip
        @param outputId: output id"""
-    global ipx800
-    ipx800.setOutput(ipxIp, outputId, 1)
+    global ipx800v3
+    logging.info('openDrapes: ipxIp=%s outputId=%d' % (ipxIp, outputId))
+    ipx800v3.setOutput(ipxIp, outputId, 1)
 
-def closeShutter(internalid, ipxIp, outputId):
-    """open shutter
+def closeDrapes(internalid, ipxIp, outputId):
+    """open drapes
        @param internalid: internal id 
        @param ipxIp: ipx ip
        @param outputId: output id"""
-    global ipx800
-    logging.info('closeShutter: ipxIp=%s outputId=%d' % (ipxIp, outputId))
-    ipx800.setOutput(ipxIp, outputId, 1)
+    global ipx800v3
+    logging.debug('closeDrapes: ipxIp=%s outputId=%d' % (ipxIp, outputId))
+    ipx800v3.setOutput(ipxIp, outputId, 1)
+
+def stopDrapes(internalid, ipxIp):
+    """stop drapes
+       @param internalid: internal id 
+       @param ipxIp: ipx ip"""
+    global ipx800v3
+    logging.debug('stopDrapes: ipxIp=%s' % (ipxIp))
+    dev = getDevice(ipxIp, internalid)
+    if dev:
+        if dev['state']==STATE_OPENING:
+            if len(dev['inputs'])==1:
+                ipx800v3.setOutput(ipxIp, dev['inputs'][0], 0)
+                client.updateDeviceState(dev['internalid'], STATE_STOPPED)
+            else:
+                logging.error('stopDrapes: 1 input expected, %d found' % (len(dev['inputs'])))
+                return False
+        elif dev['state']==STATE_CLOSING:
+            if len(dev['outputs'])==1:
+                ipx800v3.setOutput(ipxIp, dev['outputs'][0], 0)
+                client.updateDeviceState(dev['internalid'], STATE_STOPPED)
+            else:
+                logging.error('stopDrapes: 1 output expected, %d found' % (len(dev['outputs'])))
+                return False
+    else:
+        logging.error('stopDrapes: no device found for "%s@%s"' % (str(ipxIp), str(internalid)))
+        return False
+    return True
+
+def setlevelDrapes(internalid, ipxIp):
+    """setlevelDrapes is a callback of setlevel command Timer
+       @param internalid: internal id 
+       @param ipxIp: ipx ip"""
+    logging.info('setlevelDrapes: ipxIp=%s' % (ipxIp))
+    stopDrapes(internalid, ipxIp)
+    return False
 
 def turnOnSwitch(internalid, ipxIp, outputId):
     """turn on switch
        @param internalid: internal id 
        @param ipxIp: ipx ip
        @param outputId: output id"""
-    global ipx800
-    ipx800.setOutput(ipxIp, outputId, 1)
+    global ipx800v3
+    ipx800v3.setOutput(ipxIp, outputId, 1)
 
 def turnOffSwitch(internalid, ipxIp, outputId):
     """turn off switch
        @param internalid: internal id 
        @param ipxIp: ipx ip
        @param outputId: output id"""
-    global ipx800
-    ipx800.setOutput(ipxIp, outputId, 0)
+    global ipx800v3
+    ipx800v3.setOutput(ipxIp, outputId, 0)
 
 def resetCounter(internalid, ipxIp, counterId):
     """Reset specified counter
        @param internalid: internalid
        @param ipxIp: ipx ip
        @param counterId: counter id"""
-    global ipx800
-    ipx800.setCounter(ipxIp, counterId, 0)
+    global ipx800v3
+    ipx800v3.setCounter(ipxIp, counterId, 0)
 
 def commandHandler(internalid, content):
     """ago command handler"""
@@ -627,89 +725,226 @@ def commandHandler(internalid, content):
 
     if internalid=='ipx800controller':
         #controller command
-        if command=='addipx800':
-            addIpx800Board(content['ip'])
+        if command=='adddevice':
+            #param1=ip
+            if content.has_key('param1'):
+                logging.info('Add IPX800v3 board "%s"' % content['param1'])
+                addIpx800v3Board(content['param1'])
+                return {'error':0, 'msg':'Board added successfully'}
+            else:
+                logging.error('Missing "param1" parameter')
+                return {'error':1, 'msg':'Internal error'}
     else:
         #device command
         (ipxIp, deviceType, inputs, outputs, analogs, counters) = explodeDeviceName(internalid)
-        if command=='addswitch':
-            logging.info('Add switch on "%s"' % (ipxIp))
-            addIpx800Switch(ipxIp, content['relayid'])
-            buildDevicesList()
-        elif command=='addshutter':
-            logging.info('Add shutter on "%s"' % (ipxIp))
-            addIpx800Shutter(ipxIp, content['relayopen'], content['relayclose'])
-            buildDevicesList()
-        elif command=='addanalog':
-            logging.info('Add analog on "%s"' % (ipxIp))
-            addIpx800Analog(ipxIp, content['analogid'], content['type'])
-            buildDevicesList()
-        elif command=='addcounter':
-            logging.info('Add counter on "%s"' % (ipxIp))
-            addIpx800Counter(ipxIp, content['counterid'])
-            buildDevicesList()
-        elif command=='turnOn':
-            if len(outputs)==1:
-                logging.info('Turn on switch "%s@%s"' % (ipxIp, internalid))
-                turnOnSwitch(internalid, ipxIp, outputs[0])
-            else:
-                logging.error('command turnOn: outputs is not valid (1 awaited, %d received) [%s]' % (len(outputs), outputs))
-        elif command=='turnOff':
-            if len(outputs)==1:
-                logging.info('Turn off switch "%s@%s"' % (ipxIp, internalid))
-                turnOffSwitch(internalid, ipxIp, outputs[0])
-            else:
-                logging.error('command turnOff: outputs is not valid (1 awaited, %d received) [%s]' % (len(outputs), outputs))
-        elif command=='open':
-            if len(outputs)==1:
-                logging.info('Open shutter "%s@%s"' % (ipxIp, internalid))
-                openShutter(internalid, ipxIp, inputs[0])
-            else:
-                logging.error('command open: inputs is not valid (1 awaited, %d received) [%s]' % (len(inputs), inputs))
-        elif command=='close':
-            if len(outputs)==1:
-                logging.info('Close shutter "%s@%s"' % (ipxIp, internalid))
-                closeShutter(internalid, ipxIp, outputs[0])
-            else:
-                logging.error('command close: outputs is not valid (1 awaited, %d received) [%s]' % (len(outputs), outputs))
-        elif command=='allopen':
+        if command=='adddevice':
+            #check type presence
+            if not content.has_key('type'):
+                logging.error('Missing "type" parameter')
+                return {'error':1, 'msg':'Internal error'}
+
+            logging.debug('Add device of type "%s"' % content['type'])
+            if content['type']==DEVICE_SWITCH:
+                #param1=outputid
+                if content.has_key('param1'):
+                    logging.info('Add switch on "%s"' % (ipxIp))
+                    if addSwitch(ipxIp, content['param1']):
+                        buildDevicesList()
+                        return {'error':0, 'msg':'Device added successfully'}
+                    else:
+                        return {'error':1, 'msg':'Ch already used'}
+                else:
+                    logging.error('Missing "param1" parameter')
+                    return {'error':1, 'msg':'Internal error'}
+            elif content['type']==DEVICE_DRAPES:
+                #param1=outputid(relayopen) param2=outputid(relayclose)
+                if content.has_key('param1') and content.has_key('param2'):
+                    logging.info('Add drapes on "%s"' % (ipxIp))
+                    addDrapes(ipxIp, content['param1'], content['param2'])
+                    buildDevicesList()
+                    return {'error':0, 'msg':'Device added successfully'}
+                else:
+                    logging.error('Missing "param1" and/or "param2" parameters')
+                    return {'error':1, 'msg':'Internal error'}
+            elif content['type'] in (DEVICE_ANALOG_TEMPERATURE, DEVICE_ANALOG_HUMIDITY, DEVICE_ANALOG_VOLT, DEVICE_ANALOG_LIGHT):
+                #param1=analogid
+                if content.has_key('param1'):
+                    logging.info('Add analog on "%s"' % (ipxIp))
+                    addAnalog(ipxIp, content['type'], content['param1'])
+                    buildDevicesList()
+                    return {'error':0, 'msg':'Device added successfully'}
+                else:
+                    logging.error('Missing "param1" parameter')
+                    return {'error':1, 'msg':'Internal error'}
+            elif content['type']=='counter':
+                #param1=counterid
+                if content.has_key('param1'):
+                    logging.info('Add counter on "%s" using C%s' % (ipxIp, content['param1']))
+                    addCounter(ipxIp, content['param1'])
+                    buildDevicesList()
+                    return {'error':0, 'msg':'Device added successfully'}
+                else:
+                    logging.error('Missing "param1" parameter')
+                    return {'error':1, 'msg':'Internal error'}
+        elif command=='on':
+            if deviceType==DEVICE_SWITCH:
+                if len(outputs)==1:
+                    logging.info('Turn on switch "%s@%s"' % (ipxIp, internalid))
+                    turnOnSwitch(internalid, ipxIp, outputs[0])
+                else:
+                    logging.error('command turnOn: outputs is not valid (1 awaited, %d received) [%s]' % (len(outputs), outputs))
+            elif deviceType==DEVICE_DRAPES:
+                if len(outputs)==1:
+                    logging.info('Open drapes "%s@%s"' % (ipxIp, internalid))
+                    openDrapes(internalid, ipxIp, inputs[0])
+                else:
+                    logging.error('command open: inputs is not valid (1 awaited, %d received) [%s]' % (len(inputs), inputs))
+        elif command=='off':
+            if deviceType==DEVICE_SWITCH:
+                if len(outputs)==1:
+                    logging.info('Turn off switch "%s@%s"' % (ipxIp, internalid))
+                    turnOffSwitch(internalid, ipxIp, outputs[0])
+                else:
+                    logging.error('command turnOff: outputs is not valid (1 awaited, %d received) [%s]' % (len(outputs), outputs))
+            elif deviceType==DEVICE_DRAPES:
+                if len(outputs)==1:
+                    logging.info('Close drapes "%s@%s"' % (ipxIp, internalid))
+                    closeDrapes(internalid, ipxIp, outputs[0])
+                else:
+                    logging.error('command close: outputs is not valid (1 awaited, %d received) [%s]' % (len(outputs), outputs))
+        elif command=='allon':
             for device in devices[ipxIp]:
-                if device['type']==DEVICE_SHUTTER:
+                if device['type']==DEVICE_DRAPES:
                     if len(device['inputs'])==1:
-                        logging.info('Open shutter "%s@%s"' % (ipxIp, internalid))
-                        openShutter(device['internalid'], ipxIp, device['inputs'][0])
-        elif command=='allclose':
-            for device in devices[ipxIp]:
-                if device['type']==DEVICE_SHUTTER:
+                        openDrapes(device['internalid'], ipxIp, device['inputs'][0])
+                    else:
+                        logging.error('command allOn: outputs is not valid (1 awaited, %d received) [%s]' % (len(outputs), outputs))
+                        return {'error':1, 'msg':'Internal error'}
+                elif device['type']==DEVICE_SWITCH:
                     if len(device['outputs'])==1:
-                        logging.info('Close shutter "%s@%s"' % (ipxIp, internalid))
-                        closeShutter(device['internalid'], ipxIp, device['outputs'][0])
-        elif command=='resetcounter':
+                        turnOnSwitch(device['internalid'], ipxIp, outputs[0])
+                    else:
+                        logging.error('command allOn: outputs is not valid (1 awaited, %d received) [%s]' % (len(outputs), outputs))
+                        return {'error':1, 'msg':'Internal error'}
+            return {'error':0, 'msg':''}
+        elif command=='alloff':
+            for device in devices[ipxIp]:
+                if device['type']==DEVICE_DRAPES:
+                    if len(device['outputs'])==1:
+                        closeDrapes(device['internalid'], ipxIp, device['outputs'][0])
+                    else:
+                        logging.error('command allOff: outputs is not valid (1 awaited, %d received) [%s]' % (len(outputs), outputs))
+                        return {'error':1, 'msg':'Internal error'}
+                elif deviceType==DEVICE_SWITCH:
+                    if len(device['outputs'])==1:
+                        turnOffSwitch(device['internalid'], ipxIp, outputs[0])
+                    else:
+                        logging.error('command allOff: outputs is not valid (1 awaited, %d received) [%s]' % (len(outputs), outputs))
+                        return {'error':1, 'msg':'Internal error'}
+            return {'error':0, 'msg':''}
+        elif command=='reset':
+            #command only available for our counters (multilevelsensors)
             if len(counters)==1:
                 logging.info('Reset counter "%s@%s"' % (ipxIp, internalid))
                 resetCounter(internalid, ipxIp, counters[0])
+                return {'error':0, 'msg':''}
             else:
                 logging.error('command reset: counters is not valid (1 awaited, %d received) [%s]' % (len(counters), counters))
+                return {'error':1, 'msg':'Internal error'}
+        elif command=='status':
+            #return all inputs/outputs/analogs/counter usage (used or not)
+            outputs = []
+            inputs = []
+            analogs = []
+            counters = []
+            for device in devices[ipxIp]:
+                if device['type']!=DEVICE_DRAPES:
+                    for input in device['inputs']:
+                        inputs.append('D%d' % (input+1))
+                elif device['type']==DEVICE_DRAPES:
+                    for input in device['inputs']:
+                        outputs.append('Ch%d' % (input+1))
+                for output in device['outputs']:
+                    outputs.append('Ch%d' % (output+1))
+                for analog in device['analogs']:
+                    analogs.append('A%d' % (analog+1))
+                for counter in device['counters']:
+                    counters.append('C%d' % (counter+1))
+            outputs.sort()
+            inputs.sort()
+            analogs.sort()
+            counters.sort()
+            status = {'outputs':" ".join(outputs), 'inputs':" ".join(inputs), 'analogs':" ".join(analogs), 'counters':" ".join(counters)}
+            logging.info(status)
+            return status;
+        elif command=='setlevel':
+            if not content.has_key('level'):
+                logging.error('setlevel command: missing parameters')
+                return {'error':1, 'msg':'Internal error'}
+            level = 0
+            try:
+                level = int(content['level'])
+            except:
+                logging.error('setlevel command: unable to convert level to int')
+                return {'error':1, 'msg':'Internal error'}
+            (ipxIp, deviceType, inputs, outputs, analogs, counters) = explodeDeviceName(internalid)
+            if deviceType==DEVICE_DRAPES:
+                dev = getDevice(ipxIp, internalid)
+                if dev:
+                    if dev['duration']>0:
+                        interval = int(dev['duration']*level/100)
+                        if dev['state']==STATE_CLOSED:
+                            #open drapes until level
+                            threading.Timer(interval, setlevelDrapes, dev['internalid'], ipxIp)
+                        elif dev['state']==STATE_OPENED:
+                            #close drapes until level
+                            threading.Timer(interval, setlevelDrapes, dev['internalid'], ipxIp)
+                        else:
+                            #impossible to setlevel of drapes that is moving
+                            logging.warning('Command can be launched only with unmoving drapes')
+                            return {'error':1, 'msg':'Command can be launched only with unmoving drapes'}
+                    else:
+                        logging.warning('setlevel command: device duration is not setted. Unable to setlevel')
+                        return {'error':1, 'msg':'Drapes must be initialized first (full open or close) before setting level'}
+                else:
+                    logging.error('setlevel command: unable to find device "%s@%s"' % (str(ipxIp), str(internalid)))
+                    return {'error':1, 'msg':'Internal error'}
+            return {'error':0, 'msg':'Ok'}
         elif command=='forcestate':
-            #get device
-            if deviceType==DEVICE_SHUTTER:
-                if content['state'].find('open')!=-1:
-                    logging.info('Force shutter "%s@%s" state to OPENED' % (ipxIp, internalid))
-                    client.updateDeviceState(internalid, STATE_OPENED)
-                elif content['state'].find('close')!=-1:
-                    logging.info('Force shutter "%s@%s" state to CLOSED' % (ipxIp, internalid))
+            if not content.has_key('device') or not content.has_key('state'):
+                logging.error('forcestate command: missing parameters')
+                return {'error':1, 'msg':'Internal error'}
+            state = content['state']
+            internalid = content['device']
+            (ipxIp, deviceType, inputs, outputs, analogs, counters) = explodeDeviceName(internalid)
+            if deviceType==DEVICE_DRAPES:
+                if state=='closed':
+                    logging.info('Force drapes "%s@%s" state to CLOSED' % (ipxIp, internalid))
                     client.updateDeviceState(internalid, STATE_CLOSED)
                 else:
-                    logging.warning('Unknown state type received from forcestate command [%s]' % content['state'])
+                    logging.info('Force drapes "%s@%s" state to OPENED' % (ipxIp, internalid))
+                    client.updateDeviceState(internalid, STATE_OPENED)
             elif deviceType==DEVICE_SWITCH:
-                if content['state'].find('on')!=-1:
-                    logging.info('Force switch "%s@%s" state to ON' % (ipxIp, internalid))
-                    client.updateDeviceState(internalid, STATE_ON)
-                elif content['state'].find('off')!=-1:
+                if state=='closed':
                     logging.info('Force switch "%s@%s" state to OFF' % (ipxIp, internalid))
                     client.updateDeviceState(internalid, STATE_OFF)
                 else:
-                    logging.warning('Unknown state type received from forcestate command [%s]' % content['state'])
+                    logging.info('Force switch "%s@%s" state to ON' % (ipxIp, internalid))
+                    client.updateDeviceState(internalid, STATE_ON)
+            return {'error':0, 'msg':'Ok'}
+        elif command=='getdevices':
+            #get drapes devices
+            devs = []
+            for device in devices[ipxIp]:
+                if device['type'] in (DEVICE_DRAPES, DEVICE_SWITCH):
+                    devs.append(device['internalid'])
+            logging.info('devices: %s' % str(devs))
+            return {'error':0, 'msg':'', 'devices':devs}
+        elif command=='stop':
+            if deviceType==DEVICE_DRAPES:
+                if not stopDrapes(internalid, ipxIp):
+                    return {'error':1, 'msg':'Failed to stop drapes'}
+            return {'error':0, 'msg':''}
 
     #update devices list after each command
     buildDevicesList()
@@ -762,13 +997,13 @@ try:
             (ipxIp, deviceType, _, _, _, _) = explodeDeviceName(internalid)
             if len(deviceType)==0:
                 logging.info('  - add board [%s]' % internalid)
-                client.addDevice(internalid, 'ipx800board', state)
+                client.addDevice(internalid, 'ipx800v3board', state)
             elif deviceType==DEVICE_SWITCH:
                 logging.info('  - add switch [%s]' % internalid)
-                client.addDevice(internalid, 'ipx800switch', state)
-            elif deviceType==DEVICE_SHUTTER:
-                logging.info('  - add shutter [%s]' % internalid)
-                client.addDevice(internalid, 'ipx800shutter', state)
+                client.addDevice(internalid, 'switch', state)
+            elif deviceType==DEVICE_DRAPES:
+                logging.info('  - add drapes [%s]' % internalid)
+                client.addDevice(internalid, 'drapes', state)
             elif deviceType in (DEVICE_ANALOG_TEMPERATURE, DEVICE_ANALOG_HUMIDITY, DEVICE_ANALOG_VOLT, DEVICE_ANALOG_LIGHT):
                 logging.info ('  - add analog [%s]' % internalid)
                 if deviceType==DEVICE_ANALOG_TEMPERATURE:
@@ -788,14 +1023,14 @@ try:
     #fill devices list
     buildDevicesList()
 
-    #create ipx800 object
-    ipx800 = Ipx800(IPX_WEBSERVER_PORT, ipxCallback)
-    ipx800.start()
+    #create ipx800v3 object
+    ipx800v3 = Ipx800v3(IPX_WEBSERVER_PORT, ipxCallback)
+    ipx800v3.start()
 
     #update counter and analog devices value
     logging.info('Set current value to analog and counter devices')
     for ipxIp in devices:
-        status = ipx800.getStatus(ipxIp)
+        status = ipx800v3.getStatus(ipxIp)
         if status and len(status)>0:
             for device in devices[ipxIp]:
                 if device['type'] in (DEVICE_ANALOG_TEMPERATURE, DEVICE_ANALOG_HUMIDITY, DEVICE_ANALOG_VOLT, DEVICE_ANALOG_LIGHT):
@@ -827,7 +1062,10 @@ try:
 
 except Exception as e:
     #init failed
-    quit('Init failed, exit now. (%s)' % str(e))
+    #(_, value, traceback) = sys.exc_info()
+    #quit('Init failed, exit now. (%s\n%s)' % (value.message, str(traceback)))
+    logging.exception("Exception on init")
+    quit('Init failed, exit now.')
 
 #run agoclient
 try:
@@ -835,9 +1073,9 @@ try:
     client.run()
 except KeyboardInterrupt:
     #stopped by user
-    quit('agoipx800 stopped')
+    quit('agoipx800 stopped by user')
 except Exception as e:
-    logging.fatal('Exception on main: %s' % str(e))
+    logging.exception("Exception on main:")
     #stop everything
     quit('agoipx800 stopped')
 

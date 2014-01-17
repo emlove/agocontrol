@@ -1,0 +1,170 @@
+<div>
+    <span id="detailsTitle">Details</span>
+    <strong>UUID: </strong><span style="color: darkorange" data-bind="text: uuid"/><br/>
+    <ko opts="if: name ">
+    <strong>Name: </strong><span style="color: darkorange" data-bind="text: name"/><br/>
+    </ko>
+    <strong>Type: </strong><span style="color: darkorange" data-bind="text: devicetype"/><br/>
+    <ko opts="if: room ">
+    <strong>Room: </strong><span style="color: darkorange" data-bind="text: room"/><br/>
+    </ko>
+    <strong>Lastseen: </strong><span style="color: darkorange" data-bind="text: timeStamp"/><br/>
+    <br/>
+    <div id="tabs">
+        <ul>
+            <li><a href="#tabs-outputs">Outputs</a></li>
+            <li><a href="#tabs-analogs">Analogs</a></li>
+            <li><a href="#tabs-counters">Counters</a></li>
+            <li><a href="#tabs-actions">Actions</a></li>
+        </ul>
+        <div id="tabs-outputs">
+            <h4 data-translateable="true">Outputs configuration</h4>
+            <div style="float:left; width:50%"><span>In this tab you can add virtual devices that uses IPX800v3 relays.</span></div>
+            <div style="float:right; width:50%"><img src="img/ipx800v3_outputs.jpg"/></div>
+            <hr/>
+            <form>
+               <ul>
+                    <li>
+                        <span>Output type: </span>
+                        <select data-bind="value: selectedOutputType">
+                            <option value="switch">Switch</option>
+                            <option value="drapes">Drapes</option>
+                        </select>
+                    </li>
+                    <ko opts="if: devswitch">
+                    <li>
+                        <span>Linked relay: </span>
+                        <select data-bind="value: selectedOutputParam1">
+                            <option value="0">Ch1</option>
+                            <option value="1">Ch2</option>
+                            <option value="2">Ch3</option>
+                            <option value="3">Ch4</option>
+                            <option value="4">Ch5</option>
+                            <option value="5">Ch6</option>
+                            <option value="6">Ch7</option>
+                            <option value="7">Ch8</option>
+                        </select>
+                    </li>
+                    </ko>
+                    <ko opts="if: devdrapes">
+                    <li>
+                        <span>Opening relay: </span>
+                        <select data-bind="value: selectedOutputParam1">
+                            <option value="0">Ch1</option>
+                            <option value="1">Ch2</option>
+                            <option value="2">Ch3</option>
+                            <option value="3">Ch4</option>
+                            <option value="4">Ch5</option>
+                            <option value="5">Ch6</option>
+                            <option value="6">Ch7</option>
+                            <option value="7">Ch8</option>
+                        </select>
+                        <span>  Closing relay: </span>
+                        <select data-bind="value: selectedOutputParam2">
+                            <option value="0">Ch1</option>
+                            <option value="1">Ch2</option>
+                            <option value="2">Ch3</option>
+                            <option value="3">Ch4</option>
+                            <option value="4">Ch5</option>
+                            <option value="5">Ch6</option>
+                            <option value="6">Ch7</option>
+                            <option value="7">Ch8</option>
+                        </select>
+                    </li>
+                    </ko>
+                    <li>
+                        <button data-translateable="true" data-bind="click: addoutput">Add device</button>
+                        <span class="addoutputresult"></span>
+                    </li>
+                </ul>
+            </form>
+            <hr/>
+            <span>Current linked outputs: </span>
+            <span class="currentoutputs"/>
+        </div>
+        <div id="tabs-analogs">
+            <h4 data-translateable="true">Analogs configuration</h4>
+            <div style="float:left; width:60%"><span>In this tab you can add devices that uses IPX800v3 analogs inputs.</span></div>
+            <div style="float:right; width:40%"><img src="img/ipx800v3_analogs.jpg"/></div>
+            <hr/>
+            <form>
+               <ul>
+                    <li>
+                        <span>Analogs type: </span>
+                        <select data-bind="value: selectedAnalogType">
+                            <option value="temperature">Temperature</option>
+                            <option value="light">Light</option>
+                            <option value="volt">Volt</option>
+                            <option value="humidity">Humidity</option>
+                        </select>
+                    </li>
+                    <li>
+                        <span>Linked analog input: </span>
+                        <select data-bind="value: selectedAnalogParam1">
+                            <option value="0">A1</option>
+                            <option value="1">A2</option>
+                            <option value="2">A3</option>
+                            <option value="3">A4</option>
+                        </select>
+                    </li>
+                    <li>
+                        <button data-translateable="true" data-bind="click: addanalog">Add device</button>
+                        <span class="addanalogresult"/>
+                    </li>
+                </ul>
+            </form>
+            <hr/>
+            <span>Current linked analogs: </span>
+            <span class="currentanalogs"/>
+        </div>
+        <div id="tabs-counters">
+            <h4 data-translateable="true">Counters configuration</h4>
+            <span>In this tab you can add counters managed by IPX800v3 board.</span>
+            <hr/>
+            <form>
+               <ul>
+                    <li>
+                        <span>Linked counter: </span>
+                        <select data-bind="value: selectedCounterParam1">
+                            <option value="0">C1</option>
+                            <option value="1">C2</option>
+                            <option value="2">C3</option>
+                        </select>
+                    </li>
+                    <li>
+                        <button data-translateable="true" data-bind="click: addcounter">Add device</button>
+                        <span class="addcounterresult"/>
+                    </li>
+                </ul>
+            </form>
+            <hr/>
+            <span>Current linked counters: </span>
+            <span class="currentcounters"/>
+        </div>
+        <div id="tabs-actions">
+            <h4 data-translateable="true">Actions</h4>
+            <span>In this tab you can execute actions available on board.</span>
+            <hr/>
+            <ul>
+                <li>
+                    <span>Turn <b>on</b> all IPX800 devices: </span>
+                    <button data-bind="click: allOn">Turn all on</button>
+                </li>
+                <li>
+                    <span>Turn <b>off</b> all IPX800 devices: </span>
+                    <button data-bind="click: allOff">Turn all off</button>
+                </li>
+                <li>
+                    <span>Force IPX800 drapes state: </span>
+                    <select data-bind="options: devices, value:selectedDevice"></select>
+                    <select data-bind="value: selectedDeviceState">
+                        <option value="opened">Opened</option>
+                        <option value="closed">Closed</option>
+                    </select>
+                    <button data-bind="click: forcestate">Force state</button>
+                    <span data-bind="text: forcestateresult"></span>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>

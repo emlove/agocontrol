@@ -136,7 +136,7 @@ commands:
   pause:
     name: pause media
   stop:
-    name: stop media
+    name: stop
   addnode:
     name: add a node
   removenode:
@@ -267,150 +267,91 @@ commands:
       idbase:
         name: id base
         type: integer
-  addipx800:
-    name: add IPX800 board
+  adddevice:
+    name: add device
     parameters:
-      ip:
-        name: IPX800 ip address
-        type: string
-  addswitch:
-    name: add switch (use 1 relay)
-    parameters:
-      relayid:
-        name: relay id
-        type: option
-        options: ['output1', 'output2', 'output3', 'output4', 'output5', 'output6', 'output7', 'output8']
-  addshutter:
-    name: add shutter (use 2 relays)
-    parameters:
-      relayopen:
-        name: relay open
-        type: option
-        options: ['output1', 'output2', 'output3', 'output4', 'output5', 'output6', 'output7', 'output8']
-      relayclose:
-        name: relay close
-        type: option
-        options: ['output1', 'output2', 'output3', 'output4', 'output5', 'output6', 'output7', 'output8']
-  addanalog:
-    name: add analog device (use 1 analog input)
-    parameters:
-      analogid:
-        name: analog id
-        type: option
-        options: ['analog1', 'analog2', 'analog3', 'analog4']
       type:
-        name: analog type
-        type: option
-        options: ['temperature', 'humidity', 'volt', 'light']
-  addcounter:
-    name: add counter device (use 1 counter)
-    parameters:
-      counterid:
-        name: counter id
-        type: option
-        options: ['counter1', 'counter2', 'counter3']
-  open:
-    name: open
-  close:
-    name: close
-  allopen:
-    name: open all
-  allclose:
-    name: close all
+        name: device type
+        type: string
+      param1:
+        name: param1
+        type: string
+      param2:
+        name: param2
+        type: string
+      param3:
+        name: param3
+        type: string
+  status:
+    name: get device status
   forcestate:
-    name: force state
+    name: force device state
     parameters:
+      device:
+        name: device internalid
+        type: string
       state:
-        name: relay state
-        type: option
-        options: ['on/open', 'off/close']
-  resetcounter:
-    name: reset counter
-  twitterurl:
-    name: get twitter authorization url
-  twitteraccesscode:
-    name: set twitter access code
+        name: device state
+        type: string
+  getdevices:
+    name: get all devices
+  setconfig:
+    name: set config
     parameters:
-      code:
-        name: code
+      param1:
+        name: parameter1
         type: string
-  twittertest:
-    name: send test tweet
-  twittersend:
-    name: send tweet
+      param2:
+        name: parameter2
+        type: string
+      param3:
+        name: parameter3
+        type: string
+      param4:
+        name: parameter4
+        type: string
+      param5:
+        name: parameter5
+        type: string
+  test:
+    name: test
     parameters:
-      tweet:
-        name: tweet
+      param1:
+        name: parameter1
         type: string
-  mailconfig:
-    name: set mail config
+      param2:
+        name: parameter2
+        type: string
+      param3:
+        name: parameter3
+        type: string
+      param4:
+        name: parameter4
+        type: string
+      param5:
+        name: parameter5
+        type: string
+  sendalert:
+    name: send alert
     parameters:
-      smtp:
-        name: smtp server
+      type:
+        name: alert type
         type: string
-      sender:
-        name: email of sender
+      param1:
+        name: parameter1
         type: string
-  mailtest:
-    name: send test email
-    parameters:
-      email:
-        name: your email
+      param2:
+        name: parameter2
         type: string
-  mailsend:
-    name: send email
-    parameters:
-      tos:
-        name: list of email recipient (coma separated)
+      param3:
+        name: parameter3
         type: string
-      subject:
-        name: email subject
+      param4:
+        name: parameter4
         type: string
-      content:
-        name: email content
+      param5:
+        name: parameter5
         type: string
-  smsconfig:
-    name: set SMS config
-    parameters:
-      username:
-        name: username
-        type: string
-      password:
-        name: password
-        type: string
-  smstest:
-    name: send test SMS
-  smssend:
-    name: send SMS
-    parameters:
-      to:
-        name: SMS recipient
-        type: string
-      text:
-        name: SMS message
-        type: string
-  gtalkconfig:
-    name: set GTalk config
-    parameters:
-      username:
-        name: username
-        type: string
-      password:
-        name: password
-        type: string
-  gtalktest:
-    name: send test message on GTalk
-  gtalksend:
-    name: send GTalk message
-    parameters:
-      to:
-        name: GTalk recipient
-        type: string
-      message:
-        name: GTalk message
-        type: string
-  alertstatus:
-    name: status of all alert modules
 devicetypes:
   enoceancontroller:
     name: enocean controller
@@ -479,7 +420,7 @@ devicetypes:
   multilevelsensor:
     name: multilevel sensor
     description: sensor for multilevel values
-    commands: []
+    commands: [reset]
   smokedetector:
     name: smoke detector
     description: smoke detector
@@ -511,7 +452,7 @@ devicetypes:
   drapes:
     name: drapes
     description: window drapes or blinds
-    commands: ["on", "off", setlevel]
+    commands: ["on", "off", stop, setlevel]
   dimmer:
     name: dimmer
     description: light dimmmer
@@ -535,31 +476,15 @@ devicetypes:
   ipx800controller:
     name: IPX800 board controller
     description: Internal device to control IPX800 boards
-    commands: [addipx800]
-  ipx800board:
-    name: IPX800
+    commands: [adddevice]
+  ipx800v3board:
+    name: IPX800v3 relay board
     description: Ethernet relay board
-    commands: [addswitch, addshutter, addanalog, addcounter, allopen, allclose]
-  ipx800switch:
-    name: IPX800 switch
-    description: Control single relay on IPX800
-    commands: ["on", "off", forcestate]
-  ipx800shutter:
-    name: IPX800 shutter
-    description: Control 2 relays on IPX800
-    commands: [open, close, forcestate]
-  ipx800analog:
-    name: IPX800 analog
-    description: Get value of analog input
-    commands: []
-  ipx800counter:
-    name: IPX800 counter
-    description: Get value of board counter
-    commands: [resetcounter]
+    commands: [adddevice, allon, alloff, status, forcestate, getdevices]
   alertcontroller:
     name: alert controller
     description: internal device to control the alerts
-    commands: [twitterauthorizationurl, twitteraccesscode]
+    commands: [status, test, sendalert, setconfig]
 values:
   level:
     name: level

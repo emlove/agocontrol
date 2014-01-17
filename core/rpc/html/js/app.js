@@ -76,7 +76,7 @@ var scenarioController = null;
 var alertControler = null
 
 var supported_devices = [ "switch", "dimmer", "binarysensor", "dimmerrgb", "multilevelsensor", , "scenario", "drapes", "brightnesssensor", "powermeter", "energysensor", "humiditysensor", "phone",
-	"pushbutton", "placeholder", "temperaturesensor", "energymeter", "squeezebox", 'ipx800shutter', 'ipx800switch' ];
+	"pushbutton", "placeholder", "temperaturesensor", "energymeter", "squeezebox", 'ipx800v3board' ];
 
 function device(obj, uuid) {
     var self = this;
@@ -175,6 +175,20 @@ function device(obj, uuid) {
         }
     }
 
+    this.allOn = function() {
+	var content = {};
+	content.uuid = uuid;
+	content.command = 'allon';
+	sendCommand(content);
+    };
+
+    this.allOff = function() {
+	var content = {};
+	content.uuid = uuid;
+	content.command = 'alloff';
+	sendCommand(content);
+    };
+
     this.turnOn = function() {
 	var content = {};
 	content.uuid = uuid;
@@ -203,18 +217,11 @@ function device(obj, uuid) {
 	sendCommand(content);
     };
 
-    this.open = function() {
-        var content = {};
-        content.uuid = uuid;
-        content.command = 'open';
-        sendCommand(content);
-    };
-
-    this.close = function() {
-        var content = {};
-        content.uuid = uuid;
-        content.command = 'close';
-        sendCommand(content);
+    this.reset = function() {
+	var content = {};
+	content.uuid = uuid;
+	content.command = 'reset';
+	sendCommand(content);
     };
 
     this.execCommand = function() {
@@ -231,7 +238,139 @@ function device(obj, uuid) {
 	});
     };
 
-    if (this.devicetype == "alertcontroller") {
+    //add device function
+    this.addDevice = function(content, containername, callback) {
+        var el = document.getElementsByClassName(containername);
+        if( el!==undefined )
+            el[0].innerHTML = '';
+        sendCommand(content, function(res) {
+            if( el!==undefined )
+            {
+                if( res.result.result.error==0 )
+                    color = "#00CC00";
+                else
+                    color = "#CC0000";
+                el[0].innerHTML = '<span style="color:'+color+'">'+res.result.result.msg+'</span>';
+            }
+            if( callback!==null )
+                callback(res);
+        });
+    };
+
+    //get devices
+    this.getDevices = function(callback) {
+        var content = {};
+        content.uuid = uuid;
+        content.command = 'getdevices'
+        sendCommand(content, function(res) {
+            if( callback!==undefined )
+                callback(res);
+        });
+    }
+
+    if( this.devicetype=="ipx800controller" ) {
+        self.ipx800ip = ko.observable();
+        self.addboard = function() {
+            var content = {};
+            content.uuid = uuid;
+            content.command = 'adddevice';
+            content.param1 = self.ipx800ip();
+            self.addDevice(content, "addboardresult", null);
+        };
+    }
+    else if( this.devicetype=="ipx800v3board" ) {
+        self.output = {};
+        self.updateUi = function() {
+            self.getIpx800Status();
+            self.getDevices(self.getDevicesCallback);
+        }
+        self.getIpx800Status = function() {
+            var content = {};
+            content.uuid = uuid;
+            content.command = 'status';
+            sendCommand(content, function(res) {
+                el = document.getElementsByClassName("currentoutputs");
+                el[0].innerHTML = res.result.result.outputs
+                el = document.getElementsByClassName("currentanalogs");
+                el[0].innerHTML = res.result.result.analogs
+                el = document.getElementsByClassName("currentcounters");
+                el[0].innerHTML = res.result.result.counters
+            });
+        }
+        self.dialogopened = function(dialog) {
+            $("#tabs").tabs();
+            self.updateUi();
+        };
+        self.devswitch = ko.observable(true);
+        self.devdrapes = ko.observable(false);
+        self.selectedOutputParam1 = ko.observable();
+        self.selectedOutputParam2 = ko.observable();
+        self.selectedAnalogParam1 = ko.observable();
+        self.selectedCounterParam1 = ko.observable();
+        self.selectedOutputType = ko.observable();
+        self.selectedOutputType.subscribe(function(newVal) {
+            if( newVal=="switch" )
+            {
+                self.devswitch(true);
+                self.devdrapes(false);
+            }
+            else if( newVal=="drapes" )
+            {
+                self.devswitch(false);
+                self.devdrapes(true);
+            }
+        });
+        self.selectedAnalogType = ko.observable();
+        self.addoutput = function() {
+            var content = {};
+            content.uuid = uuid;
+            content.command = 'adddevice';
+            content.type = self.selectedOutputType();
+            if( content.type=="switch" )
+                content.param1 = self.selectedOutputParam1();
+            else if( content.type=="drapes")
+            {
+                content.param1 = self.selectedOutputParam1();
+                content.param2 = self.selectedOutputParam2();
+            }
+            self.addDevice(content, "addoutputresult", self.getIpx800Status);
+        }
+        self.addanalog = function() {
+            var content = {};
+            content.uuid = uuid;
+            content.command = 'adddevice';
+            content.type = self.selectedAnalogType();
+            content.param1 = self.selectedAnalogParam1();
+            self.addDevice(content, "addanalogresult", self.getIpx800Status);
+        };
+        self.addcounter = function() {
+            var content = {};
+            content.uuid = uuid;
+            content.command = 'adddevice';
+            content.type = 'counter'
+            content.param1 = self.selectedCounterParam1();
+            self.addDevice(content, "addcounterresult", self.getIpx800Status);
+        };
+        self.devices = ko.observableArray([]);
+        self.getDevicesCallback = function(res) {
+            self.devices(res.result.result.devices);
+        }
+        self.selectedDevice = ko.observable();
+        self.selectedDeviceState = ko.observable();
+        self.forcestateresult = ko.observable();
+        self.forcestate = function() {
+            self.forcestateresult("");
+            var content = {};
+            content.uuid = uuid;
+            content.command = 'forcestate';
+            content.state = self.selectedDeviceState();
+            content.device = self.selectedDevice();
+            sendCommand(content, function(res) {
+                self.forcestateresult(res.result.result.msg);
+            });
+        }
+    }
+    else if (this.devicetype == "alertcontroller") {
     	alertController = uuid;
         self.gtalkstatus = ko.observable(self.gtalkstatus)
         self.smsstatus = ko.observable(self.smsstatus)
@@ -239,10 +378,10 @@ function device(obj, uuid) {
         self.twitterstatus = ko.observable(self.twitterstatus)
 
         //get current status
-        this.getAlertStatus = function() {
+        self.getAlertStatus = function() {
             var content = {};
             content.uuid = uuid;
-            content.command = 'alertstatus';
+            content.command = 'status';
             sendCommand(content, function(res) {
                 self.gtalkstatus(res.result.result.gtalk)
                 self.mailstatus(res.result.result.mail)
@@ -250,7 +389,10 @@ function device(obj, uuid) {
                 self.twitterstatus(res.result.result.twitter)
             });
         }
-        this.getAlertStatus();
+        self.dialogopened = function(dialog) {
+            $("#tabs").tabs();
+            self.getAlertStatus();
+        };
 
         this.gtalkstatusc = ko.computed(function() {
             if( self.state()==10 ) self.gtalkstatus(0);
@@ -275,7 +417,9 @@ function device(obj, uuid) {
             //get authorization url
             var content = {};
             content.uuid = uuid;
-            content.command = 'twitterurl';
+            content.command = 'setconfig';
+            content.param1 = 'twitter';
+            content.param2 = '';
             sendCommand(content, function(res) {
                 if( res.result.result.error==0 )
                 {
@@ -291,8 +435,9 @@ function device(obj, uuid) {
         this.twitterAccessCode = function() {
             var content = {};
             content.uuid = uuid;
-            content.command = 'twitteraccesscode';
-            content.code = document.getElementsByClassName("twitterCode")[0].value;
+            content.command = 'setconfig';
+            content.param1 = 'twitter';
+            content.param2 = document.getElementsByClassName("twitterCode")[0].value;
             sendCommand(content, function(res) {
                 if( res.result.result.error==1 )
                 {
@@ -303,7 +448,8 @@ function device(obj, uuid) {
         this.twitterTest = function() {
             var content = {};
             content.uuid = uuid;
-            content.command = 'twittertest';
+            content.command = 'test';
+            content.param1 = 'twitter'
             sendCommand(content, function(res) {
                 alert( res.result.result.msg );
             });
@@ -311,9 +457,10 @@ function device(obj, uuid) {
         this.smsConfig = function() {
             var content = {};
             content.uuid = uuid;
-            content.command = 'smsconfig';
-            content.username = document.getElementsByClassName("smsUsername")[0].value;
-            content.password = document.getElementsByClassName("smsPassword")[0].value;
+            content.command = 'setconfig';
+            content.param1 = 'sms'
+            content.param2 = document.getElementsByClassName("smsUsername")[0].value;
+            content.param3 = document.getElementsByClassName("smsPassword")[0].value;
             sendCommand(content, function(res) {
                 if( res.result.result.error==1 )
                 {
@@ -324,7 +471,8 @@ function device(obj, uuid) {
         this.smsTest = function() {
             var content = {};
             content.uuid = uuid;
-            content.command = 'smstest';
+            content.command = 'test';
+            content.param1 = 'sms'
             sendCommand(content, function(res) {
                 alert( res.result.result.msg );
             });
@@ -332,9 +480,10 @@ function device(obj, uuid) {
         this.gtalkConfig = function() {
             var content = {};
             content.uuid = uuid;
-            content.command = 'gtalkconfig';
-            content.username = document.getElementsByClassName("gtalkUsername")[0].value;
-            content.password = document.getElementsByClassName("gtalkPassword")[0].value;
+            content.command = 'setconfig';
+            content.param1 = 'gtalk'
+            content.param2 = document.getElementsByClassName("gtalkUsername")[0].value;
+            content.param3 = document.getElementsByClassName("gtalkPassword")[0].value;
             sendCommand(content, function(res) {
                 if( res.result.result.error==1 )
                 {
@@ -345,7 +494,8 @@ function device(obj, uuid) {
         this.gtalkTest = function() {
             var content = {};
             content.uuid = uuid;
-            content.command = 'gtalktest';
+            content.command = 'test';
+            content.param1 = 'gtalk';
             sendCommand(content, function(res) {
                 if( res.result.result.error==1 )
                 {
@@ -356,9 +506,10 @@ function device(obj, uuid) {
         this.mailConfig = function() {
             var content = {};
             content.uuid = uuid;
-            content.command = 'mailconfig';
-            content.smtp = document.getElementsByClassName("mailSmtp")[0].value;
-            content.sender = document.getElementsByClassName("mailSender")[0].value;
+            content.command = 'setconfig';
+            content.param1 = 'mail'
+            content.param2 = document.getElementsByClassName("mailSmtp")[0].value;
+            content.param3 = document.getElementsByClassName("mailSender")[0].value;
             sendCommand(content, function(res) {
                 if( res.result.result.error==1 )
                 {
@@ -369,8 +520,9 @@ function device(obj, uuid) {
         this.mailTest = function() {
             var content = {};
             content.uuid = uuid;
-            content.command = 'mailtest';
-            content.email = document.getElementsByClassName("mailEmail")[0].value;
+            content.command = 'test';
+            content.param1 = 'mail';
+            content.param2 = document.getElementsByClassName("mailEmail")[0].value;
             sendCommand(content, function(res) {
                 alert( res.result.result.msg );
             });
@@ -810,7 +962,18 @@ function doShowDetails(device, template, environment) {
 		dialogHeight = 720;
 	    }
 
+        //detail dialog size
         if( device.devicetype=="alertcontroller" )
+        {
+            dialogWidth = 800;
+            dialogHeight = 625;
+        }
+        else if( device.devicetype=="ipx800controller" )
+        {
+            dialogWidth = 800;
+            dialogHeight = 325;
+        }
+        else if( device.devicetype=="ipx800v3board" )
         {
             dialogWidth = 800;
             dialogHeight = 600;
@@ -830,9 +993,8 @@ function doShowDetails(device, template, environment) {
 		    },
 		    open : function() {
 			    $("#detailsPage").css("overflow", "visible");
-                if( device.devicetype=="alertcontroller" ) {
-                    $("#tabs").tabs();
-                }
+                if( device.dialogopened!==undefined )
+                    device.dialogopened(this);
 		    }
 		});
 	    }

@@ -2,7 +2,7 @@
 	<div class="row">
 		<div class="three columns">
 			<div class="pretty large primary btn grid-item-icon handle">
-				<i class="icon-arrow-combo" data-bind="click: showDetails"></i>
+                <i class="icon-arrow-combo" data-bind="click: showDetails"></i>
 			</div>
 		</div>
 		<div class="nine columns">
@@ -16,7 +16,24 @@
 				<ko opts="if: room">
 					<p class="room"><i class="icon-location"></i><span data-bind="text: room"></span></p>
 				</ko>
-				<p class="info"><i class="icon-info"></i><span data-bind="text: state"></span></p>
+				<p class="info">
+                    <i class="icon-info"/>
+                    <ko opts="if: state()==0">
+                        <span data-translateable="true">CLOSED</span>
+                    </ko>
+                    <ko opts="if: (state()!=0 && state()!=50 && state()!=100)">
+                        <span data-translateable="true">OPENED</span>
+                    </ko>
+                    <ko opts="if: state()==50">
+                        <span data-translateable="true">OPENING</span>
+                    </ko>
+                    <ko opts="if: state()==100">
+                        <span data-translateable="true">CLOSING</span>
+                    </ko>
+                    <ko opts="if: state()==150">
+                        <span data-translateable="true">STOPPED</span>
+                    </ko>
+                </p>
 			</div>
 		</div>
 	</div>
@@ -30,11 +47,11 @@
             </ko>
 		</div>
 		<div class="four columns">
-			<div class="cmd-btn pretty medium primary btn btn-full grid-command" data-bind="click: turnStop" data-value="stop">STOP</div>
+            <div class="cmd-btn pretty medium primary btn btn-full grid-command" data-bind="click: turnStop" data-value="stop">STOP</div>
 		</div>
 		<div class="four columns">
 		    <ko opts="if: state">
-		        <div class="cmd-btn pretty medium primary btn btn-full grid-command" data-bind="click: turnOff" data-value="off">CLOSE</div>
+                <div class="cmd-btn pretty medium primary btn btn-full grid-command" data-bind="click: turnOff" data-value="off">CLOSE</div>
 		    </ko>
             <ko opts="ifnot: state">
                 <div class="cmd-btn pretty medium default btn btn-full grid-command" data-bind="click: turnOff" data-value="off">CLOSE</div>

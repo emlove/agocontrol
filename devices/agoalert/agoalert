@@ -11,14 +11,17 @@ import threading
 import time
 import logging
 from Queue import Queue
-#google hangout lib
+#gtalk libs
 import xmpp
-#twitter lib
+#twitter libs
 import tweepy
-#mail lib
+#mail libs
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+#sms libs
+import urllib
+import urllib2
 
 client = None
 twitter = None
@@ -27,7 +30,7 @@ sms = None
 gtalk = None
 hangout = None
 
-#logging.basicConfig(filename='agosqueezebox.log', level=logging.INFO, format="%(asctime)s %(levelname)s : %(message)s")
+#logging.basicConfig(filename='agoalert.log', level=logging.INFO, format="%(asctime)s %(levelname)s : %(message)s")
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(name)s %(levelname)s : %(message)s")
 
 #=================================
@@ -112,7 +115,7 @@ class SMS12voip(AgoAlert):
             if not to or not text or len(to)==0 or len(text)==0:
                 logging.error('SMS12voip: Unable to add SMS because all parameters are mandatory')
                 return False
-            if not to.startswith('+'):
+            if not to.startswith('+') and to!=self.username:
                 logging.error('SMS12voip: Unable to add SMS because "to" number must be international number')
                 return False
             if len(text)>160:
@@ -134,7 +137,7 @@ class SMS12voip(AgoAlert):
         req = urllib2.urlopen(url)
         lines = req.readlines()
         req.close()
-        self.logger.debug(url)
+        logging.debug(url)
 
 class GTalk(AgoAlert):
     """Class for GTalk message sending"""
@@ -280,7 +283,7 @@ class Twitter(AgoAlert):
     def _sendMessage(self, message):
         #connect using OAuth auth (basic auth deprecated)
         auth = tweepy.OAuthHandler(self.consumerKey, self.consumerSecret)
-        logging.info('key=%s secret=%s' % (self.key, self.secret))
+        logging.debug('key=%s secret=%s' % (self.key, self.secret))
         auth.set_access_token(self.key, self.secret)
         api = tweepy.API(auth)
         api.update_status(message['tweet'])
@@ -407,131 +410,158 @@ def commandHandler(internalid, content):
         logging.error('No command specified')
         return None
 
-    if command=='alertstatus':
+    if command=='status':
         #return module status
         try:
             return {'error':0, 'msg':'', 'twitter':twitter.configured(), 'mail':mail.configured(), 'sms':sms.configured(), 'gtalk':gtalk.configured()}
         except Exception as e:
-            logging.error('commandHandler: configured exception [%s]' % str(e))
+            logging.exception('commandHandler: configured exception [%s]' % str(e))
             return {'error':1, 'msg':'Internal error'}
-    elif command=='twitterurl':
-        #get authorization url
-        return twitter.getAuthorizationUrl()
-    elif command=='twitteraccesscode':
-        #set twitter config
-        if content.has_key('code'):
-            return twitter.setAccessCode(content['code'])
-        else:
-            logging.error('commandHandler: parameters missing for Twitter config')
+    elif command=='test':
+        if not content.has_key('param1'):
+            logging.error('test command: missing parameters')
             return {'error':1, 'msg':'Internal error'}
-    elif command=='twittertest':
-        #twitter test
-        if twitter.addTweet('agocontrol test tweet @ %s' % time.strftime('%H:%M:%S')):
-            return {'error':0, 'msg':'Tweet successful'}
-        else:
-            logging.warning('CommandHandler: failed to tweet')
-            return {'error':1, 'msg':'Failed to tweet'}
-    elif command=='twittersend':
-        #send tweet
-        if content.has_key('tweet'):
-            if twitter.addTweet(content['tweet']):
-                return {'error':0, 'msg':''}
+        type = content['param1']
+        if type=='twitter':
+            #twitter test
+            if twitter.addTweet('agocontrol test tweet @ %s' % time.strftime('%H:%M:%S')):
+                return {'error':0, 'msg':'Tweet successful'}
             else:
-                logging.warning('CommandHandler: failed to tweet [%s]' % str(content['tweet']))
+                logging.warning('CommandHandler: failed to tweet')
                 return {'error':1, 'msg':'Failed to tweet'}
-        else:
-            logging.error('commandHandler: parameters missing for Twitter tweet')
-            return {'error':1, 'msg':'Internal error'}
-    elif command=='smsconfig':
-        #set sms config
-        if content.has_key('username') and content.has_key('password'):
-            if sms.setConfig(content['username'], content['password']):
-                return {'error':0, 'msg':''}
-            else:
-                return {'error':1, 'msg':'Unable to save config'}
-        else:
-            logging.error('commandHandler: parameters missing for SMS config')
-            return {'error':1, 'msg':'Internal error'}
-    elif command=='smstest':
-        #test sms
-        if sms.addSMS(sms.username, 'agocontrol sms test'):
-            return {'error':0, 'msg':'SMS sent successfully'}
-        else:
-            logging.warning('CommandHandler: failed to send SMS [%s, %s]' % (str(content['to']), str(content['text'])))
-            return {'error':1, 'msg':'Failed to send SMS'}
-    elif command=='smssend':
-        #send sms
-        if content.has_key('to') and content.has_key('text'):
-            if sms.addSMS(content['to'], content['text']):
-                return {'error':0, 'msg':''}
+        elif type=='sms':
+            #test sms
+            if sms.addSMS(sms.username, 'agocontrol sms test'):
+                return {'error':0, 'msg':'SMS sent successfully'}
             else:
                 logging.warning('CommandHandler: failed to send SMS [%s, %s]' % (str(content['to']), str(content['text'])))
                 return {'error':1, 'msg':'Failed to send SMS'}
-        else:
-            logging.error('commandHandler: parameters missing for SMS')
-            return {'error':1, 'msg':'Internal error'}
-    elif command=='mailconfig':
-        #set mail config
-        if content.has_key('smtp') and content.has_key('sender'):
-            if mail.setConfig(content['smtp'], content['sender']):
+        elif type=='mail':
+            #mail test
+            if content.has_key('param2'):
+                tos = content['param2'].split(';')
+                if mail.addMail(tos, 'agocontrol mail test', 'If you receive this email it means agocontrol alert is working fine!'):
+                    return {'error':0, 'msg':'Email sent successfully'}
+                else:
+                    logging.warning('CommandHandler: failed to send email [%s, test]' % (str(tos)))
+                    return {'error':1, 'msg':'Failed to send email'}
+            else:
+                logging.error('commandHandler: parameters missing for SMS')
+                return {'error':1, 'msg':'Internal error'}
+        elif type=='gtalk':
+            #test gtalk
+            if gtalk.addMessage(gtalk.username, 'agocontrol gtalk test'):
                 return {'error':0, 'msg':''}
             else:
-                return {'error':1, 'msg':'Unable to save config'}
-        else:
-            logging.error('commandHandler: parameters missing for Mail config')
-            return {'error':1, 'msg':'Internal error'}
-    elif command=='mailtest':
-        #mail test
-        if content.has_key('email'):
-            tos = content['email'].split(';')
-            if mail.addMail(tos, 'agocontrol mail test', 'If you receive this email it means agocontrol alert is working fine!'):
-                return {'error':0, 'msg':'Email sent successfully'}
-            else:
-                logging.warning('CommandHandler: failed to send email [%s, test]' % (str(tos)))
-                return {'error':1, 'msg':'Failed to send email'}
-        else:
-            logging.error('commandHandler: parameters missing for SMS')
-            return {'error':1, 'msg':'Internal error'}
-    elif command=='mailsend':
-        #send mail
-        if content.has_key('tos') and content.has_key('subject') and content.has_key('content'):
-            tos = content['tos'].split(';')
-            if mail.addMail(tos, content['subject'], content['content']):
-                return {'error':0, 'msg':''}
-            else:
-                logging.warning('CommandHandler: failed to send email [%s, %s, %s]' % (str(tos), str(content['subject']), str(content['content'])))
-                return {'error':1, 'msg':'Failed to send SMS'}
-        else:
-            logging.error('commandHandler: parameters missing for SMS')
-            return {'error':1, 'msg':'Internal error'}
-    elif command=='gtalkconfig':
-        #set gtalk config
-        if content.has_key('username') and content.has_key('password'):
-            if gtalk.setConfig(content['username'], content['password']):
-                return {'error':0, 'msg':''}
-            else:
-                return {'error':1, 'msg':'Unable to save config'}
-        else:
-            logging.error('commandHandler: parameters missing for GTalk config')
-            return {'error':1, 'msg':'Internal error'}
-    elif command=='gtalktest':
-        #test gtalk
-        if gtalk.addMessage(gtalk.username, 'agocontrol gtalk test'):
-            return {'error':0, 'msg':''}
-        else:
-            logging.warning('CommandHandler: failed to send GTalk message [test]')
-            return {'error':1, 'msg':'Failed to send GTalk message'}
-    elif command=='gtalksend':
-        #send gtalk message
-        if content.has_key('to') and content.has_key('message'):
-            if gtalk.addMessage(content['to'], content['message']):
-                return {'error':0, 'msg':''}
-            else:
-                logging.warning('CommandHandler: failed to send GTalk message [%s, %s]' % (str(content['to']), str(content['message'])))
+                logging.warning('CommandHandler: failed to send GTalk message [test]')
                 return {'error':1, 'msg':'Failed to send GTalk message'}
         else:
-            logging.error('commandHandler: parameters missing for GTalk')
+            #TODO add here new alert test
+            pass
+    elif command=='sendalert':
+        if not content.has_key('type'):
+            logging.error('sendalert command: missing parameters "type"')
             return {'error':1, 'msg':'Internal error'}
+        type = content['type']
+        if type=='twitter':
+            #send tweet
+            if content.has_key('tweet'):
+                if twitter.addTweet(content['tweet']):
+                    return {'error':0, 'msg':''}
+                else:
+                    logging.warning('CommandHandler: failed to tweet [%s]' % str(content['tweet']))
+                    return {'error':1, 'msg':'Failed to tweet'}
+            else:
+                logging.error('commandHandler: parameters missing for Twitter tweet')
+                return {'error':1, 'msg':'Internal error'}
+        elif type=='sms':
+            #send sms
+            if content.has_key('to') and content.has_key('text'):
+                if sms.addSMS(content['to'], content['text']):
+                    return {'error':0, 'msg':''}
+                else:
+                    logging.warning('CommandHandler: failed to send SMS [%s, %s]' % (str(content['to']), str(content['text'])))
+                    return {'error':1, 'msg':'Failed to send SMS'}
+            else:
+                logging.error('commandHandler: parameters missing for SMS')
+                return {'error':1, 'msg':'Internal error'}
+        elif type=='mail':
+            #send mail
+            if content.has_key('tos') and content.has_key('subject') and content.has_key('content'):
+                tos = content['tos'].split(';')
+                if mail.addMail(tos, content['subject'], content['content']):
+                    return {'error':0, 'msg':''}
+                else:
+                    logging.warning('CommandHandler: failed to send email [%s, %s, %s]' % (str(tos), str(content['subject']), str(content['content'])))
+                    return {'error':1, 'msg':'Failed to send SMS'}
+            else:
+                logging.error('commandHandler: parameters missing for SMS')
+                return {'error':1, 'msg':'Internal error'}
+        elif type=='gtalk':
+            #send gtalk message
+            if content.has_key('to') and content.has_key('message'):
+                if gtalk.addMessage(content['to'], content['message']):
+                    return {'error':0, 'msg':''}
+                else:
+                    logging.warning('CommandHandler: failed to send GTalk message [%s, %s]' % (str(content['to']), str(content['message'])))
+                    return {'error':1, 'msg':'Failed to send GTalk message'}
+            else:
+                logging.error('commandHandler: parameters missing for GTalk')
+                return {'error':1, 'msg':'Internal error'}
+        else:
+            #TODO add here new alert sending
+            pass
+    elif command=='setconfig':
+        if not content.has_key('param1'):
+            logging.error('test command: missing parameters')
+            return {'error':1, 'msg':'Internal error'}
+        type = content['param1']
+        if type=='twitter':
+            if not content.has_key('param2'):
+                logging.error('test command: missing parameters "param2"')
+                return {'error':1, 'msg':'Internal error'}
+            accessCode = content['param2'].strip()
+            if len(accessCode)==0:
+                #get authorization url
+                return twitter.getAuthorizationUrl()
+            elif len(accessCode)>0:
+                #set twitter config
+                return twitter.setAccessCode(accessCode)
+        elif type=='sms':
+            #set sms config
+            if content.has_key('param2') and content.has_key('param3'):
+                if sms.setConfig(content['param2'], content['param3']):
+                    return {'error':0, 'msg':''}
+                else:
+                    return {'error':1, 'msg':'Unable to save config'}
+            else:
+                logging.error('commandHandler: parameters missing for SMS config')
+                return {'error':1, 'msg':'Internal error'}
+        elif type=='mail':
+            #set mail config
+            if content.has_key('param2') and content.has_key('param3'):
+                if mail.setConfig(content['param2'], content['param3']):
+                    return {'error':0, 'msg':''}
+                else:
+                    return {'error':1, 'msg':'Unable to save config'}
+            else:
+                logging.error('commandHandler: parameters missing for Mail config')
+                return {'error':1, 'msg':'Internal error'}
+        elif type=='gtalk':
+            #set gtalk config
+            if content.has_key('param2') and content.has_key('param3'):
+                if gtalk.setConfig(content['param2'], content['param3']):
+                    return {'error':0, 'msg':''}
+                else:
+                    return {'error':1, 'msg':'Unable to save config'}
+            else:
+                logging.error('commandHandler: parameters missing for GTalk config')
+                return {'error':1, 'msg':'Internal error'}
+        else:
+            #TODO add here other alert configuration
+            pass
+    else:
+        logging.warning('Unmanaged command "%s"' % content['command'])
 
 def eventHandler(event, content):
     """ago event handler"""

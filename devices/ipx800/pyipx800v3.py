@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-pyipx800v3: Python wrapper for IPX800
+pyipx800v3: Python wrapper for IPX800v3
 IPX800v3 is a relay board developped by GCE Electronics
 More info on website http://www.gce-electronics.com/
 
@@ -36,7 +36,7 @@ import urllib, urllib2
 from xml.dom import minidom
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 
-class Ipx800HttpHandler(BaseHTTPRequestHandler):
+class Ipx800v3HttpHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         try:
             self.server.callback(self.client_address[0], self.path, None)
@@ -52,7 +52,7 @@ class Ipx800HttpHandler(BaseHTTPRequestHandler):
         return
 
 
-class Ipx800HttpServer(HTTPServer):
+class Ipx800v3HttpServer(HTTPServer):
     allow_reuse_address = 1
     timeout = 1
     def __init__(self, server_address, RequestHandlerClass, callback):
@@ -81,7 +81,7 @@ class Ipx800v3(threading.Thread):
         self.logger = logging.getLogger('Ipx800v3')
         self.port = port
         self.__callback = ipxCallback
-        self.__server = Ipx800HttpServer(('', port), Ipx800HttpHandler, self.__pushCallback)
+        self.__server = Ipx800v3HttpServer(('', port), Ipx800v3HttpHandler, self.__pushCallback)
         self.__running = True
 
     def __del__(self):
@@ -546,17 +546,17 @@ if __name__ == '__main__':
 
     mainloop = gobject.MainLoop()
 
-    def callbck(*args):
-        logger.info('==> %s' % str(args))
+    def callbck(push):
+        logger.info('==> %s' % str(push))
 
     board = '192.168.1.80'
     ipx = Ipx800v3(8020, callbck)
     try:
 
         #ipx.start()
-        #get status
+        #get status ==> passed
         #logger.info(ipx.getStatus('192.168.1.80'))
-        #set counters
+        #set counters ==> passed
         #ipx.setCounter(board, 0, 0, 'counter0')
         #ipx.setCounter(board, 2, 666)
         #close shutter
