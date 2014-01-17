@@ -609,8 +609,7 @@ void OnNotification
                                 string label = Manager::Get()->GetValueLabel(id);
                                 stringstream tempstream;
                                 tempstream << (int) _notification->GetNodeId();
-                                tempstream << "/";
-                                tempstream << (int) id.GetInstance();
+                                tempstream << "/1";
                                 string nodeinstance = tempstream.str();
 				string eventtype = "event.device.statechanged";
 				ZWaveNode *device;
@@ -619,7 +618,7 @@ void OnNotification
 					agoConnection->emitEvent(device->getId().c_str(), eventtype.c_str(), scene, "");	
 				} else {
 					cout << "WARNING: no agocontrol device found for scene event" << endl;
-					cout << "Node/Instance: " << nodeinstance << " Value label: " << label << " Scene: " << scene << endl;
+					cout << "Node: " << nodeinstance << " Scene: " << scene << endl;
 				}
 
 			}
