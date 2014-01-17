@@ -260,6 +260,7 @@ void OnNotification
 			{
 				// Add the new value to our list
 				nodeInfo->m_values.push_back( _notification->GetValueID() );
+				uint8 basic = Manager::Get()->GetNodeBasic(_notification->GetHomeId(),_notification->GetNodeId());
 				uint8 generic = Manager::Get()->GetNodeGeneric(_notification->GetHomeId(),_notification->GetNodeId());
 				uint8 specific = Manager::Get()->GetNodeSpecific(_notification->GetHomeId(),_notification->GetNodeId());
 				ValueID id = _notification->GetValueID();
@@ -273,6 +274,17 @@ void OnNotification
 				tempstream << label;
 				string tempstring = tempstream.str();
 				ZWaveNode *device;
+				if (basic == BASIC_TYPE_CONTROLLER) {
+					if ((device = devices.findId(nodeinstance)) != NULL) {
+						device->addValue(label, id);
+						device->setDevicetype("remote");
+					} else {
+						device = new ZWaveNode(nodeinstance, "remote");	
+						device->addValue(label, id);
+						devices.add(device);
+						agoConnection->addDevice(device->getId().c_str(), device->getDevicetype().c_str());
+					}
+				} else
 				switch(id.GetCommandClassId()) {
 					case COMMAND_CLASS_SWITCH_MULTILEVEL:
 						if (label == "Level") {
