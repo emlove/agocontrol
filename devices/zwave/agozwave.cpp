@@ -619,6 +619,7 @@ void OnNotification
 					agoConnection->emitEvent(device->getId().c_str(), eventtype.c_str(), scene, "");	
 				} else {
 					cout << "WARNING: no agocontrol device found for scene event" << endl;
+				}
 
 			}
 			break;
