@@ -14,23 +14,23 @@ CONFIG_LOCK = Lock()
 
 def getConfigOption(section, option, default, file=None):
         config = ConfigParser.ConfigParser()
+        CONFIG_LOCK.acquire(True)
         try:
-                CONFIG_LOCK.acquire(True)
                 if file:
                         config.read('/etc/opt/agocontrol/conf.d/' + file + '.conf')
                 else:
                         config.read('/etc/opt/agocontrol/conf.d/' + section + '.conf')
                 value = config.get(section,option)
-                CONFIG_LOCK.release()
         except:
                 value = default
+        CONFIG_LOCK.release()
         return value
 
 def setConfigOption(section, option, value, file=None):
         config = ConfigParser.ConfigParser()
         result = False
+        CONFIG_LOCK.acquire(True)
         try:
-                CONFIG_LOCK.acquire(True)
                 path = '/etc/opt/agocontrol/conf.d/' + section + '.conf'
                 if file:
                         path = '/etc/opt/agocontrol/conf.d/' + file + '.conf'
@@ -46,9 +46,9 @@ def setConfigOption(section, option, value, file=None):
                 #finally close it
                 fpw.close()
                 result = True
-                CONFIG_LOCK.release()
         except:
                 result = False
+        CONFIG_LOCK.release()
         return result
 
 class AgoConnection:
