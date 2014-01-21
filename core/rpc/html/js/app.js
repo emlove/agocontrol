@@ -987,23 +987,39 @@ function showCommandList(container, device) {
     }
 
     commandSelect.onchange = function() {
-	if (commandSelect.options.length == 0) {
-	    return 0;
-	}
-	var cmd = schema.commands[commandSelect.options[commandSelect.selectedIndex].value];
-	commandParams.innerHTML = "";
-	if (cmd.parameters !== undefined) {
-	    commandParams.style.display = "";
-	    for ( var param in cmd.parameters) {
-		var input = document.createElement("input");
-		input.name = param;
-		input.className = "cmdParam";
-		input.placeholder = cmd.parameters[param].name;
-		commandParams.appendChild(input);
+    	if (commandSelect.options.length == 0) {
+    	    return 0;
 	    }
-	} else {
-	    commandParams.style.display = "none";
-	}
+    	var cmd = schema.commands[commandSelect.options[commandSelect.selectedIndex].value];
+	    commandParams.innerHTML = "";
+    	if (cmd.parameters !== undefined)
+        {
+	        commandParams.style.display = "";
+    	    for ( var param in cmd.parameters)
+            {
+                if( cmd.parameters[param].type=='option' )
+                {
+                    var select = document.createElement("select");
+                    select.name = param;
+                    select.className = "cmdParam";
+                    for( var i=0; i<cmd.parameters[param].options.length; i++ )
+                        select.options[select.options.length] = new Option(cmd.parameters[param].options[i], cmd.parameters[param].options[i]);
+    	    	    commandParams.appendChild(select);
+                }
+                else
+                {
+        	    	var input = document.createElement("input");
+        	    	input.name = param;
+	        	    input.className = "cmdParam";
+    	        	input.placeholder = cmd.parameters[param].name;
+    	    	    commandParams.appendChild(input);
+                }
+	        }
+    	}
+        else
+        {
+	        commandParams.style.display = "none";
+    	}
     };
 
     commandSelect.onchange();
