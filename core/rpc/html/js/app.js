@@ -372,45 +372,80 @@ function device(obj, uuid) {
     }
     else if (this.devicetype == "alertcontroller") {
     	alertController = uuid;
-        self.gtalkstatus = ko.observable(self.gtalkstatus)
-        self.smsstatus = ko.observable(self.smsstatus)
-        self.mailstatus = ko.observable(self.mailstatus)
-        self.twitterstatus = ko.observable(self.twitterstatus)
+        self.gtalkStatus = ko.observable(self.gtalkStatus);
+        self.gtalkUsername = ko.observable(self.gtalkUsername);
+        self.gtalkPassword = ko.observable(self.gtalkPassword);
+        self.smsStatus = ko.observable(self.smsStatus);
+        self.twelvevoipUsername = ko.observable(self.twelvevoipUsername);
+        self.twelvevoipPassword = ko.observable(self.twelvevoipPassword);
+        self.mailStatus = ko.observable(self.mailStatus);
+        self.mailSmtp = ko.observable(self.mailSmtp);
+        self.mailSender = ko.observable(self.mailSender);
+        self.twitterStatus = ko.observable(self.twitterStatus);
+        self.pushStatus = ko.observable(self.pushStatus);
+        self.selectedPushProvider = ko.observable(self.selectedPushProvider);
+        self.pushbulletSelectedDevices = ko.observableArray();
+        self.pushbulletAvailableDevices = ko.observableArray();
+        self.pushbulletApikey = ko.observable();
+        self.pushoverUserid = ko.observable();
+        self.nmaApikey = ko.observable(self.nmaApikey);
+        self.nmaAvailableApikeys = ko.observableArray();
+        self.nmaSelectedApikeys = ko.observableArray();
 
         //get current status
-        self.getAlertStatus = function() {
+        self.getAlertsConfigs = function() {
             var content = {};
             content.uuid = uuid;
             content.command = 'status';
             sendCommand(content, function(res) {
-                self.gtalkstatus(res.result.result.gtalk)
-                self.mailstatus(res.result.result.mail)
-                self.smsstatus(res.result.result.sms)
-                self.twitterstatus(res.result.result.twitter)
+                self.gtalkStatus(true);
+                if( res.result.result.gtalk.configured )
+                {
+                    self.gtalkUsername(res.result.result.gtalk.username);
+                    self.gtalkPassword(res.result.result.gtalk.password);
+                }
+                self.mailStatus(res.result.result.mail.configured);
+                if( res.result.result.mail.configured )
+                {
+                    self.mailSmtp(res.result.result.mail.smtp);
+                    self.mailSender(res.result.result.mail.sender);
+                }
+                self.smsStatus(res.result.result.sms.configured);
+                if( res.result.result.sms.configured )
+                {
+                    self.twelvevoipUsername(res.result.result.sms.username);
+                    self.twelvevoipPassword(res.result.result.sms.password);
+                }
+                self.twitterStatus(res.result.result.twitter.configured);
+                self.pushStatus(res.result.result.push.configured);
+                if( res.result.result.push.configured )
+                {
+                    self.selectedPushProvider(res.result.result.push.provider);
+                    if( res.result.result.push.provider=='pushbullet' )
+                    {
+                        self.pushbulletApikey(res.result.result.push.apikey);
+                        self.pushbulletAvailableDevices(res.result.result.push.devices);
+                        self.pushbulletSelectedDevices(res.result.result.push.devices);
+                    }
+                    else if( res.result.result.push.provider=='pushover' )
+                    {    
+                        self.pushoverUserid(res.result.result.push.userid);
+                    }
+                    else if( res.result.result.push.provider=='notifymyandroid' )
+                    {
+                        self.nmaAvailableApikeys(res.result.result.push.apikeys);
+                    }
+                }
             });
         }
         self.dialogopened = function(dialog) {
-            $("#tabs").tabs();
-            self.getAlertStatus();
+            $("#tabs").tabs({
+                beforeActivate: function(event,ui) {
+                    console.log('-> selected tab index: '+ui.newTab.index());
+                }
+            });
+            self.getAlertsConfigs();
         };
-
-        this.gtalkstatusc = ko.computed(function() {
-            if( self.state()==10 ) self.gtalkstatus(0);
-            if( self.state()==11 ) self.gtalkstatus(1);
-        });
-        this.mailstatusc = ko.computed(function() {
-            if( self.state()==20 ) self.mailstatus(0);
-            if( self.state()==21 ) self.mailstatus(1);
-        });
-        this.smsstatusc = ko.computed(function() {
-            if( self.state()==30 ) self.smsstatus(0);
-            if( self.state()==31 ) self.smsstatus(1);
-        });
-        this.twitterstatusc = ko.computed(function() {
-            if( self.state()==40 ) self.twitterstatus(0);
-            if( self.state()==41 ) self.twitterstatus(1);
-        });
-
         this.twitterUrl = function() {
             el = document.getElementsByClassName("twitterUrl");
             el[0].innerHTML = 'Generating url...';
@@ -443,6 +478,7 @@ function device(obj, uuid) {
                 {
                     alert(res.result.result.msg);
                 }
+                self.getAlertsConfigs();
             });
         }
         this.twitterTest = function() {
@@ -459,13 +495,14 @@ function device(obj, uuid) {
             content.uuid = uuid;
             content.command = 'setconfig';
             content.param1 = 'sms'
-            content.param2 = document.getElementsByClassName("smsUsername")[0].value;
-            content.param3 = document.getElementsByClassName("smsPassword")[0].value;
+            content.param2 = self.smsUsername();
+            content.param3 = self.smsPassword();
             sendCommand(content, function(res) {
                 if( res.result.result.error==1 )
                 {
                     alert(res.result.result.msg);
                 }
+                self.getAlertsConfigs();
             });
         }
         this.smsTest = function() {
@@ -482,13 +519,14 @@ function device(obj, uuid) {
             content.uuid = uuid;
             content.command = 'setconfig';
             content.param1 = 'gtalk'
-            content.param2 = document.getElementsByClassName("gtalkUsername")[0].value;
-            content.param3 = document.getElementsByClassName("gtalkPassword")[0].value;
+            content.param2 = self.gtalkUsername();
+            content.param3 = self.gtalkPassword();
             sendCommand(content, function(res) {
                 if( res.result.result.error==1 )
                 {
                     alert(res.result.result.msg);
                 }
+                self.getAlertsConfigs();
             });
         }
         this.gtalkTest = function() {
@@ -508,13 +546,14 @@ function device(obj, uuid) {
             content.uuid = uuid;
             content.command = 'setconfig';
             content.param1 = 'mail'
-            content.param2 = document.getElementsByClassName("mailSmtp")[0].value;
-            content.param3 = document.getElementsByClassName("mailSender")[0].value;
+            content.param2 = self.mailSmtp();
+            content.param3 = self.mailSender();
             sendCommand(content, function(res) {
                 if( res.result.result.error==1 )
                 {
                     alert(res.result.result.msg);
                 }
+                self.getAlertsConfigs();
             });
         }
         this.mailTest = function() {
@@ -527,7 +566,78 @@ function device(obj, uuid) {
                 alert( res.result.result.msg );
             });
         }
-
+        this.pushbulletRefreshDevices = function() {
+            var content = {};
+            content.uuid = uuid;
+            content.command = 'setconfig';
+            content.param1 = 'push';
+            content.param2 = this.selectedPushProvider();
+            content.param3 = 'getdevices';
+            content.param4 = self.pushbulletApikey();
+            sendCommand(content, function(res) {
+                if( res.result.result.error==0 )
+                {
+                    self.pushbulletAvailableDevices(res.result.result.devices);
+                }
+                else
+                {
+                    //TODO error
+                }
+            });
+        }
+        this.nmaAddApikey = function() {
+            if( self.nmaApikey().length>0 )
+            {
+                self.nmaAvailableApikeys.push(self.nmaApikey());
+            }
+            self.nmaApikey('');
+        }
+        this.nmaDelApikey = function() {
+            for(var j=self.nmaSelectedApikeys().length-1; j>=0; j--)
+            {
+                for(var i=self.nmaAvailableApikeys().length-1; i>=0; i--)
+                {
+                    if( self.nmaAvailableApikeys()[i]===self.nmaSelectedApikeys()[j] )
+                        self.nmaAvailableApikeys().splice(i, 1);
+                }
+            }
+            self.nmaAvailableApikeys(self.nmaAvailableApikeys());
+        }
+        this.pushConfig = function() {
+            var content = {};
+            content.uuid = uuid;
+            content.command = 'setconfig';
+            content.param1 = 'push';
+            content.param2 = this.selectedPushProvider();
+            if( this.selectedPushProvider()=='pushbullet' )
+            {
+                content.param3 = 'save';
+                content.param4 = this.pushbulletApikey();
+                content.param5 = this.pushbulletSelectedDevices();
+            }
+            else if( this.selectedPushProvider()=='pushover' )
+            {
+                content.param3 = this.pushoverUserid();
+            }
+            else if( this.selectedPushProvider()=='notifymyandroid' )
+            {
+                content.param3 = this.nmaAvailableApikeys();
+            }
+            sendCommand(content, function(res) {
+                if( res.result.result.error==1 )
+                    alert( res.result.result.msg );
+                self.getAlertsConfigs();
+            });
+        }
+        this.pushTest = function() {
+            var content = {};
+            content.uuid = uuid;
+            content.command = 'test';
+            content.param1 = 'push';
+            sendCommand(content, function(res) {
+                alert( res.result.result.msg );
+            });
+        }
     }
 
     if (this.devicetype == "camera") {
