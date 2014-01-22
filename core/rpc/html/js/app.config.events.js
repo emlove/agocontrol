@@ -376,11 +376,13 @@ function eventConfig() {
 	self.map.action.uuid = self.deviceList[document.getElementById("deviceListSelect").options[document.getElementById("deviceListSelect").selectedIndex].value].uuid;
 
 	var paramList = document.getElementsByClassName("cmdParam");
-	if (paramList) {
-	    for (var i = 0; i < paramList.length; i++) {
-		self.map.action[paramList[i].id] = paramList[i].value;
-	    }
-	}
+    if (paramList)
+    {
+        for( var i=0; i<paramList.length; i++)
+        {
+            self.map.action[paramList[i].id] = paramList[i].value;
+        }
+    }
     };
 
     /**
@@ -992,17 +994,31 @@ function eventConfig() {
 		    label.setAttribute("for", cmd.parameters[param].name);
 		    commandParams.appendChild(label);
 
-		    var input = document.createElement("input");
-		    input.name = cmd.parameters[param].name;
-		    input.id = cmd.parameters[param].name;
-		    input.className = "cmdParam";
-		    if (defaults && defaults[cmd.parameters[param].name]) {
-			input.value = defaults[cmd.parameters[param].name];
-		    }
-		    commandParams.appendChild(input);
+            if( cmd.parameters[param].type=='option' )
+            {
+                var select = document.createElement("select");
+                select.name = cmd.parameters[param].name;
+                select.className = "cmdParam";
+                select.id = cmd.parameters[param].name;
+                for( var i=0; i<cmd.parameters[param].options.length; i++ )
+                    select.options[select.options.length] = new Option(cmd.parameters[param].options[i], cmd.parameters[param].options[i]);
+                commandParams.appendChild(select);
+            }
+            else
+            {
+               var input = document.createElement("input");
+               input.name = cmd.parameters[param].name;
+               input.id = cmd.parameters[param].name;
+               input.className = "cmdParam";
+               if (defaults && defaults[cmd.parameters[param].name])
+               {
+                   input.value = defaults[cmd.parameters[param].name];
+               } 
+               commandParams.appendChild(input);
+            }
 
-		    var br = document.createElement("br");
-		    commandParams.appendChild(br);
+            var br = document.createElement("br");
+            commandParams.appendChild(br);
 		}
 	    } else {
 		commandParams.style.display = "none";
