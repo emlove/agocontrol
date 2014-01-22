@@ -1,0 +1,14 @@
+[Unit]
+Description=ago control Wake on LAN handler
+
+[Service]
+ExecStart=/opt/agocontrol/bin/agowake_on_lan.py
+WorkingDirectory=/opt/agocontrol/bin
+StandardOutput=syslog
+StandardError=syslog
+Restart=always
+RestartSec=2
+User=root
+
+[Install]
+WantedBy=multi-user.target
