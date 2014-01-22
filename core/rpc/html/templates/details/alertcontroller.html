@@ -102,11 +102,14 @@
                 <span style="color:#CC0000;">Mail is not yet configured</span>
             </ko>
             <br/>
-            <span>Specify your email SMTP server and a sender email address:</span>
+            <span>Specify your email SMTP server and a sender email address (* is mandatory):</span>
             <form>
                 <ul>
-                <li><span>SMTP server: </span><input data-bind="value:mailSmtp" placeholder="smtp"/></li>
-                <li><span>Sender email: </span><input data-bind="value:mailSender" placeholder="email"/>
+                <li><span>*SMTP server: </span><input data-bind="value:mailSmtp" placeholder="smtp"/><small>(could be smtp:port)</small></li>
+                <li><span>*Sender email: </span><input data-bind="value:mailSender" placeholder="email"/>
+                <li><span>Login: </span><input data-bind="value:mailLogin" placeholder="login"/></li>
+                <li><span>Password: </span><input type="password" data-bind="value:mailPassword" placeholder="password"/></li>
+                <li><span>TLS: </span><input type="checkbox" data-bind="checked:mailTls"/></li>
                 <button data-translateable="true" data-bind="click: mailConfig">Save</button></li>
                 </ul>
             </form>

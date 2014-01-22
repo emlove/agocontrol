@@ -231,13 +231,12 @@ class GTalk(AgoAlert):
 
     def _sendMessage(self, message):
        jid = xmpp.protocol.JID( self.username )
-       #connection = xmpp.Client('gmail.com')
-       connection = xmpp.Client('gmail.com', debug=[]) #no debug
+       connection = xmpp.Client('gmail.com', debug=[])
+       #connection = xmpp.Client('gmail.com', debug=[]) #no debug
        connection.connect( ( 'talk.google.com', 5222 ) )
        connection.auth( jid.getNode( ), self.password, 'agocontrol' )
        connection.sendInitPresence()
        connection.send( xmpp.protocol.Message( message['to'], message['message'], typ='chat' ) )
-       del connection
 
 class Twitter(AgoAlert):
     """Class for tweet sending"""
@@ -330,12 +329,17 @@ class Twitter(AgoAlert):
 
 class Mail(AgoAlert):
     """Class for mail sending"""
-    def __init__(self, smtp, sender):
+    def __init__(self, smtp, sender, login, password, tls):
         """Constructor"""
         AgoAlert.__init__(self)
         global client
         self.smtp = smtp
         self.sender = sender
+        self.login = login
+        self.password = password
+        self.tls = False
+        if tls=='1':
+            self.tls = True
         self.name = 'mail'
         if smtp and len(smtp)>0 and sender and len(sender)>0:
             self.__configured = True
@@ -348,20 +352,28 @@ class Mail(AgoAlert):
         configured = 0
         if self.__configured:
             configured = 1
-        return {'configured':configured, 'sender':self.sender, 'smtp':self.smtp}
+        tls = 0
+        if self.tls:
+            tls = 1
+        return {'configured':configured, 'sender':self.sender, 'smtp':self.smtp, 'login':self.login, 'password':self.password, 'tls':tls}
 
-    def setConfig(self, smtp, sender):
+    def setConfig(self, smtp, sender, login, password, tls):
         """set config
            @param smtp: smtp server address
            @param sender: mail sender""" 
         if not smtp or len(smtp)==0 or not sender or len(sender)==0:
             logging.error('Mail: all parameters are mandatory')
             return False
-        if not agoclient.setConfigOption('mail', 'smtp', smtp, 'alert') or not agoclient.setConfigOption('mail', 'sender', sender, 'alert'):
+        if not agoclient.setConfigOption('mail', 'smtp', smtp, 'alert') or not agoclient.setConfigOption('mail', 'sender', sender, 'alert') or not agoclient.setConfigOption('mail', 'login', login, 'alert') or not agoclient.setConfigOption('mail', 'password', password, 'alert') or not agoclient.setConfigOption('mail', 'tls', tls, 'alert'):
             logging.error('Mail: unable to save config')
             return False
         self.smtp = smtp
         self.sender = sender
+        self.login = login
+        self.password = password
+        self.tls = False
+        if tls=='1':
+            self.tls = True
         self.__configured = True
         client.emitEvent('alertcontroller', "event.device.statechanged", STATE_MAIL_CONFIGURED, "")
         return True
@@ -387,6 +399,10 @@ class Mail(AgoAlert):
 
     def _sendMessage(self, message):
         mails = smtplib.SMTP(self.smtp)
+        if self.tls:
+            mails.starttls()
+        if len(self.login)>0:
+            mails.login(self.login, self.password)
         mail = MIMEMultipart('alternative')
         mail['Subject'] = message['content']
         mail['From'] = self.sender
@@ -772,7 +788,7 @@ def commandHandler(internalid, content):
         elif type=='gtalk':
             #test gtalk
             if gtalk.addMessage(gtalk.username, 'agocontrol gtalk test'):
-                return {'error':0, 'msg':''}
+                return {'error':0, 'msg':'Gtalk message sent succesfully'}
             else:
                 logging.error('CommandHandler: failed to send GTalk message [test]')
                 return {'error':1, 'msg':'Failed to send GTalk message'}
@@ -780,7 +796,7 @@ def commandHandler(internalid, content):
             #test push
             if push.name=='pushbullet':
                 if push.addPush('This is an agocontrol test notification', ''):
-                    return {'error':0, 'msg':''}
+                    return {'error':0, 'msg':'Push notification sent'}
                 else:
                     logging.error('CommandHandler: failed to send push message with pushbullet [test]')
                     return {'error':1, 'msg':'Failed to send push notification'}
@@ -917,7 +933,18 @@ def commandHandler(internalid, content):
         elif type=='mail':
             #set mail config
             if content.has_key('param2') and content.has_key('param3'):
-                if mail.setConfig(content['param2'], content['param3']):
+                login = ''
+                password = ''
+                tls = ''
+                if content.has_key('param4'):
+                    #format login%_%password
+                    try:
+                        (login, password) = content['param4'].split('%_%')
+                    except:
+                        logging.warning('commandHandler: unable to split login%_%password [%s]' % content['param4'])
+                if content.has_key('param5'):
+                    tls = content['param5']
+                if mail.setConfig(content['param2'], content['param3'], login, password, tls):
                     return {'error':0, 'msg':''}
                 else:
                     return {'error':1, 'msg':'Unable to save config'}
@@ -1020,6 +1047,9 @@ try:
     #load config
     configMailSmtp = agoclient.getConfigOption("mail", "smtp", "", 'alert')
     configMailSender = agoclient.getConfigOption("mail", "sender", "", 'alert')
+    configMailLogin = agoclient.getConfigOption("mail", "login", "", 'alert')
+    configMailPassword = agoclient.getConfigOption("mail", "password", "", 'alert')
+    configMailTls = agoclient.getConfigOption("mail", "tls", "", 'alert')
     configTwitterKey = agoclient.getConfigOption("twitter", "key", "", 'alert')
     configTwitterSecret = agoclient.getConfigOption("twitter", "secret", "", 'alert')
     configGTalkUsername = agoclient.getConfigOption("gtalk", "username", "", 'alert')
@@ -1033,7 +1063,7 @@ try:
     configNotifymyandroidApikeys = agoclient.getConfigOption('notifymyandroid', 'apikeys', '', 'alert')
 
     #create objects
-    mail = Mail(configMailSmtp, configMailSender)
+    mail = Mail(configMailSmtp, configMailSender, configMailLogin, configMailPassword, configMailTls)
     twitter = Twitter(configTwitterKey, configTwitterSecret)
     sms = SMS12voip(configSmsUsername, configSmsPassword)
     gtalk = GTalk(configGTalkUsername, configGTalkPassword)

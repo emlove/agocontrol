@@ -336,7 +336,8 @@ commands:
     parameters:
       type:
         name: alert type
-        type: string
+        type: option
+        options: ['mail', 'sms', 'push', 'twitter', 'gtalk']
       param1:
         name: parameter1
         type: string

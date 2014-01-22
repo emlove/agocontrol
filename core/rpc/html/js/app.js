@@ -380,6 +380,9 @@ function device(obj, uuid) {
         self.twelvevoipPassword = ko.observable(self.twelvevoipPassword);
         self.mailStatus = ko.observable(self.mailStatus);
         self.mailSmtp = ko.observable(self.mailSmtp);
+        self.mailLogin = ko.observable(self.mailLogin);
+        self.mailPassword = ko.observable(self.mailPassword);
+        self.mailTls = ko.observable(self.mailTls);
         self.mailSender = ko.observable(self.mailSender);
         self.twitterStatus = ko.observable(self.twitterStatus);
         self.pushStatus = ko.observable(self.pushStatus);
@@ -408,6 +411,12 @@ function device(obj, uuid) {
                 if( res.result.result.mail.configured )
                 {
                     self.mailSmtp(res.result.result.mail.smtp);
+                    self.mailLogin(res.result.result.mail.login);
+                    self.mailPassword(res.result.result.mail.password);
+                    if( res.result.result.mail.tls==1 )
+                        self.mailTls(true);
+                    else
+                        self.mailTls(false);
                     self.mailSender(res.result.result.mail.sender);
                 }
                 self.smsStatus(res.result.result.sms.configured);
@@ -535,10 +544,7 @@ function device(obj, uuid) {
             content.command = 'test';
             content.param1 = 'gtalk';
             sendCommand(content, function(res) {
-                if( res.result.result.error==1 )
-                {
-                    alert( res.result.result.msg );
-                }
+                alert( res.result.result.msg );
             });
         }
         this.mailConfig = function() {
@@ -548,6 +554,10 @@ function device(obj, uuid) {
             content.param1 = 'mail'
             content.param2 = self.mailSmtp();
             content.param3 = self.mailSender();
+            content.param4 = self.mailLogin() + '%_%' + self.mailPassword();
+            content.param5 = '0';
+            if( self.mailTls() )
+                content.param5 = '1';
             sendCommand(content, function(res) {
                 if( res.result.result.error==1 )
                 {
