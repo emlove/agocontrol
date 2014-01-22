@@ -24,7 +24,8 @@ def getConfigOption(section, option, default, file=None):
         except ConfigParser.Error, e:
 		syslog.syslog(syslog.LOG_WARNING, "Can't parse config file: " + e)
                 value = default
-        CONFIG_LOCK.release()
+	finally:
+		CONFIG_LOCK.release()
         return value
 
 def setConfigOption(section, option, value, file=None):
@@ -50,7 +51,8 @@ def setConfigOption(section, option, value, file=None):
         except ConfigParser.Error, e:
 		syslog.syslog(syslog.LOG_ERROR, "Can't write config file: " + e)
                 result = False
-        CONFIG_LOCK.release()
+	finally:
+		CONFIG_LOCK.release()
         return result
 
 class AgoConnection:
