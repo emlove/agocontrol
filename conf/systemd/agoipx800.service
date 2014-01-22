@@ -1,8 +1,8 @@
 [Unit]
-Description=ago control alerts system
+Description=ago control IPX800
 
 [Service]
-ExecStart=/opt/agocontrol/bin/agoalert
+ExecStart=/opt/agocontrol/bin/agoipx800
 WorkingDirectory=/opt/agocontrol/bin
 StandardOutput=syslog
 StandardError=syslog

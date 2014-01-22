@@ -32,7 +32,7 @@ Description: Development header files for the agocontrol client library
 Package: python-agoclient
 Section: libs
 Architecture: all
-Depends: ${shlibs:Depends}, ${misc:Depends}, python, python-qpid
+Depends: ${shlibs:Depends}, ${misc:Depends}, python, python-qpid, python-simplejson
 Description: python client routines and utility functions for ago control device interfaces
 
 Package: agocontrol-owfs
@@ -159,3 +159,18 @@ Package: agocontrol-gc100
 Architecture: all
 Depends: ${shlibs:Depends}, ${misc:Depends}, libagoclient1.0
 Description: gc100 interface support
+
+Package: agocontrol-alert
+Architecture: all
+Depends: ${shlibs:Depends}, ${misc:Depends}, python-agoclient, python-xmpp, python-tweepy, python-simplejson 
+Description: agocontrol alerts
+
+Package: agocontrol-squeezebox
+Architecture: all
+Depends: ${shlibs:Depends}, ${misc:Depends}, python-agoclient
+Description: squeezeboxes
+
+Package: agocontrol-ipx800
+Architecture: all
+Depends: ${shlibs:Depends}, ${misc:Depends}, python-agoclient
+Description: IPX800 relay boards
