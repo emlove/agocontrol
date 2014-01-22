@@ -29,7 +29,6 @@ opt/agocontrol/bin/agotimer
 opt/agocontrol/bin/agorpc
 opt/agocontrol/bin/agosecurity
 opt/agocontrol/bin/agoctrl.sh
-opt/agocontrol/bin/agoman
 opt/agocontrol/bin/agodatalogger
 opt/agocontrol/bin/agososreport.sh
 core/rpc/html /opt/agocontrol
