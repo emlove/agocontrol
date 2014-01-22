@@ -76,7 +76,7 @@ var scenarioController = null;
 var alertControler = null
 
 var supported_devices = [ "switch", "dimmer", "binarysensor", "dimmerrgb", "multilevelsensor", , "scenario", "drapes", "brightnesssensor", "powermeter", "energysensor", "humiditysensor", "phone",
-	"pushbutton", "placeholder", "temperaturesensor", "energymeter", "squeezebox", 'ipx800v3board' ];
+	"pushbutton", "placeholder", "temperaturesensor", "energymeter", "squeezebox", 'ipx800v3board', 'computer' ];
 
 function device(obj, uuid) {
     var self = this;
