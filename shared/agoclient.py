@@ -49,7 +49,7 @@ def setConfigOption(section, option, value, file=None):
                 fpw.close()
                 result = True
         except ConfigParser.Error, e:
-		syslog.syslog(syslog.LOG_ERROR, "Can't write config file: " + e)
+		syslog.syslog(syslog.LOG_ERR, "Can't write config file: " + e)
                 result = False
 	finally:
 		CONFIG_LOCK.release()
@@ -101,18 +101,18 @@ class AgoConnection:
 			with open('/etc/opt/agocontrol/uuidmap/' + self.instance + '.json' , 'w') as outfile:
 				simplejson.dump(self.uuids, outfile)
                 except (OSError, IOError) as e:
-			syslog.syslog(syslog.LOG_ERROR, "Cannot write uuid map file: " + e)
+			syslog.syslog(syslog.LOG_ERR, "Cannot write uuid map file: " + e)
                 except ValueError, e: # includes simplejson error
-			syslog.syslog(syslog.LOG_ERROR, "Cannot encode uuid map: " + e)
+			syslog.syslog(syslog.LOG_ERR, "Cannot encode uuid map: " + e)
 
         def loadUuidMap(self):
                 try:
                         with open('/etc/opt/agocontrol/uuidmap/' + self.instance + '.json' , 'r') as infile:
                                 self.uuids = simplejson.load(infile)
                 except (OSError, IOError) as e:
-			syslog.syslog(syslog.LOG_ERROR, "Cannot load uuid map file: " + e)
+			syslog.syslog(syslog.LOG_ERR, "Cannot load uuid map file: " + e)
                 except ValueError, e: # includes simplejson.decoder.JSONDecodeError
-			syslog.syslog(syslog.LOG_ERROR, "Cannot decode uuid map: " + e)
+			syslog.syslog(syslog.LOG_ERR, "Cannot decode uuid map: " + e)
 
         def emitDeviceAnnounce(self, uuid, device):
                 content = {}
