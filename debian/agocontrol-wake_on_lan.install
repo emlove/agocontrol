@@ -1,0 +1,4 @@
+lib/systemd/system/agowake_on_lan.service
+opt/agocontrol/bin/agowake_on_lan.py
+opt/agocontrol/bin/configobj.py
+opt/agocontrol/bin/pinger.py

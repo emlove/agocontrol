@@ -56,7 +56,7 @@ commands:
     parameters:
       number:
         name: number to dial
-        type: string 
+        type: string
   setlevel:
     name: set level
     parameters:
@@ -149,7 +149,7 @@ commands:
     name: add association
     parameters:
       node:
-        name: node 
+        name: node
         type: integer
       group:
         name: group
@@ -161,7 +161,7 @@ commands:
     name: remove association
     parameters:
       node:
-        name: node 
+        name: node
         type: integer
       group:
         name: group
@@ -173,7 +173,7 @@ commands:
     name: configure parameter
     parameters:
       node:
-        name: node 
+        name: node
         type: integer
       param:
         name: parameter number
@@ -397,7 +397,7 @@ devicetypes:
   phone:
     name: telephone
     description: a phone
-    commands: [dial] 
+    commands: [dial]
   zwavecontroller:
     name: z-wave interface
     description: z-wave interface from agozwave
@@ -474,6 +474,10 @@ devicetypes:
     name: Set top box
     description: Receives TV Service
     commands: ["on", "off", mute, unmute, mutetoggle, vol+, vol-, setlevel, setchannel, getepg]
+  computer:
+    name: General computer (for Wake on LAN)
+    description: A computer
+    commands: ["on"]
   ipx800controller:
     name: IPX800 board controller
     description: Internal device to control IPX800 boards

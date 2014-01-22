@@ -1,7 +1,7 @@
-DIRS = enocean3 blinkm chromoflex firmata i2c irtrans_ethernet kwikwai mediaproxy rain8net zwave 1wire syslog enigma2 asterisk agoapc agojointspace raspiGPIO raspi1wGPIO raspiMCP3xxxGPIO gc100 onkyo x10 webcam
+DIRS = enocean3 blinkm chromoflex firmata i2c irtrans_ethernet kwikwai mediaproxy rain8net zwave 1wire syslog enigma2 asterisk agoapc agojointspace raspiGPIO raspi1wGPIO raspiMCP3xxxGPIO gc100 onkyo x10 webcam temperaturnu wake_on_lan
 
 ifdef BUILDEXTRA
-DIRS += agodmx knx 
+DIRS += agodmx knx
 endif
 
 BUILDDIRS = $(DIRS:%=build-%)
@@ -14,11 +14,11 @@ $(BUILDDIRS):
 	$(MAKE) -C $(@:build-%=%)
 
 install: $(INSTALLDIRS) all
-$(INSTALLDIRS): 
+$(INSTALLDIRS):
 	$(MAKE) -C $(@:install-%=%) install
 
 clean: $(CLEANDIRS)
-$(CLEANDIRS): 
+$(CLEANDIRS):
 	$(MAKE) -C $(@:clean-%=%) clean
 
 .PHONY: subdirs $(DIRS)
