@@ -21,7 +21,8 @@ def getConfigOption(section, option, default, file=None):
                 else:
                         config.read('/etc/opt/agocontrol/conf.d/' + section + '.conf')
                 value = config.get(section,option)
-        except:
+        except ConfigParser.Error, e:
+		syslog.syslog(syslog.LOG_WARNING, "Can't parse config file: " + e)
                 value = default
         CONFIG_LOCK.release()
         return value
@@ -46,7 +47,8 @@ def setConfigOption(section, option, value, file=None):
                 #finally close it
                 fpw.close()
                 result = True
-        except:
+        except ConfigParser.Error, e:
+		syslog.syslog(syslog.LOG_ERROR, "Can't write config file: " + e)
                 result = False
         CONFIG_LOCK.release()
         return result
@@ -89,18 +91,26 @@ class AgoConnection:
                 try:
                         return self.uuids[uuid]
                 except KeyError, e:
+			syslog.syslog(syslog.LOG_WARNING, "Cannot translate uuid to internalid: " + e)
                         return None
 
         def storeUuidMap(self):
-                with open('/etc/opt/agocontrol/uuidmap/' + self.instance + '.json' , 'w') as outfile:
-                        simplejson.dump(self.uuids, outfile)
+                try:
+			with open('/etc/opt/agocontrol/uuidmap/' + self.instance + '.json' , 'w') as outfile:
+				simplejson.dump(self.uuids, outfile)
+                except (OSError, IOError) as e:
+			syslog.syslog(syslog.LOG_ERROR, "Cannot write uuid map file: " + e)
+                except ValueError, e: # includes simplejson error
+			syslog.syslog(syslog.LOG_ERROR, "Cannot encode uuid map: " + e)
 
         def loadUuidMap(self):
                 try:
                         with open('/etc/opt/agocontrol/uuidmap/' + self.instance + '.json' , 'r') as infile:
                                 self.uuids = simplejson.load(infile)
-                except:
-                        pass
+                except (OSError, IOError) as e:
+			syslog.syslog(syslog.LOG_ERROR, "Cannot load uuid map file: " + e)
+                except ValueError, e: # includes simplejson.decoder.JSONDecodeError
+			syslog.syslog(syslog.LOG_ERROR, "Cannot decode uuid map: " + e)
 
         def emitDeviceAnnounce(self, uuid, device):
                 content = {}
@@ -179,22 +189,18 @@ class AgoConnection:
                                                                                                 replysender = replysession.sender(message.reply_to)
                                                                                                 try:
                                                                                                         response = Message(replydata)
-                                                                                                except:
+                                                                                                except EncodeError, e:
                                                                                                         syslog.syslog(syslog.LOG_ERR, "can't encode reply")
-                                                                                                        print "Can't encode reply\n"
                                                                                                         response = Message({})
                                                                                                 try:
                                                                                                         response.subject = self.instance
                                                                                                         replysender.send(response)
                                                                                                 except SendError, e:
                                                                                                         syslog.syslog(syslog.LOG_ERR, "can't send reply: " + e)
-                                                                                                        print "Can't send reply\n"
                                                                                                 except AttributeError, e:
                                                                                                         syslog.syslog(syslog.LOG_ERR, "can't send reply: " + e)
-                                                                                                        print "Can't send reply\n"
-                                                                                        except:
-                                                                                                syslog.syslog(syslog.LOG_ERR, "can't send reply")
-                                                                                                print "Can't send reply\n"
+                                                                                        except MessagingError, e:
+                                                                                                syslog.syslog(syslog.LOG_ERR, "can't send reply message: " + e)
                                                                                         replysession.close()
                                 if message.subject:
                                         if 'event' in message.subject and self.eventhandler:
