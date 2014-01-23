@@ -1,0 +1,22 @@
+<div>
+    <span id="detailsTitle">Details</span>
+    <_strong data-translateable="true">UUID: </_strong><span style="color: darkorange" data-bind="text: uuid"/><br/>
+    <ko opts="if: name ">
+    <_strong data-translateable="true">Name: </_strong><span style="color: darkorange" data-bind="text: name"/><br/>
+    </ko>
+    <_strong data-translateable="true">Type: </_strong><span style="color: darkorange" data-bind="text: devicetype"/><br/>
+    <ko opts="if: room ">
+    <_strong data-translateable="true">Room: </_strong><span style="color: darkorange" data-bind="text: room"/><br/>
+    </ko>
+    <_strong data-translateable="true">Lastseen: </_strong><span style="color: darkorange" data-bind="text: timeStamp"/><br/>
+    <br/>
+    <_h4 data-translateable="true">IPX800 configuration</_h4>
+    <hr/>
+    <_span data-translateable="true">Add new board:</_span>
+    <form>
+        <_span data-translateable="true">Board ip address: </_span>
+        <input data-bind="value: ipx800ip" placeholder="ip address"/>
+        <_button data-translateable="true" data-bind="click: addboard">Add board</_button>
+        <span class="addboardresult"></span>
+    </form>
+</div>

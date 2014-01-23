@@ -1,14 +1,14 @@
 <div>
     <span id="detailsTitle">Details</span>
-    <strong>UUID: </strong><span style="color: darkorange" data-bind="text: uuid"/><br/>
+    <_strong data-translateable="true">UUID: </_strong><span style="color: darkorange" data-bind="text: uuid"/><br/>
     <ko opts="if: name ">
-    <strong>Name: </strong><span style="color: darkorange" data-bind="text: name"/><br/>
+    <_strong data-translateable="true">Name: </_strong><span style="color: darkorange" data-bind="text: name"/><br/>
     </ko>
-    <strong>Type: </strong><span style="color: darkorange" data-bind="text: devicetype"/><br/>
+    <_strong data-translateable="true">Type: </_strong><span style="color: darkorange" data-bind="text: devicetype"/><br/>
     <ko opts="if: room ">
-    <strong>Room: </strong><span style="color: darkorange" data-bind="text: room"/><br/>
+    <_strong data-translateable="true">Room: </_strong><span style="color: darkorange" data-bind="text: room"/><br/>
     </ko>
-    <strong>Lastseen: </strong><span style="color: darkorange" data-bind="text: timeStamp"/><br/>
+    <_strong data-translateable="true">Lastseen: </_strong><span style="color: darkorange" data-bind="text: timeStamp"/><br/>
     <br/>
     <div id="tabs">
         <ul>
@@ -18,22 +18,22 @@
             <li><a href="#tabs-actions">Actions</a></li>
         </ul>
         <div id="tabs-outputs">
-            <h4 data-translateable="true">Outputs configuration</h4>
-            <div style="float:left; width:50%"><span>In this tab you can add virtual devices that uses IPX800v3 relays.</span></div>
+            <_h4 data-translateable="true">Outputs configuration</_h4>
+            <div style="float:left; width:50%"><_span data-translateable="true">In this tab you can add virtual devices that uses IPX800v3 relays.</_span></div>
             <div style="float:right; width:50%"><img src="img/ipx800v3_outputs.jpg"/></div>
             <hr/>
             <form>
                <ul>
                     <li>
-                        <span>Output type: </span>
+                        <_span data-translateable="true">Output type: </_span>
                         <select data-bind="value: selectedOutputType">
-                            <option value="switch">Switch</option>
-                            <option value="drapes">Drapes</option>
+                            <_option data-translateable="true" value="switch">Switch</_option>
+                            <_option data-translateable="true" value="drapes">Drapes</_option>
                         </select>
                     </li>
                     <ko opts="if: devswitch">
                     <li>
-                        <span>Linked relay: </span>
+                        <_span data-translateable="true">Linked relay: </_span>
                         <select data-bind="value: selectedOutputParam1">
                             <option value="0">Ch1</option>
                             <option value="1">Ch2</option>
@@ -48,7 +48,7 @@
                     </ko>
                     <ko opts="if: devdrapes">
                     <li>
-                        <span>Opening relay: </span>
+                        <_span data-translateable="true">Opening relay: </_span>
                         <select data-bind="value: selectedOutputParam1">
                             <option value="0">Ch1</option>
                             <option value="1">Ch2</option>
@@ -59,7 +59,8 @@
                             <option value="6">Ch7</option>
                             <option value="7">Ch8</option>
                         </select>
-                        <span>  Closing relay: </span>
+                        <span>  </span>
+                        <_span data-translateable="true">Closing relay: </_span>
                         <select data-bind="value: selectedOutputParam2">
                             <option value="0">Ch1</option>
                             <option value="1">Ch2</option>
@@ -73,33 +74,33 @@
                     </li>
                     </ko>
                     <li>
-                        <button data-translateable="true" data-bind="click: addoutput">Add device</button>
+                        <_button data-translateable="true" data-bind="click: addoutput">Add device</_button>
                         <span class="addoutputresult"></span>
                     </li>
                 </ul>
             </form>
             <hr/>
-            <span>Current linked outputs: </span>
+            <_span data-translateable="true">Current linked outputs: </_span>
             <span class="currentoutputs"/>
         </div>
         <div id="tabs-analogs">
-            <h4 data-translateable="true">Analogs configuration</h4>
-            <div style="float:left; width:60%"><span>In this tab you can add devices that uses IPX800v3 analogs inputs.</span></div>
+            <_h4 data-translateable="true">Analogs configuration</_h4>
+            <div style="float:left; width:60%"><_span data-translateable="true">In this tab you can add devices that uses IPX800v3 analogs inputs.</_span></div>
             <div style="float:right; width:40%"><img src="img/ipx800v3_analogs.jpg"/></div>
             <hr/>
             <form>
                <ul>
                     <li>
-                        <span>Analogs type: </span>
+                        <_span data-translateable="true">Analogs type: </_span>
                         <select data-bind="value: selectedAnalogType">
-                            <option value="temperature">Temperature</option>
-                            <option value="light">Light</option>
-                            <option value="volt">Volt</option>
-                            <option value="humidity">Humidity</option>
+                            <_option data-translateable="true" value="temperature">Temperature</_option>
+                            <_option data-translateable="true" value="light">Light</_option>
+                            <_option data-translateable="true" value="volt">Volt</_option>
+                            <_option data-translateable="true" value="humidity">Humidity</_option>
                         </select>
                     </li>
                     <li>
-                        <span>Linked analog input: </span>
+                        <_span data-translateable="true">Linked analog input: </_span>
                         <select data-bind="value: selectedAnalogParam1">
                             <option value="0">A1</option>
                             <option value="1">A2</option>
@@ -108,23 +109,23 @@
                         </select>
                     </li>
                     <li>
-                        <button data-translateable="true" data-bind="click: addanalog">Add device</button>
+                        <_button data-translateable="true" data-bind="click: addanalog">Add device</_button>
                         <span class="addanalogresult"/>
                     </li>
                 </ul>
             </form>
             <hr/>
-            <span>Current linked analogs: </span>
+            <_span data-translateable="true">Current linked analogs: </_span>
             <span class="currentanalogs"/>
         </div>
         <div id="tabs-counters">
-            <h4 data-translateable="true">Counters configuration</h4>
-            <span>In this tab you can add counters managed by IPX800v3 board.</span>
+            <_h4 data-translateable="true">Counters configuration</_h4>
+            <_span data-translateable="true">In this tab you can add counters managed by IPX800v3 board.</_span>
             <hr/>
             <form>
                <ul>
                     <li>
-                        <span>Linked counter: </span>
+                        <_span data-translateable="true">Linked counter: </_span>
                         <select data-bind="value: selectedCounterParam1">
                             <option value="0">C1</option>
                             <option value="1">C2</option>
@@ -132,36 +133,36 @@
                         </select>
                     </li>
                     <li>
-                        <button data-translateable="true" data-bind="click: addcounter">Add device</button>
+                        <_button data-translateable="true" data-bind="click: addcounter">Add device</_button>
                         <span class="addcounterresult"/>
                     </li>
                 </ul>
             </form>
             <hr/>
-            <span>Current linked counters: </span>
+            <_span data-translateable="true">Current linked counters: </_span>
             <span class="currentcounters"/>
         </div>
         <div id="tabs-actions">
-            <h4 data-translateable="true">Actions</h4>
-            <span>In this tab you can execute actions available on board.</span>
+            <_h4 data-translateable="true">Actions</_h4>
+            <_span data-translateable="true">In this tab you can execute actions available on board.</_span>
             <hr/>
             <ul>
                 <li>
-                    <span>Turn <b>on</b> all IPX800 devices: </span>
-                    <button data-bind="click: allOn">Turn all on</button>
+                    <_span data-translateable="true">Turn on all IPX800 devices: </_span>
+                    <_button data-translateable="true" data-bind="click: allOn">Turn all on</_button>
                 </li>
                 <li>
-                    <span>Turn <b>off</b> all IPX800 devices: </span>
-                    <button data-bind="click: allOff">Turn all off</button>
+                    <_span data-translateable="true">Turn off all IPX800 devices: </_span>
+                    <_button data-translateable="true" data-bind="click: allOff">Turn all off</_button>
                 </li>
                 <li>
-                    <span>Force IPX800 drapes state: </span>
+                    <_span data-translateable="true">Force IPX800 drapes state: </_span>
                     <select data-bind="options: devices, value:selectedDevice"></select>
                     <select data-bind="value: selectedDeviceState">
-                        <option value="opened">Opened</option>
-                        <option value="closed">Closed</option>
+                        <_option data-translateable="true" value="opened">Opened</_option>
+                        <_option data-translateable="true" value="closed">Closed</_option>
                     </select>
-                    <button data-bind="click: forcestate">Force state</button>
+                    <_button data-translateable="true" data-bind="click: forcestate">Force state</_button>
                     <span data-bind="text: forcestateresult"></span>
                 </li>
             </ul>
