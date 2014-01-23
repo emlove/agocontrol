@@ -1094,6 +1094,11 @@ function doShowDetails(device, template, environment) {
 		    renderGraph(device, environment ? environment : device.valueList()[0].name);
 		};
 
+        var reset = function() {
+            if( device!==undefined )
+                device.reset();
+        }
+
 		dialogWidth = 1000;
 		dialogHeight = 720;
 	    }
