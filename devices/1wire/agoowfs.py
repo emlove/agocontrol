@@ -43,6 +43,8 @@ for sensor in root.sensors():
 				client.addDevice(sensor._path, "multilevelsensor");
 			if ow.owfs_get('%s/MultiSensor/type' % sensor._path) == 'MS-TH':
 				client.addDevice(sensor._path, "multilevelsensor");
+			if ow.owfs_get('%s/MultiSensor/type' % sensor._path) == 'MS-T':
+				client.addDevice(sensor._path, "multilevelsensor");
 		except ow.exUnknownSensor, e:
 			print e
 	if sensor._type == 'DS2406':
