@@ -463,7 +463,7 @@ void OnNotification
 					if (str == "True") level="255";
 					if (str == "False") level="0";
 					printf("Value: %s Label: %s Unit: %s\n",str.c_str(),label.c_str(),units.c_str());
-					if ((label == "Basic") || (label == "Switch")) {
+					if ((label == "Basic") || (label == "Switch") || (label == "Level")) {
 						eventtype="event.device.statechanged";
 					}
 					if (label == "Luminance") {
