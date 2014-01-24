@@ -17,7 +17,6 @@
 #define SECURITYMAPFILE CONFIG_BASE_DIR "/maps/securitymap.json"
 #endif
 
-
 using namespace qpid::messaging;
 using namespace qpid::types;
 using namespace agocontrol;
@@ -26,21 +25,64 @@ AgoConnection *agoConnection;
 std::string agocontroller;
 qpid::types::Variant::Map securitymap;
 
+// example map: {"housemode":"armed","zones":{"armed":[{"zone":"hull","delay":12}]}}
+
+bool findList(qpid::types::Variant::List list, std::string elem) {
+	//qpid::types::Variant::List::const_iterator it = std::find(list.begin(), list.end(), elem);
+	for (qpid::types::Variant::List::const_iterator it = list.begin(); it != list.end(); it++) {
+		if (it->getType() == qpid::types::VAR_MAP) {
+			qpid::types::Variant::Map map = it->asMap();
+			if (map["zone"].asString() == elem) {
+				// cout << "found zone: " << map["zone"] << endl;
+				return true;
+			}
+		}
+
+	}
+	return false;
+}
+
+int getZoneDelay(qpid::types::Variant::Map smap, std::string elem) {
+	qpid::types::Variant::Map zonemap;
+	qpid::types::Variant::List list;
+	std::string housemode = securitymap["housemode"];
+	if (!(smap["zones"].isVoid())) zonemap = smap["zones"].asMap();
+	if (!(zonemap[housemode].isVoid())) {
+		if (zonemap[housemode].getType() == qpid::types::VAR_LIST) {
+			list = zonemap[housemode].asList();
+			for (qpid::types::Variant::List::const_iterator it = list.begin(); it != list.end(); it++) {
+				if (it->getType() == qpid::types::VAR_MAP) {
+					qpid::types::Variant::Map map = it->asMap();
+					if (map["zone"].asString() == elem) {
+						// cout << "found zone: " << map["zone"] << endl;
+						if (map["delay"].isVoid()) {
+							return 0;
+						} else {
+							int delay = map["delay"].asUint8();
+							return delay;
+						}
+					}
+				}
+
+			}
+		}
+	}
+	return 0;
+}
+
 void *alarmthread(void *param) {
-	int delay = *((int *)param);
+	std::string zone;
+	if (param) zone = (const char*)param;
+	int delay=getZoneDelay(securitymap, zone);	
 	Variant::Map content;
-	cout << "Alarm triggered, delay: " << delay << endl;
+	content["zone"]=zone;
+	cout << "Alarm triggered, zone: " << zone << " delay: " << delay << endl;
 	while (delay-- > 0) {
 		cout << "count down: " << delay << endl;
 		sleep(1);
 	}
-	agoConnection->sendMessage("event.security.intruderalert", content);
-}
-
-bool findList(qpid::types::Variant::List list, std::string elem) {
-	qpid::types::Variant::List::const_iterator it = std::find(list.begin(), list.end(), elem);
-	if (it == list.end()) return false;
-	return true;
+	cout << "sending alarm event" << endl;
+	agoConnection->emitEvent("securitycontroller", "event.security.intruderalert", content);
 }
 
 qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
@@ -71,13 +113,17 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 				if (zonemap[housemode].getType() == qpid::types::VAR_LIST) {
 					if (findList(zonemap[housemode].asList(), zone)) {
 						static pthread_t securityThread;
-						int delay = 30;
-						pthread_create(&securityThread,NULL,alarmthread,(void *)&delay);
+						const char *_zone = zone.c_str();
+						if (pthread_create(&securityThread,NULL,alarmthread,(void *)_zone) != 0) {
+							cout << "ERROR: can't start alarmthread!" << endl;
+							returnval["result"] = -1;
+						} else {
+							returnval["result"] = 0;
+						}
 					}
 				}	
 
 			}
-			returnval["result"] = 0;
 		} else if (content["command"] == "setzones") {
 			try {
 				cout << "setzones request" << endl;
@@ -130,7 +176,7 @@ int main(int argc, char** argv) {
 */
 	agoConnection->addDevice("securitycontroller", "securitycontroller");
 	agoConnection->addHandler(commandHandler);
-	agoConnection->addEventHandler(eventHandler);
+//	agoConnection->addEventHandler(eventHandler);
 
 	int pin=atoi(getConfigOption("security", "pin", "1234").c_str());
 
