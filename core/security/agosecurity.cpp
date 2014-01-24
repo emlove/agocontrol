@@ -23,6 +23,8 @@ using namespace agocontrol;
 
 AgoConnection *agoConnection;
 std::string agocontroller;
+static pthread_t securityThread;
+bool isSecurityThreadRunning = false;
 qpid::types::Variant::Map securitymap;
 
 // example map: {"housemode":"armed","zones":{"armed":[{"zone":"hull","delay":12}]}}
@@ -83,6 +85,7 @@ void *alarmthread(void *param) {
 	}
 	cout << "sending alarm event" << endl;
 	agoConnection->emitEvent("securitycontroller", "event.security.intruderalert", content);
+	isSecurityThreadRunning = false;
 }
 
 qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
@@ -111,13 +114,20 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 			if (!(securitymap["zones"].isVoid())) zonemap = securitymap["zones"].asMap();
 			if (!(zonemap[housemode].isVoid())) {
 				if (zonemap[housemode].getType() == qpid::types::VAR_LIST) {
+					// let's see if the zone is active in the current house mode
 					if (findList(zonemap[housemode].asList(), zone)) {
-						static pthread_t securityThread;
 						const char *_zone = zone.c_str();
-						if (pthread_create(&securityThread,NULL,alarmthread,(void *)_zone) != 0) {
-							cout << "ERROR: can't start alarmthread!" << endl;
-							returnval["result"] = -1;
+						// check if there is already an alarmthread running
+						if (isSecurityThreadRunning  == false) {
+							if (pthread_create(&securityThread,NULL,alarmthread,(void *)_zone) != 0) {
+								cout << "ERROR: can't start alarmthread!" << endl;
+								returnval["result"] = -1;
+							} else {
+								isSecurityThreadRunning = true;
+								returnval["result"] = 0;
+							}
 						} else {
+							cout << "alarmthread already running" << endl;
 							returnval["result"] = 0;
 						}
 					}
@@ -140,6 +150,21 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
                         } catch (...) {
                                 returnval["result"] = -1;
 				returnval["error"] = "exception";
+			}
+		} else if (content["command"] == "cancel") {
+			if (isSecurityThreadRunning) {
+				if (pthread_cancel(securityThread) != 0) {
+					cout << "ERROR: cannot cancel alarm thread!" << endl;
+					returnval["result"] = -1;
+				} else {
+					isSecurityThreadRunning = false;
+					returnval["result"] = 0;
+					cout << "alarm cancelled" << endl;
+				}
+
+			} else {
+				cout << "ERROR: no alarm thread running" << endl;
+				returnval["result"] = -1;
 			}
 		} else {
 			returnval["result"] = -1;
