@@ -597,7 +597,7 @@ events:
     parameters: [level, uuid]
   event.proximity.ndef:
     description: NFC NDEF tag within range
-    paramteres: [data]
+    parameters: [data]
 units:
   degC:
     label: "°C"
