@@ -115,7 +115,7 @@ public class MainActivity extends ListActivity {
     	Context context = getApplicationContext();
     	SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
     	agoHostname = prefs.getString(PreferencesActivity.PREF_AGOCONTROL_HOSTNAME,  "192.168.80.2");
-    	agoPort = prefs.getString(PreferencesActivity.PREF_AGOCONTROL_PORT,  "8000");
+    	agoPort = prefs.getString(PreferencesActivity.PREF_AGOCONTROL_PORT,  "8008");
     	
     }
 
@@ -223,7 +223,10 @@ public class MainActivity extends ListActivity {
 	        for (NdefRecord ndefRecord : records) {
 	            if (ndefRecord.getTnf() == NdefRecord.TNF_WELL_KNOWN && Arrays.equals(ndefRecord.getType(), NdefRecord.RTD_TEXT)) {
 	                try {
-	                    return readText(ndefRecord);
+	                    
+	                    String text = readText(ndefRecord);
+	    	        	connection.sendEvent("event.proximity.ndef", text);
+	    	        	return text;
 	                } catch (UnsupportedEncodingException e) {
 	                    Log.e(TAG, "Unsupported Encoding", e);
 	                }
@@ -253,9 +256,8 @@ public class MainActivity extends ListActivity {
 	    }
 	    @Override
 	    protected void onPostExecute(String result) {
-	        if (result != null) {
-	        	connection.sendEvent("event.proximity.ndef", result);
-	        }
+	        // if (result != null) {
+	        // }
 	    }
 	}
 	

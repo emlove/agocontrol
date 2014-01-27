@@ -128,7 +128,8 @@ public class AgoConnection {
 	    	JSONObject agoevent = new JSONObject();
 	    	agoevent.put("data", data);
 	    	JSONObject params = new JSONObject();
-	    	params.put("content", agoevent); 
+	    	params.put("content", agoevent);
+	    	params.put("subject", subject); 
 	    	JSONObject result = client.callJSONObject("message", params);
 	    	return true;
 	    } catch (JSONRPCException e) {
