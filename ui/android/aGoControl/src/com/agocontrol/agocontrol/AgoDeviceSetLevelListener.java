@@ -50,19 +50,8 @@ public class AgoDeviceSetLevelListener implements SeekBar.OnSeekBarChangeListene
 			
 			final AgoDevice dev = (AgoDevice)params[0];
 			final String level = String.valueOf((Integer)params[1]);
-			final String host = dev.connection.host;
-		    HttpClient client = new DefaultHttpClient();
-		    HttpGet httpGet = new HttpGet("http://" + host + ":8000/setdevicelevel/" + dev.getUuid().toString() + "/setlevel/" + level);
-		    try {
-		        HttpResponse response = client.execute(httpGet);
-		        StatusLine statusLine = response.getStatusLine();
-		        int statusCode = statusLine.getStatusCode();
-		    } catch (ClientProtocolException e) {
-			        e.printStackTrace();
-			} catch (IOException e) {
-			        e.printStackTrace();
-			}
-		
+			AgoConnection connection = myDevice.getConnection();
+			connection.setDeviceLevel(myDevice.getUuid(), level);
 			return null;
 		}
 		
