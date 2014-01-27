@@ -121,6 +121,23 @@ public class AgoConnection {
 		return false;
 	}
 	
+	public boolean sendEvent(String subject, String data) {
+		try {
+	    	JSONObject agoevent = new JSONObject();
+	    	agoevent.put("data", data);
+	    	JSONObject params = new JSONObject();
+	    	params.put("content", agoevent); 
+	    	JSONObject result = client.callJSONObject("message", params);
+	    	return true;
+	    } catch (JSONRPCException e) {
+	    	  e.printStackTrace();
+	    } catch (JSONException e) {
+	    		e.printStackTrace();
+		}
+		return false;
+	
+	}
+	
 	public boolean setDeviceLevel(UUID uuid, String level) {
 	    try {
 	    	JSONObject agocommand = new JSONObject();
