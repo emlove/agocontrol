@@ -3,7 +3,8 @@
     android:versionCode="2"
     android:versionName="2.0" >
 <uses-permission android:name="android.permission.INTERNET"/>
-<uses-sdk android:minSdkVersion="4" android:targetSdkVersion="16"/>
+<uses-permission android:name="android.permission.NFC" />
+<uses-sdk android:minSdkVersion="10" android:targetSdkVersion="17"/>
 
     <application
         android:icon="@drawable/ic_launcher"
@@ -17,6 +18,12 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <intent-filter>
+        		<action android:name="android.nfc.action.TECH_DISCOVERED" />
+    		</intent-filter>
+    		<meta-data
+        		android:name="android.nfc.action.TECH_DISCOVERED"
+        		android:resource="@xml/nfc_tech_filter" />
         </activity>
         <activity
             android:name=".FragmentPreferences"
