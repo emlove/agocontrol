@@ -143,11 +143,13 @@ class AgoConnection:
                         del self.devices[self.internalIdToUuid(internalid)]
 
         def sendMessage(self, content):
-                return self.sendmessage(None, content)
+                return self.sendMessage(None, content)
 
         def sendMessage(self, subject, content):
+		_content = content
+		_content["instance"] = self.instance
                 try:
-                        message = Message(content=content, subject=subject)
+                        message = Message(content=_content, subject=subject)
                         self.sender.send(message)
                         return True
                 except SendError, e:
