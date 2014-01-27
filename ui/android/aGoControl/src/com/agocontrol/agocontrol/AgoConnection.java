@@ -1,6 +1,7 @@
 package com.agocontrol.agocontrol;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -19,6 +20,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.util.Base64;
 import android.util.Log;
 
 public class AgoConnection {
@@ -155,6 +157,25 @@ public class AgoConnection {
 		}
 	    return false;
 	}
+	
+	public byte[] getVideoFrame(UUID uuid) {
+	    try {
+	    	JSONObject agocommand = new JSONObject();
+	    	agocommand.put("command", "getvideoframe");
+	    	agocommand.put("uuid", uuid.toString());
+	    	JSONObject params = new JSONObject();
+	    	params.put("content", agocommand); 
+	    	JSONObject result = client.callJSONObject("message", params);
+	    	String frame = result.getString("image");
+	    	return Base64.decode(frame, Base64.DEFAULT);
+	    } catch (JSONRPCException e) {
+    	  e.printStackTrace();
+	    } catch (JSONException e) {
+    		e.printStackTrace();
+	    }
+		return null;
+	}
+	
 	
 	private String getInventory() {
 	    StringBuilder builder = new StringBuilder();

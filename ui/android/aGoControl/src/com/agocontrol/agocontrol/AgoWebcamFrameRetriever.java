@@ -18,48 +18,31 @@ public class AgoWebcamFrameRetriever {
 	private static final String TAG = AgoWebcamFrameRetriever.class.getSimpleName();
 	
 	private Context mContext;
-	private AgoDevice mDevice;
+	private AgoDevice myDevice;
 	private String mUrl;
 	
-	public AgoWebcamFrameRetriever(Context context, AgoDevice myDevice) {
+	public AgoWebcamFrameRetriever(Context context, AgoDevice _myDevice) {
 		mContext = context;
-		mDevice = myDevice;
-		mUrl = "http://" + myDevice.connection.host + ":8000/getvideoframe?uuid=" + myDevice.getUuid();
+		this.myDevice = _myDevice;
 	}
 	
 	
 	public Bitmap getBitmap() {
-		
-		Log.i(TAG, "getting video frame: " + mUrl);
-		
-		File f =  null; 
 		Bitmap bitmap = null;
+		
+		AgoConnection connection = myDevice.getConnection();	
 		try {
-			File dir = mContext.getCacheDir();
-			f=File.createTempFile("frame", null, dir);
-            InputStream is=new  URL(mUrl).openStream();
-            OutputStream os = new FileOutputStream(f);
-            copyStream(is, os);
-            os.close();
-            bitmap = decodeFile(f);
-            is.close();
-        } catch (UnknownHostException uhe) {
-        	if (Global.DEBUG) Log.e(TAG, "UnknownHostException . . . returning default");
-        	return BitmapFactory.decodeResource(mContext.getResources(), R.drawable.ic_camera);
-        	//return null;
+			Log.i(TAG, "getting video frame");
+			 byte[] byteArray = connection.getVideoFrame(myDevice.getUuid());
+            bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length);
         } catch (Exception ex){
            if (Global.DEBUG) Log.e(TAG, "getBitmap(): " + ex.getMessage());
            return BitmapFactory.decodeResource(mContext.getResources(),  R.drawable.ic_camera);
-        } finally {
-        	if (f != null) {
-        		f.delete();
-        	}
         }
-		
 		return bitmap;
 	}
 	
-	private Bitmap decodeFile(File f) {
+	private Bitmap decodeFile(byte[] byteArray) {
 		
 		try {
 			final BitmapFactory.Options o = new BitmapFactory.Options();
@@ -68,7 +51,7 @@ public class AgoWebcamFrameRetriever {
             o.inPurgeable = true;
             o.inTempStorage = new byte[16000];
             
-            BitmapFactory.decodeStream(new FileInputStream(f),null,o);
+            BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length, o);
             
             final int REQUIRED_SIZE=70;
             int width_tmp=o.outWidth, height_tmp=o.outHeight;
@@ -85,8 +68,7 @@ public class AgoWebcamFrameRetriever {
             final BitmapFactory.Options o2 = new BitmapFactory.Options();
             o2.inSampleSize=scale;
             o2.inPurgeable = true;
-            final FileInputStream is = new FileInputStream(f);
-            final Bitmap ret = BitmapFactory.decodeStream(is, null, o2);
+            final Bitmap ret = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.length, o2);
             return ret;
 		} catch (Exception e) {
 			
