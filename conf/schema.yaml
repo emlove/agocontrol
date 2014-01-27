@@ -548,6 +548,9 @@ values:
   extension:
     name: phone extension
     description: extension being called
+  data:
+    name: data
+    description: data field
 events:
   event.telecom.call:
     description: a call is originating
@@ -592,6 +595,9 @@ events:
   event.environment.energychanged:
     description: energy has changed
     parameters: [level, uuid]
+  event.proximity.ndef:
+    description: NFC NDEF tag within range
+    paramteres: [data]
 units:
   degC:
     label: "°C"
