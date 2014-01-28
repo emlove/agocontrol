@@ -755,7 +755,7 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 		ZWaveNode *device = devices.findId(internalid);
 		if (device != NULL) {
 			printf("command received for %s\n", internalid.c_str());
-			printf("device tpye: %s\n", device->getDevicetype().c_str()); 
+			printf("device type: %s\n", device->getDevicetype().c_str()); 
 
 			string devicetype = device->getDevicetype();
 			ValueID *tmpValueID;
