@@ -76,7 +76,7 @@ var scenarioController = null;
 var alertControler = null
 
 var supported_devices = [ "switch", "dimmer", "binarysensor", "dimmerrgb", "multilevelsensor", , "scenario", "drapes", "brightnesssensor", "powermeter", "energysensor", "humiditysensor", "phone",
-	"pushbutton", "placeholder", "temperaturesensor", "energymeter", "squeezebox", 'ipx800v3board', 'computer' ];
+	"pushbutton", "placeholder", "temperaturesensor", "energymeter", "squeezebox", "ipx800v3board", "computer", "thermostat" ];
 
 function device(obj, uuid) {
     var self = this;
@@ -128,10 +128,10 @@ function device(obj, uuid) {
 	};
     }
 
-    if (this.devicetype.match(/sensor$/) || this.devicetype.match(/meter$/)) {
+    if (this.devicetype.match(/sensor$/) || this.devicetype.match(/meter$/) || this.devicetype.match(/thermostat$/)) {
 	this.valueList = ko.computed(function() {
 	    var result = [];
-	    var i = 0;
+	    // var i = 0;
 	    for ( var k in self.values()) {
 		var unit = self.values()[k].unit;
 		if (schema.units[self.values()[k].unit] !== undefined) {
@@ -142,10 +142,10 @@ function device(obj, uuid) {
 		    level : self.values()[k].level,
 		    unit : unit
 		});
-		i++;
-		if (i == 2) {
-		    break;
-		}
+		// i++;
+		// if (i == 2) {
+		//    break;
+		//}
 	    }
 	    return result;
 	});
