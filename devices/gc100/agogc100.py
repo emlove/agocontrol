@@ -103,7 +103,7 @@ for addr in devices:
 					if 'SENSOR_NOTIFY' in getir(addr, GC100_COMM_PORT, "%s:%i" % (module, x)):
 						client.addDevice("%s/%s:%i" % (addr, module, x), "binarysensor")
 		except ValueError, e:
-			print "value error", e, data
+			print "value error", e, device
 
 	notificationThread = WatchInputs(addr)
 	notificationThread.setDaemon(True)

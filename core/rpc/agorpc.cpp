@@ -19,7 +19,9 @@
 #include <string.h>
 
 #include <termios.h>
+#ifndef __FreeBSD__
 #include <malloc.h>
+#endif
 #include <stdio.h>
 #include <unistd.h>
 #include <errno.h>
@@ -140,6 +142,7 @@ static void update (struct mg_connection *conn, const struct mg_request_info *re
 	while(true) {
 		try {
 			Message receiveMessage = myReceiver.fetch(Duration::SECOND * 3);
+			session.acknowledge(receiveMessage);
 			if (receiveMessage.getContentSize() > 3) {	
 				Variant::Map receiveMap;
 				decode(receiveMessage,receiveMap);
@@ -177,6 +180,7 @@ static void command (struct mg_connection *conn, const struct mg_request_info *r
 	mg_printf(conn, "%s", "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n\r\n");
 	try {
 		Message response = responseReceiver.fetch(Duration::SECOND * 3);
+		session.acknowledge(response);
 		if (response.getContentSize() > 3) {	
 			Variant::Map responseMap;
 			decode(response,responseMap);
@@ -293,7 +297,11 @@ bool jsonrpcRequestHandler(struct mg_connection *conn, Json::Value request, bool
 				if (content.isString()) {
 					cout << "removing subscription: " << content.asString() << endl;
 					pthread_mutex_lock(&mutexSubscriptions);	
-					subscriptions.erase(content.asString());
+					map<string,Subscriber>::iterator it = subscriptions.find(content.asString());
+					if (it != subscriptions.end()) {
+						Subscriber *sub = &(it->second);
+						subscriptions.erase(content.asString());
+					}
 					pthread_mutex_unlock(&mutexSubscriptions);	
 					mg_printf(conn, "{\"jsonrpc\": \"2.0\", \"result\": \"success\", \"id\": %s}",myId.c_str());
 				} else {
@@ -448,7 +456,7 @@ int main(int argc, char **argv) {
 			Variant::Map content;
 			string subject;
 			Message message = receiver.fetch(Duration::SECOND * 3);
-			session.acknowledge();
+			session.acknowledge(message);
 
 			subject = message.getSubject();
 
@@ -476,6 +484,7 @@ int main(int argc, char **argv) {
 					if (it->second.queue.size() > 100) {
 						// this subscription seems to be abandoned, let's remove it to save resources
 						printf("removing subscription %s as the queue size exceeds limits\n", it->first.c_str());
+						Subscriber *sub = &(it->second);
 						subscriptions.erase(it++);
 					} else {
 						it->second.queue.push_back(content);

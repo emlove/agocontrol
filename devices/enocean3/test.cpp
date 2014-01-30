@@ -10,11 +10,15 @@
 
 #include "esp3.h"
 
+esp3::ESP3 *myESP3;
 
 int main(int argc, char **argv) {
-       esp3::init("/dev/ttyAMA0");
+	myESP3 = new esp3::ESP3("/dev/ttyAMA0");
+	myESP3->init();
+	std::cout << "ID base: " << myESP3->getIdBase() << std::endl;
+	myESP3->fourbsCentralCommandDimLevel(1,0x64,1);
         while (true) {
-		esp3::readFrame();
+		sleep(1);
  	}
 
 }

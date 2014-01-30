@@ -18,13 +18,12 @@
 #include <string.h>
 
 #include <termios.h>
-#include <malloc.h>
-#include <stdio.h>
-#include <unistd.h>
 #include <errno.h>
 #include <stdlib.h>
 #include <pthread.h>
+#ifndef __FreeBSD__
 #include <sys/sysinfo.h>
+#endif
 
 #include <sstream>
 #include <map>
@@ -67,7 +66,7 @@ Variant::Map variables; // holds global variables
 
 Inventory *inv;
 int discoverdelay;
-bool persistence = true;
+bool persistence = false;
 
 bool saveDevicemap() {
 	if (persistence) return variantMapToJSONFile(inventory, DEVICESMAPFILE);
@@ -79,6 +78,10 @@ void loadDevicemap() {
 }
 
 void get_sysinfo() {
+#ifndef __FreeBSD__
+	/* Note on FreeBSD exclusion. Sysinfo.h does not exist, but the code below
+	 * does not really use it anyway.. so just skip it.
+	 */ 
 	struct sysinfo s_info;
 	int error;
 	error = sysinfo(&s_info);
@@ -94,6 +97,7 @@ void get_sysinfo() {
 		systeminfo["procs"] = s_info.procs;
 		*/
 	}
+#endif
 }
 
 bool emitNameEvent(const char *uuid, const char *eventType, const char *name) {
@@ -166,10 +170,13 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 			string uuid = content["room"];
 			// if no uuid is provided, we need to generate one for a new room
 			if (uuid == "") uuid = generateUuid();
-			inv->setroomname(uuid, content["name"]);
-			reply["uuid"] = uuid;
-			reply["returncode"] = 0;
-			emitNameEvent(uuid.c_str(), "event.system.roomnamechanged", content["name"].asString().c_str());
+			if (inv->setroomname(uuid, content["name"]) == 0) {
+				reply["uuid"] = uuid;
+				reply["returncode"] = 0;
+				emitNameEvent(uuid.c_str(), "event.system.roomnamechanged", content["name"].asString().c_str());
+			} else {
+				reply["returncode"] = -1;
+			}
 		} else if (content["command"] == "setdeviceroom") {
 			if ((content["device"].asString() != "") && (inv->setdeviceroom(content["device"], content["room"]) == 0)) {
 				reply["returncode"] = 0;
@@ -380,7 +387,7 @@ int main(int argc, char **argv) {
 
 	schemafile=getConfigOption("system", "schema", CONFDIR "/schema.yaml");
 	discoverdelay=atoi(getConfigOption("system", "discoverdelay", "300").c_str());
-	if (atoi(getConfigOption("system","devicepersistence", "1").c_str()) != 1) persistence=false;
+	if (atoi(getConfigOption("system","devicepersistence", "0").c_str()) != 1) persistence=false;
 
 	systeminfo["uuid"] = getConfigOption("system", "uuid", "00000000-0000-0000-000000000000");
 	systeminfo["version"] = AGOCONTROL_VERSION;

@@ -19,6 +19,22 @@ Iter next(Iter iter)
     return ++iter;
 }
 
+bool agocontrol::nameval(const std::string& in, std::string& name, std::string& value) {
+	std::string::size_type i = in.find("=");
+        if (i == std::string::npos) {
+		name = in;
+		return false;
+        } else {
+		name = in.substr(0, i);
+		if (i+1 < in.size()) {
+			value = in.substr(i+1);
+			return true;
+		} else {
+			return false;
+		}
+        }
+}
+
 void agocontrol::replaceString(std::string& subject, const std::string& search, const std::string& replace) {
         size_t pos = 0;
         while ((pos = subject.find(search, pos)) != std::string::npos) {
@@ -264,7 +280,6 @@ agocontrol::AgoConnection::AgoConnection(const char *interfacename) {
 	try {
 		connection.open(); 
 		session = connection.createSession(); 
-		receiver = session.createReceiver("agocontrol; {create: always, node: {type: topic}}");
 		sender = session.createSender("agocontrol; {create: always, node: {type: topic}}"); 
 	} catch(const std::exception& error) {
 		std::cerr << error.what() << std::endl;
@@ -284,6 +299,13 @@ agocontrol::AgoConnection::~AgoConnection() {
 
 
 void agocontrol::AgoConnection::run() {
+	try {
+		receiver = session.createReceiver("agocontrol; {create: always, node: {type: topic}}");
+	} catch(const std::exception& error) {
+		std::cerr << error.what() << std::endl;
+		printf("could not create receiver when connecting to broker\n");
+		_exit(1);
+	}
 	// reportDevices(); // this is obsolete as it is handled by addDevice 
 	while( true ) {
 		try{
@@ -591,6 +613,45 @@ qpid::types::Variant::Map agocontrol::AgoConnection::getInventory() {
 		printf("WARNING, no reply message to fetch\n");
 	}
 	return responseMap;
+}
+
+std::string agocontrol::AgoConnection::getAgocontroller() {
+	std::string agocontroller;
+	int retry = 10;
+        while(agocontroller=="" && retry-- > 0) {
+                qpid::types::Variant::Map inventory = getInventory();
+                if (!(inventory["devices"].isVoid())) {
+                        qpid::types::Variant::Map devices = inventory["devices"].asMap();
+                        qpid::types::Variant::Map::const_iterator it;
+                        for (it = devices.begin(); it != devices.end(); it++) {
+                                if (!(it->second.isVoid())) {
+                                        qpid::types::Variant::Map device = it->second.asMap();
+                                        if (device["devicetype"] == "agocontroller") {
+                                                cout << "Agocontroller: " << it->first << endl;
+                                                agocontroller = it->first;
+                                        }
+                                }
+                        }
+                } else {
+			cout << "unable to resolve agocontroller, retrying" << endl;
+			sleep(1);
+		}
+        }
+	if (agocontroller == "") cout << "unable to resolve agocontroller, giving up" << endl;
+	return agocontroller;
+}
+
+bool agocontrol::AgoConnection::setGlobalVariable(std::string variable, qpid::types::Variant value) {
+	Variant::Map setvariable;
+	std::string agocontroller = getAgocontroller();
+	if (agocontroller != "") {
+		setvariable["uuid"] = agocontroller;
+		setvariable["command"] = "setvariable";
+		setvariable["variable"] = variable;
+		setvariable["value"] = value;
+		return sendMessage("", setvariable);
+	} 
+	return false;
 }
 
 agocontrol::Log::Log(std::string ident, int facility) {

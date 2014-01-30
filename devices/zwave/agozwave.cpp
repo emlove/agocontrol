@@ -45,6 +45,8 @@ using namespace agocontrol;
 using namespace OpenZWave;
 
 bool debug = true;
+bool polling = false;
+
 int unitsystem = 0; // 0 == SI, 1 == US
 
 AgoConnection *agoConnection;
@@ -61,6 +63,9 @@ typedef struct
 }NodeInfo;
 
 static list<NodeInfo*> g_nodes;
+
+static map<ValueID, qpid::types::Variant> valueCache;
+
 static pthread_mutex_t g_criticalSection;
 static pthread_cond_t  initCond  = PTHREAD_COND_INITIALIZER;
 static pthread_mutex_t initMutex = PTHREAD_MUTEX_INITIALIZER;
@@ -255,6 +260,9 @@ void OnNotification
 			{
 				// Add the new value to our list
 				nodeInfo->m_values.push_back( _notification->GetValueID() );
+				uint8 basic = Manager::Get()->GetNodeBasic(_notification->GetHomeId(),_notification->GetNodeId());
+				uint8 generic = Manager::Get()->GetNodeGeneric(_notification->GetHomeId(),_notification->GetNodeId());
+				uint8 specific = Manager::Get()->GetNodeSpecific(_notification->GetHomeId(),_notification->GetNodeId());
 				ValueID id = _notification->GetValueID();
 				string label = Manager::Get()->GetValueLabel(id);
 				stringstream tempstream;
@@ -266,6 +274,17 @@ void OnNotification
 				tempstream << label;
 				string tempstring = tempstream.str();
 				ZWaveNode *device;
+				if (basic == BASIC_TYPE_CONTROLLER) {
+					if ((device = devices.findId(nodeinstance)) != NULL) {
+						device->addValue(label, id);
+						device->setDevicetype("remote");
+					} else {
+						device = new ZWaveNode(nodeinstance, "remote");	
+						device->addValue(label, id);
+						devices.add(device);
+						agoConnection->addDevice(device->getId().c_str(), device->getDevicetype().c_str());
+					}
+				} else
 				switch(id.GetCommandClassId()) {
 					case COMMAND_CLASS_SWITCH_MULTILEVEL:
 						if (label == "Level") {
@@ -278,7 +297,7 @@ void OnNotification
 								devices.add(device);
 								agoConnection->addDevice(device->getId().c_str(), device->getDevicetype().c_str());
 							}
-						
+							// Manager::Get()->EnablePoll(id);
 						}
 					break;
 					case COMMAND_CLASS_SWITCH_BINARY:
@@ -291,6 +310,7 @@ void OnNotification
 								devices.add(device);
 								agoConnection->addDevice(device->getId().c_str(), device->getDevicetype().c_str());
 							}
+							// Manager::Get()->EnablePoll(id);
 						}
 					break;
 					case COMMAND_CLASS_SENSOR_BINARY:
@@ -303,6 +323,7 @@ void OnNotification
 								devices.add(device);
 								agoConnection->addDevice(device->getId().c_str(), device->getDevicetype().c_str());
 							}
+							// Manager::Get()->EnablePoll(id);
 						}
 					break;
 					case COMMAND_CLASS_SENSOR_MULTILEVEL:
@@ -312,10 +333,21 @@ void OnNotification
 							devices.add(device);
 							agoConnection->addDevice(device->getId().c_str(), device->getDevicetype().c_str());
 						} else if (label == "Temperature") {
-							device = new ZWaveNode(tempstring, "temperaturesensor");	
-							device->addValue(label, id);
-							devices.add(device);
-							agoConnection->addDevice(device->getId().c_str(), device->getDevicetype().c_str());
+							if (generic == GENERIC_TYPE_THERMOSTAT) {
+								if ((device = devices.findId(nodeinstance)) != NULL) {
+									device->addValue(label, id);
+								} else {
+									device = new ZWaveNode(nodeinstance, "thermostat");	
+									device->addValue(label, id);
+									devices.add(device);
+									agoConnection->addDevice(device->getId().c_str(), device->getDevicetype().c_str());
+								}
+							} else {
+								device = new ZWaveNode(tempstring, "temperaturesensor");	
+								device->addValue(label, id);
+								devices.add(device);
+								agoConnection->addDevice(device->getId().c_str(), device->getDevicetype().c_str());
+							}
 						} else {
 							printf("WARNING: unhandled label for SENSOR_MULTILEVEL: %s - adding generic multilevelsensor\n",label.c_str());
 							if ((device = devices.findId(nodeinstance)) != NULL) {
@@ -327,6 +359,7 @@ void OnNotification
 								agoConnection->addDevice(device->getId().c_str(), device->getDevicetype().c_str());
 							}
 						}
+						// Manager::Get()->EnablePoll(id);
 					break;
 					case COMMAND_CLASS_METER:
 						if (label == "Power") {
@@ -350,6 +383,7 @@ void OnNotification
 								agoConnection->addDevice(device->getId().c_str(), device->getDevicetype().c_str());
 							}
 						}
+						// Manager::Get()->EnablePoll(id);
 					break;
 					case COMMAND_CLASS_BASIC_WINDOW_COVERING:
 						// if (label == "Open") {
@@ -362,11 +396,16 @@ void OnNotification
 								devices.add(device);
 								agoConnection->addDevice(device->getId().c_str(), device->getDevicetype().c_str());
 							}
+							// Manager::Get()->EnablePoll(id);
 					//	}
 					break;
 					case COMMAND_CLASS_THERMOSTAT_SETPOINT:
+						if (polling) Manager::Get()->EnablePoll(id);
 					case COMMAND_CLASS_THERMOSTAT_MODE:
 					case COMMAND_CLASS_THERMOSTAT_FAN_MODE:
+					case COMMAND_CLASS_THERMOSTAT_FAN_STATE:
+					case COMMAND_CLASS_THERMOSTAT_OPERATING_STATE:
+						cout << "adding thermostat label: " << label << endl;
 						if ((device = devices.findId(nodeinstance)) != NULL) {
 							device->addValue(label, id);
 							device->setDevicetype("thermostat");
@@ -413,6 +452,9 @@ void OnNotification
 				string str;
 				printf("Notification: Value Changed Home 0x%08x Node %d Genre %d Class %d Instance %d Index %d Type %d\n", _notification->GetHomeId(), _notification->GetNodeId(), id.GetGenre(), id.GetCommandClassId(), id.GetInstance(), id.GetIndex(), id.GetType());
 			      if (Manager::Get()->GetValueAsString(id, &str)) {
+					qpid::types::Variant cachedValue;
+					cachedValue.parse(str);
+					valueCache[id] = cachedValue;
 					string label = Manager::Get()->GetValueLabel(id);
 					string units = Manager::Get()->GetValueUnits(id);
 
@@ -422,7 +464,7 @@ void OnNotification
 					if (str == "True") level="255";
 					if (str == "False") level="0";
 					printf("Value: %s Label: %s Unit: %s\n",str.c_str(),label.c_str(),units.c_str());
-					if ((label == "Basic") || (label == "Switch")) {
+					if ((label == "Basic") || (label == "Switch") || (label == "Level")) {
 						eventtype="event.device.statechanged";
 					}
 					if (label == "Luminance") {
@@ -467,11 +509,17 @@ void OnNotification
 					if (label == "Fan Mode") {
 						eventtype="event.environment.fanmodechanged";
 					}
+					if (label == "Fan State") {
+						eventtype="event.environment.fanstatechanged";
+					}
+					if (label == "Operating State") {
+						eventtype="event.environment.operatingstatechanged";
+					}
 					if (label == "Cooling 1") {
 						eventtype="event.environment.coolsetpointchanged";
 					}
 					if (label == "Heating 1") {
-						eventtype="event.environment.fanmodechanged";
+						eventtype="event.environment.heatsetpointchanged";
 					}
 					if (label == "Fan State") {
 						eventtype="event.environment.fanstatechanged";
@@ -565,7 +613,30 @@ void OnNotification
 			}
 			break;
 		}
+		case Notification::Type_SceneEvent:
+		{
+			if( NodeInfo* nodeInfo = GetNodeInfo( _notification ) )
+			{
+				int scene = _notification->GetSceneId();
+				ValueID id = _notification->GetValueID();
+                                string label = Manager::Get()->GetValueLabel(id);
+                                stringstream tempstream;
+                                tempstream << (int) _notification->GetNodeId();
+                                tempstream << "/1";
+                                string nodeinstance = tempstream.str();
+				string eventtype = "event.device.statechanged";
+				ZWaveNode *device;
+				if ((device = devices.findId(nodeinstance)) != NULL) {
+					if (debug) printf("Sending %s for scene event from child %s\n",eventtype.c_str(), device->getId().c_str());
+					agoConnection->emitEvent(device->getId().c_str(), eventtype.c_str(), scene, "");	
+				} else {
+					cout << "WARNING: no agocontrol device found for scene event" << endl;
+					cout << "Node: " << nodeinstance << " Scene: " << scene << endl;
+				}
 
+			}
+			break;
+		}
 		case Notification::Type_PollingDisabled:
 		{
 			if( NodeInfo* nodeInfo = GetNodeInfo( _notification ) )
@@ -605,14 +676,17 @@ void OnNotification
 			pthread_cond_broadcast(&initCond);
 			break;
 		}
-
 		case Notification::Type_DriverReset:
 		case Notification::Type_Notification:
 		case Notification::Type_NodeNaming:
 		case Notification::Type_NodeProtocolInfo:
 		case Notification::Type_NodeQueriesComplete:
+		{
+			break;
+		}
 		default:
 		{
+			cout << "WARNING: Unhandled OpenZWave Event: " << _notification->GetType() << endl;
 		}
 	}
 
@@ -682,7 +756,7 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 		ZWaveNode *device = devices.findId(internalid);
 		if (device != NULL) {
 			printf("command received for %s\n", internalid.c_str());
-			printf("device tpye: %s\n", device->getDevicetype().c_str()); 
+			printf("device type: %s\n", device->getDevicetype().c_str()); 
 
 			string devicetype = device->getDevicetype();
 			ValueID *tmpValueID;
@@ -734,18 +808,36 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 				if (content["command"] == "settemperature") {
 					string mode = content["mode"].asString();
 					if  (mode == "") mode = "auto";
-					if ((mode == "auto") || (mode == "cool")) {
+					if (mode == "cool") {
 						tmpValueID = device->getValueID("Cooling 1");
-						if (tmpValueID == NULL) { returnval["result"] = -1;  return returnval; }
-						float temp = content["temperature"];
-						result = Manager::Get()->SetValue(*tmpValueID , temp);
-					}
-					if ((mode == "auto") || (mode == "heat")) {
+					} else if ((mode == "auto") || (mode == "heat")) {
 						tmpValueID = device->getValueID("Heating 1");
-						if (tmpValueID == NULL) { returnval["result"] = -1;  return returnval; }
-						float temp = content["temperature"];
-						result = Manager::Get()->SetValue(*tmpValueID , temp);
 					}
+					if (tmpValueID == NULL) { returnval["result"] = -1;  return returnval; }
+					float temp = 0.0;
+					if (content["temperature"] == "-1") {
+						try {
+							cout << "rel temp -1:" << valueCache[*tmpValueID] << endl;
+							temp = atof(valueCache[*tmpValueID].asString().c_str());
+							temp = temp - 1.0;
+						} catch (...) {
+							cout << "can't determine current value for relative temperature change" << endl;
+							returnval["result"] = -1; return returnval;
+						}
+					} else if (content["temperature"] == "+1") {
+						try {
+							cout << "rel temp +1: " << valueCache[*tmpValueID] << endl;
+							temp = atof(valueCache[*tmpValueID].asString().c_str());
+							temp = temp + 1.0;
+						} catch (...) {
+							cout << "can't determine current value for relative temperature change" << endl;
+							returnval["result"] = -1; return returnval;
+						}
+					} else {
+						temp = content["temperature"];
+					}
+					cout << "setting temperature: " << temp << endl;
+					result = Manager::Get()->SetValue(*tmpValueID , temp);
 				} else if (content["command"] == "setthermostatmode") {
 					string mode = content["mode"].asString();
 					tmpValueID = device->getValueID("Mode");
@@ -818,6 +910,8 @@ int main(int argc, char **argv) {
 	Options::Get()->Lock();
 	Manager::Create();
 	Manager::Get()->AddWatcher( OnNotification, NULL );
+	// Manager::Get()->SetPollInterval(atoi(getConfigOption("zwave", "pollinterval", "300000").c_str()),true);
+	if (getConfigOption("zwave", "polling", "0") == "1") polling=true;
 	Manager::Get()->AddDriver(device);
 
 	// Now we just wait for the driver to become ready

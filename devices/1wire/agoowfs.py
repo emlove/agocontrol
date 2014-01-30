@@ -43,13 +43,31 @@ for sensor in root.sensors():
 				client.addDevice(sensor._path, "multilevelsensor");
 			if ow.owfs_get('%s/MultiSensor/type' % sensor._path) == 'MS-TH':
 				client.addDevice(sensor._path, "multilevelsensor");
+			if ow.owfs_get('%s/MultiSensor/type' % sensor._path) == 'MS-T':
+				client.addDevice(sensor._path, "multilevelsensor");
 		except ow.exUnknownSensor, e:
 			print e
 	if sensor._type == 'DS2406':
-		sensor.PIO_A = '0'
-		sensor.latch_A = '0'
+		sensor.PIO_B = '0'
+		sensor.latch_B = '0'
 		sensor.set_alarm = '111'
+		client.addDevice(sensor._path, "switch");
 		client.addDevice(sensor._path, "binarysensor");
+
+def messageHandler(internalid, content):
+	for sensor in root.sensors():
+		if (sensor._path == intenralid):
+			if "command" in content:
+				if content["command"] == "on":
+					print "switching on: ", internalid
+					sensor.PIO_A = '1'
+					client.emitEvent(internalid, "event.device.state", "255", "")
+				if content["command"] == "off":
+					print "switching off: ", internalid
+					sensor.PIO_A = '0'
+					client.emitEvent(internalid, "event.device.state", "0", "")
+
+client.addHandler(messageHandler)
 					
 class readBus(threading.Thread):
     def __init__(self,):
@@ -99,9 +117,9 @@ class readBus(threading.Thread):
 					except ow.exUnknownSensor, e:
 						print e
 				if sensor._type == 'DS2406':
-					if sensor.latch_A == '1':
-						sensor.latch_A = '0'
-						sendSensorTriggerEvent(sensor._path, sensor.sensed_A)
+					if sensor.latch_B == '1':
+						sensor.latch_B = '0'
+						sendSensorTriggerEvent(sensor._path, sensor.sensed_B)
 		except ow.exUnknownSensor, e:
 			pass
 		time.sleep(2)

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 TMPFILE=$(mktemp -u).xml.in
 SOURCEFILE=$(realpath $1)
 ln -s ${SOURCEFILE} ${TMPFILE}

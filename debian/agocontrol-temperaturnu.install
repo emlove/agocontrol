@@ -1,0 +1,2 @@
+lib/systemd/system/agotemperaturnu.service
+opt/agocontrol/bin/agotemperaturnu.py

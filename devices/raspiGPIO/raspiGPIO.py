@@ -78,6 +78,7 @@ class readGPIO(threading.Thread):
 					#print 'sensor:', pin, '0'
 					client.emitEvent(pin, "event.security.sensortriggered", 0, "")
 				prev_input[pin] = input[pin]
+			time.sleep(0.002)
 
 if inputs:      
 	background = readGPIO()

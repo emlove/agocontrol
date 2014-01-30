@@ -17,7 +17,7 @@ from qpid.log import enable, DEBUG, WARN
 
 
 config = ConfigParser.ConfigParser()
-config.read(agoclient.CONFDIR + '/config.ini')
+config.read(agoclient.CONFDIR + '/conf.d/system.conf')
 
 try:
 	username = config.get("system","username")

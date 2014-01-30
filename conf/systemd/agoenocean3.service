@@ -1,0 +1,12 @@
+[Unit]
+Description=ago control Enocean ESP3 Device
+
+[Service]
+ExecStart=/opt/agocontrol/bin/agoenocean3
+WorkingDirectory=/opt/agocontrol/bin
+Restart=always
+RestartSec=2
+User=agocontrol
+
+[Install]
+WantedBy=multi-user.target

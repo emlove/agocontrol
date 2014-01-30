@@ -52,7 +52,9 @@ typedef enum
 	PACKET_SMART_ACK_COMMAND	= 0x06,	//! Smart Ack command
 	PACKET_REMOTE_MAN_COMMAND	= 0x07,	//! Remote management command
 	PACKET_PRODUCTION_COMMAND	= 0x08,	//! Production command
-	PACKET_RADIO_MESSAGE		= 0x09	//! Radio message (chained radio telegrams)
+	PACKET_RADIO_MESSAGE		= 0x09,	//! Radio message (chained radio telegrams)
+	PACKET_RADIO_ADVANCED		= 0x0a  //! Advanced Protocol radio telegram
+
 } PACKET_TYPE;
 
 //! Response type
@@ -148,8 +150,32 @@ typedef enum
 // end of lines from EO300I API header file
 
 
-bool init(std::string devicefile);
-bool readFrame();
+	class ESP3 {
+		public:
+			ESP3(std::string _devicefile);
+			~ESP3();
+			bool init();
+			void *readerFunction();
+			uint32_t getIdBase();
+			bool fourbsCentralCommandDimLevel(uint16_t rid, uint8_t level, uint8_t speed);
+			bool fourbsCentralCommandDimOff(uint16_t rid);
+			bool fourbsCentralCommandDimTeachin(uint16_t rid);
+			bool fourbsCentralCommandSwitchOn(uint16_t rid);
+			bool fourbsCentralCommandSwitchOff(uint16_t rid);
+			bool fourbsCentralCommandSwitchTeachin(uint16_t rid);
+		private:
+			int readFrame(uint8_t *buf, int &datasize, int &optdatasize);
+			void parseFrame(uint8_t *buf, int datasize, int optdatasize);
+			bool sendFrame(uint8_t frametype, uint8_t *databuf, uint16_t datalen, uint8_t *optdata, uint8_t optdatalen);
+			bool readIdBase();
+
+			uint32_t idBase;
+			std::string devicefile;
+			int fd;
+			pthread_t eventThread;
+			pthread_mutex_t serialMutex;
+
+	};
 
 }
 

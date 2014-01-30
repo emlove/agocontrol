@@ -10,6 +10,6 @@
         android:key="PREF_AGOCONTROL_PORT"
         android:title="Port"
         android:summary="Specify the agocontrol port"
-        android:defaultValue="8000"
+        android:defaultValue="8008"
         />
 </PreferenceScreen>

@@ -1,0 +1,3 @@
+lib/systemd/system/agoipx800.service
+opt/agocontrol/bin/agoipx800
+opt/agocontrol/bin/pyipx800v3.py
