@@ -34,11 +34,12 @@ def messageHandler(internalid, content):
 			sendtcp(host,port,COMMAND_ON)
 			client.emitEvent(internalid, "event.device.statechanged", "255", "")
 		if content["command"] == "off":
-			print "switching on: " + internalid
+			print "switching off: " + internalid
 			sendtcp(host,port,COMMAND_OFF)
-			client.emitEvent(internalid, "event.device.statechanged", "255", "")
+			client.emitEvent(internalid, "event.device.statechanged", "0", "")
 		if content["command"] == "setlevel":
 			level = content["level"]
+			print "setting level: " + level
 			value = int(level) * 255 / 100
 			command = "\x56" + chr(value) + chr(value) + chr(value) + "\xaa"
 			sendtcp(host,port,command)
@@ -47,11 +48,9 @@ def messageHandler(internalid, content):
 			red = int(content["red"]) * 255 / 100
 			green = int(content["green"]) * 255 / 100
 			blue = int(content["blue"]) * 255 / 100
-			print "RGB:", content["red"], content["green"], content["blue"]
-			print "RGB:", red, green, blue
 			command = "\x56" + chr(red) + chr(green) + chr(blue) + "\xaa"
 			sendtcp(host,port,command)
-			client.emitEvent(internalid, "event.device.statechanged", str((red + green + blue) / 3), "")
+			client.emitEvent(internalid, "event.device.statechanged", str((red + green + blue) / 255 * 33), "")
 			
 
 client.addHandler(messageHandler)
