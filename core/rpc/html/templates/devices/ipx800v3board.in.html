@@ -1,0 +1,24 @@
+<div class="four columns grid-item device"  data-bind="attr: {'data-uuid': uuid}">
+	<div class="row">
+		<div class="three columns">
+			<div class="pretty large primary btn grid-item-icon handle">
+				<i class="icon-progress-3" data-bind="click: showDetails"></i>
+			</div>
+		</div>
+		<div class="nine columns">
+			<div class="grid-item-header">
+				<h3 data-bind="text: name, if: name"></h3>
+				<ko opts="if: room ">
+					<p class="room"><i class="icon-location"></i><span data-bind="text: room"></span></p>
+				</ko>
+                <p class="info"><i class="icon-info"></i>
+                    <_span data-translateable="true">ON</_span>
+                </p>
+			</div>
+		</div>
+	</div>
+	<div class="row grid-item-controls">
+		<div class="six columns">
+		</div>
+	</div>
+</div>
