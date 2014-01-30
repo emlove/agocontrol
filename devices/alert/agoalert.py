@@ -897,7 +897,7 @@ def commandHandler(internalid, content):
                         logging.error('CommandHandler: failed to send push message with notifymyandroid [message:%s priority:%s]'% (str(content['param1']), str(content['param2'])))
                         return {'error':1, 'msg':'Failed to send push notification'}
                 else:
-                    logging.error('commandHandler: parameters missing for pushbullet')
+                    logging.error('commandHandler: parameters missing for notifymyandroid')
                     return {'error':1, 'msg':'Internal error'}
         else:
             #TODO add here new alert sending
