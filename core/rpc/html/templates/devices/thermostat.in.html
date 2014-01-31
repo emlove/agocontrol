@@ -39,7 +39,9 @@
                                 	<div data-bind="foreach: valueList">
                                         	<ko opts="if: name == 'Heatsetpoint'">
 							<li class="danger label">
-                                                        	<_span data-translateable="true">Heat</_span>: <span data-bind="text: level"></span>
+                                                        	<_span data-translateable="true">Heat</_span>
+                                                                <span class="light label"><span data-bind="text: level"/> <span data-bind="text: unit"/></span>
+
 							</li>
                                         	</ko>
                                 	</div>
@@ -49,7 +51,7 @@
                                 <div data-bind="foreach: valueList">
                                         <ko opts="if: name == 'Temperature'">
                                                 <div class="six columns" style="text-align:center;">
-                                                        <h3 data-bind="text: level"></h3>
+                                                        <h3><span data-bind="text: level"/> <span data-bind="text: unit"/></h3>
                                                 </div>
                                         </ko>
                                 </div>
@@ -57,7 +59,8 @@
                                 	<div data-bind="foreach: valueList">
                                         	<ko opts="if: name == 'Coolsetpoint'">
 							<li class="primary label">
-                                                        	<_span data-translateable="true">Cool</_span>: <span data-bind="text: level"></span>
+                                                        	<_span data-translateable="true">Cool</_span>
+                                                                <span class="light label"><span data-bind="text: level"/> <span data-bind="text: unit"/></span>
 							</li>
                                         	</ko>
                                 	</div>
