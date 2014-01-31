@@ -934,9 +934,9 @@ $(function() {
 		content.uuid = $("#colorPickerDialog").data('uuid');
 		content.command = "setcolor";
 		var color = $('#colorValue').val();
-		content.red = parseInt(color.substring(0, 2), 16);
-		content.green = parseInt(color.substring(2, 4), 16);
-		content.blue = parseInt(color.substring(4, 6), 16);
+		content.red = ~~(parseInt(color.substring(0, 2), 16) * 100 / 255);
+		content.green = ~~(parseInt(color.substring(2, 4), 16) * 100 / 255);
+		content.blue = ~~(parseInt(color.substring(4, 6), 16) * 100 / 255);
 		sendCommand(content);
 		$(this).dialog("close");
 	    }

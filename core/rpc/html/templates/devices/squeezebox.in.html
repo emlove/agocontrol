@@ -13,22 +13,22 @@
 				</ko>
                 <p class="info"><i class="icon-info" />
                     <ko opts="if: state() == 0">
-                        <span data-translateable="false">OFF</span>
+                        <_span data-translateable="false">OFF</_span>
                     </ko>
                     <ko opts="if: state() == 25">
-                        <span data-translateable="false">STREAMING</span>
+                        <_span data-translateable="false">STREAMING</_span>
                     </ko>
                     <ko opts="if: state() == 50">
-                        <span data-translateable="false">PLAYING</span>
+                        <_span data-translateable="false">PLAYING</_span>
                     </ko>
                     <ko opts="if: state() == 100">
-                        <span data-translateable="false">STOPPED</span>
+                        <_span data-translateable="false">STOPPED</_span>
                     </ko>
                     <ko opts="if: state() == 150">
-                        <span data-translateable="false">PAUSED</span>
+                        <_span data-translateable="false">PAUSED</_span>
                     </ko>
                     <ko opts="if: state() == 255">
-                        <span data-translateable="false">ON</span>
+                        <_span data-translateable="false">ON</_span>
                     </ko>
                 </p>
 			</div>
@@ -38,34 +38,34 @@
         <ko opts="if: state()!=25">
 		<div class="three columns">
 		    <ko opts="if: state() == 0">
-                <div data-value="on" data-translateable="true" data-bind="click: turnOn" class="cmd-btn pretty medium primary btn btn-full grid-command">ON</div>
+                <_div data-value="on" data-translateable="true" data-bind="click: turnOn" class="cmd-btn pretty medium primary btn btn-full grid-command">ON</_div>
             </ko>
             <ko opts="ifnot: state() == 0">
-                <div data-value="on" data-translateable="true" data-bind="click: turnOn" class="cmd-btn pretty medium default btn btn-full grid-command">ON</div>
+                <_div data-value="on" data-translateable="true" data-bind="click: turnOn" class="cmd-btn pretty medium default btn btn-full grid-command">ON</_div>
             </ko>
 		</div>
 		<div class="three columns">
 		    <ko opts="if: state() == 0">
-                <div data-value="off" data-translateable="true" data-bind="click: turnOff" class="cmd-btn pretty medium default btn btn-full grid-command">OFF</div>
+                <_div data-value="off" data-translateable="true" data-bind="click: turnOff" class="cmd-btn pretty medium default btn btn-full grid-command">OFF</_div>
             </ko>
             <ko opts="ifnot: state() == 0">
-                <div data-value="off" data-translateable="true" data-bind="click: turnOff" class="cmd-btn pretty medium primary btn btn-full grid-command">OFF</div>
+                <_div data-value="off" data-translateable="true" data-bind="click: turnOff" class="cmd-btn pretty medium primary btn btn-full grid-command">OFF</_div>
             </ko>
 		</div>
 		<div class="three columns">
 		    <ko opts="if: (state()!=0 && state()!=50)">
-                <div data-value="play" data-translateable="true" data-bind="click: play" class="cmd-btn pretty medium primary btn btn-full grid-command">PLAY</div>
+                <_div data-value="play" data-translateable="true" data-bind="click: play" class="cmd-btn pretty medium primary btn btn-full grid-command">PLAY</_div>
             </ko>
             <ko opts="ifnot: (state()!=0 && state()!=50)">
-                <div data-value="play" data-translateable="true" data-bind="click: play" class="cmd-btn pretty medium default btn btn-full grid-command">PLAY</div>
+                <_div data-value="play" data-translateable="true" data-bind="click: play" class="cmd-btn pretty medium default btn btn-full grid-command">PLAY</_div>
             </ko>
 		</div>
 		<div class="three columns">
 		    <ko opts="if: (state()!=0 && state()==50)">
-                <div data-value="pause" data-translateable="true" data-bind="click: pause" class="cmd-btn pretty medium primary btn btn-full grid-command">PAUSE</div>
+                <_div data-value="pause" data-translateable="true" data-bind="click: pause" class="cmd-btn pretty medium primary btn btn-full grid-command">PAUSE</_div>
             </ko>
             <ko opts="ifnot: (state()!=0 && state()==50)">
-                <div data-value="pause" data-translateable="true" data-bind="click: pause" class="cmd-btn pretty medium default btn btn-full grid-command">PAUSE</div>
+                <_div data-value="pause" data-translateable="true" data-bind="click: pause" class="cmd-btn pretty medium default btn btn-full grid-command">PAUSE</_div>
             </ko>
 		</div>
         </ko>
