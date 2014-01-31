@@ -224,6 +224,17 @@ function device(obj, uuid) {
 	sendCommand(content);
     };
 
+    this.customCommand = function(params) {
+        var content = {};
+        content.uuid = uuid;
+        for (var key in params) {
+          if (params.hasOwnProperty(key)) {
+                content[key] = params[key];
+          }
+        }
+        sendCommand(content);
+    };
+
     this.execCommand = function() {
 	var command = document.getElementById("commandSelect").options[document.getElementById("commandSelect").selectedIndex].value;
 	var content = {};
