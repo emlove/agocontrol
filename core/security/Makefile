@@ -14,5 +14,5 @@ clean:
 	rm -f agosecurity agosecurity.o
 
 install:
-	$(INSTALL_DIR) $(BINDIR)
-	$(INSTALL_PROGRAM) agosecurity $(BINDIR)
+	$(INSTALL_DIR) $(DESTDIR)$(BINDIR)
+	$(INSTALL_PROGRAM) agosecurity $(DESTDIR)$(BINDIR)
