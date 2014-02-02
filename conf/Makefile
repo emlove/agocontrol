@@ -1,4 +1,4 @@
-DIRS = systemd conf.d
+DIRS = systemd conf.d sysvinit
 
 # Generate a list of all .init files that need to be created
 FILES = $(patsubst %.init.in, %.init, $(wildcard *.init.in))

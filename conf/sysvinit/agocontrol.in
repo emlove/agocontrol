@@ -10,7 +10,7 @@
 
 . /lib/lsb/init-functions
 
-BIN_PATH=/opt/agocontrol/bin/
+BIN_PATH=@BINDIR/
 PID_PATH=/var/run/
 APPS="agorpc agodatalogger agoevent agoresolver agoscenario agotimer agosqueezebox agoalert agoipx800"
 
