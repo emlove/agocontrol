@@ -1,0 +1,14 @@
+[Unit]
+Description=ago control Tellstick handler
+
+[Service]
+ExecStart=/opt/agocontrol/bin/agotellstick.py
+WorkingDirectory=/opt/agocontrol/bin
+StandardOutput=syslog
+StandardError=syslog
+Restart=always
+RestartSec=2
+User=agocontrol
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,7 @@
+lib/systemd/system/agotellstick.service
+opt/agocontrol/bin/agotellstick.py
+opt/agocontrol/bin/tellstickbase.py
+opt/agocontrol/bin/tellstickduo.py
+opt/agocontrol/bin/tellsticknet.py
+opt/agocontrol/bin/tellstick_auth.py
+opt/agocontrol/bin/td.py
