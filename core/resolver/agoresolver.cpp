@@ -414,7 +414,7 @@ int main(int argc, char **argv) {
 		}
 	}
 
-	qpid::types::Variant::Map harischema = parseSchema("/etc/opt/agocontrol/hari.yaml");
+	qpid::types::Variant::Map harischema = parseSchema(CONFDIR "/hari.yaml");
 	schema = mergeMap(schema, harischema);
 
 //	clog << agocontrol::kLogDebug << "reading inventory" << std::endl;

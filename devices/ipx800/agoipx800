@@ -59,7 +59,7 @@ class Ipx800AgoConnection(agoclient.AgoConnection):
     def storeUuidMap(self):
         self.__lock.acquire(True)
         try:
-            with open('/etc/opt/agocontrol/uuidmap/' + self.instance + '.json' , 'w') as outfile:
+            with open(agoclient.CONFDIR + '/uuidmap/' + self.instance + '.json' , 'w') as outfile:
                 items = {}
                 for uuid in self.uuids:
                     items[uuid] = {'internalid':self.uuids[uuid], 'state':self.states[uuid], 'duration':self.durations[uuid]}
@@ -71,7 +71,7 @@ class Ipx800AgoConnection(agoclient.AgoConnection):
     def loadUuidMap(self):
         self.__lock.acquire(True)
         try:
-            path = '/etc/opt/agocontrol/uuidmap/' + self.instance + '.json'
+            path = agoclient.CONFDIR + '/uuidmap/' + self.instance + '.json'
             if os.path.exists(path):
                 with open(path , 'r') as infile:
                     items = simplejson.load(infile)
