@@ -13,14 +13,14 @@ libagoclient.so: agoclient.h agoclient.o CDataFile.o
 	test -h $(@) || ln -s $(@)$(LIB_VER) $(@)
 
 agoclient.py: agoclient.py.in
-	sed -e 's|@BINDIR@|$(BINDIR)|g' \
-		-e 's|@CONFDIR@|$(CONFDIR)|g' $< > $@
+	sed -e 's|@BINDIR|$(BINDIR)|g' \
+		-e 's|@CONFDIR|$(CONFDIR)|g' $< > $@
 
 agoclient.h: agoclient.h.in
-	sed -e 's|@BINDIR@|$(BINDIR)|g' \
-		-e 's|@CONFDIR@|$(CONFDIR)|g' \
-		-e 's|@LOCALSTATEDIR@|$(LOCALSTATEDIR)|g' \
-		-e 's|@HTMLDIR@|$(HTMLDIR)|g' $< > $@
+	sed -e 's|@BINDIR|$(BINDIR)|g' \
+		-e 's|@CONFDIR|$(CONFDIR)|g' \
+		-e 's|@LOCALSTATEDIR|$(LOCALSTATEDIR)|g' \
+		-e 's|@HTMLDIR|$(HTMLDIR)|g' $< > $@
 
 clean:
 	rm -f agoclient.h agoclient.o CDataFile.o libagoclient.so* agoclient.py

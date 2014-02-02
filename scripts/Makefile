@@ -1,5 +1,5 @@
 agososreport.sh: agososreport.sh.in
-	sed -e 's|@CONFDIR@|$(CONFDIR)|g' $< > $@
+	sed -e 's|@CONFDIR|$(CONFDIR)|g' $< > $@
 
 all: agososreport.sh
 

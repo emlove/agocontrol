@@ -16,8 +16,8 @@ from qpid.log import enable, DEBUG, WARN
 
 syslog.openlog(sys.argv[0], syslog.LOG_PID, syslog.LOG_DAEMON)
 
-BINDIR = '@BINDIR@'
-CONFDIR = '@CONFDIR@'
+BINDIR = '@BINDIR'
+CONFDIR = '@CONFDIR'
 
 CONFIG_LOCK = Lock()
 

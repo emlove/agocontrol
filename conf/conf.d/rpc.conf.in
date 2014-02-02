@@ -1,5 +1,5 @@
 [rpc]
 ports=8008,8009s
-htdocs=@HTMLDIR@
-certificate=@CONFDIR@/rpc/rpc_cert.pem
+htdocs=@HTMLDIR
+certificate=@CONFDIR/rpc/rpc_cert.pem
 numthreads=50
