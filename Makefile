@@ -15,7 +15,11 @@ export INCLUDES = -I../../shared
 export BINDIR = /opt/agocontrol/bin
 export ETCDIR = /etc
 export LIBDIR = /usr/lib
+ifeq ($(uname_S),FreeBSD)
+export CONFDIR = /usr/local/etc/agocontrol
+else
 export CONFDIR = $(ETCDIR)/opt/agocontrol
+endif
 export INCDIR = /usr/include/agocontrol
 export DATADIR = /var/opt/agocontrol
 export LOCALSTATEDIR = /var/opt/agocontrol
