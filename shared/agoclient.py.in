@@ -1,3 +1,9 @@
+"""@package agoclient
+This is the agocontrol python client library.
+
+An example device can be found here: http://wiki.agocontrol.com/index.php/Example_Device
+"""
+
 import syslog
 import sys
 import ConfigParser
@@ -16,6 +22,7 @@ CONFDIR = '@CONFDIR@'
 CONFIG_LOCK = Lock()
 
 def getConfigOption(section, option, default, file=None):
+	"""Read a config option from a .ini style file."""
         config = ConfigParser.ConfigParser()
         CONFIG_LOCK.acquire(True)
         try:
@@ -32,6 +39,7 @@ def getConfigOption(section, option, default, file=None):
         return value
 
 def setConfigOption(section, option, value, file=None):
+	"""Write out a config option to a .ini style file."""
         config = ConfigParser.ConfigParser()
         result = False
         CONFIG_LOCK.acquire(True)
@@ -59,7 +67,9 @@ def setConfigOption(section, option, value, file=None):
         return result
 
 class AgoConnection:
+	"""This is class will handle the connection to ago control."""
         def __init__(self, instance):
+		"""The constructor."""
                 self.instance=instance
                 syslog.syslog(syslog.LOG_NOTICE, "connecting to broker")
                 broker = getConfigOption("system", "broker", "localhost")
@@ -82,17 +92,21 @@ class AgoConnection:
                 self.connection.close()
 
         def addHandler(self, handler):
+		"""Add a command handler to be called when a command for a local device arrives."""
                 self.handler = handler
                 
         def addEventHandler(self, eventhandler):
+		"""Add an event handler to be called when an event arrives."""
                 self.eventhandler = eventhandler
 
         def internalIdToUuid(self, internalid):
+		"""Convert a local (internal) id to an agocontrol UUID."""
                 for uuid in self.uuids:
                         if (self.uuids[uuid] == internalid):
                                 return uuid
 
         def uuidToInternalId(self, uuid):
+		"""Convert an agocontrol UUID to a local (internal) id."""
                 try:
                         return self.uuids[uuid]
                 except KeyError, e:
@@ -100,6 +114,7 @@ class AgoConnection:
                         return None
 
         def storeUuidMap(self):
+		"""Store the mapping (dict) of UUIDs to internal ids into a JSON file."""
                 try:
 			with open(CONFDIR + '/uuidmap/' + self.instance + '.json' , 'w') as outfile:
 				simplejson.dump(self.uuids, outfile)
@@ -109,6 +124,7 @@ class AgoConnection:
 			syslog.syslog(syslog.LOG_ERR, "Cannot encode uuid map: " + str(e))
 
         def loadUuidMap(self):
+		"""Read the mapping (dict) of UUIDs to internal ids from a JSON file."""
                 try:
                         with open(CONFDIR + '/uuidmap/' + self.instance + '.json' , 'r') as infile:
                                 self.uuids = simplejson.load(infile)
@@ -118,6 +134,9 @@ class AgoConnection:
 			syslog.syslog(syslog.LOG_ERR, "Cannot decode uuid map: " + str(e))
 
         def emitDeviceAnnounce(self, uuid, device):
+		"""Send a device announce event, this will be honored by the resolver component.
+
+		You can find more information regarding the resolver here: http://wiki.agocontrol.com/index.php/Resolver """
                 content = {}
                 content["devicetype"]  = device["devicetype"]
                 content["uuid"]  = uuid
@@ -131,6 +150,8 @@ class AgoConnection:
                 self.sendMessage("event.device.remove", content)                        
 
         def addDevice(self, internalid, devicetype):
+		"""Add a device. Announcement to ago control will happen automatically. Commands to this device will be dispatched to the command handler.
+		The devicetype corresponds to an entry in the schema."""
                 if (self.internalIdToUuid(internalid) == None):
                         self.uuids[str(uuid4())]=internalid
                         self.storeUuidMap()
@@ -146,9 +167,11 @@ class AgoConnection:
                         del self.devices[self.internalIdToUuid(internalid)]
 
         def sendMessage(self, content):
+		"""Send message without subject."""
                 return self.sendMessage(None, content)
 
         def sendMessage(self, subject, content):
+		"""Method to send an agocontrol message with a subject."""
 		_content = content
 		_content["instance"] = self.instance
                 try:
@@ -160,6 +183,7 @@ class AgoConnection:
                         return False
 
         def emitEvent(self, internalId, eventType, level, unit):
+		"""This will send an event."""
                 content  = {}
                 content["uuid"]=self.internalIdToUuid(internalId)
                 content["level"]=level
@@ -167,11 +191,13 @@ class AgoConnection:
                 return self.sendMessage(eventType, content)
 
         def reportDevices(self):
+		"""Report all our devices."""
                 syslog.syslog(syslog.LOG_NOTICE, "reporting child devices")
                 for device in self.devices:
                         self.emitDeviceAnnounce(device, self.devices[device])
 
         def run(self):
+		"""This will start command and event handling. Be aware that this is blocking."""
                 # self.reportDevices() # - this is now handled by the addDevice
                 syslog.syslog(syslog.LOG_NOTICE, "startup complete, waiting for messages")
                 while (True):

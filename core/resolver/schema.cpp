@@ -15,6 +15,40 @@ using namespace std;
 using namespace qpid::messaging;
 using namespace qpid::types;
 
+/// Merge two Variant Lists.
+qpid::types::Variant::List mergeList(qpid::types::Variant::List a, qpid::types::Variant::List b) {
+	qpid::types::Variant::List result = a;
+	result.splice(result.begin(),b);
+	return result;
+} 
+
+qpid::types::Variant::Map mergeMap(qpid::types::Variant::Map a, qpid::types::Variant::Map b) {
+	qpid::types::Variant::Map result = a;
+
+	for (qpid::types::Variant::Map::const_iterator it = b.begin(); it != b.end(); it++) {
+		qpid::types::Variant::Map::const_iterator it_a = result.find(it->first);
+		if (it_a != result.end()) {
+			if ((it_a->second.getType()==VAR_MAP) && (it->second.getType()==VAR_MAP)) {
+				result[it->first] = mergeMap(it_a->second.asMap(), it->second.asMap());
+                        } else if ((it_a->second.getType()==VAR_LIST) && (it->second.getType()==VAR_LIST)) {
+                                result[it->first] = mergeList(it_a->second.asList(), it->second.asList());
+			} else {
+				qpid::types::Variant::List list;
+				list.push_front(it->second);
+				list.push_front(it_a->second);
+				result[it->first] = list;
+			}
+		} else {
+			result[it->first] = it->second;
+		}
+
+	}
+
+	return result;
+
+}
+
+
 Variant::List sequenceToVariantList(const YAML::Node &node);
 
 Variant::Map mapToVariantMap(const YAML::Node &node) {

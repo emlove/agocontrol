@@ -31,27 +31,37 @@
 namespace agocontrol {
 
 	bool nameval(const std::string& in, std::string& name, std::string& value);
+
+	/// string replace helper.
 	void replaceString(std::string& subject, const std::string& search, const std::string& replace);
-	// these will convert back and forth between a Variant type and JSON
+	/// convert a Variant::Map to JSON string representation.
 	std::string variantMapToJSONString(qpid::types::Variant::Map map);
+	/// convert a Variant::List to JSON string.
 	std::string variantListToJSONString(qpid::types::Variant::List list);
+	/// convert a JSON value to a Variant::Map.
 	qpid::types::Variant::Map jsonToVariantMap(Json::Value value);
+	/// convert a JSON string to a Variant::List.
 	qpid::types::Variant::List jsonToVariantList(Json::Value value);
+	/// convert a JSON string to a Variant::Map.
 	qpid::types::Variant::Map jsonStringToVariantMap(std::string jsonstring);
+	/// convert content of a JSON file containing JSON data.
 	qpid::types::Variant::Map jsonFileToVariantMap(std::string filename);
+	// write a Variant::Map to a JSON file.
 	bool variantMapToJSONFile(qpid::types::Variant::Map map, std::string filename);
 
-	// helper to generate a string containing a uuid
+	/// helper to generate a string containing a uuid.
 	std::string generateUuid();
 
-	// fetch a value from the config file
+	/// fetch a value from the config file.
 	std::string getConfigOption(const char *section, const char *option, const char *defaultvalue);
 
-	// string helpers
+	/// convert int to std::string.
 	std::string int2str(int i);
+
+	/// convert float to std::string.
 	std::string float2str(float f);
 
-	// connection class
+	/// ago control client connection class.
 	class AgoConnection {
 		protected:
 			qpid::messaging::Connection connection;

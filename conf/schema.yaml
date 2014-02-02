@@ -157,6 +157,12 @@ commands:
       target:
         name: target
         type: integer
+  healnode:
+    name: heal a zwave node
+    paramters:
+      node:
+        name: node
+        type: integer
   removeassociation:
     name: remove association
     parameters:
@@ -401,7 +407,7 @@ devicetypes:
   zwavecontroller:
     name: z-wave interface
     description: z-wave interface from agozwave
-    commands: [allon, alloff, addnode, removenode, addcontroller, removecontroller, addassociation, removeassociation, setconfigparam, downloadconfig, cancel, saveconfig, reset]
+    commands: [allon, alloff, addnode, removenode, addcontroller, removecontroller, addassociation, removeassociation, setconfigparam, downloadconfig, cancel, saveconfig, reset, healnode]
   securitycontroller:
     name: security system
     description: ago control security system module

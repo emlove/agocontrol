@@ -13,3 +13,4 @@ templates/configuration/devices.xml.in
 templates/devices/multilevelsensor.xml.in
 templates/details/multilevelsensor.xml.in
 templates/devices/switch.xml.in
+templates/devices/thermostat.xml.in

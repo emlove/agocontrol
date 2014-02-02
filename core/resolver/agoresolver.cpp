@@ -38,6 +38,10 @@
 #include <qpid/messaging/Session.h>
 #include <qpid/messaging/Address.h>
 
+#define BOOST_FILESYSTEM_VERSION 3
+#define BOOST_FILESYSTEM_NO_DEPRECATED 
+#include "boost/filesystem.hpp"
+
 #include "../../shared/agoclient.h"
 #include "../../version.h"
 
@@ -56,6 +60,8 @@ using namespace std;
 using namespace qpid::messaging;
 using namespace qpid::types;
 using namespace agocontrol;
+
+namespace fs = ::boost::filesystem;
 
 AgoConnection *agoConnection;
 
@@ -392,8 +398,24 @@ int main(int argc, char **argv) {
 	systeminfo["uuid"] = getConfigOption("system", "uuid", "00000000-0000-0000-000000000000");
 	systeminfo["version"] = AGOCONTROL_VERSION;
 
-//	clog << agocontrol::kLogDebug << "parsing schema file" << std::endl;
+	clog << agocontrol::kLogDebug << "parsing schema file" << std::endl;
 	schema = parseSchema(schemafile.c_str());
+
+	fs::path schemadir(CONFIG_BASE_DIR "/schema.d");
+	if (fs::exists(schemadir)) {
+		fs::recursive_directory_iterator it(schemadir);
+		fs::recursive_directory_iterator endit;
+		while (it != endit) {
+			if (fs::is_regular_file(*it) && (it->path().extension().string() == ".yaml")) {
+				clog << agocontrol::kLogDebug << "parsing additional schema file:" << it->path().filename().string() << std::endl;
+				schema = mergeMap(schema, parseSchema(it->path().c_str()));
+			}
+			++it;
+		}
+	}
+
+	qpid::types::Variant::Map harischema = parseSchema("/etc/opt/agocontrol/hari.yaml");
+	schema = mergeMap(schema, harischema);
 
 //	clog << agocontrol::kLogDebug << "reading inventory" << std::endl;
 	inv = new Inventory(CONFDIR "/db/inventory.db");
