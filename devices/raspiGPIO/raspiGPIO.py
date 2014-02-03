@@ -20,6 +20,7 @@ client = agoclient.AgoConnection("raspiGPIO")
 
 readInputs = agoclient.getConfigOption("raspiGPIO", "inputs", "")
 readOutputs = agoclient.getConfigOption("raspiGPIO", "outputs", "")
+reverse = agoclient.getConfigOption("raspiGPIO", "reverse", "0")
 
 GPIO.setmode(GPIO.BCM)
 
@@ -49,11 +50,17 @@ def messageHandler(internalid, content):
 	if "command" in content:
 		if content["command"] == "on":
 			#print "switching on: ", internalid
-			GPIO.output(internalid, True)
+			if reverse == "1":
+				GPIO.output(internalid, False)
+			else:
+				GPIO.output(internalid, True)
 			client.emitEvent(internalid, "event.device.statechanged", "255", "")
 		if content["command"] == "off":
 			#print "switching off: ", internalid
-			GPIO.output(internalid, False)
+			if reverse=="1":
+				GPIO.output(internalid, True)
+			else:
+				GPIO.output(internalid, False)
 			client.emitEvent(internalid, "event.device.statechanged", "0", "")
 
 client.addHandler(messageHandler)
