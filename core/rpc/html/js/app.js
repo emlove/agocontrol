@@ -75,8 +75,7 @@ var dataLoggerController = null;
 var scenarioController = null;
 var alertControler = null
 
-var supported_devices = [ "switch", "dimmer", "binarysensor", "dimmerrgb", "multilevelsensor", , "scenario", "drapes", "brightnesssensor", "powermeter", "energysensor", "humiditysensor", "phone",
-	"pushbutton", "placeholder", "temperaturesensor", "energymeter", "squeezebox", "ipx800v3board", "computer", "thermostat" ];
+var supported_devices = [];
 
 function device(obj, uuid) {
     var self = this;
@@ -725,7 +724,15 @@ function initGUI() {
     }
 }
 
-initGUI();
+/* Load the device template names before loading the gui */
+$.ajax({
+    url: "/cgi-bin/listing.cgi?devices=1",
+    type: "GET"
+}).done(function(msg) {
+    subscribe();
+    supported_devices = msg;
+    initGUI();
+});
 
 // --- AGO --- //
 
@@ -928,7 +935,6 @@ function subscribe() {
     $.post(url, JSON.stringify(request), handleSubscribe, "json");
 }
 
-subscribe();
 
 $(function() {
     $("#colorPickerDialog").dialog({
