@@ -53,18 +53,18 @@
             </ko>
 		</div>
 		<div class="three columns">
-		    <ko opts="if: (state()!=0 && state()!=50)">
+		    <ko opts="if: (state()!=0 and state()!=50)">
                 <_div data-value="play" data-translateable="true" data-bind="click: play" class="cmd-btn pretty medium primary btn btn-full grid-command">PLAY</_div>
             </ko>
-            <ko opts="ifnot: (state()!=0 && state()!=50)">
+            <ko opts="ifnot: (state()!=0 and state()!=50)">
                 <_div data-value="play" data-translateable="true" data-bind="click: play" class="cmd-btn pretty medium default btn btn-full grid-command">PLAY</_div>
             </ko>
 		</div>
 		<div class="three columns">
-		    <ko opts="if: (state()!=0 && state()==50)">
+		    <ko opts="if: (state()!=0 and state()==50)">
                 <_div data-value="pause" data-translateable="true" data-bind="click: pause" class="cmd-btn pretty medium primary btn btn-full grid-command">PAUSE</_div>
             </ko>
-            <ko opts="ifnot: (state()!=0 && state()==50)">
+            <ko opts="ifnot: (state()!=0 and state()==50)">
                 <_div data-value="pause" data-translateable="true" data-bind="click: pause" class="cmd-btn pretty medium default btn btn-full grid-command">PAUSE</_div>
             </ko>
 		</div>

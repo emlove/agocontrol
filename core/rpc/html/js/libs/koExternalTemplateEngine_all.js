@@ -48,6 +48,7 @@
 	    if (templateContent) {
 		templateContent = templateContent.replace(/<ko opts=(.+)>/g, function(str, group) {
 		   group = group.replace(/"/g, "");
+		   group = group.replace(/\sand\s/g, " && ");
 		   return "<!-- ko " + group + " -->"; 
 		});
 		templateContent = templateContent.replace(/<\/ko>/g, "<!-- /ko -->");
