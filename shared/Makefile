@@ -22,3 +22,4 @@ install:
 	$(INSTALL) libagoclient.so.1 $(LIBDIR)
 	$(INSTALL) agoclient.py $(BINDIR)
 	$(INSTALL) agoclient.h $(INCDIR)
+	$(INSTALL) CDataFile.h $(INCDIR)
