@@ -208,8 +208,16 @@ bool jsonrpcRequestHandler(struct mg_connection *conn, Json::Value request, bool
 		const Json::Value params = request.get("params", Json::Value());
 		if (method == "message" ) {
 			if (params.isObject()) {
-				Session tmpSession = connection->createSession();
-				Sender tmpSender = tmpSession.createSender("agocontrol; {create: always, node: {type: topic}}"); 
+				Session tmpSession;
+				Sender tmpSender;
+				try {
+					tmpSession = connection->createSession();
+					tmpSender = tmpSession.createSender("agocontrol; {create: always, node: {type: topic}}"); 
+				} catch ( qpid::messaging::MessagingException) {
+					cout << "ERROR: Can't create session/sender" << endl;
+					mg_printf(conn, "{\"jsonrpc\": \"2.0\", \"result\": \"exception: %s\", \"id\": %s}","qpid::messaging::MessagingException",myId.c_str());
+					return false;		
+				}
 				Json::Value content = params["content"];
 				Json::Value subject = params["subject"];
 				Json::Value replytimeout = params["replytimeout"];
@@ -429,6 +437,14 @@ int main(int argc, char **argv) {
 		"ssl_certificate", certificate.c_str(),
 		NULL
 	};
+
+	pthread_mutex_init(&mutexSubscriptions, NULL);
+
+	// start web server
+	if((ctx = mg_start(&event_handler, NULL, options)) == NULL) {
+		printf("Cannot start http server\n");
+	}
+
 	connectionOptions["reconnect"] = "true";
 
 	connection = new Connection(broker, connectionOptions);
@@ -444,12 +460,6 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 
-	pthread_mutex_init(&mutexSubscriptions, NULL);
-
-	// start web server
-	if((ctx = mg_start(&event_handler, NULL, options)) == NULL) {
-		printf("Cannot start http server\n");
-	}
 
 	while (true) {
 		try{
