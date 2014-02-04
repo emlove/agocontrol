@@ -606,6 +606,7 @@ qpid::types::Variant::Map agocontrol::AgoConnection::getInventory() {
 	sender.send(message);
 	try {
 		Message response = responseReceiver.fetch(Duration::SECOND * 3);
+		session.acknowledge();
 		if (response.getContentSize() > 3) {	
 			decode(response,responseMap);
 		}
