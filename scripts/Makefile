@@ -11,4 +11,4 @@ install:
 	$(INSTALL_PROGRAM) convert-config.py $(DESTDIR)$(BINDIR)
 
 clean:
-	rm agososreport.sh
+	-rm agososreport.sh
