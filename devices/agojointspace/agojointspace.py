@@ -7,6 +7,8 @@ import pickle
 import optparse
 import ConfigParser
 
+import agoclient
+
 from qpid.messaging import *
 from qpid.util import URL
 from qpid.log import enable, DEBUG, WARN
@@ -28,7 +30,7 @@ from struct import *
 myUUID = uuid.uuid1()
 
 config = ConfigParser.ConfigParser()
-config.read('/etc/opt/agocontrol/config.ini')
+config.read(agoclient.CONFDIR + '/config.ini')
 
 try:
 	username = config.get("system","username")
@@ -107,7 +109,7 @@ sender = session.sender("agocontrol; {create: always, node: {type: topic}}")
 # Update store (pickle file)
 def updateStore():
 	try:
-		uuidmapfile = open("/etc/opt/agocontrol/jointspace/uuidmap.pck","w")
+		uuidmapfile = open(agoclient.CONFDIR + "/jointspace/uuidmap.pck","w")
 		pickle.dump(uuidmap, uuidmapfile, 0)
 		uuidmapfile.close()
 	except IOError, e:
@@ -425,7 +427,7 @@ syslog.syslog(syslog.LOG_NOTICE, "agocontrol jointspace device is starting up")
 
 # read persistent uuid mapping from file
 try:
-	uuidmapfile = open("/etc/opt/agocontrol/jointspace/uuidmap.pck","r")
+	uuidmapfile = open(agoclient.CONFDIR + "/jointspace/uuidmap.pck","r")
 	uuidmap = pickle.load(uuidmapfile)
 	uuidmapfile.close()
 except IOError, e:

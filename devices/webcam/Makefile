@@ -14,5 +14,5 @@ clean:
 	rm -f agowebcam agowebcam.o base64.o
 
 install:
-	$(INSTALL_DIR) $(BINDIR)
-	$(INSTALL_PROGRAM) agowebcam $(BINDIR)
+	$(INSTALL_DIR) $(DESTDIR)$(BINDIR)
+	$(INSTALL_PROGRAM) agowebcam $(DESTDIR)$(BINDIR)

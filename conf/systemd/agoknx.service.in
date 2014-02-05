@@ -1,0 +1,12 @@
+[Unit]
+Description=ago control KNX Device
+
+[Service]
+ExecStart=@BINDIR/agoknx
+WorkingDirectory=@BINDIR
+Restart=always
+RestartSec=2
+User=agocontrol
+
+[Install]
+WantedBy=multi-user.target

@@ -4,21 +4,28 @@ BUILDDIRS = $(DIRS:%=build-%)
 INSTALLDIRS = $(DIRS:%=install-%)
 CLEANDIRS = $(DIRS:%=clean-%)
 
-all: $(BUILDDIRS)
+BUILDFILES = agocontrol-init-script.sh
+
+all: $(BUILDDIRS) $(BUILDFILES)
 $(DIRS): $(BUILDDIRS)
 $(BUILDDIRS):
 	$(MAKE) -C $(@:build-%=%)
 
+agocontrol-init-script.sh: agocontrol-init-script.sh.in
+	sed -e 's|@BINDIR|$(BINDIR)|g' $< > $@
+
 install: $(INSTALLDIRS) all
-	$(INSTALL_DIR) $(BINDIR)
-	$(INSTALL) agodrain.py $(BINDIR)
-	$(INSTALL) myavahi.py $(BINDIR)
-	$(INSTALL) agoctrl.sh $(BINDIR)
+	$(INSTALL_DIR) $(DESTDIR)$(BINDIR)
+	$(INSTALL) agodrain.py $(DESTDIR)$(BINDIR)
+	$(INSTALL) myavahi.py $(DESTDIR)$(BINDIR)
+	$(INSTALL) agoctrl.sh $(DESTDIR)$(BINDIR)
 
 $(INSTALLDIRS): 
 	$(MAKE) -C $(@:install-%=%) install
 
 clean: $(CLEANDIRS)
+	rm $(BUILDFILES)
+
 $(CLEANDIRS): 
 	$(MAKE) -C $(@:clean-%=%) clean
 

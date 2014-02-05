@@ -1,0 +1,12 @@
+[Unit]
+Description=ago control i2c device
+
+[Service]
+ExecStart=@BINDIR/agoi2c
+WorkingDirectory=@BINDIR
+Restart=always
+RestartSec=2
+User=agocontrol
+
+[Install]
+WantedBy=multi-user.target

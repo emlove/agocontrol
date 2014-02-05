@@ -1,0 +1,12 @@
+[Unit]
+Description=ago control dmx device
+
+[Service]
+ExecStart=@BINDIR/agodmx
+WorkingDirectory=@BINDIR
+Restart=always
+RestartSec=2
+User=agocontrol
+
+[Install]
+WantedBy=multi-user.target

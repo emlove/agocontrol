@@ -1,8 +1,8 @@
 all:
 
 install:
-	$(INSTALL_DIR) $(BINDIR)
-	$(INSTALL_PROGRAM) raspiGPIO.py $(BINDIR)
+	$(INSTALL_DIR) $(DESTDIR)$(BINDIR)
+	$(INSTALL_PROGRAM) raspiGPIO.py $(DESTDIR)$(BINDIR)
 
 
 clean:

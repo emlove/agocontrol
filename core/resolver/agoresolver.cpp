@@ -46,11 +46,11 @@
 #include "../../version.h"
 
 #ifndef VARIABLESMAPFILE
-#define VARIABLESMAPFILE CONFIG_BASE_DIR "/maps/variablesmap.json"
+#define VARIABLESMAPFILE CONFDIR "/maps/variablesmap.json"
 #endif
 
 #ifndef DEVICESMAPFILE
-#define DEVICESMAPFILE CONFIG_BASE_DIR "/maps/devices.json"
+#define DEVICESMAPFILE CONFDIR "/maps/devices.json"
 #endif
 
 #include "schema.h"
@@ -391,7 +391,7 @@ int main(int argc, char **argv) {
 
 //	clog << agocontrol::kLogNotice << "starting up" << std::endl;
 
-	schemafile=getConfigOption("system", "schema", CONFIG_BASE_DIR "/schema.yaml");
+	schemafile=getConfigOption("system", "schema", CONFDIR "/schema.yaml");
 	discoverdelay=atoi(getConfigOption("system", "discoverdelay", "300").c_str());
 	if (atoi(getConfigOption("system","devicepersistence", "0").c_str()) != 1) persistence=false;
 
@@ -415,7 +415,7 @@ int main(int argc, char **argv) {
 	}
 
 //	clog << agocontrol::kLogDebug << "reading inventory" << std::endl;
-	inv = new Inventory(CONFIG_BASE_DIR "/db/inventory.db");
+	inv = new Inventory(CONFDIR "/db/inventory.db");
 
 	variables = jsonFileToVariantMap(VARIABLESMAPFILE);
 	if (persistence) loadDevicemap();

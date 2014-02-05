@@ -426,8 +426,8 @@ int main(int argc, char **argv) {
 	connectionOptions["username"]=getConfigOption("system", "username", "agocontrol");
 	connectionOptions["password"]=getConfigOption("system", "password", "letmein");
 	port=getConfigOption("rpc", "ports", "8008,8009s");
-	htdocs=getConfigOption("rpc", "htdocs", "/opt/agocontrol/html");
-	certificate=getConfigOption("rpc", "certificate", CONFIG_BASE_DIR "/rpc/rpc_cert.pem");
+	htdocs=getConfigOption("rpc", "htdocs", HTMLDIR);
+	certificate=getConfigOption("rpc", "certificate", CONFDIR "/rpc/rpc_cert.pem");
 	numthreads=getConfigOption("rpc", "numthreads", "30");
 
 	static const char *options[] = {

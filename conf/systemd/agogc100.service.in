@@ -1,0 +1,12 @@
+[Unit]
+Description=ago control gc100 interface
+
+[Service]
+ExecStart=@BINDIR/agogc100.py
+WorkingDirectory=@BINDIR
+Restart=always
+RestartSec=2
+User=agocontrol
+
+[Install]
+WantedBy=multi-user.target

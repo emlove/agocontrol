@@ -9,13 +9,15 @@ import sys
 import syslog
 import ConfigParser, os
 
+import agoclient
+
 from qpid.messaging import *
 from qpid.util import URL
 from qpid.log import enable, DEBUG, WARN
 
 
 config = ConfigParser.ConfigParser()
-config.read('/etc/opt/agocontrol/conf.d/system.conf')
+config.read(agoclient.CONFDIR + '/conf.d/system.conf')
 
 try:
 	username = config.get("system","username")

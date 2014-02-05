@@ -1,9 +1,10 @@
 #!/usr/bin/python
 import ConfigParser
+import agoclient
 
 config = ConfigParser.RawConfigParser()
 
-config.read('/etc/opt/agocontrol/config.ini')
+config.read(agoclient.CONFDIR + '/config.ini')
 
 for section in config.sections():
 	# print "Section", section
@@ -12,6 +13,6 @@ for section in config.sections():
 	for option in config.options(section):
 		# print "Option: ", option, ":", config.get(section, option)
 		newconfig.set(section, option, config.get(section, option))
-	with open('/etc/opt/agocontrol/conf.d/' + section + '.conf', 'wb') as configfile:
+	with open(agoclient.CONFDIR + '/conf.d/' + section + '.conf', 'wb') as configfile:
 		newconfig.write(configfile)
 

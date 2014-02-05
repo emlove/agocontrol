@@ -20,8 +20,7 @@ clean:
 	rm -f agozwave agozwave.o ZWaveNode.o
 
 install:
-	$(INSTALL_DIR) $(BINDIR)
-	$(INSTALL_PROGRAM) agozwave $(BINDIR)
-	$(INSTALL_DIR) $(CONFDIR)
-	$(INSTALL_DIR) $(CONFDIR)/ozw
-
+	$(INSTALL_DIR) $(DESTDIR)$(BINDIR)
+	$(INSTALL_PROGRAM) agozwave $(DESTDIR)$(BINDIR)
+	$(INSTALL_DIR) $(DESTDIR)$(CONFDIR)
+	$(INSTALL_DIR) $(DESTDIR)$(CONFDIR)/ozw

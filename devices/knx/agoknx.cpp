@@ -284,7 +284,7 @@ int main(int argc, char **argv) {
 	// parse config
 	eibdurl=getConfigOption("knx", "url", "ip:127.0.0.1");
 	polldelay=atoi(getConfigOption("knx", "polldelay", "5000").c_str());
-	devicesFile=getConfigOption("knx", "devicesfile", "/etc/opt/agocontrol/knx/devices.xml");
+	devicesFile=getConfigOption("knx", "devicesfile", CONFDIR "/knx/devices.xml");
 
 	// load xml file into map
 	if (!loadDevices(devicesFile, deviceMap)) {

@@ -13,5 +13,5 @@ clean:
 	rm -f agoirtrans_ethernet agoirtrans_ethernet.o 
 
 install:
-	$(INSTALL_DIR) $(BINDIR)
-	$(INSTALL_PROGRAM) agoirtrans_ethernet $(BINDIR)
+	$(INSTALL_DIR) $(DESTDIR)$(BINDIR)
+	$(INSTALL_PROGRAM) agoirtrans_ethernet $(DESTDIR)$(BINDIR)

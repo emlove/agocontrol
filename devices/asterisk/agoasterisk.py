@@ -13,12 +13,14 @@ import pickle
 import optparse
 import ConfigParser
 
+import agoclient
+
 from qpid.messaging import *
 from qpid.util import URL
 from qpid.log import enable, DEBUG, WARN
 
 config = ConfigParser.ConfigParser()
-config.read('/etc/opt/agocontrol/config.ini')
+config.read(agoclient.CONFDIR + '/config.ini')
 
 try:
 	username = config.get("system","username")
@@ -73,7 +75,7 @@ running = True
 
 # read persistent uuid mapping from file
 try:
-	uuidmapfile = open("/etc/opt/agocontrol/asterisk-uuidmap.pck","r")
+	uuidmapfile = open(agoclient.CONFDIR + "/asterisk-uuidmap.pck","r")
 	uuidmap = pickle.load(uuidmapfile)
 	uuidmapfile.close()
 except IOError, e:
@@ -92,7 +94,7 @@ def lookupuuid(path):
 			print "new uuid %s %s" % (newuuid, path)
 			# uuid is new, try to store it
 			print uuidmap
-			uuidmapfile = open("/etc/opt/agocontrol/asterisk-uuidmap.pck","w")
+			uuidmapfile = open(agoclient.CONFDIR + "/asterisk-uuidmap.pck","w")
 			pickle.dump(uuidmap, uuidmapfile)
 			uuidmapfile.close()
 		except IOError, e:

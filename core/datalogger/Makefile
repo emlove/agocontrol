@@ -13,5 +13,5 @@ clean:
 	rm -f agodatalogger agodatalogger.o
 
 install:
-	$(INSTALL_DIR) $(BINDIR)
-	$(INSTALL_PROGRAM) agodatalogger $(BINDIR)
+	$(INSTALL_DIR) $(DESTDIR)$(BINDIR)
+	$(INSTALL_PROGRAM) agodatalogger $(DESTDIR)$(BINDIR)

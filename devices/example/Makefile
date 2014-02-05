@@ -31,6 +31,6 @@ clean:
 	rm -f example example.o
 
 install:
-	$(INSTALL_DIR) $(BINDIR)
-	$(INSTALL_PROGRAM) example $(BINDIR)
+	$(INSTALL_DIR) $(DESTDIR)$(BINDIR)
+	$(INSTALL_PROGRAM) example $(DESTDIR)$(BINDIR)
 

@@ -1,7 +1,7 @@
 all:
 
 install:
-	$(INSTALL_DIR) $(BINDIR)
-	$(INSTALL_PROGRAM) agox10.py $(BINDIR)
+	$(INSTALL_DIR) $(DESTDIR)$(BINDIR)
+	$(INSTALL_PROGRAM) agox10.py $(DESTDIR)$(BINDIR)
 
 clean:

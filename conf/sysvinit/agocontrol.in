@@ -1,0 +1,85 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides: agorpc
+# Required-Start:	$syslog $local_fs 
+# Required-Stop:	$syslog $local_fs 
+# Default-Start:	2 3 4 5
+# Default-Stop:		0 1 6
+# Short-Description: ago control HTTP RPC interface
+### END INIT INFO
+
+. /lib/lsb/init-functions
+
+BIN_PATH=@BINDIR/
+PID_PATH=/var/run/
+APPS="agorpc agodatalogger agoevent agoresolver agoscenario agotimer agosqueezebox agoalert agoipx800"
+
+DESC="agocontrol"
+start_module() {
+    start-stop-daemon --start --quiet --background --pidfile "$3" --make-pidfile --exec "$2" -- "$4"
+    if [ $? -ne 0 ]; then
+        log_failure_msg "$1"
+        exit 1
+    fi
+    if [ $? -eq 0 ]; then
+        log_success_msg "$1"
+    fi
+}
+
+start() {
+    echo "Starting $DESC..."
+    for app in $APPS
+    do
+        if [ -f "$BIN_PATH$app" ]
+        then
+            start_module "$app" "$BIN_PATH$app" "$PID_PATH$app.pid"
+        fi
+    done
+}
+
+stop_module() {
+	start-stop-daemon --stop --quiet --oknodo --pidfile "$3"
+	if [ $? -ne 0 ]; then
+    log_failure_msg "$1"
+        exit 1
+    fi
+    if [ $? -eq 0 ]; then
+		log_success_msg "$1"
+    fi
+}
+
+stop() {
+    echo "Stopping $DESC..."
+    for app in $APPS
+    do
+        if [ -f "$BIN_PATH$app" ]
+        then
+            stop_module "$app" "$BIN_PATH$app" "$PID_PATH$app.pid"
+        fi
+    done
+}
+
+force_reload() {
+    stop
+    start
+}
+
+case "$1" in
+	start)
+		start
+		;;
+	stop)
+		stop
+		;;
+	force-reload)
+		force_reload
+		;;
+	restart)
+		stop
+		start
+		;;
+
+	*)
+		echo "Usage: $DESC {start|stop|force-reload|restart}"
+		exit 2
+esac
