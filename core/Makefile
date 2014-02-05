@@ -24,7 +24,7 @@ $(INSTALLDIRS):
 	$(MAKE) -C $(@:install-%=%) install
 
 clean: $(CLEANDIRS)
-	rm $(BUILDFILES)
+	-rm $(BUILDFILES)
 
 $(CLEANDIRS): 
 	$(MAKE) -C $(@:clean-%=%) clean
