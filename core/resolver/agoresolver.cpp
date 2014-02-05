@@ -401,7 +401,7 @@ int main(int argc, char **argv) {
 	clog << agocontrol::kLogDebug << "parsing schema file" << std::endl;
 	schema = parseSchema(schemafile.c_str());
 
-	fs::path schemadir(CONFIG_BASE_DIR "/schema.d");
+	fs::path schemadir(CONFDIR "/schema.d");
 	if (fs::exists(schemadir)) {
 		fs::recursive_directory_iterator it(schemadir);
 		fs::recursive_directory_iterator endit;
