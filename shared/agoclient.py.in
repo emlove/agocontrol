@@ -196,6 +196,21 @@ class AgoConnection:
                 for device in self.devices:
                         self.emitDeviceAnnounce(device, self.devices[device])
 
+	def _sendreply(self, addr, content):
+		try:
+			replysession = self.connection.session()
+			replysender = replysession.sender(addr)
+			response = Message(content)
+			replysender.send(response)
+		except SendError, e:
+			syslog.syslog(syslog.LOG_ERR, "can't send reply: " + str(e))
+		except AttributeError, e:
+			syslog.syslog(syslog.LOG_ERR, "can't send reply: " + str(e))
+		except MessagingError, e:
+			syslog.syslog(syslog.LOG_ERR, "can't send reply message: " + str(e))
+		finally:
+			replysession.close()
+
         def run(self):
 		"""This will start command and event handling. Be aware that this is blocking."""
                 # self.reportDevices() # - this is now handled by the addDevice
@@ -204,37 +219,18 @@ class AgoConnection:
                         try:
                                 message = self.receiver.fetch()
                                 self.session.acknowledge()
-                                if message.content:
-                                        if 'command' in message.content:
-                                                if message.content['command'] == 'discover':
-                                                        self.reportDevices()
-                                                else:
-                                                        if 'uuid' in message.content:
-                                                                if message.content['uuid'] in self.devices:
-                                                                        #this is for one of our children
-                                                                        myid = self.uuidToInternalId(message.content["uuid"])
-                                                                        if myid != None and self.handler:
-                                                                                replydata = {}
-                                                                                replydata["result"] = self.handler(myid, message.content)
-                                                                                if message.reply_to:
-                                                                                        replysession = self.connection.session()
-                                                                                        try:
-                                                                                                replysender = replysession.sender(message.reply_to)
-                                                                                                try:
-                                                                                                        response = Message(replydata)
-                                                                                                except EncodeError, e:
-                                                                                                        syslog.syslog(syslog.LOG_ERR, "can't encode reply")
-                                                                                                        response = Message({})
-                                                                                                try:
-                                                                                                        response.subject = self.instance
-                                                                                                        replysender.send(response)
-                                                                                                except SendError, e:
-                                                                                                        syslog.syslog(syslog.LOG_ERR, "can't send reply: " + str(e))
-                                                                                                except AttributeError, e:
-                                                                                                        syslog.syslog(syslog.LOG_ERR, "can't send reply: " + str(e))
-                                                                                        except MessagingError, e:
-                                                                                                syslog.syslog(syslog.LOG_ERR, "can't send reply message: " + str(e))
-                                                                                        replysession.close()
+                                if message.content and 'command' in message.content:
+					if message.content['command'] == 'discover':
+						self.reportDevices()
+					else:
+						if 'uuid' in message.content and message.content['uuid'] in self.devices:
+							#this is for one of our children
+							myid = self.uuidToInternalId(message.content["uuid"])
+							if myid != None and self.handler:
+								replydata = {}
+								replydata["result"] = self.handler(myid, message.content)
+								if message.reply_to:
+									self._sendreply(message.reply_to, replydata)
                                 if message.subject:
                                         if 'event' in message.subject and self.eventhandler:
                                                 self.eventhandler(message.subject, message.content)
