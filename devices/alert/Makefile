@@ -1,9 +1,9 @@
 all:
 
 install:
-	$(INSTALL_DIR) $(BINDIR)
-	$(INSTALL_PROGRAM) agoalert.py $(BINDIR)
-	$(INSTALL_PROGRAM) pushbullet.py $(BINDIR)
-	$(INSTALL_DIR) $(CONFDIR)
+	$(INSTALL_DIR) $(DESTDIR)$(BINDIR)
+	$(INSTALL_PROGRAM) agoalert.py $(DESTDIR)$(BINDIR)
+	$(INSTALL_PROGRAM) pushbullet.py $(DESTDIR)$(BINDIR)
+	$(INSTALL_DIR) $(DESTDIR)$(CONFDIR)
 
 clean:
