@@ -23,7 +23,7 @@ using namespace agocontrol;
 #include "lua5.2/lua.hpp"
 
 #ifndef LUA_SCRIPT_DIR
-#define LUA_SCRIPT_DIR CONFIG_BASE_DIR "/lua/"
+#define LUA_SCRIPT_DIR CONFDIR "/lua/"
 #endif
 
 qpid::types::Variant::Map inventory;

@@ -4,10 +4,10 @@ INCLUDES ?= -I../../shared
 %.o : %.cpp
 	$(CXX) -c $(CFLAGS) $(INCLUDES) -o $@ $<
 
+all: agolua command.lua
+
 command.lua : command.lua.in
 	 sed -e 's|@CONFDIR|$(CONFDIR)|g' $< > $@
-
-all: agolua command.lua
 
 agolua: agolua.o
 	$(LD) -o $@ $(LDFLAGS) $^ -lqpidmessaging -lqpidtypes -luuid -lagoclient -llua5.2
