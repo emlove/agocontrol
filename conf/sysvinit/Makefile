@@ -5,7 +5,7 @@ agocontrol : agocontrol.in
 
 all: $(FILES)
 
-# install:
+install:
 #	$(INSTALL_DIR) $(DESTDIR)$(ETCDIR)/init.d
 #	$(INSTALL_FILE) agocontrol $(DESTDIR)$(ETCDIR)/init.d
 
