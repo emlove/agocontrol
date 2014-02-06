@@ -1,0 +1,50 @@
+ Is there any implementation in ago that uses subject based subscription for QPID?
+<-- jaeger4 has quit (Quit: This computer has gone to sleep)
+<hari> JoakimL: The AMQP exchange type we are using here, amq.topic, can also do more sophisticated matching. A sender's subject can contain multiple words separated by a “.” delimiter. For instance, in a news application, the sender might use subjects like usa.news, usa.weather, europe.news, or europe.weather. The receiver's subject can include wildcard characters— “#” matches one or more words in the message's subject, “*” matches a singl
+<hari>  For instance, if the subject in the source address is *.news, it matches messages with the subject europe.news or usa.news; if it is europe.#, it matches messages with subjects like europe.news or europe.pseudo.news.
+<hari> JoakimL: from the qpid manual ^
+<hari> but agoclient does not make use of that functionality
+<JoakimL> hari: Yes, I read a long article about. Semms quite qualified (and I've spent many years with enterprise messaging)
+<hari> but if you create the qpid receiver yourself, you could specify an address string that only passes specific subjects from our agocontrol topic
+<JoakimL> hari: Aha. I thought so. I don't know the performance hit - in my weaterreporter program I listen to all messages and filter out the ones to use - I thought I could have  been a good idea to set a subscription subject
+<hari> i had intentions to do so first, but then realized that with the few messages/components we have, it is not yet worth the effort
+<JoakimL> OK
+ I'll look into creating a receiver
+<hari> JoakimL: we would need to add an optional parameter to the agoclient constructor
+<hari> so that you can specify the address
+<hari> JoakimL: not using agoclient would be not the preferred way, as we try to encapsulate qpid specifics there..
+<JoakimL> OK. Nothing prioritised - it works without it
+<hari> JoakimL: but just look at shared/agoclient.py
+<hari> there is no magic in there
+<JoakimL> I've not used agoclient, I used agodrain as a startingpoint
+ OK, will do
+<hari> JoakimL: this is the constructor: http://agocontrol.com/trac/browser/agocontrol.git/shared/agoclient.py#L59
+<hari> one could rewrite the __init__ to something like this:
+ def __init__(self, instance, address="agocontrol"):
+ and then change http://agocontrol.com/trac/browser/agocontrol.git/shared/agoclient.py#L68
+ self.receiver = self.session.receiver(address + "; {create: always, node: {type: topic}}")
+<hari> JoakimL: these two changes would keep the current behavior if agoclient is just instantiated as usual
+<JoakimL> Great. I'll test it out tomorrow. Thanks
+<hari> like we do in python devices right now:
+  client = agoclient.AgoConnection("wifi370")
+<hari> JoakimL: but when you want a specific receiver address, one would then use:
+<hari>  client = agoclient.AgoConnection("wifi370", address="xyzblah")
+<hari> JoakimL: i've not verified this but this should be a rough outline
+ JoakimL: just be aware that you would not receive commands anymore that way
+<hari> so we might think about optionally using a specific receiver for the event handler
+<JoakimL> That's OK, my program just needs to listen for events, not commands.
+<hari> e.g. allowing a "filter" parameter for the __init__ method
+ and if it is specified, one would create a second receiver with that filter for the eventHandler
+ thus regular commands would still arrive on the first receiver, and be dispatched to the messageHandler method
+ and filtered subjects on the other receiver would be passed to the eventHandler
+<hari> JoakimL: or we could take another approach and add a new method to add a "filteredEventHandler"
+<JoakimL> I think the later would be preferred
+<hari> so one could use addEventHandler like usual
+ and use another method addFilteredEventHandler with filter parameter
+<hari> JoakimL: but the performance hit of the current approach should be veeery low..
+<hari> anyway, if you want to take the challenge, I'll be there to assist you when you get stuck
+
+
+OpenWeather: Up5Wbr1HTzOrHN35kAXH
+
+http://openweathermap.org/data/post?
