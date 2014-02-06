@@ -18,13 +18,15 @@ playlist = None
 library = None
 client = None
 states = {}
+mediastates = {}
 
 STATE_OFF = 0
-STATE_STREAM = 25
-STATE_PLAY = 50
-STATE_STOP = 100
-STATE_PAUSE = 150
 STATE_ON = 255
+
+STATE_STREAM = 'streaming'
+STATE_PLAY = 'play'
+STATE_STOP = 'stopped'
+STATE_PAUSE = 'paused'
 
 #logging.basicConfig(filename='agosqueezebox.log', level=logging.INFO, format="%(asctime)s %(levelname)s : %(message)s")
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(name)s %(levelname)s : %(message)s")
@@ -40,39 +42,43 @@ def getPlayers():
 def quit(msg):
     """Exit application"""
     global playlist
+    global client
     if playlist:
         playlist.stop()
         playlist = None
+    if client:
+        del client
+        client = None
     logging.fatal(msg)
     sys.exit(0)
 
 #squeezebox callbacks
 def play_callback(player_id, track_title, playlist_index):
     #if player is off or player is already playing, kick this callback
-    if states.has_key(player_id) and states[player_id]!=STATE_OFF and states[player_id]!=STATE_PLAY and states[player_id]!=STATE_STREAM:
-        logging.info('callback PLAY: %s' % player_id)
-        states[player_id] = STATE_PLAY
+    logging.info('callback PLAY: %s' % player_id)
+    if mediastates.has_key(player_id) and mediastates[player_id]!=STATE_PLAY and mediastates[player_id]!=STATE_STREAM:
+        mediastates[player_id] = STATE_PLAY
         emit_play(player_id)
 def stop_callback(player_id):
     #if player is off, kick this callback
-    if states.has_key(player_id) and states[player_id]!=STATE_OFF and states[player_id]!=STATE_STREAM:
-        logging.info('callback STOP: %s' % player_id)
-        states[player_id] = STATE_STOP
+    logging.info('callback STOP: %s' % player_id)
+    if mediastates.has_key(player_id) and mediastates[player_id]!=STATE_STREAM:
+        mediastates[player_id] = STATE_STOP
         emit_stop(player_id)
 def pause_callback(player_id):
     #if player is off, kick this callback
-    if states.has_key(player_id) and states[player_id]!=STATE_OFF and states[player_id]!=STATE_STREAM:
-        logging.info('callback PAUSE: %s' % player_id)
-        states[player_id] = STATE_PAUSE
+    logging.info('callback PAUSE: %s' % player_id)
+    if mediastates.has_key(player_id) and mediastates[player_id]!=STATE_STREAM:
+        mediastates[player_id] = STATE_PAUSE
         emit_pause(player_id)
 def on_callback(player_id):
-    if states[player_id]!=STATE_STREAM:
-        logging.info('callback ON: %s' % player_id)
+    logging.info('callback ON: %s' % player_id)
+    if mediastates.has_key(player_id) and mediastates[player_id]!=STATE_STREAM:
         states[player_id] = STATE_ON
         emit_on(player_id)
 def off_callback(player_id):
-    if states[player_id]!=STATE_STREAM:
-        logging.info('callback OFF: %s' % player_id)
+    logging.info('callback OFF: %s' % player_id)
+    if mediastates.has_key(player_id) and mediastates[player_id]!=STATE_STREAM:
         states[player_id] = STATE_OFF
         emit_off(player_id)
 
@@ -80,19 +86,19 @@ def off_callback(player_id):
 #emit function
 def emit_play(internalid):
     client.emitEvent(internalid, "event.mediaplayer.statechanged", "play", "")
-    client.emitEvent(internalid, "event.device.statechanged", str(STATE_PLAY), "")
+    client.emitEvent(internalid, "event.device.mediastatechanged", str(STATE_PLAY), "")
 def emit_stop(internalid):
     client.emitEvent(internalid, "event.mediaplayer.statechanged", "stop", "")
-    client.emitEvent(internalid, "event.device.statechanged", str(STATE_STOP), "")
+    client.emitEvent(internalid, "event.device.mediastatechanged", str(STATE_STOP), "")
 def emit_pause(internalid):
     client.emitEvent(internalid, "event.mediaplayer.statechanged", "pause", "")
-    client.emitEvent(internalid, "event.device.statechanged", str(STATE_PAUSE), "")
+    client.emitEvent(internalid, "event.device.mediastatechanged", str(STATE_PAUSE), "")
 def emit_on(internalid):
     client.emitEvent(internalid, "event.device.statechanged", str(STATE_ON), "")
 def emit_off(internalid):
     client.emitEvent(internalid, "event.device.statechanged", str(STATE_OFF), "")
 def emit_stream(internalid):
-    client.emitEvent(internalid, "event.device.statechanged", str(STATE_STREAM), "")
+    client.emitEvent(internalid, "event.device.mediastatechanged", str(STATE_STREAM), "")
 
 #init
 try:
@@ -210,37 +216,39 @@ try:
         if p.get_model()=='http':
             #it's a stream. No control on it
             logging.info('  Player %s[%s] is a streaming' % (p.name, p.mac))
-            states[p.mac] = STATE_STREAM
+            states[p.mac] = STATE_ON
+            mediastates[p.mac] = STATE_STREAM
             emit_stream(p.mac)
         elif not p.get_is_on():
             #player is off
             logging.info('  Player %s[%s] is off' % (p.name, p.mac))
             states[p.mac] = STATE_OFF
+            mediastates[p.mac] = STATE_STOP
             emit_off(p.mac)
         else:
             #player is on
             mode = p.get_mode()
+            states[p.mac] = STATE_ON
             if mode=='stop':
                 logging.info('  Player %s[%s] is stopped' % (p.name, p.mac))
-                states[p.mac] = STATE_STOP
+                mediastates[p.mac] = STATE_STOP
                 emit_stop(p.mac)
             elif mode=='play':
                 logging.info('  Player %s[%s] is playing' % (p.name, p.mac))
-                states[p.mac] = STATE_PLAY
+                mediastates[p.mac] = STATE_PLAY
                 emit_play(p.mac)
             elif mode=='pause':
                 logging.info('  Player %s[%s] is paused' % (p.name, p.mac))
-                states[p.mac] = STATE_PAUSE
+                mediastates[p.mac] = STATE_PAUSE
                 emit_pause(p.mac)
-            else:
-                logging.info('  Player %s[%s] is on' % (p.name, p.mac))
-                states[p.mac] = STATE_ON
-                emit_on(p.mac)
 except Exception as e:
     quit('Failed to get player status. Exit now. (%s)' % str(e))
 
 #run agoclient
-logging.info('Running agoclient...')
-client.run()
+try:
+    logging.info('Running agoclient...')
+    client.run()
+except:
+    quit('agosqueezebox stopped')
 
 
