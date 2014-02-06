@@ -844,6 +844,8 @@ function eventConfig() {
 	comp.options[1] = new Option("!=", "new");
 	comp.options[2] = new Option(">", "gt");
 	comp.options[3] = new Option("<", "lt");
+	comp.options[4] = new Option(">=", "gte");
+	comp.options[5] = new Option("<=", "lte");
 
 	if (defaultValues) {
 	    for ( var i = 0; comp.options.length; i++) {

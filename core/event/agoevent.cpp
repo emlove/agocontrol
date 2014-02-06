@@ -152,6 +152,10 @@ void eventHandler(std::string subject, qpid::types::Variant::Map content) {
 						criteria[crit->first] = lval < rval;
 					} else if (element["comp"] == "gt") {
 						criteria[crit->first] = lval > rval;
+					} else if (element["comp"] == "gte") {
+						criteria[crit->first] = lval >= rval;
+					} else if (element["comp"] == "lte") {
+						criteria[crit->first] = lval <= rval;
 					} else {
 						criteria[crit->first] = false;
 					}
