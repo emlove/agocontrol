@@ -132,7 +132,7 @@ function scenarioConfig() {
 		    }
 		});
 	    } else {
-		alert("ERROR");
+		alert("Please add commands before creating the scenario!");
 	    }
 	});
 
