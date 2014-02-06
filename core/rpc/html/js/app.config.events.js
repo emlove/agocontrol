@@ -33,9 +33,9 @@ function eventConfig() {
 		uuid : "0"
 	    });
 	}
-	
+
 	self.events(tmp);
-	
+
 	self.eventMap = schema.events;
 	self.deviceList = deviceMap;
     });
@@ -55,7 +55,6 @@ function eventConfig() {
 	var eventSelector = self.getEventSelector(self.eventMap, document.getElementsByClassName("eventBuilder")[0]);
 	eventSelector.id = "eventSelector";
 	document.getElementsByClassName("eventBuilder")[0].appendChild(eventSelector);
-	self.renderMainConnector("and", document.getElementsByClassName("eventBuilder")[0]);
 	self.addNesting(document.getElementsByClassName("eventBuilder")[0], "and");
 	self.createActionBuilder(document.getElementById("actionBuilder"));
     };
@@ -149,11 +148,10 @@ function eventConfig() {
 	}
 
 	var res = {};
-	res.conn = "and";
 	if (input.nesting == "True") {
 	    res.elements = [];
 	} else {
-	    res.elements = [ self.parseGroup(input.nesting, criteria) ];
+	    res.elements = [ self.parseGroup("(" + input.nesting + ")", criteria) ];
 	}
 	res.path = input.event;
 
@@ -359,7 +357,7 @@ function eventConfig() {
 	}
 
 	// Add the toplevel operator
-	self.map.nesting = self.map.nesting.replace(/\)\(/g, ") " + data.conn + " (");
+	self.map.nesting = self.map.nesting.replace(/\)\(/g, ") " + data.elements[data.elements.length - 1].type + " (");
 
 	// Remove useless and/or suffixes
 	self.map.nesting = $.trim(self.map.nesting);
@@ -376,13 +374,11 @@ function eventConfig() {
 	self.map.action.uuid = self.deviceList[document.getElementById("deviceListSelect").options[document.getElementById("deviceListSelect").selectedIndex].value].uuid;
 
 	var paramList = document.getElementsByClassName("cmdParam");
-    if (paramList)
-    {
-        for( var i=0; i<paramList.length; i++)
-        {
-            self.map.action[paramList[i].id] = paramList[i].value;
-        }
-    }
+	if (paramList) {
+	    for ( var i = 0; i < paramList.length; i++) {
+		self.map.action[paramList[i].id] = paramList[i].value;
+	    }
+	}
     };
 
     /**
@@ -617,9 +613,21 @@ function eventConfig() {
 	    }
 	    res.push(self.operationToJSON(ops[i]));
 	}
+
+	/*var elements = [];
+	var tmp = {type: res[0].type, sub: []};
+	for (var i = 0; i < res[0].sub.length; i++) {
+	    if (res[0].sub[i].type === undefined) {
+		tmp.sub.push(res[0].sub[i]);
+	    }
+	    else {
+		elements.push(res[0].sub[i]);
+	    }
+	}
+	elements.push(tmp);*/
+
 	var eventSelector = document.getElementById("eventSelector");
 	res = {
-	    "conn" : document.getElementById("conn_and").checked ? "and" : "or",
 	    "elements" : res,
 	    "path" : eventSelector.options[eventSelector.selectedIndex].value
 	};
@@ -630,7 +638,11 @@ function eventConfig() {
     /**
      * Creates a new operation
      */
-    this.createOperation = function(sub, container, type) {
+    this.createOperation = function(sub, container, type, toplevel) {
+	if (toplevel) {
+	    self.createOperation(sub[0].sub, container, sub[0].type);
+	    return;
+	}
 	var res = self.addNesting(container, type);
 	var dl = res[0];
 	var subList = res[1];
@@ -651,12 +663,12 @@ function eventConfig() {
 	var eventSelector = self.getEventSelector(self.eventMap, document.getElementsByClassName("eventBuilder")[0]);
 	eventSelector.id = "eventSelector";
 	document.getElementsByClassName("eventBuilder")[0].appendChild(eventSelector);
-	self.renderMainConnector(input.conn, document.getElementsByClassName("eventBuilder")[0]);
 
 	var inputList = input.elements;
+	inputList.reverse();
 	for ( var i = 0; i < inputList.length; i++) {
 	    var op = inputList[i];
-	    self.createOperation(op.sub, document.getElementsByClassName("eventBuilder")[0], op.type);
+	    self.createOperation(op.sub, document.getElementsByClassName("eventBuilder")[0], op.type, i == 0);
 	}
 
 	var eventSelector = document.getElementById("eventSelector");
@@ -691,36 +703,6 @@ function eventConfig() {
 	}
 
 	return eventList;
-    };
-
-    /**
-     * Renders the main content
-     */
-    this.renderMainConnector = function(type, container) {
-	var radio = document.createElement("input");
-	radio.name = "conn";
-	radio.id = radio.name + "_and";
-	radio.type = "radio";
-	radio.value = "and";
-	radio.checked = (type == "and");
-	var label = document.createElement("label");
-	label.appendChild(document.createTextNode("and"));
-	label.setAttribute("for", radio.id);
-	container.appendChild(radio);
-	container.appendChild(label);
-
-	var radio = document.createElement("input");
-	radio.name = "conn";
-	radio.id = radio.name + "_or";
-	radio.type = "radio";
-	radio.value = "or";
-	radio.checked = (type == "or");
-	var label = document.createElement("label");
-	label.appendChild(document.createTextNode("or"));
-	label.setAttribute("for", radio.name);
-
-	container.appendChild(radio);
-	container.appendChild(label);
     };
 
     /**
@@ -996,31 +978,27 @@ function eventConfig() {
 		    label.setAttribute("for", cmd.parameters[param].name);
 		    commandParams.appendChild(label);
 
-            if( cmd.parameters[param].type=='option' )
-            {
-                var select = document.createElement("select");
-                select.name = cmd.parameters[param].name;
-                select.className = "cmdParam";
-                select.id = cmd.parameters[param].name;
-                for( var i=0; i<cmd.parameters[param].options.length; i++ )
-                    select.options[select.options.length] = new Option(cmd.parameters[param].options[i], cmd.parameters[param].options[i]);
-                commandParams.appendChild(select);
-            }
-            else
-            {
-               var input = document.createElement("input");
-               input.name = cmd.parameters[param].name;
-               input.id = cmd.parameters[param].name;
-               input.className = "cmdParam";
-               if (defaults && defaults[cmd.parameters[param].name])
-               {
-                   input.value = defaults[cmd.parameters[param].name];
-               } 
-               commandParams.appendChild(input);
-            }
+		    if (cmd.parameters[param].type == 'option') {
+			var select = document.createElement("select");
+			select.name = cmd.parameters[param].name;
+			select.className = "cmdParam";
+			select.id = cmd.parameters[param].name;
+			for ( var i = 0; i < cmd.parameters[param].options.length; i++)
+			    select.options[select.options.length] = new Option(cmd.parameters[param].options[i], cmd.parameters[param].options[i]);
+			commandParams.appendChild(select);
+		    } else {
+			var input = document.createElement("input");
+			input.name = cmd.parameters[param].name;
+			input.id = cmd.parameters[param].name;
+			input.className = "cmdParam";
+			if (defaults && defaults[cmd.parameters[param].name]) {
+			    input.value = defaults[cmd.parameters[param].name];
+			}
+			commandParams.appendChild(input);
+		    }
 
-            var br = document.createElement("br");
-            commandParams.appendChild(br);
+		    var br = document.createElement("br");
+		    commandParams.appendChild(br);
 		}
 	    } else {
 		commandParams.style.display = "none";
