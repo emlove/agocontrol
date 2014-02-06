@@ -472,6 +472,8 @@ devicetypes:
     name: Squeezebox Player
     description: Plays music
     commands: ["on", "off", play, pause, stop, displaymessage]
+    events: [event.device.statechanged, event.device.mediastatechanged]
+    properties: [mediastate]
   squeezeboxserver:
     name: Squeezebox Server
     description: Squeezebox player manager
@@ -557,6 +559,11 @@ values:
   data:
     name: data
     description: data field
+  mediastate:
+    name: media state
+    description: media device media state
+    type: option
+    options: ["playing", "stopped", "paused", "streaming"]
 events:
   event.telecom.call:
     description: a call is originating
@@ -604,6 +611,9 @@ events:
   event.proximity.ndef:
     description: NFC NDEF tag within range
     parameters: [data]
+  event.device.mediastatechanged:
+    description: device changed media state
+    parameters: [state]
 units:
   degC:
     label: "°C"
