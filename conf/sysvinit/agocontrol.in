@@ -12,7 +12,7 @@
 
 BIN_PATH=@BINDIR/
 PID_PATH=/var/run/
-APPS="agorpc agodatalogger agoevent agoresolver agoscenario agotimer agosqueezebox agoalert agoipx800"
+APPS="agorpc agodatalogger agoevent agoresolver agoscenario agotimer agosqueezebox.py agoalert.py agoipx800"
 
 DESC="agocontrol"
 start_module() {
