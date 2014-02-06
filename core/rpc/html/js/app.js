@@ -150,8 +150,10 @@ function device(obj, uuid) {
 	});
     }
 
-    //all mediaplayer device type
+    //TODO add here other mediaplayer type
     if( this.devicetype=="squeezebox" ) {
+        this.mediastate = ko.observable(''); //string variable
+
         this.play = function() {
             var content = {};
             content.uuid = uuid;
@@ -739,7 +741,17 @@ $.ajax({
 function handleEvent(response) {
     for ( var i = 0; i < deviceMap.length; i++) {
 	if (deviceMap[i].uuid == response.result.uuid && response.result.level !== undefined) {
-	    deviceMap[i].state(parseInt(response.result.level));
+        //update custom device member
+        if( response.result.event.indexOf('event.device')!=-1 && response.result.event.indexOf('changed')!=-1 )
+        {
+            //event that update device member
+            var member = response.result.event.replace('event.device.','').replace('changed','');
+            if( deviceMap[i][member]!==undefined )
+            {
+               deviceMap[i][member](response.result.level);
+            }
+        }
+        //update device last seen datetime
 	    deviceMap[i].timeStamp(formatDate(new Date()));
 	    if (response.result.quantity) {
 		var values = deviceMap[i].values();
