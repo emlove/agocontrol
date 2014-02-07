@@ -14,6 +14,7 @@ function eventConfig() {
     this.map = {};
     this.eventMap = {};
     this.deviceList = {};
+    this.builderStepByStepInitialized = false;
 
     this.devices.subscribe(function() {
 	if (self.events().length > 0) {
@@ -47,6 +48,16 @@ function eventConfig() {
 	self.eventMap = schema.events;
 	self.deviceList = deviceMap;
 
+    //init tabs
+    $("#tabs").tabs();
+
+    //init blockly
+    Blockly.inject(document.getElementById('blocklyDiv'), {path: './blockly/', toolbox: document.getElementById('toolbox')});
+    if( Agocontrol.init!==undefined )
+        Agocontrol.init(schema, deviceMap);
+    else
+        console.log('Agocontrol is undefined!. Blockly not configured');
+
 	// Clean
 	document.getElementsByClassName("eventBuilder")[0].innerHTML = "";
 	document.getElementById("actionBuilder").innerHTML = "";
@@ -59,6 +70,13 @@ function eventConfig() {
 	self.addNesting(document.getElementsByClassName("eventBuilder")[0], "and");
 	self.createActionBuilder(document.getElementById("actionBuilder"));
     };
+
+    //init step by step event builder
+    this.initStepByStepBuilder = function() 
+    {
+        self.deviceList = deviceMap;
+        self.fillAvailableDeviceTypes();
+    }
 
     /**
      * Callback for editable table
@@ -86,7 +104,14 @@ function eventConfig() {
 	if (!document.getElementsByClassName("eventBuilder")[0]._set) {
 	    self.initBuilder();
 	    document.getElementsByClassName("eventBuilder")[0]._set = true;
-	}
+    }
+
+    
+    if( !self.builderStepByStepInitialized )
+    {
+        self.initStepByStepBuilder();
+        self.builderStepByStepInitialized = true;
+    }
 
 	self.events.remove(function(ev) {
 	    return ev.uuid == '0';
@@ -1029,6 +1054,610 @@ function eventConfig() {
 
 	commandSelect.onchange();
     };
+
+
+    //STEP BY STEP EVENT BUILDER========================================================
+    //---------------------------------------
+    //utils
+    //---------------------------------------
+    var Event = function() {
+        //this.deviceType = undefined;
+        //this.deviceUuid = undefined;
+        //this.deviceName = undefined;
+        this.triggers = [];
+        this.conditions = [];
+        this.actionsThen = [];
+        this.actionsElse = [];
+    };
+    self.currentEvent = new Event();
+
+    var Trigger = function() {
+        this.deviceType = undefined;
+        this.deviceName = undefined;
+        this.deviceUuid = undefined;
+        this.event = undefined;
+    };
+
+    var Condition = function() {
+        this.andOr = undefined;
+        this.deviceName = undefined;
+        this.deviceUuid = undefined;
+        this.propName = undefined;
+        this.propType = undefined;
+        //options
+        this.option = undefined;
+        //moptions
+        this.options = [];
+        //bool
+        this.bool = undefined;
+        //time
+        this.time = undefined;
+        //range
+        this.rangeMin = undefined;
+        this.rangeMax = undefined;
+        //threshold
+        this.thresholdSign = undefined;
+        this.thresholdValue = undefined;
+        //timeoffset
+        this.timeOffsetSign = undefined;
+        this.timeOffsetValue = undefined;
+    };
+
+    var CommandParameter = function() {
+        this.name = undefined;
+        this.desc = undefined;
+        this.type = undefined;
+        this.options = [];
+    };
+
+    var Action = function() {
+        this.deviceName = undefined;
+        this.deviceUuid = undefined;
+        this.action = undefined;
+        this.actionDesc = undefined;
+        this.parameters = [];
+    };
+
+    var ActionParameter = function() {
+        this.name = undefined;
+        this.type = undefined;
+        this.value = undefined;
+    };
+
+    var SbSOption = function(key,value) {
+        this.optionKey = key;
+        this.optionValue = value;
+    }
+
+    //---------------------------------------
+    //trigger picker
+    //---------------------------------------
+    self.availableDeviceTypes = ko.observableArray([]);
+    self.selectedDeviceType = ko.observable();
+    self.availableDevices = ko.observableArray([]);
+    self.selectedDevice = ko.observable();
+    self.availableDeviceEvents = ko.observableArray([]);
+    self.selectedDeviceEvent = ko.observable();
+    self.hasSelectedDevice = ko.computed(function() {
+        if( self.selectedDevice()!==undefined )
+            return true;
+        else
+            return false;
+    });
+
+    //fill available device types
+    this.fillAvailableDeviceTypes = function() {
+        var found = 0;
+        for ( var i = 0; i < self.deviceList.length; i++)
+        {
+            var dev = self.deviceList[i];
+
+            //check device validity
+            //TODO add here useless device types
+            if( schema.devicetypes[dev.devicetype]===undefined )
+                continue;
+            else if( dev.devicetype=='event' || dev.devicetype=='scenario' )
+                continue;
+
+            if( self.availableDeviceTypes.indexOf(dev.devicetype)==-1 )
+            {
+                self.availableDeviceTypes.push(dev.devicetype);
+                if( found==0 )
+                    self.selectedDeviceType(dev.devicetype);
+                found++;
+            }
+        }
+    };
+
+    //fill available devices
+    this.fillAvailableDevices = function() {
+        var found = 0;
+        self.availableDevices([]);
+
+        //fill with new content
+        for ( var i=0; i<self.deviceList.length; i++)
+        {
+            var dev = self.deviceList[i];
+
+            //check device validity
+            if( schema.devicetypes[dev.devicetype]===undefined )
+            {
+                //device has problem, drop it
+                continue;
+            }
+
+            //add device to list
+            if( dev.name!==undefined && dev.name.length>0 && dev.devicetype==self.selectedDeviceType() )
+            {
+                var option = new SbSOption(dev.uuid, dev.name);
+                self.availableDevices.push(option);
+                if( found==0 )
+                    self.selectedDevice(option);
+                found++;
+            }
+        }
+        if( found==0 )
+            self.selectedDevice('');
+    };
+    //fill automatically devices list when device type is modified
+    self.selectedDeviceType.subscribe(self.fillAvailableDevices);
+
+
+    //fill available events for specified device type
+    this.fillAvailableDeviceEvents = function() {
+        //init
+        var found = 0;
+        self.availableDeviceEvents([]);
+        deviceType = self.selectedDeviceType();
+
+        //fill events list
+        if( deviceType!==undefined && schema.devicetypes[deviceType].events!==undefined )
+        {
+            for( var i=0; i<schema.devicetypes[deviceType].events.length; i++ )
+            {
+                //fill with new content
+                devEvent = schema.devicetypes[deviceType].events[i];
+                self.availableDeviceEvents.push(devEvent);
+                if( found==0 )
+                    self.selectedDeviceEvent(devEvent);
+                found++;
+            }
+        }
+        //if( found==0 )
+        //    self.availableDeviceEvents.push('<device has no event>');
+    }
+    self.selectedDevice.subscribe(self.fillAvailableDeviceEvents);
+
+    self.triggerPicker = function(deviceType, deviceUuid, callback) {
+        //pre-select device type and device if necessary
+        if( deviceType!==undefined && deviceUuid!==undefined )
+        {
+            self.selectedDeviceType(deviceType);
+            self.selectedDevice(deviceUuid);
+        }
+
+        //TODO select deviceType and  deviceName automatically
+        $("#dialogTriggerPicker").dialog({
+            resizable: true,
+            modal: true,
+            height: 200,
+            width: 550,
+            buttons: {
+                'Ok': function() {
+                    if( self.selectedDeviceType()!==undefined && self.selectedDeviceType().length>0 && self.selectedDevice()!==undefined ) {
+                        var trig = new Trigger();
+                        trig.deviceType = self.selectedDeviceType();
+                        trig.deviceName = self.selectedDevice().optionValue;
+                        trig.deviceUuid = self.selectedDevice().optionKey;
+                        trig.event = self.selectedDeviceEvent();
+                        if( callback!==undefined )
+                            callback(trig);
+                    }
+                    $(this).dialog('close');
+                },
+                'Cancel': function() {
+                    $(this).dialog('close');
+                }
+            }
+        });
+    };
+
+    //------------------------------------------
+    //condition picker
+    //------------------------------------------
+    self.availableDeviceProperties = ko.observableArray([]);
+    self.selectedDeviceProperty = ko.observable();
+    self.selectedDevicePropertyType = ko.observable();
+    self.dialogConditionPickerDeviceType = ko.observable();
+    self.dialogConditionPickerFirstCond = ko.observable(true);
+
+    self.selectedAndOr = ko.observable();
+    self.availablePropertyOptions = ko.observableArray([]);
+    self.selectedPropertyOption = ko.observable();
+    self.selectedPropertyOptions = ko.observableArray([]);
+    self.selectedPropertyTime = ko.observable();
+    self.availablePropertyBools = ko.observableArray([]);
+    self.selectedPropertyBool = ko.observable();
+    self.selectedPropertyRangeMin = ko.observable();
+    self.selectedPropertyRangeMax = ko.observable();
+    self.selectedPropertyRangeText = ko.computed( function() {
+        return '['+self.selectedPropertyRangeMin()+'-'+self.selectedPropertyRangeMax()+']';
+    });
+    self.selectedPropertyThresholdSign = ko.observable();
+    self.selectedPropertyThresholdValue = ko.observable();
+    self.selectedPropertyTimeOffsetSign = ko.observable();
+    self.selectedPropertyTimeOffsetValue = ko.observable();
+
+    //fill available device properties
+    this.fillAvailableDeviceProperties = function(deviceType) {
+        //init
+        var found = 0;
+        self.availableDeviceProperties([]);
+        self.dialogConditionPickerDeviceType(deviceType);
+
+        //fill available properties
+        if( schema.devicetypes[deviceType].properties!==undefined )
+        {
+            //for( var prop in schema.devicetypes[deviceType].properties )
+            for( var i=0; i<schema.devicetypes[deviceType].properties.length; i++)
+            {
+                var prop = schema.devicetypes[deviceType].properties[i];
+                self.availableDeviceProperties.push(prop);
+                if( found==0 )
+                    self.selectedDeviceProperty(prop);
+                found++;
+            }
+        }
+        if( found==0 )
+        {
+            //self.availableDeviceProperties.push('<device has no property>');
+            self.selectedDevicePropertyType('');
+        }
+    }
+    //fill automatically devices properties when device type is modified
+    self.selectedDeviceType.subscribe(self.fillAvailableDeviceProperties);
+
+    //build device property
+    this.buildDeviceProperty = function() {
+        //init
+        var deviceType = self.dialogConditionPickerDeviceType();
+        var deviceProperty = self.selectedDeviceProperty();
+        self.availablePropertyOptions([]);
+
+        //hide property content if something not available
+        if( deviceType===undefined || deviceType.length==0 || deviceProperty===undefined || deviceProperty.length==0 )
+            self.selectedDevicePropertyType('');
+
+        if( deviceType!==undefined && deviceProperty!==undefined && deviceType.length>0 && deviceProperty.length>0 )
+        {
+            //type = schema.devicetypes[deviceType].properties[deviceProperty].type;
+            type = schema.values[deviceProperty].type;
+            self.selectedDevicePropertyType(type);
+            if( type===undefined ) 
+            {
+                //should not happened
+            }
+            else if( type=='option' )
+            {
+                var first = true;
+                //for( var value in schema.devicetypes[deviceType].properties[deviceProperty].values )
+                for( var i=0; i<schema.values[deviceProperty].options.length; i++)
+                {
+                    var value = schema.values[deviceProperty].options[i];
+                    //var option = new SbSOption(value, schema.devicetypes[deviceType].properties[deviceProperty].values[value]);
+                    var option = new SbSOption(value, value);
+                    self.availablePropertyOptions.push(option);
+                    if( first )
+                    {
+                        self.selectedPropertyOption(option);
+                        first = false;
+                    }
+                }
+            }
+            else if( type=='moptions' )
+            {
+                for( var value in schema.devicetypes[deviceType].properties[deviceProperty].values )
+                {
+                    var option = new SbSOption(value, schema.devicetypes[deviceType].properties[deviceProperty].values[value]);
+                    self.availablePropertyOptions.push(option);
+                }
+            }
+            else if( type=='bool' )
+            {
+                self.availablePropertyBools([]);
+                var option = new SbSOption("1", schema.devicetypes[deviceType].properties[deviceProperty].true);
+                self.availablePropertyBools.push(option);
+                self.selectedPropertyBool(option);
+                option = new SbSOption("0", schema.devicetypes[deviceType].properties[deviceProperty].false);
+                self.availablePropertyBools.push(option);
+            }
+            else if( type=='range' )
+            {
+                var min = schema.devicetypes[deviceType].properties[deviceProperty].min;
+                var max = schema.devicetypes[deviceType].properties[deviceProperty].max;
+                self.selectedPropertyRangeMin(min);
+                self.selectedPropertyRangeMax(max);
+                $("#eventRangePicker").slider({
+                    range: true,
+                    min: min,
+                    max: max,
+                    values: [min, max],
+                    change: function(event, ui) { 
+                        self.selectedPropertyRangeMin(ui.values[0]);
+                        self.selectedPropertyRangeMax(ui.values[1]);
+                    }
+                });
+            }
+            else if( type=='time' )
+            {
+                var date = new Date();
+                var sNow = date.getHours()+':'+date.getMinutes();
+                $('#eventTimePicker').timepicker({
+                    defaultValue: sNow
+                });
+            }
+            else if( type=='threshold' )
+            {
+                self.selectedPropertyThresholdSign('gt');
+                self.selectedPropertyThresholdValue(0);
+            }
+            else if( type=='timeoffset' )
+            {
+                $('#eventTimeOffsetPicker').timepicker({
+                    defaultValue: '00:00'
+                });
+            }
+            else
+            {
+                //unmanaged type
+                console.log('unmanaged type "'+type+'"');
+            }
+        }
+    };
+    self.selectedDeviceProperty.subscribe(self.buildDeviceProperty);
+
+    //open condition picker
+    self.conditionPicker = function(firstCondition, deviceType, callback) {
+        //TODO check parameters
+        //hide and/or select if necessary
+        self.dialogConditionPickerFirstCond(firstCondition);
+    
+        //open dialog
+        $("#dialogConditionPicker").dialog({
+            resizable: true,
+            modal: true,
+            height: 250,
+            width: 700,
+            buttons: {
+                'Ok': function() {
+                    //fill condition
+                    if( self.selectedDevice()!==undefined && self.selectedDeviceProperty()!==undefined && self.selectedDeviceProperty().length>0 )
+                    {
+                        var cond = new Condition();
+                        if( firstCondition )
+                            cond.andOr = '';
+                        else
+                            cond.andOr = self.selectedAndOr();
+                        cond.deviceUuid = self.selectedDevice().optionKey;
+                        cond.deviceName = self.selectedDevice().optionValue;
+                        cond.propName = self.selectedDeviceProperty();
+                        cond.propType = self.selectedDevicePropertyType();
+                        if( cond.propType===undefined )
+                        {
+                            //should not happen, close dialog
+                            $(this).dialog('close');
+                        }
+                        else if( cond.propType=='options' )
+                        {
+                            cond.options = self.selectedPropertyOption();
+                        }
+                        else if( cond.propType=='moptions' )
+                        {
+                            cond.moptions = self.selectedPropertyOptions();
+                            //console.log(cond.moptions);
+                        }
+                        else if( cond.propType=='bool' )
+                        {
+                            cond.bool = self.selectedPropertyBool();
+                        }
+                        else if( cond.propType=='range' )
+                        {
+                            cond.rangeMin = self.selectedPropertyRangeMin();
+                            cond.rangeMax = self.selectedPropertyRangeMax();
+                        }
+                        else if( cond.propType=='time' )
+                        {
+                            cond.time = self.selectedPropertyTime();
+                        }
+                        else if( cond.propType=='threshold' )
+                        {
+                            cond.thresholdSign = self.selectedPropertyThresholdSign();
+                            cond.thresholdValue = self.selectedPropertyThresholdValue();
+                        }
+                        else if( cond.propType=='timeoffset' )
+                        {
+                            cond.timeOffsetSign = self.selectedPropertyTimeOffsetSign();
+                            cond.timeOffsetValue = self.selectedPropertyTimeOffsetValue();
+                        }
+                        else
+                        {
+                            //TODO add here new property type
+                            console.log('Unmanaged property type');
+                            $(this).dialog('close');
+                        }
+                        if( callback!==undefined )
+                            callback(cond);
+                    }
+                    $(this).dialog('close');
+                },
+                'Cancel': function() {
+                    $(this).dialog('close');
+                }
+            }
+        });
+    };
+
+    //------------------------------------
+    //action picker
+    //------------------------------------
+    self.availableDeviceCommands = ko.observableArray([]);
+    self.selectedDeviceCommand = ko.observable();
+    self.selectedCommandParameters = ko.observableArray([]);
+
+    //fill available device commands
+    this.fillAvailableDeviceCommands = function(deviceType) {
+        //init
+        var found = 0;
+        self.availableDeviceCommands([]);
+
+        if( self.selectedDevice()!==undefined )
+        {
+            //fill available properties
+            if( schema.devicetypes[deviceType].commands!==undefined )
+            {
+                for( var i=0; i<schema.devicetypes[deviceType].commands.length; i++ )
+                {
+                    var cmd = schema.devicetypes[deviceType].commands[i];
+                    if( schema.commands[cmd]!==undefined )
+                    {
+                        var opt = new SbSOption(cmd, schema.commands[cmd].name);
+                        self.availableDeviceCommands.push(opt);
+                        if( found==0 )
+                            self.selectedDeviceCommand(cmd);
+                        found++;
+                    }
+                }
+            }
+        }
+    }
+    //fill automatically devices commands when device type is modified
+    self.selectedDeviceType.subscribe(self.fillAvailableDeviceCommands);
+
+    //build command and its parameters
+    this.buildCommand = function() {
+        self.selectedCommandParameters([]);
+        if( self.selectedDeviceCommand()!==undefined )
+        {
+            var cmd = self.selectedDeviceCommand().optionKey;
+            if( schema.commands[cmd]!==undefined && schema.commands[cmd].parameters!==undefined )
+            {
+                for( var param in schema.commands[cmd].parameters )
+                {
+                    var par = new CommandParameter();
+                    par.name = param;
+                    par.desc = schema.commands[cmd].parameters[param].name;
+                    par.type = schema.commands[cmd].parameters[param].type;
+                    if( schema.commands[cmd].parameters[param].options!==undefined )
+                    {
+                        for( var i=0; i<schema.commands[cmd].parameters[param].options.length; i++ )
+                            par.options.push( schema.commands[cmd].parameters[param].options[i] );
+                    }
+                    self.selectedCommandParameters.push(par);
+                }
+            }
+        }
+    };
+    self.selectedDeviceCommand.subscribe(self.buildCommand);
+
+    //open action picker
+    self.actionPicker = function(callback) {
+        //TODO check parameters
+    
+        //open dialog
+        $("#dialogActionPicker").dialog({
+            resizable: true,
+            modal: true,
+            height: 350,
+            width: 700,
+            buttons: {
+                'Ok': function() {
+                    //build action
+                    var act = new Action();
+                    act.deviceName = self.selectedDevice().optionValue;
+                    act.deviceUuid = self.selectedDevice().optionKey;
+                    act.action = self.selectedDeviceCommand().optionKey;
+                    act.actionDesc = self.selectedDeviceCommand().optionValue;
+                    for(var i=0; i<self.selectedCommandParameters().length; i++)
+                    {
+                        var par = new ActionParameter();
+                        par.name = self.selectedCommandParameters()[i].name;
+                        par.type = self.selectedCommandParameters()[i].type;
+                        par.value = $("#"+par.name).val();
+                        act.parameters.push(par);
+                    }
+                    if( callback!==undefined )
+                        callback(act);
+                    $(this).dialog('close');
+                },
+                'Cancel': function() {
+                    $(this).dialog('close');
+                }
+            }
+        });
+    };
+
+    //----------------------------
+    //If
+    //----------------------------
+    self.ifTriggersText = ko.observableArray([]);
+    self.hasTriggers = ko.computed( function() {
+        if( self.ifTriggersText() && self.ifTriggersText().length>0 )
+            return true;
+        else
+            return false;
+    });
+    this.setIfTrigger = function(trig) {
+        //save selected infos
+        self.currentEvent.triggers.push(trig);
+        //update ui
+        self.ifTriggersText.push(trig);
+    };
+    this.openIfTriggerPicker = function() {
+        self.triggerPicker(self.currentEvent.deviceType, self.currentEvent.deviceUuid, self.setIfTrigger);
+    };
+
+    //----------------------------
+    //And
+    //----------------------------
+    self.andConditionsText = ko.observableArray([]);
+    self.setAndCondition = function(cond) {
+        //save condition in current event
+        self.currentEvent.conditions.push(cond);
+        //update ui
+        self.andConditionsText.push(cond);
+    };
+    self.openAndConditionPicker = function() {
+        self.conditionPicker(self.currentEvent.conditions.length==0 ? true : false, self.currentEvent.deviceType, self.setAndCondition);
+    };
+
+    //---------------------------
+    //Then
+    //---------------------------
+    self.thenActionsText = ko.observableArray([]);
+    self.setThenAction = function(act) {
+        //save action in current event
+        self.currentEvent.actionsThen.push(act);
+        //update ui
+        self.thenActionsText.push(act);
+    };
+    self.openThenActionPicker = function() {
+        self.actionPicker(self.setThenAction);
+    }
+
+    //---------------------------
+    //Else
+    //---------------------------
+    self.elseActionsText = ko.observableArray([]);
+    self.setElseAction = function(act) {
+        //save action in current event
+        self.currentEvent.actionsElse.push(act);
+        //update ui
+        self.elseActionsText.push(act);
+    };
+    self.openElseActionPicker = function() {
+        self.actionPicker(self.setElseAction);
+    }
+
 }
 
 /**
