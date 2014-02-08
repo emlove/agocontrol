@@ -11,12 +11,16 @@ function agodrainPlugin() {
     var subscription = "";
 
     this.displayEvent = function(response) {
-	if (response.result) { 
-		var output = document.getElementById('output');
-		var content = JSON.stringify(response.result);
+	if (response.error) {
+		return;
+	} else {
+		if (response.result) { 
+			var output = document.getElementById('output');
+			var content = JSON.stringify(response.result);
 			output.innerHTML = '<li class="default alert">' + content + '</li>' + output.innerHTML;
+		}
+		self.getevent();
 	}
-	self.getevent();
     };
 
     this.getevent = function() {
@@ -38,6 +42,18 @@ function agodrainPlugin() {
 		output.innerHTML = output.innerHTML + '<li class="success alert">Client subscription uuid: ' + subscription + '</li>';
 		self.getevent();
 	}
+    };
+
+    this.stopDrain = function() {
+        var request = {};
+        request.method = "unsubscribe";
+        request.id = 2;
+        request.jsonrpc = "2.0";
+        request.params = {};
+        request.params.uuid = subscription;
+
+	$.post(url, JSON.stringify(request), function() {
+	}, "json");
     };
 
     this.startDrain = function() {
