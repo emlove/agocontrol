@@ -1,4 +1,4 @@
-infuser.defaults.templateUrl = "./templates";
+infuser.defaults.templateUrl = "/templates";
 
 Array.prototype.chunk = function(chunkSize) {
     var array = this;
@@ -695,6 +695,24 @@ function buildfloorPlanList(model) {
  */
 var deferredInit = null;
 
+function loadPlugin() {
+    /* Get plugin name from query string */
+    var name = window.location.search.substring(1);
+    var tmp = name.split("&");
+    for ( var i = 0; i < tmp.length; i++) {
+	if (tmp[i].indexOf("name=") == 0) {
+	    name = tmp[i].split("=")[1];
+	}
+    }
+    name = name.replace(/\//g, "");
+    $.getScript("plugins/" + name + "/plugin.js", function() {
+	templatePath = "../plugins/" + name + "/templates/";
+	init_plugin();
+    }).fail(function() {
+	alert("Error: Failed to load plugin!");
+    });
+}
+
 function initGUI() {
     var page = getPage();
     if (page == "dashboard") {
@@ -723,6 +741,8 @@ function initGUI() {
 	deferredInit = init_inventoryView;
     } else if (page == "systemStatus") {
 	init_systemStatus();
+    } else if (page == "plugin") {
+	loadPlugin();
     }
 }
 
