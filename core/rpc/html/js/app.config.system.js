@@ -5,6 +5,7 @@
 function systemConfig() {
     this.hasNavigation = ko.observable(true);
     this.system = ko.observable(systemvar);
+    this.plugins = ko.observableArray([]);
 }
 
 /**
@@ -21,5 +22,14 @@ function init_systemConfig() {
 	return "navigation/configuration";
     }.bind(model);
 
+    $.ajax({
+	url: "/cgi-bin/pluginlist.cgi",
+	method: "GET",
+	async: true,
+    }).done(function(result) {
+	model.plugins(result);
+    });
+    
     ko.applyBindings(model);
+    console.log(model.plugins());
 }

@@ -1,5 +1,5 @@
 {
-	name: "Example",
-	version: "0.0.1",
-	description: "This is an example plugin",
+	"name": "Example",
+	"version": "0.0.1",
+	"description": "This is an example plugin"
 }

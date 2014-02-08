@@ -7,5 +7,12 @@
 				data-bind="text: systemvar.uuid"></span><br />
 		<a href="?inventoryView">Show Inventory</a>
 		</p>
+		<h2>Plugins</h2>
+		<ko opts="foreach: { data: plugins }">
+			<p>
+				<a href="#" data-bind="attr: {'href': '/?plugin&amp;name=' + _name}, text: name"></a><i style="padding-left: 5px;" data-bind="text: version"/><br />
+				<span style="text-size:0.8em" data-bind="text: description" /><br />
+			</p>
+		</ko>
 	</div>
 </div>
