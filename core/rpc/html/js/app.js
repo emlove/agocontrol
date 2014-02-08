@@ -742,7 +742,7 @@ function initGUI() {
     } else if (page == "systemStatus") {
 	init_systemStatus();
     } else if (page == "plugin") {
-	loadPlugin();
+	deferredInit = loadPlugin;
     }
 }
 
