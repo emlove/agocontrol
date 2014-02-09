@@ -31,5 +31,4 @@ function init_systemConfig() {
     });
     
     ko.applyBindings(model);
-    console.log(model.plugins());
 }
