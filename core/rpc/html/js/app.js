@@ -73,7 +73,8 @@ var agoController = null;
 var eventController = null;
 var dataLoggerController = null;
 var scenarioController = null;
-var alertControler = null
+var alertControler = null;
+var model = null;
 
 var supported_devices = [];
 
@@ -864,6 +865,10 @@ function handleInventory(response) {
 
     if (deferredInit) {
 	deferredInit();
+    }
+    
+    if (!model) {
+	return;
     }
 
     if (model.devices !== undefined) {

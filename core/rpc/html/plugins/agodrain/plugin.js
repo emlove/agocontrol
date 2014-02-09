@@ -7,8 +7,8 @@ function agodrainPlugin() {
     this.rooms = ko.observableArray([]);
 
     var self = this;
-    var url = "/jsonrpc";
-    var subscription = "";
+    var _originalHandler = handleEvent;
+    var subDisplayed = false;
 
     this.displayEvent = function(response) {
 	if (response.error) {
@@ -19,50 +19,24 @@ function agodrainPlugin() {
 			var content = JSON.stringify(response.result);
 			output.innerHTML = '<li class="default alert">' + content + '</li>' + output.innerHTML;
 		}
-		self.getevent();
-	}
-    };
-
-    this.getevent = function() {
-	var request = {};
-	request.method = "getevent";
-	request.params = {};
-	request.params.uuid = subscription;
-	request.id = 2;
-	request.jsonrpc = "2.0";
-
-	$.post(url, JSON.stringify(request), self.displayEvent, "json");
-    };
-
-    this.handleSubscribe = function(response) {
-	if (response.result) { 
-		subscription = response.result;
-		var output = document.getElementById('output');
-		output.innerHTML = '<br>';
-		output.innerHTML = output.innerHTML + '<li class="success alert">Client subscription uuid: ' + subscription + '</li>';
-		self.getevent();
+		getEvent();
 	}
     };
 
     this.stopDrain = function() {
-        var request = {};
-        request.method = "unsubscribe";
-        request.id = 2;
-        request.jsonrpc = "2.0";
-        request.params = {};
-        request.params.uuid = subscription;
-
-	$.post(url, JSON.stringify(request), function() {
-	}, "json");
+        handleEvent = _originalHandler;
     };
 
     this.startDrain = function() {
-	var request = {};
-	request.method = "subscribe";
-	request.id = 2;
-	request.jsonrpc = "2.0";
-
-	$.post(url, JSON.stringify(request), self.handleSubscribe, "json");
+	if (!self.subDisplayed) {
+	    var output = document.getElementById('output');
+	    output.innerHTML = '<br>';
+	    output.innerHTML = output.innerHTML + '<li class="success alert">Client subscription uuid: ' + subscription + '</li>';
+	    self.subDisplayed = true;
+	}
+	
+	_originalHandler = handleEvent;
+	handleEvent = self.displayEvent;
     };
 }
 
