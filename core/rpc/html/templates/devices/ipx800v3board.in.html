@@ -11,14 +11,15 @@
 				<ko opts="if: room ">
 					<p class="room"><i class="icon-location"></i><span data-bind="text: room"></span></p>
 				</ko>
-                <p class="info"><i class="icon-info"></i>
-                    <_span data-translateable="true">ON</_span>
-                </p>
 			</div>
 		</div>
 	</div>
-	<div class="row grid-item-controls">
-		<div class="six columns">
-		</div>
+    <div class="row grid-item-controls">
+        <div class="six columns">
+            <_div data-translateable="true" data-bind="click: allOn" class="cmd-btn pretty medium primary btn btn-full grid-command">OPEN ALL</_div>
+        </div>
+        <div class="six columns">
+            <_div data-translateable="true" data-bind="click: allOff" class="cmd-btn pretty medium primary btn btn-full grid-command">CLOSE ALL</_div>
+        </div>	
 	</div>
 </div>
