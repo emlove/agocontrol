@@ -140,6 +140,8 @@ function initGUI() {
 	deferredInit = init_inventoryView;
     } else if (page == "systemStatus") {
 	init_systemStatus();
+    } else if (page == "pluginsConfig") {
+	deferredInit = init_pluginsConfig;
     } else if (page == "plugin") {
 	deferredInit = loadPlugin;
     }
