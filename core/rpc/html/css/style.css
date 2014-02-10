@@ -2073,3 +2073,32 @@ ago control Styles
 }
 
 .btn i { cursor: pointer; }
+
+
+/* =agoTable styles
+-----------------------------------------------------------------------------*/
+table.agoTable {
+    width: 910px;
+    margin: 15px 0 5px 0;
+}
+
+table.agoTable a {
+    font-weight: 600;
+}
+
+table.agoTable thead th {
+    font-weight: 700;
+    border-bottom: 1px solid #000000;
+}
+
+table.agoTable tr.even {
+    background-color: #EAEBFF;
+}
+
+table.agoTable tr.odd {
+    background-color: #D3D6FF;
+}
+
+table.agoTable td {
+    padding: 5px;
+}

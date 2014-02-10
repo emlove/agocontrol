@@ -1,7 +1,7 @@
 <div class="container" id="contentarea">
 	<div class="row">
 		<_h3 data-translateable="true">Plugins</_h3>
-		<table class="dataTable">
+		<table class="agoTable">
 			<thead>
 				<tr>
 					<_th data-translateable="true">Name</_th>
@@ -11,7 +11,7 @@
 			</thead>
 			<tbody>
 				<ko opts="foreach: { data: plugins }">
-				<tr>
+				<tr data-bind="css: { 'odd': ($index() % 2 == 0), 'even': ($index() % 2 == 1) }">
 					<td><a href="#" data-bind="attr: {'href': '/?plugin&amp;name=' + _name}, text: name"></a></td>
 					<td><i style="padding-left: 5px;" data-bind="text: version"/></td>
 					<td><span style="text-size:0.8em" data-bind="text: description" /></td>
