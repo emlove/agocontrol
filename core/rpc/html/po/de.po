@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-02-10 17:52+0100\n"
+"POT-Creation-Date: 2014-02-10 18:36+0100\n"
 "PO-Revision-Date: 2013-10-01 18:04+0100\n"
 "Last-Translator: \n"
 "Language-Team: ago control <jaeger@agocontrol.com>\n"
@@ -129,6 +129,7 @@ msgid "Cloud"
 msgstr "Cloud"
 
 #: ../templates/navigation/configuration.xml.in.h:8
+#: ../templates/configuration/plugins.xml.in.h:1
 msgid "Plugins"
 msgstr "Plugins"
 
@@ -254,6 +255,7 @@ msgstr "Raum Konfiguration"
 #: ../templates/configuration/scenarios.xml.in.h:5
 #: ../templates/configuration/events.xml.in.h:5
 #: ../templates/configuration/variables.xml.in.h:5
+#: ../templates/configuration/plugins.xml.in.h:2
 msgid "Name"
 msgstr "Name"
 
@@ -496,6 +498,14 @@ msgstr "Interne ID"
 #: ../templates/configuration/devices.xml.in.h:14
 msgid "Details"
 msgstr "Details"
+
+#: ../templates/configuration/plugins.xml.in.h:3
+msgid "Version"
+msgstr "Version"
+
+#: ../templates/configuration/plugins.xml.in.h:4
+msgid "Description"
+msgstr "Beschreibung"
 
 #: ../templates/devices/multilevelsensor.xml.in.h:1
 msgid "GRAPH"
