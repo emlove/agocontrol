@@ -1069,7 +1069,7 @@ except Exception as e:
 
 #run agoclient
 try:
-    logging.info('Running agoclient...')
+    logging.info('Running agoipx800...')
     client.run()
 except KeyboardInterrupt:
     #stopped by user

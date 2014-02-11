@@ -246,7 +246,7 @@ except Exception as e:
 
 #run agoclient
 try:
-    logging.info('Running agoclient...')
+    logging.info('Running agosqueezebox...')
     client.run()
 except:
     quit('agosqueezebox stopped')
