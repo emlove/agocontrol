@@ -1,88 +1,92 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# French translation for ago control
+# Copyright (C) 2013 ago control
+# This file is distributed under the same license as the ago control package.
+# Tanguy Bonneau <tanguy.bonneau@gmail.com>, 2014.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-02-11 09:45+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"POT-Creation-Date: 2014-02-10 18:36+0100\n"
+"PO-Revision-Date: 2014-02-10 18:04+0100\n"
+"Last-Translator: \n"
+"Language-Team: ago control <jaeger@agocontrol.com>\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.5.4\n"
 
 #: ../templates/configuration.xml.in.h:1
 msgid "ago control Configuration"
-msgstr ""
+msgstr "Configuration de ago control"
 
 #: ../templates/configuration.xml.in.h:2
 msgid "Welcome"
-msgstr ""
+msgstr "Bienvenue"
 
 #: ../templates/configuration.xml.in.h:3
 msgid "Dashboard and Floorplans"
-msgstr ""
+msgstr "Accueil et zones"
 
 #: ../templates/configuration.xml.in.h:4
 msgid "Rooms and Variables"
-msgstr ""
+msgstr "Pièces et variables"
 
 #: ../templates/configuration.xml.in.h:5
 #: ../templates/navigation/configuration.xml.in.h:3
 msgid "Scenarios"
-msgstr ""
+msgstr "Scenarios"
 
 #: ../templates/configuration.xml.in.h:6
 #: ../templates/navigation/configuration.xml.in.h:4
 msgid "Events"
-msgstr ""
+msgstr "Evènements"
 
 #: ../templates/configuration.xml.in.h:7
 #: ../templates/navigation/configuration.xml.in.h:5
 msgid "Devices"
-msgstr ""
+msgstr "Périphériques"
 
 #: ../templates/configuration.xml.in.h:8
 msgid "System and Cloud"
-msgstr ""
+msgstr "Système et Cloud"
 
 #: ../templates/configuration.xml.in.h:9
 msgid ""
 "Welcome to the configuration page. You can find useful information and help "
 "for the configuration menu records in the left tabs."
 msgstr ""
+"Bienvenue sur la page de configuration. Vous y trouverez des informations utiles et de l'aide "
+"pour configurer ago control dans le menu à gauche."
 
 #: ../templates/configuration.xml.in.h:10
 msgid "Help and Documentation"
-msgstr ""
+msgstr "Aide et documentation"
 
 #: ../templates/configuration.xml.in.h:11
 msgid "ago control Documentation"
-msgstr ""
+msgstr "Documentation de ago control"
 
 #: ../templates/configuration.xml.in.h:12
 msgid "ago control Forum"
-msgstr ""
+msgstr "Forum ago control"
 
 #: ../templates/configuration.xml.in.h:13
 msgid "Contribute"
-msgstr ""
+msgstr "Contribuer au projet"
 
 #: ../templates/configuration.xml.in.h:14
 msgid ""
 "If you want to join the development community or if you like ago control and "
 "want to help us with your donation!"
 msgstr ""
+"Si vous voulez joindre la communauté de développeurs ou si tout simplement vous aimez ago control "
+"et souhaitez nous aider avec une donation"
 
 #: ../templates/configuration.xml.in.h:15
 msgid "Contribute to ago control"
-msgstr ""
+msgstr "Contribuer à ago control"
 
 #: ../templates/configuration.xml.in.h:16
 msgid ""
@@ -92,75 +96,86 @@ msgid ""
 "on a single grid. If you want to reorder the devices on the grid you just "
 "drag and drop it on the grid."
 msgstr ""
+"Vous pouvez très facilement créer votre page d'acceuil ou ajouter de "
+"nouvelles zones qui seront accessibles dans le menu de gauche. "
+"Choisissez vos périphériques dans la liste en bas à gauche et glisser-déposer "
+"les sur la grille d'agencement. Vous pouvez aussi avoir plusieurs pages pour "
+"une même zone. Pour réorganiser vos périphéques, glisser-déposer les à "
+"nouveau sur la grille."
 
 #: ../templates/configuration.xml.in.h:17
 #: ../templates/navigation/configuration.xml.in.h:1
 msgid "Floorplans"
-msgstr ""
+msgstr "Zones"
 
 #: ../templates/dashboard.xml.in.h:1
 msgid "Search"
-msgstr ""
+msgstr "Rechercher"
 
 #: ../templates/navigation/configuration.xml.in.h:2
 msgid "Rooms"
-msgstr ""
+msgstr "Pièces"
 
 #: ../templates/navigation/configuration.xml.in.h:6
 msgid "Variables"
-msgstr ""
+msgstr "Variables"
 
 #: ../templates/navigation/configuration.xml.in.h:7
 msgid "Cloud"
-msgstr ""
+msgstr "Cloud"
 
 #: ../templates/navigation/configuration.xml.in.h:8
+#: ../templates/configuration/plugins.xml.in.h:1
+msgid "Plugins"
+msgstr "Extensions"
+
+#: ../templates/navigation/configuration.xml.in.h:9
 msgid "System"
-msgstr ""
+msgstr "Système"
 
 #: ../templates/navigation/main.xml.in.h:1
 msgid "System Status"
-msgstr ""
+msgstr "System Status"
 
 #: ../templates/navigation/main.xml.in.h:2
 msgid "Dashboard"
-msgstr ""
+msgstr "Tableau de bord"
 
 #: ../templates/navigation/main.xml.in.h:3
 msgid "Configuration"
-msgstr ""
+msgstr "Configuration"
 
 #: ../templates/details/default.xml.in.h:1
 #: ../templates/details/multilevelsensor.xml.in.h:1
 msgid "Room:"
-msgstr ""
+msgstr "Pièce:"
 
 #: ../templates/details/default.xml.in.h:2
 msgid "State:"
-msgstr ""
+msgstr "Statut:"
 
 #: ../templates/details/default.xml.in.h:3
 #: ../templates/details/multilevelsensor.xml.in.h:2
 msgid "Type:"
-msgstr ""
+msgstr "Type:"
 
 #: ../templates/details/default.xml.in.h:4
 #: ../templates/details/multilevelsensor.xml.in.h:3
 msgid "Lastseen:"
-msgstr ""
+msgstr "Vu le:"
 
 #: ../templates/details/default.xml.in.h:5
 msgid "Command:"
-msgstr ""
+msgstr "Commande:"
 
 #: ../templates/details/default.xml.in.h:6
 #: ../templates/configuration/scenarios.xml.in.h:9
 msgid "Run"
-msgstr ""
+msgstr "Executer"
 
 #: ../templates/configuration/floorplan.xml.in.h:1
 msgid "Are you sure that you want to delete this floorplan?"
-msgstr ""
+msgstr "Voulez vous supprimer cette zone?"
 
 #: ../templates/configuration/floorplan.xml.in.h:2
 #: ../templates/configuration/rooms.xml.in.h:2
@@ -169,7 +184,7 @@ msgstr ""
 #: ../templates/configuration/variables.xml.in.h:2
 #: ../templates/configuration/devices.xml.in.h:2
 msgid "Yes"
-msgstr ""
+msgstr "Oui"
 
 #: ../templates/configuration/floorplan.xml.in.h:3
 #: ../templates/configuration/rooms.xml.in.h:3
@@ -178,15 +193,15 @@ msgstr ""
 #: ../templates/configuration/variables.xml.in.h:3
 #: ../templates/configuration/devices.xml.in.h:3
 msgid "No"
-msgstr ""
+msgstr "Non"
 
 #: ../templates/configuration/floorplan.xml.in.h:4
 msgid "Floorplan Configuration"
-msgstr ""
+msgstr "Configuration de la zone"
 
 #: ../templates/configuration/floorplan.xml.in.h:5
 msgid "Floorplan Name"
-msgstr ""
+msgstr "Nom de la zone"
 
 #: ../templates/configuration/floorplan.xml.in.h:6
 #: ../templates/configuration/rooms.xml.in.h:6
@@ -195,13 +210,13 @@ msgstr ""
 #: ../templates/configuration/variables.xml.in.h:7
 #: ../templates/configuration/devices.xml.in.h:12
 msgid "Action"
-msgstr ""
+msgstr "Action"
 
 #: ../templates/configuration/floorplan.xml.in.h:7
 #: ../templates/configuration/scenarios.xml.in.h:10
 #: ../templates/configuration/events.xml.in.h:7
 msgid "Edit"
-msgstr ""
+msgstr "Editer"
 
 #: ../templates/configuration/floorplan.xml.in.h:8
 #: ../templates/configuration/rooms.xml.in.h:8
@@ -210,99 +225,102 @@ msgstr ""
 #: ../templates/configuration/variables.xml.in.h:8
 #: ../templates/configuration/devices.xml.in.h:15
 msgid "Delete"
-msgstr ""
+msgstr "Effacer"
 
 #: ../templates/configuration/floorplan.xml.in.h:9
 msgid "Create a new floorplan"
-msgstr ""
+msgstr "Créer une nouvelle zone"
 
 #: ../templates/configuration/floorplan.xml.in.h:10
 msgid "New floorplan name"
-msgstr ""
+msgstr "Nouveau nom de a zone"
 
 #: ../templates/configuration/floorplan.xml.in.h:11
 msgid "Create Floorplan"
-msgstr ""
+msgstr "Créer une zone"
 
 #: ../templates/configuration/rooms.xml.in.h:1
 msgid "Are you sure that you want to delete this room?"
-msgstr ""
+msgstr "Voulez vous supprimer cette pièce?"
 
 #: ../templates/configuration/rooms.xml.in.h:4
 msgid "Room Configuration"
-msgstr ""
+msgstr "Configuration de la pièce"
 
 #: ../templates/configuration/rooms.xml.in.h:5
 #: ../templates/configuration/scenarios.xml.in.h:5
 #: ../templates/configuration/events.xml.in.h:5
 #: ../templates/configuration/variables.xml.in.h:5
+#: ../templates/configuration/plugins.xml.in.h:2
 msgid "Name"
-msgstr ""
+msgstr "Nom"
 
 #: ../templates/configuration/rooms.xml.in.h:7
 #: ../templates/configuration/scenarios.xml.in.h:8
 #: ../templates/configuration/devices.xml.in.h:13
 msgid "unset"
-msgstr ""
+msgstr "effacer"
 
 #: ../templates/configuration/rooms.xml.in.h:9
 msgid "Create a new room"
-msgstr ""
+msgstr "Créer une nouvelle pièce"
 
 #: ../templates/configuration/rooms.xml.in.h:10
 msgid "New room name"
-msgstr ""
+msgstr "Nom de la nouvelle pièce"
 
 #: ../templates/configuration/rooms.xml.in.h:11
 msgid "Create Room"
-msgstr ""
+msgstr "Créer pièce"
 
 #: ../templates/configuration/scenarios.xml.in.h:1
 msgid "Are you sure that you want to delete this scenario?"
-msgstr ""
+msgstr "Voulez vous supprimer ce scénario?"
 
 #: ../templates/configuration/scenarios.xml.in.h:4
 msgid "Scenario Configuration"
-msgstr ""
+msgstr "Configuration du scénario"
 
 #: ../templates/configuration/scenarios.xml.in.h:6
 msgid "Room"
-msgstr ""
+msgstr "Pièce"
 
 #: ../templates/configuration/scenarios.xml.in.h:12
 msgid "Create Scenario"
-msgstr ""
+msgstr "Créer scénario"
 
 #: ../templates/configuration/scenarios.xml.in.h:13
 msgid ""
 "To create a scenario press the \"Add Command\" button to add commands. After "
 "you need to give a name and press \"Create Scenario\"."
 msgstr ""
+"Pour créer un scénario appuyer sur le bouton \"Ajouter commande\". Ensuite "
+"vous devez donner un nom à votre scénario et appuyer sur \"Créer scénario\"."
 
 #: ../templates/configuration/scenarios.xml.in.h:14
 msgid "Add Command"
-msgstr ""
+msgstr "Ajouter commande"
 
 #: ../templates/configuration/scenarios.xml.in.h:15
 msgid "Input scenario name"
-msgstr ""
+msgstr "Nom du scénario"
 
 #: ../templates/configuration/scenarios.xml.in.h:16
 msgid "Edit Scenario"
-msgstr ""
+msgstr "Modifier scénario"
 
 #: ../templates/configuration/scenarios.xml.in.h:17
 #: ../templates/configuration/events.xml.in.h:13
 msgid "Save"
-msgstr ""
+msgstr "Enregistrer"
 
 #: ../templates/configuration/cloud.xml.in.h:1
 msgid "ago control Cloud Registration"
-msgstr ""
+msgstr "Créer un compte au cloud ago control"
 
 #: ../templates/configuration/cloud.xml.in.h:2
 msgid "This service is currently under heavy development!"
-msgstr ""
+msgstr "Ce service est encore au stade expérimental!"
 
 #: ../templates/configuration/cloud.xml.in.h:3
 msgid ""
@@ -311,211 +329,223 @@ msgid ""
 "com</a><br/> You will be taken to the order page after completing your "
 "registration<br/>This service is not free."
 msgstr ""
+"Créer un compte au cloud ago control pour controller à distance votre "
+"installation via <a target=\"_blank\" href=\"https://cloud.agocontrol.com\">"
+"cloud.agocontrol.com</a><br/>. Vous serez redirigé vers la page de souscription "
+"au service après votre inscription<br />Ce service n'est pas gratuit."
 
 #: ../templates/configuration/cloud.xml.in.h:4
 msgid "Your username"
-msgstr ""
+msgstr "Votre identifiant"
 
 #: ../templates/configuration/cloud.xml.in.h:5
 msgid "Input your username"
-msgstr ""
+msgstr "Entrer votre identifiant"
 
 #: ../templates/configuration/cloud.xml.in.h:6
 msgid "Your E-Mail address"
-msgstr ""
+msgstr "Votre adresse email"
 
 #: ../templates/configuration/cloud.xml.in.h:7
 msgid "Input your E-Mail address"
-msgstr ""
+msgstr "Entrer votre email"
 
 #: ../templates/configuration/cloud.xml.in.h:8
 msgid "Your new password"
-msgstr ""
+msgstr "Votre nouveau mot de passe"
 
 #: ../templates/configuration/cloud.xml.in.h:9
 msgid "Input new password"
-msgstr ""
+msgstr "Entrer votre nouveau mot de passe"
 
 #: ../templates/configuration/cloud.xml.in.h:10
 msgid "Confirm new password"
-msgstr ""
+msgstr "Confirmer votre mot de passe"
 
 #: ../templates/configuration/cloud.xml.in.h:11
 msgid "Register Cloud account"
-msgstr ""
+msgstr "Créer un compte au cloud"
 
 #: ../templates/configuration/cloud.xml.in.h:12
 msgid "Cloud Activation"
-msgstr ""
+msgstr "Activation du cloud"
 
 #: ../templates/configuration/cloud.xml.in.h:13
 msgid "Success, activation successful!"
-msgstr ""
+msgstr "Bravo, votre compte a été créé!"
 
 #: ../templates/configuration/cloud.xml.in.h:14
 msgid "Certificate read error!"
-msgstr ""
+msgstr "Impossible de lire le certificat!"
 
 #: ../templates/configuration/cloud.xml.in.h:15
 msgid "Wrong username, password or activation PIN!"
-msgstr ""
+msgstr "Mauvais identifiant, mot de passe ou code d'activation (PIN)!"
 
 #: ../templates/configuration/cloud.xml.in.h:16
 msgid "Close"
-msgstr ""
+msgstr "Fermer"
 
 #: ../templates/configuration/cloud.xml.in.h:17
 msgid "Your password"
-msgstr ""
+msgstr "Votre mot de passe"
 
 #: ../templates/configuration/cloud.xml.in.h:18
 msgid "Input password"
-msgstr ""
+msgstr "Entrer votre mot de passe"
 
 #: ../templates/configuration/cloud.xml.in.h:19
 msgid "Your PIN"
-msgstr ""
+msgstr "Votre code d'activation (PIN)"
 
 #: ../templates/configuration/cloud.xml.in.h:20
 msgid "Input PIN"
-msgstr ""
+msgstr "Code PIN"
 
 #: ../templates/configuration/cloud.xml.in.h:21
 msgid "Activate Cloud"
-msgstr ""
+msgstr "Activer le cloud"
 
 #: ../templates/configuration/events.xml.in.h:1
 msgid "Are you sure that you want to delete this event?"
-msgstr ""
+msgstr "Voulez vous supprimer cet évènement?"
 
 #: ../templates/configuration/events.xml.in.h:4
 msgid "Event Configuration"
-msgstr ""
+msgstr "Configuration des évènements"
 
 #: ../templates/configuration/events.xml.in.h:9
 msgid "Create Event"
-msgstr ""
+msgstr "Créer évènement"
 
 #: ../templates/configuration/events.xml.in.h:10
 msgid "Criteria"
-msgstr ""
+msgstr "Critère"
 
 #: ../templates/configuration/events.xml.in.h:11
 msgid "Input event name"
-msgstr ""
+msgstr "Entrer le nom de l'évènement"
 
 #: ../templates/configuration/events.xml.in.h:12
 msgid "Edit Event"
-msgstr ""
+msgstr "Modifier l'évènement"
 
 #: ../templates/configuration/variables.xml.in.h:1
 msgid "Are you sure that you want to delete this variable?"
-msgstr ""
+msgstr "Voulez vous supprimer cette variable?"
 
 #: ../templates/configuration/variables.xml.in.h:4
 msgid "Variables Configuration"
-msgstr ""
+msgstr "Configuration des variables"
 
 #: ../templates/configuration/variables.xml.in.h:6
 msgid "Value"
-msgstr ""
+msgstr "Valeur"
 
 #: ../templates/configuration/variables.xml.in.h:9
 msgid "Add new variable"
-msgstr ""
+msgstr "Ajouter une nouvelle variable"
 
 #: ../templates/configuration/variables.xml.in.h:10
 msgid "Input variable name"
-msgstr ""
+msgstr "Entrer le nom de la variable"
 
 #: ../templates/configuration/variables.xml.in.h:11
 msgid "Create variable"
-msgstr ""
+msgstr "Créer une variable"
 
 #: ../templates/configuration/devices.xml.in.h:1
 msgid "Are you sure that you want to delete this device?"
-msgstr ""
+msgstr "Voulez vous supprimer ce périphérique?"
 
 #: ../templates/configuration/devices.xml.in.h:4
 msgid "Device Configuration"
-msgstr ""
+msgstr "Configuration des périphériques"
 
 #: ../templates/configuration/devices.xml.in.h:5
 msgid "Filter rooms:"
-msgstr ""
+msgstr "Filtre par pièce:"
 
 #: ../templates/configuration/devices.xml.in.h:6
 msgid "Filter devicetypes:"
-msgstr ""
+msgstr "Filtre par type de périphérique:"
 
 #: ../templates/configuration/devices.xml.in.h:7
 msgid "Device Name"
-msgstr ""
+msgstr "Nom du périphérique"
 
 #: ../templates/configuration/devices.xml.in.h:8
 msgid "Room Name"
-msgstr ""
+msgstr "Nom de la pièce"
 
 #: ../templates/configuration/devices.xml.in.h:9
 msgid "Device Type"
-msgstr ""
+msgstr "Type de périphérique"
 
 #: ../templates/configuration/devices.xml.in.h:10
 msgid "Handler"
-msgstr ""
+msgstr "Contrôle des périphériques"
 
 #: ../templates/configuration/devices.xml.in.h:11
 msgid "IntID"
-msgstr ""
+msgstr "ID interne"
 
 #: ../templates/configuration/devices.xml.in.h:14
 msgid "Details"
-msgstr ""
+msgstr "Détails"
+
+#: ../templates/configuration/plugins.xml.in.h:3
+msgid "Version"
+msgstr "Version"
+
+#: ../templates/configuration/plugins.xml.in.h:4
+msgid "Description"
+msgstr "Description"
 
 #: ../templates/devices/multilevelsensor.xml.in.h:1
 msgid "GRAPH"
-msgstr ""
+msgstr "GRAPHIQUE"
 
 #: ../templates/details/multilevelsensor.xml.in.h:4
 msgid "Show as:"
-msgstr ""
+msgstr "Montrer:"
 
 #: ../templates/details/multilevelsensor.xml.in.h:5
 msgid "Graph"
-msgstr ""
+msgstr "Graphique"
 
 #: ../templates/details/multilevelsensor.xml.in.h:6
 msgid "List"
-msgstr ""
+msgstr "Liste"
 
 #: ../templates/details/multilevelsensor.xml.in.h:7
 msgid "From:"
-msgstr ""
+msgstr "De:"
 
 #: ../templates/details/multilevelsensor.xml.in.h:8
 msgid "To:"
-msgstr ""
+msgstr "A:"
 
 #: ../templates/devices/switch.xml.in.h:1
 msgid "OFF"
-msgstr ""
+msgstr "ETEINT"
 
 #: ../templates/devices/switch.xml.in.h:2
 msgid "ON"
-msgstr ""
+msgstr "ALLUMER"
 
 #: ../templates/devices/thermostat.xml.in.h:1
 msgid "Mode"
-msgstr ""
+msgstr "Mode"
 
 #: ../templates/devices/thermostat.xml.in.h:2
 msgid "FanMode"
-msgstr ""
+msgstr "Ventilateur"
 
 #: ../templates/devices/thermostat.xml.in.h:3
 msgid "Heat"
-msgstr ""
+msgstr "Chaud"
 
 #: ../templates/devices/thermostat.xml.in.h:4
 msgid "Cool"
-msgstr ""
+msgstr "Froid"
