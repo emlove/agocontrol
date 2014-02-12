@@ -75,6 +75,7 @@ function prepareTemplate(doc) {
     targetLang = supportedLanguages[targetLang] ? targetLang : null;
 
     /* Remove tags which have a different language */
+    var killList = [];
     for ( var i = 0; i < tags.length; i++) {
 	var tag = tags[i];
 	if (tag.getAttribute("data-translateable") == null) {
@@ -82,8 +83,12 @@ function prepareTemplate(doc) {
 	}
 	var lang = tag.getAttribute("xml:lang");
 	if (lang != targetLang) {
-	    tag.parentNode.removeChild(tag);
+	    killList.push(tag);
 	}
+    }
+    
+    for (var i = 0; i < killList.length; i++) {
+	killList[i].parentNode.removeChild(killList[i]);
     }
 
     return xml2string(doc);
