@@ -227,9 +227,13 @@ class AgoConnection:
 							#this is for one of our children
 							myid = self.uuidToInternalId(message.content["uuid"])
 							if myid != None and self.handler:
-								replydata = {}
-								replydata["result"] = self.handler(myid, message.content)
+								returnval = self.handler(myid, message.content)
 								if message.reply_to:
+									replydata = {}
+									if isinstance(returnval, dict):
+										replydata = returnval
+									else:
+										replydata["result"] = returnval
 									self._sendreply(message.reply_to, replydata)
                                 if message.subject:
                                         if 'event' in message.subject and self.eventhandler:
