@@ -57,8 +57,8 @@ msgid ""
 "Welcome to the configuration page. You can find useful information and help "
 "for the configuration menu records in the left tabs."
 msgstr ""
-"Bienvenue sur la page de configuration. Vous y trouverez des informations utiles et de l'aide "
-"pour configurer ago control dans le menu à gauche."
+"Bienvenue sur la page de configuration. Vous trouverez tout l'aide nécessaire "
+"afin de configurer ago control dans le menu sur votre gauche."
 
 #: ../templates/configuration.xml.in.h:10
 msgid "Help and Documentation"
@@ -81,8 +81,9 @@ msgid ""
 "If you want to join the development community or if you like ago control and "
 "want to help us with your donation!"
 msgstr ""
-"Si vous voulez joindre la communauté de développeurs ou si tout simplement vous aimez ago control "
-"et souhaitez nous aider avec une donation"
+"Si vous souhaitez participer à ce projet n'hésiter pas à rejoindre la communauté "
+"de développeurs ou si tout simplement vous aimez ago control, vous pouvez toujours "
+"nous soutenir grâce à une donation. "
 
 #: ../templates/configuration.xml.in.h:15
 msgid "Contribute to ago control"
@@ -98,7 +99,7 @@ msgid ""
 msgstr ""
 "Vous pouvez très facilement créer votre page d'acceuil ou ajouter de "
 "nouvelles zones qui seront accessibles dans le menu de gauche. "
-"Choisissez vos périphériques dans la liste en bas à gauche et glisser-déposer "
+"Choisissez vos périphériques dans la liste du bas et glisser-déposer "
 "les sur la grille d'agencement. Vous pouvez aussi avoir plusieurs pages pour "
 "une même zone. Pour réorganiser vos périphéques, glisser-déposer les à "
 "nouveau sur la grille."
@@ -135,11 +136,11 @@ msgstr "Système"
 
 #: ../templates/navigation/main.xml.in.h:1
 msgid "System Status"
-msgstr "System Status"
+msgstr "Statut"
 
 #: ../templates/navigation/main.xml.in.h:2
 msgid "Dashboard"
-msgstr "Tableau de bord"
+msgstr "Accueil"
 
 #: ../templates/navigation/main.xml.in.h:3
 msgid "Configuration"
@@ -233,7 +234,7 @@ msgstr "Créer une nouvelle zone"
 
 #: ../templates/configuration/floorplan.xml.in.h:10
 msgid "New floorplan name"
-msgstr "Nouveau nom de a zone"
+msgstr "Nom de la zone"
 
 #: ../templates/configuration/floorplan.xml.in.h:11
 msgid "Create Floorplan"
@@ -329,38 +330,38 @@ msgid ""
 "com</a><br/> You will be taken to the order page after completing your "
 "registration<br/>This service is not free."
 msgstr ""
-"Créer un compte au cloud ago control pour controller à distance votre "
-"installation via <a target=\"_blank\" href=\"https://cloud.agocontrol.com\">"
-"cloud.agocontrol.com</a><br/>. Vous serez redirigé vers la page de souscription "
+"Créer un compte au cloud ago control pour controller à distance votre installation"
+"via <a target=\"_blank\" href=\"https://cloud.agocontrol.com\">cloud.agocontrol.com</a><br/>."
+"Vous serez redirigé vers la page de souscription "
 "au service après votre inscription<br />Ce service n'est pas gratuit."
 
 #: ../templates/configuration/cloud.xml.in.h:4
 msgid "Your username"
-msgstr "Votre identifiant"
+msgstr "Identifiant"
 
 #: ../templates/configuration/cloud.xml.in.h:5
 msgid "Input your username"
-msgstr "Entrer votre identifiant"
+msgstr "Votre identifiant"
 
 #: ../templates/configuration/cloud.xml.in.h:6
 msgid "Your E-Mail address"
-msgstr "Votre adresse email"
+msgstr "Adresse email"
 
 #: ../templates/configuration/cloud.xml.in.h:7
 msgid "Input your E-Mail address"
-msgstr "Entrer votre email"
+msgstr "Votre adresse email"
 
 #: ../templates/configuration/cloud.xml.in.h:8
 msgid "Your new password"
-msgstr "Votre nouveau mot de passe"
+msgstr "Mot de passe"
 
 #: ../templates/configuration/cloud.xml.in.h:9
 msgid "Input new password"
-msgstr "Entrer votre nouveau mot de passe"
+msgstr "Votre mot de passe"
 
 #: ../templates/configuration/cloud.xml.in.h:10
 msgid "Confirm new password"
-msgstr "Confirmer votre mot de passe"
+msgstr "Confirmer mot de passe"
 
 #: ../templates/configuration/cloud.xml.in.h:11
 msgid "Register Cloud account"
@@ -392,11 +393,11 @@ msgstr "Votre mot de passe"
 
 #: ../templates/configuration/cloud.xml.in.h:18
 msgid "Input password"
-msgstr "Entrer votre mot de passe"
+msgstr "Votre mot de passe"
 
 #: ../templates/configuration/cloud.xml.in.h:19
 msgid "Your PIN"
-msgstr "Votre code d'activation (PIN)"
+msgstr "Code d'activation (PIN)"
 
 #: ../templates/configuration/cloud.xml.in.h:20
 msgid "Input PIN"
@@ -448,7 +449,7 @@ msgstr "Ajouter une nouvelle variable"
 
 #: ../templates/configuration/variables.xml.in.h:10
 msgid "Input variable name"
-msgstr "Entrer le nom de la variable"
+msgstr "Nom de la variable"
 
 #: ../templates/configuration/variables.xml.in.h:11
 msgid "Create variable"
@@ -476,19 +477,19 @@ msgstr "Nom du périphérique"
 
 #: ../templates/configuration/devices.xml.in.h:8
 msgid "Room Name"
-msgstr "Nom de la pièce"
+msgstr "Pièce"
 
 #: ../templates/configuration/devices.xml.in.h:9
 msgid "Device Type"
-msgstr "Type de périphérique"
+msgstr "Type"
 
 #: ../templates/configuration/devices.xml.in.h:10
 msgid "Handler"
-msgstr "Contrôle des périphériques"
+msgstr "Contrôleur"
 
 #: ../templates/configuration/devices.xml.in.h:11
 msgid "IntID"
-msgstr "ID interne"
+msgstr "Identifiant"
 
 #: ../templates/configuration/devices.xml.in.h:14
 msgid "Details"
