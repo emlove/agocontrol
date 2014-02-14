@@ -10,11 +10,46 @@
 
 #include "agoclient.h"
 
+extern "C"{
+	#include "BMP085.c"
+}
+
 using namespace std;
 using namespace agocontrol;
 
+typedef struct {const char *file; int interval;} config_struct;
+
 string devicefile;
 AgoConnection *agoConnection;
+
+//void *readBMP085(void*){
+void *readBMP085( void* param){
+
+	config_struct *config;
+	config = (config_struct*)param;
+	const char *i2cFileName = config->file;
+	int interval = config->interval;
+    cout << "void *readBMP085( void* param) i2cFileName: " << i2cFileName << " interval: " << interval << endl;
+	while (true){
+
+
+
+		bmp085_Calibration(i2cFileName);
+		temperature = bmp085_GetTemperature(bmp085_ReadUT(i2cFileName));
+		pressure = bmp085_GetPressure(bmp085_ReadUP(i2cFileName));
+		printf("Temperature\t%0.1f%cC\n", ((double)temperature)/10,0x00B0);
+		printf("Pressure\t%0.2fhPa\n", ((double)pressure)/100);
+
+		stringstream value;
+		value << ((double)pressure)/100;
+		stringstream value2;
+		value2 << ((double)temperature)/10,0x00B0;
+		agoConnection->emitEvent("BMP085-baro", "event.environment.pressurechanged", value.str().c_str(), "hPa");
+		agoConnection->emitEvent("BMP085-temp", "event.environment.temperaturechanged", value2.str().c_str(), "degC");
+
+		sleep(interval);
+	}
+}
 
 bool i2ccommand(const char *device, int i2caddr, int command, size_t size, __u8  *buf) {
 	int file = open(device, O_RDWR);
@@ -154,11 +189,33 @@ int main(int argc, char** argv) {
 	agoConnection = new AgoConnection("i2c");		
 	printf("connection to agocontrol established\n");
 
+	agoConnection->addDevice("BMP085-baro", "barometersensor");
+	agoConnection->addDevice("BMP085-temp", "temperaturesensor");
+
+
+
 	string device;
 	while (getline(devices, device, ',')) {
 		stringstream tmpdevice(device);
 		string type;
 		getline(tmpdevice, type, ':');
+		if (type == "BMP085") {
+			string addrBMP085;
+			getline(tmpdevice, addrBMP085, ':');
+
+			cout << "devicefile: "<< devicefile << endl;
+			cout << "addrBMP085: "<< addrBMP085 << endl;
+
+			config_struct conf;
+			const char *file = devicefile.c_str();
+
+
+			conf.file = file;
+			conf.interval = 300; // need to make this configurable
+
+			pthread_t listner;
+			pthread_create(&listner, NULL, readBMP085, &conf);
+		}
 		if (type == "pcf8574") {
 			string addr;
 			getline(tmpdevice, addr, ':');
