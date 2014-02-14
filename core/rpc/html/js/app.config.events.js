@@ -614,18 +614,6 @@ function eventConfig() {
 	    res.push(self.operationToJSON(ops[i]));
 	}
 
-	/*var elements = [];
-	var tmp = {type: res[0].type, sub: []};
-	for (var i = 0; i < res[0].sub.length; i++) {
-	    if (res[0].sub[i].type === undefined) {
-		tmp.sub.push(res[0].sub[i]);
-	    }
-	    else {
-		elements.push(res[0].sub[i]);
-	    }
-	}
-	elements.push(tmp);*/
-
 	var eventSelector = document.getElementById("eventSelector");
 	res = {
 	    "elements" : res,
