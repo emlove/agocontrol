@@ -189,10 +189,6 @@ int main(int argc, char** argv) {
 	agoConnection = new AgoConnection("i2c");		
 	printf("connection to agocontrol established\n");
 
-	agoConnection->addDevice("BMP085-baro", "barometersensor");
-	agoConnection->addDevice("BMP085-temp", "temperaturesensor");
-
-
 
 	string device;
 	while (getline(devices, device, ',')) {
@@ -203,8 +199,8 @@ int main(int argc, char** argv) {
 			string addrBMP085;
 			getline(tmpdevice, addrBMP085, ':');
 
-			cout << "devicefile: "<< devicefile << endl;
-			cout << "addrBMP085: "<< addrBMP085 << endl;
+			agoConnection->addDevice("BMP085-baro", "barometersensor");
+			agoConnection->addDevice("BMP085-temp", "temperaturesensor");
 
 			config_struct conf;
 			const char *file = devicefile.c_str();
