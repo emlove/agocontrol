@@ -174,3 +174,8 @@ Package: agocontrol-ipx800
 Architecture: all
 Depends: ${shlibs:Depends}, ${misc:Depends}, python-agoclient
 Description: IPX800 relay boards
+
+Package: agocontrol-raspicamera
+Architecture: armhf
+Depends: ${shlibs:Depends}, ${misc:Depends}, python-picamera, python-agoclient
+Description: raspberry pi camera device
