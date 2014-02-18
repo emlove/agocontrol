@@ -1,0 +1,32 @@
+<div id="contentarea" style="margin: 0px auto 10px auto; padding:15px;">
+
+<!-- CALENDAR -->
+<div data-bind="fullCalendar: calendarViewModel" id="schedulerCalendar"></div>
+
+<!-- SCHEDULE CREATION POPUP -->
+<div id="schedulerDialog" style="display:none;">
+    <span>At</span> <span style="font-weight:bold;" data-bind="text:scheduleStart"></span>
+    <br/>
+    <span>execute scenario</span> <select data-bind="options:availableStartScenarios, value:selectedStartScenario, optionsText:'text'"></select>
+    <br/>
+    <span>And at</span> <span style="font-weight:bold;" data-bind="text:scheduleEnd"></span>
+    <br/>
+    <span>execute scenario</span> <select data-bind="options:availableEndScenarios, value:selectedEndScenario, optionsText:'text'"></select>
+    <br/>
+    <br/>
+    <span>Repeat schedule</span>  : 
+    <select data-bind="value:selectedRepeat, enable:enableRepeat">
+        <option value="0">Never</option>
+        <option value="1">Every day</option>
+        <option value="7">Every week</option>
+        <option value="31">Every month</option>
+        <option value="365">Every year</option>
+    </select>
+    <br/>
+    <i class="icon-info-circled"></i><small>Recurring schedules are linked each others. If you update one of them, all will be updated too.</small>
+    <br/>
+    <span>Schedule's color</span> : <input id="schedulerColorPicker" data-bind="value: selectedColor"/>
+</div>
+
+</div>
+

@@ -1,0 +1,14 @@
+# agoscheduler
+#
+# This service starts up the agoscheduler
+# started until it is shut down again.
+
+description     "Start agoscheduler"
+author          "Tanguy Bonneau <tanguy dot bonneau at gmail dot com>"
+
+start on stopped rc RUNLEVEL=[2345]
+stop on runlevel [!2345]
+
+respawn
+chdir /opt/agocontrol/bin
+exec /opt/agocontrol/bin/agoscheduler.py

@@ -179,3 +179,8 @@ Package: agocontrol-raspicamera
 Architecture: armhf
 Depends: ${shlibs:Depends}, ${misc:Depends}, python-picamera, python-agoclient
 Description: raspberry pi camera device
+
+Package: agocontrol-scheduler
+Architecture: all
+Depends: ${shlibs:Depends}, ${misc:Depends}, python-agoclient, python-dateutil
+Description: agocontrol scheduler
