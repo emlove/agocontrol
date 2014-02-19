@@ -189,7 +189,7 @@ class AgoConnection:
                 try:
 			replyuuid = str(uuid4())
 			replyreceiver = self.session.receiver("reply-%s; {create: always, delete: always}" % replyuuid)
-			message = Message(content=_content, subject=subject)
+			message = Message(content=_content)
                         message.reply_to = 'reply-%s' % replyuuid
 			self.sender.send(message)
 			replymessage = replyreceiver.fetch(timeout=3)
@@ -209,7 +209,7 @@ class AgoConnection:
 		"""Returns the inventory from the resolver."""
 		content = {}
 		content["command"]="inventory"
-		return sendMessageReply(content)
+		return self.sendMessageReply(content)
 
         def emitEvent(self, internalId, eventType, level, unit):
 		"""This will send an event."""
