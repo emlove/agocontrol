@@ -9,6 +9,7 @@ import sys
 import ConfigParser
 import simplejson
 from threading import Lock
+import urllib2
 
 from qpid.messaging import *
 from qpid.util import URL
@@ -20,6 +21,9 @@ BINDIR = '@BINDIR'
 CONFDIR = '@CONFDIR'
 
 CONFIG_LOCK = Lock()
+
+COMMAND_URL = 'https://localhost:%d/jsonrpc'
+DEFAULT_PORTS = '8008,8009s'
 
 def getConfigOption(section, option, default, file=None):
 	"""Read a config option from a .ini style file."""
@@ -85,6 +89,7 @@ class AgoConnection:
                 self.handler = None
                 self.eventhandler = None
                 self.loadUuidMap()
+                self.rpcHttpsPort = int(getConfigOption("rpc", "ports", DEFAULT_PORTS).split(",")[1].replace('s',''))
 
         def __del__(self):
                 self.session.acknowledge()
@@ -165,6 +170,45 @@ class AgoConnection:
                 if (self.internalIdToUuid(internalid) != None): 
                         self.emitDeviceRemove(self.internalIdToUuid(internalid))
                         del self.devices[self.internalIdToUuid(internalid)]
+
+        def getInventory(self):
+                """Return agocontrol inventory"""
+                return self.__sendCommand('inventory', {}, commandId=2)
+
+        def sendCommand(self, uuid, command, parameters, timeout=None):
+                """Send a command to specified uuid"""
+                return self.__sendCommand(command, parameters, uuid=uuid, timeout=timeout)
+
+        def __sendCommand(self, command, parameters, uuid=None, commandId=1, timeout=None):
+                """Send a command to specified uuid"""
+                #force some parameters
+                if uuid:
+                    parameters['uuid'] = uuid
+                parameters['command'] = command
+                #prepare headers
+                headers = {}
+                headers['Content-Type'] = 'application/json'
+                #prepare data
+                data = {}
+                data['method'] = 'message'
+                data['params'] = {}
+                data['params']['content'] = parameters
+                if timeout:
+                        data['params']['replytimeout'] = timeout
+                data['id'] = commandId
+                data['jsonrpc'] = "2.0"
+                #send ajax request
+                #print simplejson.dumps(data)
+                request = urllib2.Request(url=COMMAND_URL%self.rpcHttpsPort, data=simplejson.dumps(data), headers=headers)
+                response = urllib2.urlopen(request)
+                #return request result
+                result = simplejson.loads(response.read())
+                #print result
+                if result.has_key('result'):
+                        if result['result']!='no-reply':
+                                return result['result']
+                        else:
+                                raise Exception("sendCommand returns no-reply")
 
         def sendMessage(self, content):
 		"""Send message without subject."""
