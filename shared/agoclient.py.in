@@ -182,6 +182,35 @@ class AgoConnection:
                         syslog.syslog(syslog.LOG_ERR, "Can't send message: " + str(e))
                         return False
 
+	def sendMessageReply(self, content):
+		"""Send message and fetch reply."""
+		_content = content
+                _content["instance"] = self.instance
+                try:
+			replyuuid = str(uuid4())
+			replyreceiver = self.session.receiver("reply-%s; {create: always, delete: always}" % replyuuid)
+			message = Message(content=_content, subject=subject)
+                        message.reply_to = 'reply-%s' % replyuuid
+			self.sender.send(message)
+			replymessage = replyreceiver.fetch(timeout=3)
+			self.session.acknowledge()
+		except Empty, e:
+			replymessage = None
+		except ReceiverError, e:
+			replymessage =  None
+		except SendError, e:
+			replymessage =  False
+		finally:
+			replyreceiver.close()
+			
+		return replymessage			
+
+	def getInventory(self):
+		"""Returns the inventory from the resolver."""
+		content = {}
+		content["command"]="inventory"
+		return sendMessageReply(content)
+
         def emitEvent(self, internalId, eventType, level, unit):
 		"""This will send an event."""
                 content  = {}
