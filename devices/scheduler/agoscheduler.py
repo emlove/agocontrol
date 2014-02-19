@@ -361,7 +361,6 @@ def addSchedule(schedule, computeRecurring=False):
             #key = int(momentjsToPython(schedule['end']).strftime('%s'))
             key = int(recurringsEnd[i].strftime('%s'))
             timeSchedules.insert( (key, {'id':newSchedule['id'], 'scenario':newSchedule['uuidEnd']}) )
-    logging.info("%d schedules added" % len(addedSchedules))
     return addedSchedules
 
 def delSchedule(scheduleId):
@@ -481,6 +480,7 @@ def commandHandler(internalid, content):
                     sched = createSchedule(content['title'], content['uuidStart'], content['uuidEnd'], content['dateStart'], content['dateEnd'], content['color'], content['repeat'])
                     #add schedule
                     scheds = addSchedule(sched, True)
+                    logging.info("%d schedules added" % len(scheds))
                     #save updates
                     saveSchedules()
                 except:
@@ -550,7 +550,7 @@ def eventHandler(event, content):
             #execute scenarios
             for schedule in schedules:
                 logging.info('Execute scenario id "%s"' % schedule['scenario'])
-                client.sendCommand(scenarioControllerUuid, 'run', {'internalid':schedule['scenario']})
+                client.sendMessage({'uuid':scenarioControllerUuid, 'command':'run', 'internalid':schedule['scenario']})
         except:
             logging.exception('Exception on timechanged event:')
 
@@ -575,8 +575,8 @@ try:
 
     #get scenariocontroller uuid (don't catch exceptions because no uuid no scenario execution)
     inventory = client.getInventory()
-    for uuid in inventory['devices']:
-        if inventory['devices'][uuid]['devicetype']=='scenariocontroller':
+    for uuid in inventory.content['devices']:
+        if inventory.content['devices'][uuid]['devicetype']=='scenariocontroller':
             scenarioControllerUuid = uuid
             break
     if not scenarioControllerUuid:
