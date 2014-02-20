@@ -27,6 +27,7 @@ opt/agocontrol/bin/agodrain.py
 opt/agocontrol/bin/messagesend
 opt/agocontrol/bin/agotimer
 opt/agocontrol/bin/agorpc
+opt/agocontrol/bin/rpc-htpasswd
 opt/agocontrol/bin/agosecurity
 opt/agocontrol/bin/agoctrl.sh
 opt/agocontrol/bin/agodatalogger

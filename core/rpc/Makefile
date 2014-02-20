@@ -8,10 +8,13 @@ LD = $(CXX)
 %.html : %.in.html
 	./mergetranslation.sh $< $@
 
-all: agorpc html cgi
+all: agorpc rpc-htpasswd html cgi
 
 agorpc: agorpc.o mongoose.o
 	$(LD) -o $@ $(LDFLAGS) $^ -lqpidmessaging -lqpidtypes -luuid -ljsoncpp -lagoclient
+
+rpc-htpasswd: rpc-htpasswd.o mongoose.o
+	$(LD) -o $@ $(LDFLAGS) $^ -lpthread -ldl
 
 html: $(patsubst %.in.html,%.html,$(wildcard html/templates/*.in.html) $(wildcard html/templates/details/*.in.html) $(wildcard html/templates/devices/*.in.html) $(wildcard html/templates/configuration/*.in.html) $(wildcard html/templates/navigation/*.in.html))
 
@@ -28,4 +31,5 @@ clean:
 install:
 	$(INSTALL_DIR) $(DESTDIR)$(BINDIR)
 	$(INSTALL_PROGRAM) agorpc $(DESTDIR)$(BINDIR)
+	$(INSTALL_PROGRAM) rpc-htpasswd $(DESTDIR)$(BINDIR)
 
