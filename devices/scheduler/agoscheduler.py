@@ -1,9 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# IPX800 relay board client
-# http://gce-electronics.com
-# copyright (c) 2013 tang
+# agoscheduler
+# copyright (c) 2014 tang (tanguy.bonneau@gmail.com) 
  
 import sys
 import os
@@ -28,7 +27,7 @@ allSchedules = None #(scheduleid, schedule)
 timeSchedules = None #(timestamp, scheduleid)
 scenarioControllerUuid = None
 
-#logging.basicConfig(filename='agosqueezebox.log', level=logging.INFO, format="%(asctime)s %(levelname)s : %(message)s")
+#logging.basicConfig(filename='agoscheduler.log', level=logging.INFO, format="%(asctime)s %(levelname)s : %(message)s")
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(name)s %(levelname)s : %(message)s")
 
 #=================================
@@ -302,7 +301,7 @@ def computeRecurrings(firstRecurringDatetime, repeat):
     #get current date infos
     now = datetime.now()
     today = datetime(now.year, now.month, now.day)
-    until = today + relativedelta(months=+1)
+    until = today + relativedelta(months=+2)
     #compute reccurings
     recurrings = []
     if repeat==0:
