@@ -681,6 +681,7 @@ void OnNotification
 		case Notification::Type_NodeNaming:
 		case Notification::Type_NodeProtocolInfo:
 		case Notification::Type_NodeQueriesComplete:
+		case Notification::Type_EssentialNodeQueriesComplete:
 		{
 			break;
 		}
