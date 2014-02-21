@@ -1086,7 +1086,6 @@ try:
 
     #add client handlers
     client.addHandler(commandHandler)
-    client.addEventHandler(eventHandler)
 
     #add controller
     logging.info('Add controller')
