@@ -480,7 +480,8 @@ function init_plugin()
                     eventClick: viewModel.eventClick,
                     eventResize: viewModel.eventResize,
                     eventDrop: viewModel.eventDrop,
-                    slotMinutes: viewModel.slotMinutes
+                    slotMinutes: viewModel.slotMinutes,
+                    firstHour: now.getHours()
                 });
                 $(element).fullCalendar('gotoDate', ko.utils.unwrapObservable(viewModel.viewDate));
             }
