@@ -7,7 +7,7 @@ function agoSchedulerPlugin(deviceMap) {
     var self = this;
     this.viewDate = ko.observable(new Date());
     this.hasNavigation = ko.observable(false);
-    this.schedules = ko.observableArray([]);
+    this.schedules = [];
     this.availableStartScenarios = ko.observableArray([]);
     this.availableEndScenarios = ko.observableArray([]);
     this.selectedStartScenario = ko.observable('');
@@ -51,14 +51,17 @@ function agoSchedulerPlugin(deviceMap) {
             command: 'getSchedules'
         };
         sendCommand(content, function(res) {
-            if( res!==undefined && res.result.result!==undefined )
+            if( res!==undefined && res.result!==undefined && res.result!=='no-reply')
             {
-                for( var i=0; i<res.result.result.schedules.length; i++)
+                for( var i=0; i<res.result.schedules.length; i++)
                 {
-                    //returned schedules are in fullCalendar format
-                    self.schedules.push(res.result.result.schedules[i]);
+                    //convert UTC datetimes to local datetimes
+                    res.result.schedules[i].start = $.fullCalendar.parseISO8601(res.result.schedules[i].start);
+                    res.result.schedules[i].end = $.fullCalendar.parseISO8601(res.result.schedules[i].end);
+                    //add schedule
+                    self.schedules.push(res.result.schedules[i]);
                 }
-                //console.log(''+self.schedules().length+' loaded');
+                $('#schedulerCalendar').fullCalendar('refetchEvents');
             }
             else
             {
@@ -71,7 +74,6 @@ function agoSchedulerPlugin(deviceMap) {
     //add new schedule
     //recurring schedules are computed server-side
     this.addSchedule = function(sched) {
-        //console.log('schedules len before add '+self.schedules().length);
         if( sched.scenarioStart!==undefined && sched.scenarioEnd!==undefined )
         {
             var content = {
@@ -80,34 +82,31 @@ function agoSchedulerPlugin(deviceMap) {
                 title: sched.scenarioStart.text + '-' + sched.scenarioEnd.text,
                 uuidStart: sched.scenarioStart.value,
                 uuidEnd: sched.scenarioEnd.value,
-                dateStart: moment(sched.start).format(),
-                dateEnd: moment(sched.end).format(),
+                dateStart: sched.start,
+                dateEnd: sched.end,
                 color: sched.color,
                 repeat: sched.repeat
             };
 
             //send new schedule to controller
             sendCommand(content, function(res) {
-                if( res!==undefined && res.result.result!==undefined && res.result.result.error==0 )
+                if( res!==undefined && res.result!==undefined && res.result!=='no-reply' && res.result.error==0 )
                 {
                     //and add all new schedules to fullCalendar
-                    var item;
-                    console.log('add '+res.result.result.schedules.length+' schedules');
-                    for( var i=0; i<res.result.result.schedules.length; i++)
+                    for( var i=0; i<res.result.schedules.length; i++)
                     {
-                        //returned schedules are in fullCalendar format
-                        var pos = self.schedules.push(res.result.result.schedules[i]);
-                        $('#schedulerCalendar').fullCalendar('updateEvent', self.schedules()[pos-1]);
-                        //$('#schedulerCalendar').fullCalendar('addEventSource', item);
+                        //convert UTC datetime to local datetime
+                        res.result.schedules[i].start = $.fullCalendar.parseISO8601(res.result.schedules[i].start);
+                        res.result.schedules[i].end = $.fullCalendar.parseISO8601(res.result.schedules[i].end);
+                        self.schedules.push(res.result.schedules[i]);
                     }
-                    //$('#schedulerCalendar').fullCalendar('refetchEvents');
+                    $('#schedulerCalendar').fullCalendar('refetchEvents');
                 }
                 else
                 {
                     //TODO error to user
                     console.log('Unable to add new schedule');
                 }
-                //console.log('schedules len after add '+self.schedules().length);
             });
         }
         else
@@ -119,7 +118,6 @@ function agoSchedulerPlugin(deviceMap) {
 
     //update schedule
     this.updateSchedule = function(oldSched, newSched, infos, revertFunc) {
-        //console.log('schedules len before update '+self.schedules().length);
         //prepare content
         var content = {
             uuid: self.agoschedulerUuid,
@@ -127,8 +125,8 @@ function agoSchedulerPlugin(deviceMap) {
             schedule: {
                 id: oldSched.id,
                 title: newSched.title,
-                dateStart: moment(newSched.start).format(),
-                dateEnd: moment(newSched.end).format(),
+                dateStart: newSched.start,
+                dateEnd: newSched.end,
                 uuidStart: newSched.uuidStart,
                 uuidEnd: newSched.uuidEnd,
                 color: newSched.color,
@@ -139,22 +137,19 @@ function agoSchedulerPlugin(deviceMap) {
             
         //update on server
         sendCommand(content, function(res) {
-            if( res!==undefined && res.result.result!==undefined && res.result.result.error==0 )
+            if( res!==undefined && res.result!==undefined && res.result!=='no-reply' && res.result.error==0 )
             {
                 if( newSched.repeat!=0 )
                 {
                     //search all events to refresh
-                    for( var i=0; i<self.schedules().length; i++)
+                    for( var i=0; i<self.schedules.length; i++)
                     {
-                        if( self.schedules()[i].id==newSched.id )
+                        if( self.schedules[i].id==newSched.id )
                         {
-                            oldSched.title = newSched.title;
-                            //oldSched.start = moment(newSched.start).format();
-                            //oldSched.end = moment(newSched.end).format();
-                            oldSched.uuidStart = newSched.uuidStart;
-                            oldSched.uuidEnd = newSched.uuidEnd;
-                            oldSched.color = newSched.color;
-                            $('#schedulerCalendar').fullCalendar('updateEvent', self.schedules()[i]);
+                            self.schedules[i].title = newSched.title;
+                            self.schedules[i].uuidStart = newSched.uuidStart;
+                            self.schedules[i].uuidEnd = newSched.uuidEnd;
+                            self.schedules[i].color = newSched.color;
                         }
                     }
                 }
@@ -162,15 +157,11 @@ function agoSchedulerPlugin(deviceMap) {
                 {
                     //refresh single event
                     oldSched.title = newSched.title;
-                    //oldSched.start = moment(newSched.start).format();
-                    //oldSched.end = moment(newSched.end).format();
                     oldSched.uuidStart = newSched.uuidStart;
                     oldSched.uuidEnd = newSched.uuidEnd;
                     oldSched.color = newSched.color;
-                    //oldSched.repeat = newSched.repeat;
-                    $('#schedulerCalendar').fullCalendar('updateEvent', oldSched);
-                    //$('#schedulerCalendar').fullCalendar('refetchEvents');
                 }
+                $('#schedulerCalendar').fullCalendar('refetchEvents');
             }
             else
             {
@@ -180,13 +171,11 @@ function agoSchedulerPlugin(deviceMap) {
                     revertFunc();
                 console.log('Unable to update schedule');
             }
-            //console.log('schedules len after update '+self.schedules().length);
         });
     };
 
     //delete schedule
     this.deleteSchedule = function(sched) {
-        //console.log('schedules len before delete '+self.schedules().length);
         var ind = self.schedules.indexOf(sched);
         if( ind!=-1 )
         {
@@ -199,14 +188,14 @@ function agoSchedulerPlugin(deviceMap) {
 
             //remove from server
             sendCommand(content, function(res) {
-                if( res!==undefined && res.result.result!==undefined && res.result.result.error==0 )
+                if( res!==undefined && res.result!==undefined && res.result!=='no-reply' && res.result.error==0 )
                 {
                     if( sched.repeat!=0 )
                     {
                         //search all events to refresh
-                        for( var i=self.schedules().length-1; i>=0; i-- )
+                        for( var i=self.schedules.length-1; i>=0; i-- )
                         {
-                            if( self.schedules()[i].id==sched.id )
+                            if( self.schedules[i].id==sched.id )
                             {
                                 //remove it from list
                                 self.schedules.splice(i,1);
@@ -226,7 +215,6 @@ function agoSchedulerPlugin(deviceMap) {
                     //TODO error to user
                     console.log('Unable to delete schedule');
                 }
-                //console.log('schedules len after delete '+self.schedules().length);
             });
         }
         else
@@ -352,7 +340,7 @@ function agoSchedulerPlugin(deviceMap) {
     };
 
     //event when selection on calendar occured
-    self.selectSchedule = function(start, end, jsEvent, view) {
+    self.selectSchedule = function(start, end, allDay, jsEvent, view) {
         var select = {
             type: 'select',
             start: start,
@@ -361,7 +349,8 @@ function agoSchedulerPlugin(deviceMap) {
             view: view
         };
         self.openSchedulePopup(select);
-    }
+        $('#schedulerCalendar').fullCalendar('unselect');
+    };
     
     //event when schedule is clicked on calendar
     self.clickSchedule = function(event, jsEvent, view) {
@@ -372,17 +361,17 @@ function agoSchedulerPlugin(deviceMap) {
             view: view
         };
         self.openSchedulePopup(click);
-    }
+    };
 
     //event when schedule is resized on calendar
     self.resizeSchedule = function(event, daysOffset, minutesOffset, revertFunc, jsEvent, ui, view) {
         self.updateSchedule(event, event, {type:'resize', days:daysOffset, minutes:minutesOffset}, revertFunc);
-    }
+    };
 
     //event when schedule is dropped on calendar
     self.dropSchedule = function(event, daysOffset, minutesOffset, revertFunc, jsEvent, ui, view) {
         self.updateSchedule(event, event, {type:'drop', days:daysOffset, minutes:minutesOffset}, revertFunc);
-    }
+    };
 
     //calendar view model
     this.calendarViewModel = new ko.fullCalendar.viewModel({
@@ -424,19 +413,34 @@ function load_css(url)
 }
 
 /**
+ * Load CSS
+ */
+function load_js(url)
+{
+    $("head").append("<script>");
+    js = $("head").children(":last");
+    js.attr({ 
+      type: "text/javascript",
+      src: url
+    });
+}
+/**
  * Entry point: mandatory!
  */
 function init_plugin()
 {
+    //force js libs to be cached by browser
+    $.ajaxSetup({
+        cache: true
+    });
+
     //sync load js libs
     $.when(
-        $.getScript("plugins/agoscheduler/fullcalendar/moment-with-langs.min.js"),
-        $.getScript("plugins/agoscheduler/fullcalendar/fullcalendar.min.js"),
-        $.getScript("plugins/agoscheduler/fullcalendar/lang/all.js"),
         load_css("plugins/agoscheduler/fullcalendar/fullcalendar.css"),
+        $.getScript("plugins/agoscheduler/fullcalendar/fullcalendar.min.js"),
         $.Deferred(function(deferred) { $(deferred.resolve); })
     ).done(function() {
-        
+
         //and load plugin code if everything went fine
         ko.fullCalendar = {
             // Defines a view model class you can use to populate a calendar
@@ -476,8 +480,7 @@ function init_plugin()
                     eventClick: viewModel.eventClick,
                     eventResize: viewModel.eventResize,
                     eventDrop: viewModel.eventDrop,
-                    slotMinutes: viewModel.slotMinutes,
-                    scrollTime: now.getHours()+':'+now.getMinutes()+':'+now.getSeconds()
+                    slotMinutes: viewModel.slotMinutes
                 });
                 $(element).fullCalendar('gotoDate', ko.utils.unwrapObservable(viewModel.viewDate));
             }

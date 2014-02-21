@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# agoscheduler
-# copyright (c) 2014 tang (tanguy.bonneau@gmail.com)
+# IPX800 relay board client
+# http://gce-electronics.com
+# copyright (c) 2013 tang
  
 import sys
 import os
@@ -27,7 +28,7 @@ allSchedules = None #(scheduleid, schedule)
 timeSchedules = None #(timestamp, scheduleid)
 scenarioControllerUuid = None
 
-#logging.basicConfig(filename='agoscheduler.log', level=logging.INFO, format="%(asctime)s %(levelname)s : %(message)s")
+#logging.basicConfig(filename='agosqueezebox.log', level=logging.INFO, format="%(asctime)s %(levelname)s : %(message)s")
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(name)s %(levelname)s : %(message)s")
 
 #=================================
@@ -253,6 +254,10 @@ def pythonToMomentjs(dt):
     out = dt.strftime("%Y-%m-%dT%H:%M:%S%z")
     return out[:len(out)-2]+':'+out[len(out)-2:]
 
+def calendarToPython(fullCalendarDatetime):
+    """convert fullcalendar v1 UTC datetime to python datetime"""
+    return parse(fullCalendarDatetime)
+
 def createSchedule(title, uuidStart, uuidEnd, dateStart, dateEnd, color, repeat):
     """create schedule structure
        @see http://arshaw.com/fullcalendar/docs2/event_data/Event_Object/"""
@@ -297,7 +302,7 @@ def computeRecurrings(firstRecurringDatetime, repeat):
     #get current date infos
     now = datetime.now()
     today = datetime(now.year, now.month, now.day)
-    until = today + relativedelta(months=+2)
+    until = today + relativedelta(months=+1)
     #compute reccurings
     recurrings = []
     if repeat==0:
@@ -324,15 +329,16 @@ def computeRecurrings(firstRecurringDatetime, repeat):
     return fixedRecurrings
 
 def addSchedule(schedule, computeRecurring=False):
-    """add schedule. /!\ Need to catch Exception"""
+    """add schedule. /!\ Need to catch Exception
+       @info: datetime are internally stored in UTC"""
     addedSchedules = []
     recurringsStart = None
     recurringsEnd = None
     if computeRecurring:
         #add recurring schedules for next 6 monthes only
         #compute recurring datetimes
-        scheduleStart = momentjsToPython(schedule['start'])
-        scheduleEnd = momentjsToPython(schedule['end'])
+        scheduleStart = calendarToPython(schedule['start'])
+        scheduleEnd = calendarToPython(schedule['end'])
         recurringsStart = computeRecurrings(scheduleStart, int(schedule['repeat']))
         recurringsEnd = computeRecurrings(scheduleEnd, int(schedule['repeat']))
     else:
@@ -394,9 +400,11 @@ def updSchedule(schedule, infos):
     #check fields to update
     updateStartDate = 0
     if infos['type']=='drop':
+        #compute time difference in minutes
         updateStartDate = infos['days']*1440 + infos['minutes']
     updateEndDate = 0
     if infos['type']=='drop' or infos['type']=='resize':
+        #compute time difference in minutes
         updateEndDate = infos['days']*1440 + infos['minutes']
     removeEndSchedule = False
     if schedule['uuidEnd']=='0':
