@@ -21,18 +21,23 @@ OPTION(BUILD_AGOLUA "Build agolua" ON)
 # to the source code
 configure_file (
     "${PROJECT_SOURCE_DIR}/version.h.in"
-    "${PROJECT_SOURCE_DIR}/version.h"
+    "${PROJECT_BINARY_DIR}/version.h"
     @ONLY
 )
  
+set (ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${LIBDIR}")
+set (LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${LIBDIR}")
+set (RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${BINDIR}")
+
 # add the binary tree to the search path for include files
 # so that we will find version.h
 include_directories("${PROJECT_BINARY_DIR}")
+include_directories("${PROJECT_BINARY_DIR}/shared")
+include_directories("${PROJECT_SOURCE_DIR}/shared")
 
-include_directories ("${PROJECT_SOURCE_DIR}/shared")
+#include_directories ("${PROJECT_SOURCE_DIR}/shared")
 
 add_subdirectory (shared) 
-
 add_subdirectory (core) 
 #add_subdirectory (devices) 
 add_subdirectory (conf) 

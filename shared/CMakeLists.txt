@@ -4,13 +4,13 @@ cmake_minimum_required (VERSION 2.6)
 # to the source code
 configure_file (
     "${CMAKE_CURRENT_SOURCE_DIR}/agoclient.h.in"
-    "${CMAKE_CURRENT_SOURCE_DIR}/agoclient.h"
+    "${CMAKE_CURRENT_BINARY_DIR}/agoclient.h"
     @ONLY
 )
 
 configure_file (
     "${CMAKE_CURRENT_SOURCE_DIR}/agoclient.py.in"
-    "${CMAKE_CURRENT_SOURCE_DIR}/agoclient.py"
+    "${CMAKE_CURRENT_BINARY_DIR}/agoclient.py"
     @ONLY
 )
 
@@ -30,6 +30,5 @@ target_link_libraries (agoclient ${AGOCLIENT_LIBRARIES})
 
 # Install instructions for this target
 install (TARGETS agoclient LIBRARY DESTINATION lib)
-
 install (FILES agoclient.h DESTINATION include)
 install (FILES agoclient.py DESTINATION lib)
