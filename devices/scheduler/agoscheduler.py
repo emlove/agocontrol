@@ -549,15 +549,18 @@ def eventHandler(event, content):
     if event=='event.environment.timechanged':
         try:
             #format: {u'hour': 15, u'month': 2, u'second': 0, u'weekday': 6, u'year': 2014, u'yday': 46, u'day': 15, u'minute': 37}
-            #convert received datetime to timestamp
-            currentDt = datetime(content['year'], content['month'], content['day'], content['hour'], content['minute'], 0)
-            currentTs = int(currentDt.strftime('%s'))
+            #convert received datetime to timestamp UTC
+            currentDtLocal = datetime(content['year'], content['month'], content['day'], content['hour'], content['minute'], 0)
+            currentTsLocal = int(currentDtLocal.strftime('%s'))
+            currentTsUtc = int(time.mktime(time.gmtime(time.mktime(currentDtLocal.timetuple()))))
+            currentDtUtc = datetime.fromtimestamp(currentTsUtc)
+
             #search scenarios to execute
-            schedules = timeSchedules.find_all(currentTs, itemgetter(1))
+            schedules = timeSchedules.find_all(currentTsUtc, itemgetter(1))
             #execute scenarios
             for schedule in schedules:
                 logging.info('Execute scenario id "%s"' % schedule['scenario'])
-                client.sendMessage({'uuid':scenarioControllerUuid, 'command':'run', 'internalid':schedule['scenario']})
+                client.sendMessage(None, {'uuid':scenarioControllerUuid, 'command':'run', 'internalid':schedule['scenario']})
         except:
             logging.exception('Exception on timechanged event:')
 
