@@ -399,98 +399,58 @@ function agoSchedulerPlugin(deviceMap) {
 }
 
 /**
- * Load CSS
- */
-function load_css(url)
-{
-    $("head").append("<link>");
-    css = $("head").children(":last");
-    css.attr({ 
-      rel:  "stylesheet",
-      type: "text/css",
-      href: url
-    });
-}
-
-/**
- * Load CSS
- */
-function load_js(url)
-{
-    $("head").append("<script>");
-    js = $("head").children(":last");
-    js.attr({ 
-      type: "text/javascript",
-      src: url
-    });
-}
-/**
  * Entry point: mandatory!
  */
 function init_plugin()
 {
-    //force js libs to be cached by browser
-    $.ajaxSetup({
-        cache: true
-    });
+    ko.fullCalendar = {
+        // Defines a view model class you can use to populate a calendar
+        viewModel: function(configuration) {
+            this.selectable = configuration.selectable;
+            this.selecHelper = configuration.selectHelper;
+            this.select = configuration.select;
+            this.events = configuration.events;
+            this.header = configuration.header;
+            this.allDaySlot = configuration.allDaySlot;
+            this.editable = configuration.editable;
+            this.viewDate = configuration.viewDate || ko.observable(new Date());
+            this.defaultView = configuration.defaultView;
+            this.eventClick = configuration.eventClick;
+            this.eventResize = configuration.eventResize;
+            this.eventDrop = configuration.eventDrop;
+            this.slotMinutes = configuration.slotMinutes;
+        }
+    };
 
-    //sync load js libs
-    $.when(
-        load_css("plugins/agoscheduler/fullcalendar/fullcalendar.css"),
-        $.getScript("plugins/agoscheduler/fullcalendar/fullcalendar.min.js"),
-        $.Deferred(function(deferred) { $(deferred.resolve); })
-    ).done(function() {
+    // The "fullCalendar" binding
+    ko.bindingHandlers.fullCalendar = {
+        update: function(element, viewModelAccessor) {
+            var viewModel = viewModelAccessor();
+            element.innerHTML = "";
+            var now = new Date();
 
-        //and load plugin code if everything went fine
-        ko.fullCalendar = {
-            // Defines a view model class you can use to populate a calendar
-            viewModel: function(configuration) {
-                this.selectable = configuration.selectable;
-                this.selecHelper = configuration.selectHelper;
-                this.select = configuration.select;
-                this.events = configuration.events;
-                this.header = configuration.header;
-                this.allDaySlot = configuration.allDaySlot;
-                this.editable = configuration.editable;
-                this.viewDate = configuration.viewDate || ko.observable(new Date());
-                this.defaultView = configuration.defaultView;
-                this.eventClick = configuration.eventClick;
-                this.eventResize = configuration.eventResize;
-                this.eventDrop = configuration.eventDrop;
-                this.slotMinutes = configuration.slotMinutes;
-            }
-        };
+            $(element).fullCalendar({
+                events: ko.utils.unwrapObservable(viewModel.events),
+                header: viewModel.header,
+                allDaySlot: viewModel.allDaySlot,
+                editable: viewModel.editable,
+                selectable: viewModel.selectable,
+                selectHelper: viewModel.selectHelper,
+                select: viewModel.select,
+                defaultView: viewModel.defaultView,
+                eventClick: viewModel.eventClick,
+                eventResize: viewModel.eventResize,
+                eventDrop: viewModel.eventDrop,
+                slotMinutes: viewModel.slotMinutes,
+                firstHour: now.getHours()
+            });
+            $(element).fullCalendar('gotoDate', ko.utils.unwrapObservable(viewModel.viewDate));
+        }
+    };
 
-        // The "fullCalendar" binding
-        ko.bindingHandlers.fullCalendar = {
-            update: function(element, viewModelAccessor) {
-                var viewModel = viewModelAccessor();
-                element.innerHTML = "";
-                var now = new Date();
-
-                $(element).fullCalendar({
-                    events: ko.utils.unwrapObservable(viewModel.events),
-                    header: viewModel.header,
-                    allDaySlot: viewModel.allDaySlot,
-                    editable: viewModel.editable,
-                    selectable: viewModel.selectable,
-                    selectHelper: viewModel.selectHelper,
-                    select: viewModel.select,
-                    defaultView: viewModel.defaultView,
-                    eventClick: viewModel.eventClick,
-                    eventResize: viewModel.eventResize,
-                    eventDrop: viewModel.eventDrop,
-                    slotMinutes: viewModel.slotMinutes,
-                    firstHour: now.getHours()
-                });
-                $(element).fullCalendar('gotoDate', ko.utils.unwrapObservable(viewModel.viewDate));
-            }
-        };
-
-        model = new agoSchedulerPlugin(deviceMap);
-        model.mainTemplate = function() {
-    	    return templatePath + "agoscheduler";
-        }.bind(model);
-        ko.applyBindings(model);
-    });
+    model = new agoSchedulerPlugin(deviceMap);
+    model.mainTemplate = function() {
+	    return templatePath + "agoscheduler";
+    }.bind(model);
+    ko.applyBindings(model);
 }
