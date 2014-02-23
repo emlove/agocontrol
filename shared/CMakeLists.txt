@@ -14,6 +14,17 @@ configure_file (
     @ONLY
 )
 
+## temporarily added to not break original makefiles
+## TODO: change the location of agoclient.h in source
+##  files to "agoclient.h" as CMAKE will add the
+##  correct INCLUDE_DIRS for us.
+configure_file (
+    "${CMAKE_CURRENT_SOURCE_DIR}/agoclient.h.in"
+    "${CMAKE_CURRENT_SOURCE_DIR}/agoclient.h"
+    @ONLY
+)
+##
+
 file(GLOB_RECURSE LIBAGOCLIENT_SOURCE_FILES *.cpp)
 
 add_library (agoclient SHARED ${LIBAGOCLIENT_SOURCE_FILES})

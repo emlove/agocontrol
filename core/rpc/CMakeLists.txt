@@ -8,9 +8,11 @@ set (RPC_LIBRARIES
     pthread
 )
 
-include_directories(
-    /usr/include/jsoncpp
-)
+
+find_package (JsonCpp REQUIRED)
+if (JSONCPP_FOUND)
+  include_directories(${JSONCPP_INCLUDE_DIRS})
+endif (JSONCPP_FOUND)
 
 # add the executable
 #add_executable (agorpc ${AGORPC_SOURCE_FILES})
@@ -23,6 +25,6 @@ add_executable (get_table_lang.cgi get_table_lang.cpp)
 # to the source code
 configure_file (
     "${CMAKE_CURRENT_SOURCE_DIR}/activate.cgi.in"
-    "${CMAKE_CURRENT_SOURCE_DIR}/activate.cgi"
+    "${CMAKE_CURRENT_BINARY_DIR}/activate.cgi"
     @ONLY
 )
