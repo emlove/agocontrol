@@ -4,7 +4,7 @@ cmake_minimum_required (VERSION 2.6)
 # to the source code
 configure_file (
     "${CMAKE_CURRENT_SOURCE_DIR}/agocontrol-init-script.sh.in"
-    "${CMAKE_CURRENT_SOURCE_DIR}/agocontrol-init-script.sh"
+    "${CMAKE_CURRENT_BINARY_DIR}/agocontrol-init-script.sh"
     @ONLY
 )
 

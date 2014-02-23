@@ -1,7 +1,17 @@
 cmake_minimum_required (VERSION 2.6)
 
-configure_file(
-    "${CMAKE_CURRENT_SOURCE_DIR}/agocontrol.in"
-    "${CMAKE_CURRENT_SOURCE_DIR}/agocontrol"
-    @ONLY
-)
+file (GLOB SYSV_FILES *.in)
+
+foreach (infile ${SYSV_FILES})
+
+    string(REGEX REPLACE ".in$" "" outfile ${infile})
+    string(REGEX REPLACE ".*/" "" outfile ${outfile})
+
+
+    configure_file(
+        "${infile}"
+        "${CMAKE_CURRENT_BINARY_DIR}/${outfile}"
+        @ONLY
+    )
+
+endforeach (infile)

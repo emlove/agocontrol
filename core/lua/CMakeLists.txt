@@ -2,7 +2,7 @@ cmake_minimum_required (VERSION 2.6)
 
 configure_file (
     "${CMAKE_CURRENT_SOURCE_DIR}/command.lua.in"
-    "${CMAKE_CURRENT_SOURCE_DIR}/command.lua"
+    "${CMAKE_CURRENT_BINARY_DIR}/command.lua"
     @ONLY
 )
 
