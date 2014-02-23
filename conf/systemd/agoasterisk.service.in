@@ -2,8 +2,8 @@
 Description=ago control Asterisk PBX interface
 
 [Service]
-ExecStart=@BINDIR/agoasterisk.py
-WorkingDirectory=@BINDIR
+ExecStart=@BINDIR@/agoasterisk.py
+WorkingDirectory=@BINDIR@
 StandardOutput=syslog
 StandardError=syslog
 Restart=always

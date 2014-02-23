@@ -2,8 +2,8 @@
 Description=ago control webcam device
 
 [Service]
-ExecStart=@BINDIR/agowebcam
-WorkingDirectory=@BINDIR
+ExecStart=@BINDIR@/agowebcam
+WorkingDirectory=@BINDIR@
 StandardOutput=syslog
 StandardError=syslog
 Restart=always

@@ -10,7 +10,7 @@
 
 . /lib/lsb/init-functions
 
-BIN_PATH=@BINDIR/
+BIN_PATH=@BINDIR@/
 PID_PATH=/var/run/
 APPS="agorpc agodatalogger agoevent agoresolver agoscenario agotimer agosqueezebox.py agoalert.py agoipx800 agoscheduler.py"
 

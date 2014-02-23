@@ -1,7 +1,7 @@
 FILES = agocontrol
 
 agocontrol : agocontrol.in
-	sed -e 's|@BINDIR|$(BINDIR)|g' $< > $@
+	sed -e 's|@BINDIR@|$(BINDIR)|g' $< > $@
 
 all: $(FILES)
 

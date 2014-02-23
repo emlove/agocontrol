@@ -2,8 +2,8 @@
 Description=ago control HTTP RPC interface
 
 [Service]
-ExecStart=@BINDIR/agorpc
-WorkingDirectory=@BINDIR
+ExecStart=@BINDIR@/agorpc
+WorkingDirectory=@BINDIR@
 StandardOutput=syslog
 StandardError=syslog
 Restart=always

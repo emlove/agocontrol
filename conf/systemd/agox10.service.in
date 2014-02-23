@@ -2,8 +2,8 @@
 Description=ago control X10 Device
 
 [Service]
-ExecStart=@BINDIR/agox10.py
-WorkingDirectory=@BINDIR
+ExecStart=@BINDIR@/agox10.py
+WorkingDirectory=@BINDIR@
 StandardOutput=syslog
 StandardError=syslog
 Restart=always

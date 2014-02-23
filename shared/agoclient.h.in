@@ -21,10 +21,10 @@
 
 #include "CDataFile.h"
 
-#define BINDIR "@BINDIR"
-#define CONFDIR "@CONFDIR"
-#define LOCALSTATEDIR "@LOCALSTATEDIR"
-#define HTMLDIR "@HTMLDIR"
+#define BINDIR "@BINDIR@"
+#define CONFDIR "@CONFDIR@"
+#define LOCALSTATEDIR "@LOCALSTATEDIR@"
+#define HTMLDIR "@HTMLDIR@"
 
 #define CONFIG_FILE_PATH CONFDIR "/conf.d"
 

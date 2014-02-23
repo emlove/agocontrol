@@ -2,8 +2,8 @@
 Description=ago control Kwikwai HDMI CEC Bridge Device
 
 [Service]
-ExecStart=@BINDIR/agokwikwai
-WorkingDirectory=@BINDIR
+ExecStart=@BINDIR@/agokwikwai
+WorkingDirectory=@BINDIR@
 Restart=always
 RestartSec=2
 User=agocontrol

@@ -2,8 +2,8 @@
 Description=ago control Z-Wave Device
 
 [Service]
-ExecStart=@BINDIR/agozwave
-WorkingDirectory=@BINDIR
+ExecStart=@BINDIR@/agozwave
+WorkingDirectory=@BINDIR@
 StandardOutput=syslog
 StandardError=syslog
 Restart=always

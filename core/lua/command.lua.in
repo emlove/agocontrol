@@ -1,4 +1,4 @@
-dofile("@CONFDIR/lua/helper.lua")
+dofile("@CONFDIR@/lua/helper.lua")
 
 for key,value in pairs(content) do print(key,value) end
 -- for key,value in pairs(inventory.devices) do

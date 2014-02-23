@@ -2,7 +2,7 @@
 FILES = $(patsubst %.service.in, %.service, $(wildcard *.service.in))
 
 %.service : %.service.in
-	sed -e 's|@BINDIR|$(BINDIR)|g' $< > $@
+	sed -e 's|@BINDIR@|$(BINDIR)|g' $< > $@
 
 all: $(FILES)
 

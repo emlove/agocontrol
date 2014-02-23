@@ -2,8 +2,8 @@
 Description=ago control Data Logger
 
 [Service]
-ExecStart=@BINDIR/agodatalogger
-WorkingDirectory=@BINDIR
+ExecStart=@BINDIR@/agodatalogger
+WorkingDirectory=@BINDIR@
 StandardOutput=syslog
 StandardError=syslog
 Restart=always

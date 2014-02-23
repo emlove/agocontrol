@@ -2,8 +2,8 @@
 Description=ago control APC Device
 
 [Service]
-ExecStart=@BINDIR/agoapc.py
-WorkingDirectory=@BINDIR
+ExecStart=@BINDIR@/agoapc.py
+WorkingDirectory=@BINDIR@
 Restart=always
 RestartSec=2
 User=agocontrol

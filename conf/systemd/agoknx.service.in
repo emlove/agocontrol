@@ -2,8 +2,8 @@
 Description=ago control KNX Device
 
 [Service]
-ExecStart=@BINDIR/agoknx
-WorkingDirectory=@BINDIR
+ExecStart=@BINDIR@/agoknx
+WorkingDirectory=@BINDIR@
 Restart=always
 RestartSec=2
 User=agocontrol

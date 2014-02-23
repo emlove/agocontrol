@@ -2,8 +2,8 @@
 Description=ago control Meloware Lightswitchserver Gateway
 
 [Service]
-ExecStart=@BINDIR/agomeloware.py
-WorkingDirectory=@BINDIR
+ExecStart=@BINDIR@/agomeloware.py
+WorkingDirectory=@BINDIR@
 StandardOutput=syslog
 StandardError=syslog
 Restart=always

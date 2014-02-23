@@ -2,8 +2,8 @@
 Description=ago control Timer
 
 [Service]
-ExecStart=@BINDIR/agotimer
-WorkingDirectory=@BINDIR
+ExecStart=@BINDIR@/agotimer
+WorkingDirectory=@BINDIR@
 StandardOutput=syslog
 StandardError=syslog
 Restart=always
