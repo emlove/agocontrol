@@ -94,6 +94,17 @@ function buildfloorPlanList(model) {
  */
 var deferredInit = null;
 
+function loadCSS(url) {
+    $.ajax({
+	url : url,
+	dataType : 'text',
+	async : false,
+	success : function(data) {
+	    $('<style type="text/css">\n' + data + '</style>').appendTo("head");
+	}
+    });
+}
+
 function loadPlugin() {
     /* Get plugin name from query string */
     var name = window.location.search.substring(1);
@@ -105,8 +116,28 @@ function loadPlugin() {
     }
     name = name.replace(/\//g, "");
     $.getScript("plugins/" + name + "/plugin.js", function() {
-	templatePath = "../plugins/" + name + "/templates/";
-	init_plugin();
+	$.ajax({
+	    url : "/cgi-bin/pluginlist.cgi",
+	    method : "GET",
+	    async : true,
+	}).done(function(result) {
+	    plugin = result.filter(function (p) { return p.name == name; })[0];
+	    /* Load the plugins resources if any */
+	    if (plugin.resources) {
+		if (plugin.resources.css && plugin.resources.css.length > 0) {
+		    for (var i = 0; i < plugin.resources.css.length; i++) {
+			loadCSS("plugins/" + name + "/" + plugin.resources.css[i]);
+		    }
+		}
+		if (plugin.resources.js && plugin.resources.js.length > 0) {
+		    for (var i = 0; i < plugin.resources.js.length; i++) {
+			$.getScript("plugins/" + name + "/" + plugin.resources.js[i]);
+		    }
+		}
+	    }
+	    templatePath = "../plugins/" + name + "/templates/";
+	    init_plugin();
+	});
     }).fail(function() {
 	alert("Error: Failed to load plugin!");
     });
@@ -162,15 +193,15 @@ $.ajax({
 function handleEvent(response) {
     for ( var i = 0; i < deviceMap.length; i++) {
 	if (deviceMap[i].uuid == response.result.uuid && response.result.level !== undefined) {
-	    //update custom device member
+	    // update custom device member
 	    if (response.result.event.indexOf('event.device') != -1 && response.result.event.indexOf('changed') != -1) {
-		//event that update device member
+		// event that update device member
 		var member = response.result.event.replace('event.device.', '').replace('changed', '');
 		if (deviceMap[i][member] !== undefined) {
 		    deviceMap[i][member](response.result.level);
 		}
 	    }
-	    //update device last seen datetime
+	    // update device last seen datetime
 	    deviceMap[i].timeStamp(formatDate(new Date()));
 	    if (response.result.quantity) {
 		var values = deviceMap[i].values();
@@ -547,7 +578,7 @@ function doShowDetails(device, template, environment) {
 		dialogHeight = 720;
 	    }
 
-	    //detail dialog size
+	    // detail dialog size
 	    if (device.devicetype == "alertcontroller") {
 		dialogWidth = 800;
 		dialogHeight = 625;
