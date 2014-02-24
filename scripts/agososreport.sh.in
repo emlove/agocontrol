@@ -3,7 +3,7 @@ TMPFILE=$(mktemp)
 echo creating ago control sosreport, will be saved in $TMPFILE
 (
 echo ==== CONFG ====
-cat @CONFDIR/config.ini | grep -v ^uuid | grep -v ^#
+cat @CONFDIR@/config.ini | grep -v ^uuid | grep -v ^#
 echo ==== PSINF ====
 ps auxw | grep ago | grep -v grep
 echo ==== QPIDD ====
@@ -22,7 +22,7 @@ dpkg -l | grep qpid
 echo ==== LSUSB ====
 lsusb -v
 echo ==== UDEVI ====
-grep "/dev" @CONFDIR/config.ini | cut -d "=" -f 2 | while read file; do echo "$file" $(udevadm info -q path -n "$file"); done
+grep "/dev" @CONFDIR@/config.ini | cut -d "=" -f 2 | while read file; do echo "$file" $(udevadm info -q path -n "$file"); done
 echo ==== DMESG ====
 dmesg
 echo ==== SYSLG ====

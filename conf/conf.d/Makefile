@@ -2,8 +2,8 @@
 FILES = $(patsubst %.conf.in, %.conf, $(wildcard *.conf.in))
 
 %.conf: %.conf.in
-	sed -e 's|@CONFDIR|$(CONFDIR)|g' \
-		-e 's|@HTMLDIR|$(HTMLDIR)|g' $< > $@
+	sed -e 's|@CONFDIR@|$(CONFDIR)|g' \
+		-e 's|@HTMLDIR@|$(HTMLDIR)|g' $< > $@
 
 all: $(FILES)
 

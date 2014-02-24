@@ -2,8 +2,8 @@
 Description=ago control Onkyo ISCP device
 
 [Service]
-ExecStart=@BINDIR/agoiscp.py
-WorkingDirectory=@BINDIR
+ExecStart=@BINDIR@/agoiscp.py
+WorkingDirectory=@BINDIR@
 StandardOutput=syslog
 StandardError=syslog
 Restart=always

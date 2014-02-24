@@ -2,8 +2,8 @@
 Description=ago control Resolver
 
 [Service]
-ExecStart=@BINDIR/agoresolver
-WorkingDirectory=@BINDIR
+ExecStart=@BINDIR@/agoresolver
+WorkingDirectory=@BINDIR@
 StandardOutput=syslog
 StandardError=syslog
 Restart=always

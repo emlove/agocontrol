@@ -2,8 +2,8 @@
 Description=ago raspberry pi MCPxxx GPIO device
 	
 [Service]
-ExecStart=@BINDIR/raspiMCP3xxxGPIO.py
-WorkingDirectory=@BINDIR
+ExecStart=@BINDIR@/raspiMCP3xxxGPIO.py
+WorkingDirectory=@BINDIR@
 Restart=always
 RestartSec=2
 User=root

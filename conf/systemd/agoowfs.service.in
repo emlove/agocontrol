@@ -2,8 +2,8 @@
 Description=ago control 1-Wire Device
 
 [Service]
-ExecStart=@BINDIR/agoowfs.py
-WorkingDirectory=@BINDIR
+ExecStart=@BINDIR@/agoowfs.py
+WorkingDirectory=@BINDIR@
 StandardOutput=syslog
 StandardError=syslog
 Restart=always

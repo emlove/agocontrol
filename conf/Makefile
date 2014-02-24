@@ -8,7 +8,7 @@ INSTALLDIRS = $(DIRS:%=install-%)
 CLEANDIRS = $(DIRS:%=clean-%)
 
 %.init : %.init.in
-	sed -e 's|@BINDIR|$(BINDIR)|g' $< > $@
+	sed -e 's|@BINDIR@|$(BINDIR)|g' $< > $@
 
 all: $(BUILDDIRS) $(FILES)
 $(DIRS): $(BUILDDIRS)

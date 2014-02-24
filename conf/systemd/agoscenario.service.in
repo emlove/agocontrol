@@ -2,8 +2,8 @@
 Description=ago control Scenario Device
 
 [Service]
-ExecStart=@BINDIR/agoscenario
-WorkingDirectory=@BINDIR
+ExecStart=@BINDIR@/agoscenario
+WorkingDirectory=@BINDIR@
 StandardOutput=syslog
 StandardError=syslog
 Restart=always

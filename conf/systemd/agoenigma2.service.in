@@ -2,8 +2,8 @@
 Description=ago control Enigma2/Dreambox interface
 
 [Service]
-ExecStart=@BINDIR/agoenigma2.py
-WorkingDirectory=@BINDIR
+ExecStart=@BINDIR@/agoenigma2.py
+WorkingDirectory=@BINDIR@
 StandardOutput=syslog
 StandardError=syslog
 Restart=always

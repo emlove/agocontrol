@@ -2,8 +2,8 @@
 Description=ago control raspberry pi 1-wire GPIO Device
 	
 [Service]
-ExecStart=@BINDIR/raspi1wGPIO.py
-WorkingDirectory=@BINDIR
+ExecStart=@BINDIR@/raspi1wGPIO.py
+WorkingDirectory=@BINDIR@
 Restart=always
 RestartSec=2
 User=root

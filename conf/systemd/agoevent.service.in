@@ -2,8 +2,8 @@
 Description=ago control Event Device
 
 [Service]
-ExecStart=@BINDIR/agoevent
-WorkingDirectory=@BINDIR
+ExecStart=@BINDIR@/agoevent
+WorkingDirectory=@BINDIR@
 StandardOutput=syslog
 StandardError=syslog
 Restart=always

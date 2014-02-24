@@ -2,8 +2,8 @@
 Description=ago control JointSpace Device
 
 [Service]
-ExecStart=@BINDIR/agojointspace.py
-WorkingDirectory=@BINDIR
+ExecStart=@BINDIR@/agojointspace.py
+WorkingDirectory=@BINDIR@
 Restart=always
 RestartSec=2
 User=agocontrol

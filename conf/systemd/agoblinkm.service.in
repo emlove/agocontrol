@@ -2,8 +2,8 @@
 Description=ago control blinkm i2c device
 
 [Service]
-ExecStart=@BINDIR/agoblinkm
-WorkingDirectory=@BINDIR
+ExecStart=@BINDIR@/agoblinkm
+WorkingDirectory=@BINDIR@
 Restart=always
 RestartSec=2
 User=agocontrol

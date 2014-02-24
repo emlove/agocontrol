@@ -2,8 +2,8 @@
 Description=ago control Device simulator
 
 [Service]
-ExecStart=@BINDIR/agosimulator.py
-WorkingDirectory=@BINDIR
+ExecStart=@BINDIR@/agosimulator.py
+WorkingDirectory=@BINDIR@
 StandardOutput=syslog
 StandardError=syslog
 Restart=always
