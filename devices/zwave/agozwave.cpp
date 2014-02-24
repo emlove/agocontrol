@@ -607,7 +607,7 @@ void OnNotification
 					if (debug) printf("Sending %s event from child %s\n",eventtype.c_str(), device->getId().c_str());
 					agoConnection->emitEvent(device->getId().c_str(), eventtype.c_str(), level.str().c_str(), "");	
 				} else {
-					cout << "no agocontrol device found for node event" << endl;
+					cout << "no agocontrol device found for node event - Label: " << label << " Level: " << level << endl;
 				}
 
 			}
