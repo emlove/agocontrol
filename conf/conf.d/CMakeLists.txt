@@ -14,4 +14,9 @@ foreach (infile ${CONFD_FILES})
         @ONLY
     )
 
+    LIST(APPEND CONFD_FILES_DONE ${CMAKE_CURRENT_BINARY_DIR}/${outfile})
+
 endforeach (infile)
+
+file (GLOB CONFD_FILES *.conf)
+install (FILES ${CONFD_FILES_DONE} ${CONFD_FILES} DESTINATION ${CONFDIR}/conf.d)

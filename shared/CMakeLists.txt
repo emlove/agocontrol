@@ -18,6 +18,8 @@ configure_file (
 ## TODO: change the location of agoclient.h in source
 ##  files to "agoclient.h" as CMAKE will add the
 ##  correct INCLUDE_DIRS for us.
+## WARNING: this will make an out-of-tree build
+##  still taint the original source!
 configure_file (
     "${CMAKE_CURRENT_SOURCE_DIR}/agoclient.h.in"
     "${CMAKE_CURRENT_SOURCE_DIR}/agoclient.h"
@@ -40,6 +42,6 @@ set (AGOCLIENT_LIBRARIES
 target_link_libraries (agoclient ${AGOCLIENT_LIBRARIES})
 
 # Install instructions for this target
-install (TARGETS agoclient LIBRARY DESTINATION lib)
-install (FILES agoclient.h DESTINATION include)
-install (FILES agoclient.py DESTINATION lib)
+install (TARGETS agoclient LIBRARY DESTINATION ${LIBDIR})
+install (FILES agoclient.h CDataFile.h DESTINATION $(INCDIR))
+install (FILES ${CMAKE_CURRENT_BINARY_DIR}/agoclient.py DESTINATION $(BINDIR))

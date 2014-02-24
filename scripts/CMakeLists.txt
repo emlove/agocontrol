@@ -14,4 +14,8 @@ foreach (infile ${SCRIPT_FILES})
         @ONLY
     )
 
+    LIST(APPEND SCRIPT_FILES_DONE ${CMAKE_CURRENT_BINARY_DIR}/${outfile})
+
 endforeach (infile)
+
+install (FILES ${SCRIPT_FILES_DONE} convert-zwave-uuid.py convert-scenario.py convert-event.py convert-config.py DESTINATION ${BINDIR})

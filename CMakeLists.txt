@@ -51,3 +51,6 @@ add_subdirectory (core)
 #add_subdirectory (devices) 
 add_subdirectory (conf) 
 add_subdirectory (scripts)
+
+install (PROGRAMS gateways/agomeloware.py DESTINATION ${BINDIR})
+install (FILES data/inventory.sql data/datalogger.sql DESTINATION ${DATADIR})

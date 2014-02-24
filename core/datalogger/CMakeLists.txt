@@ -10,3 +10,5 @@ set (DATALOGGER_LIBRARIES
 # add the executable
 add_executable (agodatalogger ${AGODATALOGGER_SOURCE_FILES})
 target_link_libraries (agodatalogger ${DATALOGGER_LIBRARIES})
+
+install (TARGETS agodatalogger RUNTIME DESTINATION ${BINDIR})

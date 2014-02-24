@@ -8,3 +8,5 @@ set (SCENARIO_LIBRARIES
 # add the executable
 add_executable (agoscenario agoscenario.cpp)
 target_link_libraries (agoscenario ${SCENARIO_LIBRARIES})
+
+install (TARGETS agoscenario RUNTIME DESTINATION ${BINDIR})

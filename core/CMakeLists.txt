@@ -8,9 +8,7 @@ configure_file (
     @ONLY
 )
 
-install (FILES agodrain.py DESTINATION bin)
-install (FILES myavahi.py DESTINATION bin)
-install (FILES agoctrl.sh DESTINATION bin)
+install (FILES agodrain.py myavahi.py agoctrl.sh DESTINATION ${BINDIR})
 
 add_subdirectory (resolver)
 add_subdirectory (rpc)
