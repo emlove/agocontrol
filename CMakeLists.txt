@@ -48,7 +48,7 @@ set (RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${BINDIR}")
 # add sub directories
 add_subdirectory (shared) 
 add_subdirectory (core) 
-#add_subdirectory (devices) 
+add_subdirectory (devices) 
 add_subdirectory (conf) 
 add_subdirectory (scripts)
 
