@@ -1,7 +1,5 @@
 cmake_minimum_required (VERSION 2.6)
 
-file (GLOB AGORPC_SOURCE_FILES *.cpp)
-
 set (RPC_LIBRARIES
     agoclient
     dl
@@ -15,7 +13,6 @@ if (JSONCPP_FOUND)
 endif (JSONCPP_FOUND)
 
 # add the executable
-#add_executable (agorpc ${AGORPC_SOURCE_FILES})
 add_executable (agorpc agorpc.cpp mongoose.c)
 target_link_libraries (agorpc ${RPC_LIBRARIES})
 
