@@ -1,6 +1,6 @@
 cmake_minimum_required (VERSION 2.6)
 
-file (GLOB_RECURSE DEVICE_SOURCE_FILES *.cpp)
+file (GLOB_RECURSE DEVICE_SOURCE_FILES *.cpp *.c)
 
 set (DEVICE_EXTRA_LIBRARIES
      agoclient

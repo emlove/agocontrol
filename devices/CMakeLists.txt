@@ -43,7 +43,6 @@ endforeach(device)
 # some overrides for devices I could not get to build properly
 OPTION(BUILD_DEVICE_i2c "Build the device i2c" OFF)
 OPTION(BUILD_DEVICE_blinkm "Build the device blinkm" OFF)
-OPTION(BUILD_DEVICE_knx "Build the device knx" OFF)
 
 foreach (device ${AGODEVICES})
     if (BUILD_DEVICE_${device})
