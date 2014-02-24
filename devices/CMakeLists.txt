@@ -4,7 +4,7 @@ set (AGODEVICES
 #  enocean3
 #  blinkm
 #  chromoflex
-#  firmata
+  firmata
 #  i2c
 #  irtrans_ethernet
 #  kwikwai
@@ -20,7 +20,7 @@ set (AGODEVICES
 #  raspiGPIO
 #  raspi1wGPIO
 #  raspiMCP3xxxGPIO
-#  gc100
+  gc100
 #  onkyo
 #  x10
 #  webcam
