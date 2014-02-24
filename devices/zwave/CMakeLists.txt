@@ -1,0 +1,23 @@
+cmake_minimum_required (VERSION 2.6)
+
+file (GLOB_RECURSE DEVICE_SOURCE_FILES *.cpp)
+
+set (DEVICE_EXTRA_LIBRARIES
+     udev
+     openzwave
+     agoclient
+)
+
+include_directories("/usr/include/openzwave")
+include_directories("/usr/include/openzwave/value_classes")
+include_directories("/usr/include/openzwave/platform")
+include_directories("/usr/include/openzwave/platform/unix")
+
+set (DEVICE "agozwave")
+
+# add the executable
+add_executable (${DEVICE} ${DEVICE_SOURCE_FILES})
+target_link_libraries (${DEVICE} ${DEVICE_EXTRA_LIBRARIES})
+
+install (TARGETS ${DEVICE} RUNTIME DESTINATION ${BINDIR})
+install (CODE "file(MAKE_DIRECTORY \${ENV}\${CMAKE_INSTALL_PREFIX}${CONFDIR}/ozw)")

@@ -3,13 +3,10 @@ cmake_minimum_required (VERSION 2.6)
 file (GLOB_RECURSE DEVICE_SOURCE_FILES *.cpp)
 
 set (DEVICE_EXTRA_LIBRARIES
-     tinyxml2
-     ola
-     olacommon
      agoclient
 )
 
-set (DEVICE "agodmx")
+set (DEVICE "agochromoflex")
 
 # add the executable
 add_executable (${DEVICE} ${DEVICE_SOURCE_FILES})

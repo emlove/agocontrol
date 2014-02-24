@@ -8,7 +8,6 @@ set (DEVICE_EXTRA_LIBRARIES
 )
 
 set (DEVICE "agoenocean3")
-include_directories("${CMAKE_CURRENT_SOURCE_DIR}")
 
 # add the executable
 add_executable (${DEVICE} ${DEVICE_SOURCE_FILES})
