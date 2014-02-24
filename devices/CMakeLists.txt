@@ -1,7 +1,7 @@
 cmake_minimum_required (VERSION 2.6)
 
 set (AGODEVICES
-#  enocean3
+  enocean3
 #  blinkm
 #  chromoflex
   firmata
@@ -19,7 +19,7 @@ set (AGODEVICES
 #  agojointspace
 #  raspiGPIO
 #  raspi1wGPIO
-#  raspiMCP3xxxGPIO
+  raspiMCP3xxxGPIO
   gc100
 #  onkyo
 #  x10

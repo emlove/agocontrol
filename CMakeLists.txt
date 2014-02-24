@@ -16,9 +16,6 @@ set (DATADIR /var/opt/agocontrol)
 set (LOCALSTATEDIR /var/opt/agocontrol)
 set (HTMLDIR /opt/agocontrol/html)
 
-# options what to build
-OPTION(BUILD_AGOLUA "Build agolua" ON)
-
 
 # configure a header file to pass some of the CMake settings
 # to the source code

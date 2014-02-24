@@ -18,6 +18,8 @@ add_subdirectory (scenario)
 add_subdirectory (event)
 add_subdirectory (datalogger)
 
+# options what to build
+OPTION(BUILD_AGOLUA "Build agolua" ON)
 if (BUILD_AGOLUA)
   add_subdirectory (lua)
 endif()
