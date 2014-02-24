@@ -38,13 +38,6 @@ set (AGODEVICES
 foreach (device ${AGODEVICES})
     # options what to build
     OPTION(BUILD_DEVICE_${device} "Build the device ${device}" ON)
-endforeach(device)
-
-# some overrides for devices I could not get to build properly
-OPTION(BUILD_DEVICE_i2c "Build the device i2c" OFF)
-OPTION(BUILD_DEVICE_blinkm "Build the device blinkm" OFF)
-
-foreach (device ${AGODEVICES})
     if (BUILD_DEVICE_${device})
         add_subdirectory(${device})
     endif()
