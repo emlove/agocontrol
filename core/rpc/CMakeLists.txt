@@ -42,15 +42,13 @@ add_dependencies(agorpc translations)
 
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/html DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
-file(GLOB_RECURSE HTML_FILES ${CMAKE_CURRENT_BINARY_DIR}/html *.in.html)
+file(GLOB_RECURSE HTML_FILES ${CMAKE_CURRENT_BINARY_DIR}/html/*.in.html)
+file(REMOVE ${HTML_FILES})
 
 foreach (infile ${HTML_FILES})
 
     string(REGEX REPLACE ".in.html$" ".html" outfile ${infile})
-    string(REGEX REPLACE "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_BINARY_DIR}" outfile ${outfile})
-    string(REGEX REPLACE "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_BINARY_DIR}" delfile ${infile})
-
-    list(APPEND HTML_FILES_DONE ${delfile})
+    string(REGEX REPLACE "${CMAKE_CURRENT_BINARY_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}" infile ${infile})
 
     add_custom_command(
         TARGET translations
@@ -58,10 +56,6 @@ foreach (infile ${HTML_FILES})
         COMMENT "Generate html files")
 
 endforeach (infile)
-
-file(REMOVE ${HTML_FILES_DONE})
-
-
 
 install (TARGETS agorpc rpc-htpasswd RUNTIME DESTINATION ${BINDIR})
 install(
@@ -72,6 +66,3 @@ install(
    )"
 )
 
-#foreach (dir "cgi-bin css datatables_lang fonts img js plugins po templates")
-#    install (DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/html/${dir} DESTINATION ${HTMLDIR})
-#endforeach (dir)
