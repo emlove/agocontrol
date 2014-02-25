@@ -33,12 +33,13 @@
             <br/>
             <form>
                <ol>
-                    <_li data-translateable="true">Click on button to generate an authorization url <_button data-translateable="true" data-bind="click: twitterUrl">Generate</_button></_li>
+                    <_li data-translateable="true">Click <a href="#" data-bind="click: twitterUrl">here</a> to generate an authorization url</_li>
                     <_li data-translateable="true">Then click on generated link: <span class="twitterUrl" name="twitterUrl" style="color: darkorange"/></_li>
                     <_li data-translateable="true">Authorize access on Twitter</_li>
                     <_li data-translateable="true">Type given access code here: <input class="twitterAccessCode" name="twitterAccessCode" placeholder="Twitter code"/></_li>
-                    <_li data-translateable="true">Finally click on button to save access code <_button data-translateable="true" data-bind="click: twitterAccessCode">Save</_button></_li>
+                    <_li data-translateable="true">Finally click on button to save access code</_li>
                 </ol>
+                <_button data-translateable="true" data-bind="click: twitterAccessCode">Save</_button>
             </form>
             <hr/>
             <_span data-translateable="true">To send test tweet on your account, click on button: </_span><_button data-translateable="true" data-bind="click: twitterTest">Test</_button>
@@ -54,7 +55,7 @@
                 <_span style="color:#CC0000;" data-translateable="true">GTalk is not configured</_span>
             </ko>
             <br/>
-            <_span data-translateable="true">If you are using 2-Step verification, generate password <_a data-translateable="true" href="https://www.google.com/settings/security" target="_blank">clicking here</_a></_span>
+            <_span data-translateable="true">If you are using 2-Step verification, generate password <a data-translateable="true" href="https://www.google.com/settings/security" target="_blank">clicking here</a></_span>
             <br/>
             <_span data-translateable="true">Otherwise use your usual Google credentials:</_span>
             <form>
