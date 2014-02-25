@@ -43,11 +43,30 @@ set (RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${BINDIR}")
 
 
 # add sub directories
-add_subdirectory (shared) 
-add_subdirectory (core) 
-add_subdirectory (devices) 
-add_subdirectory (conf) 
-add_subdirectory (scripts)
+OPTION(BUILD_SHARED "Build the agoclient shared library" ON)
+if (BUILD_SHARED)
+  add_subdirectory (shared) 
+endif()
 
-install (PROGRAMS gateways/agomeloware.py DESTINATION ${BINDIR})
-install (FILES data/inventory.sql data/datalogger.sql DESTINATION ${DATADIR})
+OPTION(BUILD_CORE "Build the CORE" ON)
+if (BUILD_CORE)
+  add_subdirectory (core) 
+  install (PROGRAMS gateways/agomeloware.py DESTINATION ${BINDIR})
+  install (FILES data/inventory.sql data/datalogger.sql DESTINATION ${DATADIR})
+endif()
+
+OPTION(BUILD_DEVICES "Build the devices" ON)
+if (BUILD_DEVICES)
+  add_subdirectory (devices) 
+endif()
+
+OPTION(BUILD_CONF "Build the configs" ON)
+if (BUILD_CONF)
+  add_subdirectory (conf) 
+endif()
+
+OPTION(BUILD_SCRIPTS "Build the scripts" ON)
+if (BUILD_SCRIPTS)
+  add_subdirectory (scripts)
+endif()
+

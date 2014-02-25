@@ -10,18 +10,48 @@ configure_file (
 
 install (FILES agodrain.py myavahi.py agoctrl.sh DESTINATION ${BINDIR})
 
-add_subdirectory (resolver)
-add_subdirectory (rpc)
-add_subdirectory (messagesend)
-add_subdirectory (timer)
-add_subdirectory (scenario)
-add_subdirectory (event)
-add_subdirectory (datalogger)
+OPTION(BUILD_CORE_resolver "Build agolua" ON)
+if (BUILD_CORE_resolver)
+  add_subdirectory (resolver)
+endif()
 
-# options what to build
-OPTION(BUILD_AGOLUA "Build agolua" ON)
-if (BUILD_AGOLUA)
+OPTION(BUILD_CORE_rpc "Build agorpc" ON)
+if (BUILD_CORE_rpc)
+  add_subdirectory (rpc)
+endif()
+
+OPTION(BUILD_CORE_messagesend "Build messagesend" ON)
+if (BUILD_CORE_messagesend)
+  add_subdirectory (messagesend)
+endif()
+
+OPTION(BUILD_CORE_timer "Build agotimer" ON)
+if (BUILD_CORE_timer)
+  add_subdirectory (timer)
+endif()
+
+OPTION(BUILD_CORE_scenario "Build agoscenario" ON)
+if (BUILD_CORE_scenario)
+  add_subdirectory (scenario)
+endif()
+
+OPTION(BUILD_CORE_event "Build agoevent" ON)
+if (BUILD_CORE_event)
+  add_subdirectory (event)
+endif()
+
+OPTION(BUILD_CORE_datalogger "Build agodatalogger" ON)
+if (BUILD_CORE_datalogger)
+  add_subdirectory (datalogger)
+endif()
+
+OPTION(BUILD_CORE_lua "Build agolua" ON)
+if (BUILD_CORE_lua)
   add_subdirectory (lua)
 endif()
 
-add_subdirectory (security)
+OPTION(BUILD_CORE_security "Build agosecurity" ON)
+if (BUILD_CORE_security)
+  add_subdirectory (security)
+endif()
+
