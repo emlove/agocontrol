@@ -48,8 +48,9 @@ foreach (infile ${HTML_FILES})
 
     string(REGEX REPLACE ".in.html$" ".html" outfile ${infile})
     string(REGEX REPLACE "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_BINARY_DIR}" outfile ${outfile})
+    string(REGEX REPLACE "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_BINARY_DIR}" delfile ${infile})
 
-    list(APPEND HTML_FILES_DONE ${outfile})
+    list(APPEND HTML_FILES_DONE ${delfile})
 
     add_custom_command(
         TARGET translations
@@ -58,5 +59,19 @@ foreach (infile ${HTML_FILES})
 
 endforeach (infile)
 
-install (FILES ${HTML_FILES_DONE} DESTINATION ${HTMLDIR})
+file(REMOVE ${HTML_FILES_DONE})
+
+
+
 install (TARGETS agorpc rpc-htpasswd RUNTIME DESTINATION ${BINDIR})
+install(
+   CODE "
+   file(GLOB HTML_FILES ${CMAKE_CURRENT_BINARY_DIR}/html/*) \n
+   file(INSTALL DESTINATION ${HTMLDIR}
+   TYPE FILE FILES \${HTML_FILES}
+   )"
+)
+
+#foreach (dir "cgi-bin css datatables_lang fonts img js plugins po templates")
+#    install (DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/html/${dir} DESTINATION ${HTMLDIR})
+#endforeach (dir)
