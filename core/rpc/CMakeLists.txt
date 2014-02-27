@@ -43,12 +43,10 @@ add_dependencies(agorpc translations)
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/html DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 file(GLOB_RECURSE HTML_FILES ${CMAKE_CURRENT_BINARY_DIR}/html/*.in.html)
-file(REMOVE ${HTML_FILES})
 
 foreach (infile ${HTML_FILES})
 
     string(REGEX REPLACE ".in.html$" ".html" outfile ${infile})
-    string(REGEX REPLACE "${CMAKE_CURRENT_BINARY_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}" infile ${infile})
 
     add_custom_command(
         TARGET translations
@@ -60,6 +58,8 @@ endforeach (infile)
 install (TARGETS agorpc rpc-htpasswd RUNTIME DESTINATION ${BINDIR})
 install(
    CODE "
+   file(GLOB_RECURSE HTML_FILES ${CMAKE_CURRENT_BINARY_DIR}/html/*.in.html)
+   file(REMOVE ${HTML_FILES})
    file(GLOB HTML_FILES ${CMAKE_CURRENT_BINARY_DIR}/html/*) \n
    file(INSTALL DESTINATION ${HTMLDIR}
    TYPE FILE FILES \${HTML_FILES}

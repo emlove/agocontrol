@@ -7,14 +7,14 @@ set (AGOCONTROL_VERSION 0.1)
 
 
 # some configurable values
-set (BINDIR /opt/agocontrol/bin)
-set (ETCDIR /etc)
-set (LIBDIR /usr/lib)
-set (CONFDIR ${ETCDIR}/opt/agocontrol)
-set (INCDIR /usr/include/agocontrol)
-set (DATADIR /var/opt/agocontrol)
-set (LOCALSTATEDIR /var/opt/agocontrol)
-set (HTMLDIR /opt/agocontrol/html)
+set (BINDIR /opt/agocontrol/bin CACHE STRING "Directory to store Binaries")
+set (ETCDIR /etc CACHE STRING "Directory for system-wide settings")
+set (LIBDIR /usr/lib CACHE STRING "Directory for libraries")
+set (CONFDIR ${ETCDIR}/opt/agocontrol CACHE STRING "Directory for agocontrol settings")
+set (INCDIR /usr/include/agocontrol CACHE STRING "Directory for include files")
+set (DATADIR /var/opt/agocontrol CACHE STRING "Directory for variable data")
+set (LOCALSTATEDIR /var/opt/agocontrol CACHE STRING "Directory for state info")
+set (HTMLDIR /opt/agocontrol/html CACHE STRING "Directory for rpc HTML files")
 
 
 # configure a header file to pass some of the CMake settings
