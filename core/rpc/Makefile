@@ -1,6 +1,7 @@
 INCLUDES ?= -I../../shared
 INCLUDES += -I/usr/include/jsoncpp
 LD = $(CXX)
+recurfind = $(shell find $(1) -name '$(2)')
 
 %.o : %.cpp
 	$(CXX) -c $(CFLAGS) $(INCLUDES) -o $@ $<
@@ -16,7 +17,7 @@ agorpc: agorpc.o mongoose.o
 rpc-htpasswd: rpc-htpasswd.o mongoose.o
 	$(LD) -o $@ $(LDFLAGS) $^ -lpthread -ldl
 
-html: $(patsubst %.in.html,%.html,$(wildcard html/templates/*.in.html) $(wildcard html/templates/details/*.in.html) $(wildcard html/templates/devices/*.in.html) $(wildcard html/templates/configuration/*.in.html) $(wildcard html/templates/navigation/*.in.html))
+html: $(patsubst %.in.html,%.html,$(wildcard html/templates/*.in.html) $(wildcard html/templates/details/*.in.html) $(wildcard html/templates/devices/*.in.html) $(wildcard html/templates/configuration/*.in.html) $(wildcard html/templates/navigation/*.in.html) $(call recurfind,html/plugins/,*.in.html))
 
 cgi:  get_table_lang.cpp
 	$(CXX) $(CFLAGS) -o html/cgi-bin/get_table_lang.cgi get_table_lang.cpp
@@ -27,6 +28,7 @@ clean:
 	rm -f html/cgi-bin/get_table_lang.cgi
 	rm -f html/cgi-bin/activate.cgi
 	find html/templates -name "*.html" | grep -v in.html | while read file ; do rm -v $$file ; done
+	find html/plugins -name "*.html" | grep -v in.html | while read file ; do rm -v $$file ; done
 
 install:
 	$(INSTALL_DIR) $(DESTDIR)$(BINDIR)
