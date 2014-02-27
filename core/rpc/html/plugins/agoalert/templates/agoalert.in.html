@@ -1,0 +1,187 @@
+<div id="contentarea" style="margin: 0px auto 10px auto; padding:15px;">
+    <div data-bind="jqTabs:{}">
+        <ul>
+            <li><a href="#tabs-twitter">Twitter</a></li>
+            <li><a href="#tabs-gtalk">GTalk</a></li>
+            <li><a href="#tabs-sms">SMS</a></li>
+            <li><a href="#tabs-mail">Mail</a></li>
+            <li><a href="#tabs-push">Push</a></li>
+        </ul>
+        <div id="tabs-twitter">
+            <div><div style="float:left; margin-right:10px; margin-top:10px;"><i style="font-size:xx-large" class="icon-twitter"></i></div><div><_h4 data-translateable="true">Twitter configuration</_h4></div></div>
+            <_span data-translateable="true">Agocontrol needs to be authorized to post alerts on your Twitter account.</_span>
+            <hr/>
+            <ko opts="if: twitterStatus()"> 
+                <_span data-translateable="true" class="success badge">Twitter is configured</_span>
+            </ko>
+            <ko opts="ifnot: twitterStatus()"> 
+                <_span data-translateable="true" class="warning badge">Twitter is not configured</_span>
+            </ko>
+            <br/>
+            <_span data-translateable="true">Follow instructions above to authorize this access:</_span>
+            <br/>
+            <form>
+               <ol>
+                    <_li data-translateable="true">Click <a href="#" data-bind="click: twitterUrl">here</a> to generate an authorization url</_li>
+                    <li data-translateable="true"><_span>Then click on generated link:</_span> <span class="twitterUrl" name="twitterUrl" style="color: darkorange"/></li>
+                    <_li data-translateable="true">Authorize access on Twitter</_li>
+                    <li data-translateable="true"><_span>Type given access code here:</_span> <input class="twitterAccessCode" name="twitterAccessCode" placeholder="Twitter code"/></li>
+                    <li data-translateable="true"><_span>Finally click on button to save access code</_span> <_button data-translateable="true" data-bind="click: twitterAccessCode">Save</_button></li>
+                </ol>
+            </form>
+            <hr/>
+            <_span data-translateable="true">To send test tweet on your account, click on button: </_span><_button data-translateable="true" data-bind="click: twitterTest">Test</_button>
+        </div>
+        <div id="tabs-gtalk">
+            <div><div style="float:left; margin-right:10px; margin-top:10px;"><i style="font-size:xx-large" class="icon-gplus"></i></div><div><_h4 data-translateable="true">Google Talk configuration</_h4></div></div>
+            <_span data-translateable="true">Agocontrol needs your Google credentials to connect GTalk and send alerts.</_span>
+            <hr/>
+            <ko opts="if: gtalkStatus()"> 
+                <_span data-translateable="true" class="success badge">GTalk is configured</_span>
+            </ko>
+            <ko opts="ifnot: gtalkStatus()"> 
+                <_span data-translateable="true" class="warning badge">GTalk is not configured</_span>
+            </ko>
+            <br/>
+            <_span data-translateable="true">If you are using 2-Step verification, generate password</_span> <_a data-translateable="true" href="https://www.google.com/settings/security" target="_blank">clicking here</_a>
+            <br/>
+            <_span data-translateable="true">Otherwise use your usual Google credentials:</_span>
+            <form>
+                <ul>
+                    <li><_span data-translateable="true">Username</_span>: <input data-bind="value:gtalkUsername" placeholder="Google username"/></li>
+                    <li>
+                        <_span data-translateable="true">Password</_span>: <input type="password" data-bind="value:gtalkPassword" placeholder="Google password"/>
+                        <_button data-translateable="true" data-bind="click: gtalkConfig">Save</_button>
+                    </li>
+                </ul>
+            </form>
+            <hr/>
+            <_span data-translateable="true">To send you a test message on GTalk, click on button: </_span><_button data-translateable="true" data-bind="click: gtalkTest">Test</_button>
+        </div>
+        <div id="tabs-sms">
+            <div><div style="float:left; margin-right:10px; margin-top:10px;"><i style="font-size:xx-large" class="icon-comment"></i></div><div><_h4 data-translateable="true">SMS configuration</_h4></div></div>
+            <span data-translateable="true">Agocontrol uses</span><span> </span><a href="https://www.12voip.com/" target="_blank">12voip</a><span> </span><_span data-translateable="true">to send SMS alerts.</_span>
+            <hr/>
+            <ko opts="if: smsStatus()"> 
+                <_span data-translateable="true" class="success badge">SMS is configured</_span>
+            </ko>
+            <ko opts="ifnot: smsStatus()"> 
+                <_span data-translateable="true" class="warning badge">SMS is not yet configured</_span>
+            </ko>
+            <br/>
+            <_span data-translateable="true">You need to create an account and add credits to send SMS</_span>(<_a href="https://www.12voip.com/sms_rates" target="_blank" data-translateable="true">click here to view SMS rates</_a>)
+            <br/>
+            <_span data-translateable="true">12voip credentials:</_span>
+            <form>
+                <ul>
+                    <li><_span data-translateable="true">Username</_span>: <input data-bind="value:twelvevoipUsername" placeholder="12voip username"/></li>
+                    <li>
+                        <_span data-translateable="true">Password</_span>: <input type="password" data-bind="value:twelvevoipPassword" placeholder="12voip password"/>
+                        <_button data-translateable="true" data-bind="click: smsConfig">Save</_button>
+                    </li>
+                </ul>
+            </form>
+            <hr/>
+            <_span data-translateable="true">To send you a test SMS, click on button</_span>: <_button data-translateable="true" data-bind="click: smsTest">Test</_button>
+        </div>
+        <div id="tabs-mail">
+            <div><div style="float:left; margin-right:10px; margin-top:10px;"><i style="font-size:xx-large" class="icon-mail"></i></div><div><_h4 data-translateable="true">Email configuration</_h4></div></div>
+            <_span data-translateable="true">Agocontrol can send alert through email.</_span>
+            <hr/>
+            <ko opts="if: mailStatus"> 
+                <_span data-translateable="true" class="success badge">Mail is configured</_span>
+            </ko>
+            <ko opts="ifnot: mailStatus"> 
+                <_span data-translateable="true" class="warning badge">Mail is not yet configured</_span>
+            </ko>
+            <br/>
+            <_span data-translateable="true">Specify your email SMTP server and a sender email address (* is mandatory):</_span>
+            <form>
+                <ul>
+                    <li>*<_span data-translateable="true">SMTP server</_span>: <input data-bind="value:mailSmtp" placeholder="smtp"/><_small data-translateable="true">(could be smtp:port)</_small></li>
+                    <li>*<_span data-translateable="true">Sender email</_span>: <input data-bind="value:mailSender" placeholder="email"/></li>
+                    <li><_span data-translateable="true">Login</_span>: <input data-bind="value:mailLogin" placeholder="login"/></li>
+                    <li><_span data-translateable="true">Password</_span>: <input type="password" data-bind="value:mailPassword" placeholder="password"/></li>
+                    <li><_span data-translateable="true">TLS</_span>: <input type="checkbox" data-bind="checked:mailTls"/></li>
+                    <li><_button data-translateable="true" data-bind="click: mailConfig">Save</_button></li>
+                </ul>
+            </form>
+            <hr/>
+            <form>
+            <_span data-translateable="true">To send you a test email, type your email address and click on button</_span>: <input class="mailEmail" name="value" placeholder="email address"/><_button data-translateable="true" data-bind="click: mailTest">Test</_button>
+            </form>
+        </div>
+        <div id="tabs-push">
+            <div><div style="float:left; margin-right:10px; margin-top:10px;"><i style="font-size:xx-large" class="icon-direction"></i></div><div><_h4 data-translateable="true">Push configuration</_h4></div></div>
+            <_span data-translateable="true">Agocontrol can send alert through push notifications.</_span>
+            <hr/>
+            <ko opts="if: pushStatus"> 
+                <_span data-translateable="true" class="success badge">Push is configured</_span>
+            </ko>
+            <ko opts="ifnot: pushStatus"> 
+                <_span data-translateable="true" class="warning badge">Push is not yet configured</_span>
+            </ko>
+            <br/>
+            <_span data-translateable="true">Choose push provider in list:</_span>
+            <select data-bind="value:selectedPushProvider">
+                <option value="pushbullet">Pushbullet</option>
+                <option value="pushover">Pushover</option>
+                <option value="notifymyandroid">Notifymyandroid</option>
+            </select>
+            <ko opts="if: selectedPushProvider()=='pushbullet'">
+            <ul>
+                <li>
+                    <_span data-translateable="true">Enter your apikey</_span> (<_a data-translateable="true" target="_blank" href="https://www.pushbullet.com/account">available here</_a>): 
+                    <input data-bind="value:pushbulletApikey" placeholder="apikey"/>
+                </li>
+                <li>
+                    <_span data-translateable="true">Refresh your devices list clicking on the button</_span>: 
+                    <_button class="icon-cycle" data-translateable="true" data-bind="click:pushbulletRefreshDevices">Refresh list</_button>
+                </li>
+                <li>
+                    <_span data-translateable="true">And choose your devices that will be notified</_span>: 
+                    <br/>
+                    <select data-bind="options:pushbulletAvailableDevices, selectedOptions:pushbulletSelectedDevices" size="5" multiple="true" style="width:300px;"></select>
+                </li>
+                <li>
+                    <_span data-translateable="true">Finally save your settings</_span>: 
+                    <_button data-translateable="true" data-bind="click: pushConfig">Save</_button>
+                </li>
+            </ul>
+            </ko>
+            <ko opts="if: selectedPushProvider()=='pushover'">
+            <ul>
+                <li>
+                    <_span data-translateable="true">Enter your userid</_span> (<_a data-translateable="true" target="_blank" href="https://pushover.net/dashboard">available here</_a>): 
+                    <input data-bind="value:pushoverUserid" placeholder="userid"/>
+                </li>
+                <li>
+                    <_span data-translateable="true">And save your settings</_span>
+                    <button data-translateable="true" data-bind="click: pushConfig">Save</button>
+                </li>
+            </ul>
+            </ko>
+            <ko opts="if: selectedPushProvider()=='notifymyandroid'">
+            <ul>
+                <li>
+                    <_span data-translateable="true">Enter your apikeys</_span> (<_a data-translateable="true" target="_blank" href="https://www.notifymyandroid.com/account.jsp">available here</_a>): 
+                    <input data-bind="value:nmaApikey" placeholder="apikey"/>
+                    <button data-bind="click:nmaAddApikey">+</button>
+                </li>
+                <li>
+                    <select data-bind="options:nmaAvailableApikeys, selectedOptions:nmaSelectedApikeys" size="5" multiple="true" style="width:400px;"></select>
+                    <button data-bind="click:nmaDelApikey">-</button>
+                </li>
+                <li>
+                    <_span data-translateable="true">And save your settings</_span>
+                    <_button data-translateable="true" data-bind="click: pushConfig">Save</_button>
+                </li>
+            </ul>
+            </ko>
+            <hr/>
+            <_span data-translateable="true">To push you test notification, click on button</_span>: <_button data-translateable="true" data-bind="click: pushTest">Test</_button>
+        </div>
+    </div>
+</div>
+
+

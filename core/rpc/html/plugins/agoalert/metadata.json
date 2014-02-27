@@ -1,0 +1,11 @@
+{
+	"name": "agoalert",
+	"version": "0.0.1",
+	"description": "Configure agocontrol alerts",
+    "resources": {
+        "css": [
+            "templates/agoalert.css"
+        ],
+        "js" : []
+    }
+}
