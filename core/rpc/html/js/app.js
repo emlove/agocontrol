@@ -121,7 +121,7 @@ function loadPlugin() {
 	    method : "GET",
 	    async : true,
 	}).done(function(result) {
-	    var plugin = result.filter(function (p) { return p.name == name; })[0];
+	    var plugin = result.filter(function (p) { return p.name.toLowerCase() == name.toLowerCase(); })[0];
 	    /* Load the plugins resources if any */
 	    if (plugin.resources) {
 		if (plugin.resources.css && plugin.resources.css.length > 0) {
