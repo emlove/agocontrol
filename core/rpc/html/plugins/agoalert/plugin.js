@@ -114,7 +114,7 @@ function agoAlertPlugin(deviceMap) {
             }
             else
             {
-                alert('Unable to get Twitter url.');
+                notif.error('Unable to get Twitter url');
             }
         });
     };
@@ -129,7 +129,7 @@ function agoAlertPlugin(deviceMap) {
         sendCommand(content, function(res) {
             if (res.result.error == 1)
             {
-                alert(res.result.msg);
+                notif.error(res.result.msg);
             }
             self.getAlertsConfigs();
         });
@@ -142,7 +142,7 @@ function agoAlertPlugin(deviceMap) {
         content.command = 'test';
         content.param1 = 'twitter';
         sendCommand(content, function(res) {
-            alert(res.result.msg);
+            notif.info(res.result.msg);
         });
     };
 
@@ -156,7 +156,7 @@ function agoAlertPlugin(deviceMap) {
         sendCommand(content, function(res) {
             if (res.result.error == 1)
             {
-                alert(res.result.msg);
+                notif.error(res.result.msg);
             }
             self.getAlertsConfigs();
         });
@@ -169,7 +169,7 @@ function agoAlertPlugin(deviceMap) {
         content.command = 'test';
         content.param1 = 'sms';
         sendCommand(content, function(res) {
-            alert(res.result.msg);
+            notif.info(res.result.msg);
         });
     };
 
@@ -184,7 +184,7 @@ function agoAlertPlugin(deviceMap) {
         sendCommand(content, function(res) {
             if (res.result.error == 1)
             {
-                alert(res.result.msg);
+                notif.error(res.result.msg);
             }
             self.getAlertsConfigs();
         });
@@ -197,7 +197,7 @@ function agoAlertPlugin(deviceMap) {
         content.command = 'test';
         content.param1 = 'gtalk';
         sendCommand(content, function(res) {
-            alert(res.result.msg);
+            notif.info(res.result.msg);
         });
     };
 
@@ -218,7 +218,7 @@ function agoAlertPlugin(deviceMap) {
         sendCommand(content, function(res) {
             if (res.result.error == 1)
             {
-                alert(res.result.msg);
+                notif.error(res.result.msg);
             }
             self.getAlertsConfigs();
         });
@@ -232,7 +232,7 @@ function agoAlertPlugin(deviceMap) {
         content.param1 = 'mail';
         content.param2 = document.getElementsByClassName("mailEmail")[0].value;
         sendCommand(content, function(res) {
-            alert(res.result.msg);
+            notif.info(res.result.msg);
         });
     };
 
@@ -305,7 +305,7 @@ function agoAlertPlugin(deviceMap) {
         sendCommand(content, function(res) {
             if (res.result.error == 1)
             {
-                alert(res.result.msg);
+                notif.error(res.result.msg);
             }
             self.getAlertsConfigs();
         });
@@ -318,7 +318,7 @@ function agoAlertPlugin(deviceMap) {
         content.command = 'test';
         content.param1 = 'push';
         sendCommand(content, function(res) {
-            alert(res.result.msg);
+            notif.info(res.result.msg);
         });
     };
 }
