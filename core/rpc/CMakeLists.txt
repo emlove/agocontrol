@@ -56,6 +56,7 @@ foreach (infile ${HTML_FILES})
 endforeach (infile)
 
 install (TARGETS agorpc rpc-htpasswd RUNTIME DESTINATION ${BINDIR})
+install (TARGETS get_table_lang.cgi RUNTIME DESTINATION ${HTMLDIR}/cgi-bin)
 install(
    CODE "
    file(GLOB_RECURSE HTML_FILES ${CMAKE_CURRENT_BINARY_DIR}/html/*.in.html)
