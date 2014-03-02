@@ -9,6 +9,7 @@ configure_file (
 )
 
 install (FILES agodrain.py myavahi.py agoctrl.sh DESTINATION ${BINDIR})
+install (DIRECTORY DESTINATION ${CONFDIR}/schema.d)
 
 OPTION(BUILD_CORE_resolver "Build agolua" ON)
 if (BUILD_CORE_resolver)
