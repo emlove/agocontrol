@@ -17,3 +17,4 @@ add_executable (agoresolver ${AGORESOLVER_SOURCE_FILES})
 target_link_libraries (agoresolver ${RESOLVER_LIBRARIES})
 
 install (TARGETS agoresolver RUNTIME DESTINATION ${BINDIR})
+install (DIRECTORY DESTINATION ${CONFDIR}/db)
