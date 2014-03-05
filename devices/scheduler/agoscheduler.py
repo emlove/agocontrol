@@ -609,9 +609,6 @@ def eventHandler(event, content):
     #logging.info('eventHandler: %s, %s' % (event, content))
     global client, timeSchedules, nowUtc
 
-    #update current datetime
-    nowUtc = datetime.utcnow()
-
     if event=='event.environment.timechanged':
         try:
             #format: {u'hour': 15, u'month': 2, u'second': 0, u'weekday': 6, u'year': 2014, u'yday': 46, u'day': 15, u'minute': 37}
@@ -667,12 +664,11 @@ def eventHandler(event, content):
                     #no schedules found
                     logging.info('No recurring schedules to append')
                     pass
-
-            #update current datetime
-            nowUtc = datetime.utcnow()
-
         except:
             logging.exception('Exception on timechanged event:')
+
+    #update current datetime
+    nowUtc = datetime.utcnow()
 
 
 #=================================
