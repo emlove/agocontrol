@@ -65,7 +65,7 @@ function agoSchedulerPlugin(deviceMap) {
             }
             else
             {
-                //TODO show error to user
+                notif.error('#nr', 0);
                 console.log('unable to get schedules list');
             }
         });
@@ -101,17 +101,18 @@ function agoSchedulerPlugin(deviceMap) {
                         self.schedules.push(res.result.schedules[i]);
                     }
                     $('#schedulerCalendar').fullCalendar('refetchEvents');
+                    notif.success('#a');
                 }
                 else
                 {
-                    //TODO error to user
+                    notif.error('#na');
                     console.log('Unable to add new schedule');
                 }
             });
         }
         else
         {
-            //TODO log error to say schedule is not valid
+            notif.error('#ie');
             console.log('invalid schedule');
         }
     };
@@ -162,11 +163,12 @@ function agoSchedulerPlugin(deviceMap) {
                     oldSched.color = newSched.color;
                 }
                 $('#schedulerCalendar').fullCalendar('refetchEvents');
+                notif.success('#u');
             }
             else
             {
-                //TODO error to user
                 //revert js if possible
+                notif.error('#nu');
                 if( revertFunc!==undefined )
                     revertFunc();
                 console.log('Unable to update schedule');
@@ -209,17 +211,18 @@ function agoSchedulerPlugin(deviceMap) {
                     }
                     //and remove it/them from fullcalendar
                     $('#schedulerCalendar').fullCalendar('removeEvents', sched.id);
+                    notif.success('#d');
                 }
                 else
                 {
-                    //TODO error to user
+                    notif.error('#nd');
                     console.log('Unable to delete schedule');
                 }
             });
         }
         else
         {
-            //TODO log error to say schedule is not valid
+            notif.error('#ie');
             console.log('event not found! unable to delete');
         }
     };
