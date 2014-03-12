@@ -7,7 +7,7 @@ LD = $(CXX)
 all: messagesend
 
 messagesend: messagesend.o
-	$(LD) -o $@ $(LDFLAGS) $^ -lagoclient
+	$(LD) -o $@ $(LDFLAGS) $^ -lagoclient -lqpidtypes
 
 clean:
 	rm -f messagesend messagesend.o
