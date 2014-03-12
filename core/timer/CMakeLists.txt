@@ -4,7 +4,6 @@ file (GLOB_RECURSE AGOTIMER_SOURCE_FILES *.cpp)
 set (TIMER_LIBRARIES
     agoclient
     boost_system
-    hdate
     pthread
 )
 
