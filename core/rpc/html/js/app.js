@@ -94,17 +94,6 @@ function buildfloorPlanList(model) {
  */
 var deferredInit = null;
 
-function loadCSS(url) {
-    $.ajax({
-	url : url,
-	dataType : 'text',
-	async : false,
-	success : function(data) {
-	    $('<style type="text/css">\n' + data + '</style>').appendTo("head");
-	}
-    });
-}
-
 function loadPlugin() {
     /* Get plugin name from query string */
     var name = window.location.search.substring(1);
@@ -122,24 +111,41 @@ function loadPlugin() {
 	    async : true,
 	}).done(function(result) {
 	    var plugin = result.filter(function (p) { return p.name.toLowerCase() == name.toLowerCase(); })[0];
+        templatePath = "../plugins/" + name + "/templates/";
 	    /* Load the plugins resources if any */
-	    if (plugin.resources) {
-		if (plugin.resources.css && plugin.resources.css.length > 0) {
-		    for (var i = 0; i < plugin.resources.css.length; i++) {
-			loadCSS("plugins/" + name + "/" + plugin.resources.css[i]);
-		    }
-		}
-		if (plugin.resources.js && plugin.resources.js.length > 0) {
-		    for (var i = 0; i < plugin.resources.js.length; i++) {
-			$.getScript("plugins/" + name + "/" + plugin.resources.js[i]);
-		    }
-		}
-	    }
-	    templatePath = "../plugins/" + name + "/templates/";
-	    init_plugin();
+	    if (plugin.resources)
+        {
+            var resources = [];
+    		if (plugin.resources.css && plugin.resources.css.length > 0)
+            {
+                for (var i = 0; i < plugin.resources.css.length; i++) {
+                    resources.push("plugins/" + name + "/" + plugin.resources.css[i]);
+                }
+    		}
+	    	if (plugin.resources.js && plugin.resources.js.length > 0)
+            {
+                for (var i = 0; i < plugin.resources.js.length; i++) {
+                    resources.push("plugins/" + name + "/" + plugin.resources.js[i]);
+                }
+            }
+            if( resources.length>0 )
+            {
+                yepnope({
+                    load: resources,
+                    complete: function() {
+                        //here, all resources are really loaded
+	                    init_plugin();
+                    }
+                });
+            }
+        }
+        else
+        {
+	        init_plugin();
+        }
 	});
     }).fail(function() {
-	alert("Error: Failed to load plugin!");
+        notif.fatal("Error: Failed to load plugin!");
     });
 }
 
