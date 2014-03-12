@@ -5,7 +5,7 @@ INCLUDES ?= -I../../shared
 %.o : %.cpp
 	$(CXX) -c $(CFLAGS) $(INCLUDES) -o $@ $<
 
-all: agotimer test
+all: agotimer
 
 agotimer: sunrise.o agotimer.o ../../shared/CDataFile.o
 	$(LD) -o $@ $(LDFLAGS) $^ -lqpidmessaging -lqpidtypes -lagoclient
