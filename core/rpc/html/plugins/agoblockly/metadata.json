@@ -1,0 +1,12 @@
+{
+        "name": "agoblockly",
+        "version": "0.0.1",
+        "description": "Create events easily using blockly",
+        "resources": {
+            "js": [
+                "blockly/blockly_compressed.js",
+                "blockly/blocks_compressed.js",
+                "blockly/msg/js/en.js"
+            ]
+        }
+}

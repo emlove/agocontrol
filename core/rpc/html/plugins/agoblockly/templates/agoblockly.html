@@ -1,0 +1,52 @@
+<div id="contentarea" style="margin: 0px auto 10px auto; padding:15px;">
+
+    <!-- blockly configuration -->
+    <xml id="toolbox" style="display: none">
+        <category name="Condition">
+            <block type="controls_if"></block>
+            <block type="controls_if_else"></block>
+            <block type="controls_if_elseif"></block>
+        </category>
+        <category name="Logic">
+            <block type="logic_compare"></block>
+            <block type="logic_operation"></block>
+            <block type="logic_negate"></block>
+            <block type="logic_boolean"></block>
+        </category>
+        <category name="Statement">
+            <block type="controls_repeat"></block>
+            <block type="controls_repeat_ext"></block>
+            <block type="controls_whileUntil"></block>
+            <block type="controls_for"></block>
+            <block type="controls_forEach"></block>
+        </category>
+        <category name="Math">
+            <block type="math_number"></block>
+            <block type="math_arithmetic"></block>
+            <block type="math_single"></block>
+            <block type="math_change"></block>
+            <block type="math_on_list"></block>
+        </category>
+        <category name="Text">
+            <block type="text"></block>
+            <block type="text_isEmpty"></block>
+            <block type="text_length"></block>
+        </category>
+        <category name="Variables">
+            <block type="variables_set"></block>
+            <block type="variables_get"></block>
+        </category>
+        <category name="Agocontrol">
+            <block type="agocontrol_device"></block>
+            <block type="agocontrol_deviceEvents"></block>
+            <block type="agocontrol_allEvents"></block>
+            <block type="agocontrol_deviceProperties"></block>
+            <block type="agocontrol_deviceCommands"></block>
+        </category>
+    </xml>
+    
+    <!-- blockly -->
+    <div data-bind="blockly:blocklyViewModel" id="blocklyDiv" style="height: 600px; width: 960px;"></div>
+
+</div>
+
