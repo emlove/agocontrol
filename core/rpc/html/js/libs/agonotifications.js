@@ -19,6 +19,7 @@
     var NOTIF_SUCC = 1;
     var NOTIF_WARN = 2;
     var NOTIF_ERRO = 3;
+    var NOTIF_FATA = 4;
 
     function agoNotifications() {
         //members
@@ -76,6 +77,11 @@
         self.error = function(message, duration) {
             self._notify(message, NOTIF_ERRO, duration);
         };
+
+        //notify fatal message
+        self.fatal = function(message) {
+            self._notify(message, NOTIF_FATA, 0);
+        };
     };
 
     function agoNotificationMessage() {
@@ -100,6 +106,8 @@
                 self.elem.attr("class", "danger alert");
             else if( self.type==NOTIF_WARN )
                 self.elem.attr("class", "warning alert");
+            else if( self.type==NOTIF_FATA )
+                self.elem.attr("class", "info alert");
             else
                 self.elem.attr("class", "primary alert");
             //build close
