@@ -272,6 +272,17 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 					reply["returncode"] = -1;
 				}
 			}
+		} else if (content["command"] == "getdevice") {
+			if (content["device"].asString() != "") {
+				if (!(inventory[content["device"].asString()].isVoid())) {
+					reply["device"] = inventory[content["device"].asString()].asMap();
+					reply["returncode"] = 0;
+				} else {
+					reply["returncode"] = -1;
+				}
+			} else {
+				reply["returncode"] = -1;
+			}
 		}
 	} else {
 		if (content["command"] == "inventory") {
