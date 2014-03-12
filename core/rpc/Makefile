@@ -12,7 +12,7 @@ recurfind = $(shell find $(1) -name '$(2)')
 all: agorpc rpc-htpasswd html cgi
 
 agorpc: agorpc.o mongoose.o
-	$(LD) -o $@ $(LDFLAGS) $^ -lqpidmessaging -lqpidtypes -luuid -ljsoncpp -lagoclient
+	$(LD) -o $@ $(LDFLAGS) $^ -lqpidmessaging -lqpidtypes -luuid -ljsoncpp -lagoclient -ldl
 
 rpc-htpasswd: rpc-htpasswd.o mongoose.o
 	$(LD) -o $@ $(LDFLAGS) $^ -lpthread -ldl
