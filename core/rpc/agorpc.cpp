@@ -430,7 +430,7 @@ int main(int argc, char **argv) {
 	htdocs=getConfigOption("rpc", "htdocs", HTMLDIR);
 	certificate=getConfigOption("rpc", "certificate", CONFDIR "/rpc/rpc_cert.pem");
 	numthreads=getConfigOption("rpc", "numthreads", "30");
-	numthreads=getConfigOption("rpc", "domainname", "agocontrol");
+	domainname=getConfigOption("rpc", "domainname", "agocontrol");
 
 	static const char *options[] = {
 		"document_root", htdocs.c_str(),
