@@ -1,0 +1,202 @@
+<div id="contentarea" style="margin: 0px auto 10px auto; padding:15px;">
+
+    <!-- blockly configuration -->
+    <xml id="toolbox" style="display: none">
+        <category name="Logic">
+            <block type="controls_if"></block>
+            <block type="logic_compare"></block>
+            <block type="logic_operation"></block>
+            <block type="logic_negate"></block>
+            <block type="logic_boolean"></block>
+            <block type="logic_ternary"></block>
+            <block type="agocontrol_contentCondition">
+                <value name="EVENT">
+                    <block type="agocontrol_eventAll">
+                    </block>
+                </value>
+            </block>
+            <block type="agocontrol_eventPropertyValue">
+                <value name="PROP">
+                    <block type="agocontrol_eventProperty">
+                    </block>
+                </value>
+            </block>
+        </category>
+        <category name="Loops">
+            <block type="controls_repeat"></block>
+            <block type="controls_whileUntil"></block>
+            <block type="controls_for">
+                <value name="FROM">
+                    <block type="math_number">
+                        <title name="NUM">1</title>
+                    </block>
+                </value>
+                <value name="TO">
+                    <block type="math_number">
+                        <title name="NUM">10</title>
+                    </block>
+                </value>
+                <value name="BY">
+                    <block type="math_number">
+                        <title name="NUM">1</title>
+                    </block>
+                </value>
+            </block>
+            <block type="controls_forEach"></block>
+            <block type="controls_flow_statements"></block>
+        </category>
+        <category name="Math">
+            <block type="math_number"></block>
+            <block type="math_arithmetic"></block>
+            <block type="math_number_property"></block>
+            <block type="math_change">
+                <value name="DELTA">
+                    <block type="math_number">
+                        <title name="NUM">1</title>
+                    </block>
+                </value>
+            </block>
+            <block type="math_round"></block>
+            <block type="math_on_list"></block>
+            <block type="math_constrain">
+                <value name="LOW">
+                    <block type="math_number">
+                        <title name="NUM">1</title>
+                    </block>
+                </value>
+                <value name="HIGH">
+                    <block type="math_number">
+                        <title name="NUM">100</title>
+                    </block>
+                </value>
+            </block>
+            <block type="math_random_int">
+                <value name="FROM">
+                    <block type="math_number">
+                        <title name="NUM">1</title>
+                    </block>
+                </value>
+                <value name="TO">
+                    <block type="math_number">
+                        <title name="NUM">100</title>
+                    </block>
+                </value>
+            </block>
+            <block type="math_random_float"></block>
+        </category>
+        <category name="Text">
+            <block type="text_print"></block>
+            <block type="text"></block>
+            <block type="text_join"></block>
+            <block type="text_append">
+                <value name="TEXT">
+                    <block type="text"></block>
+                </value>
+            </block>
+            <block type="text_length"></block>
+            <block type="text_isEmpty"></block>
+            <block type="text_indexOf">
+                <value name="VALUE">
+                    <block type="variables_get">
+                        <title name="VAR">mytext</title>
+                    </block>
+                </value>
+            </block>
+            <block type="text_charAt">
+                <value name="VALUE">
+                    <block type="variables_get">
+                        <title name="VAR">mytext</title>
+                    </block>
+                </value>
+            </block>
+            <block type="text_getSubstring">
+                <value name="STRING">
+                    <block type="variables_get">
+                        <title name="VAR">mytext</title>
+                    </block>
+                </value>
+            </block>
+            <block type="text_changeCase"></block>
+            <block type="text_trim"></block>
+        </category>
+        <category name="List">
+            <block type="lists_create_empty"></block>
+            <block type="lists_create_with"></block>
+            <block type="lists_repeat">
+                <value name="NUM">
+                    <block type="math_number">
+                        <field name="NUM">5</field>
+                    </block>
+                </value>
+            </block>
+            <block type="lists_length"></block>
+            <block type="lists_isEmpty"></block>
+            <block type="lists_indexOf">
+                <value name="VALUE">
+                    <block type="variables_get">
+                        <field name="VAR">list</field>
+                    </block>
+                </value>
+            </block>
+            <block type="lists_getIndex">
+                <value name="VALUE">
+                    <block type="variables_get">
+                        <field name="VAR">list</field>
+                    </block>
+                </value>
+            </block>
+            <block type="lists_setIndex">
+                <value name="LIST">
+                    <block type="variables_get">
+                        <field name="VAR">list</field>
+                    </block>
+                </value>
+            </block>
+            <block type="lists_getSublist">
+                <value name="LIST">
+                    <block type="variables_get">
+                        <field name="VAR">list</field>
+                    </block>
+                </value>
+            </block>
+        </category>
+        <category name="Variables" custom="VARIABLE">
+        </category>
+        <category name="Procedures" custom="PROCEDURE">
+        </category>
+        <category name="Agocontrol">
+            <category name="Device">
+                <block type="agocontrol_device"></block>
+                <block type="agocontrol_deviceNo"></block>
+                <block type="agocontrol_deviceProperty"></block>
+                <block type="agocontrol_deviceCommand"></block>
+            </category>
+            <category name="Event">
+                <block type="agocontrol_deviceEvent"></block>
+                <block type="agocontrol_eventAll"></block>
+                <block type="agocontrol_eventNo"></block>
+                <block type="agocontrol_eventProperty"></block>
+            </category>
+            <category name="Actions">
+                <block type="agocontrol_sendMessage"></block>
+            </category>
+        </category>
+    </xml>
+    
+    <!-- blockly -->
+    <div class="row">
+        <div class="pretty medium info btn icon-left icon-install"><a href="#" title="Save your script" data-bind="click:save">Save</a></div>
+        <div class="pretty medium info btn icon-left icon-up"><a href="#" title="Load existing script" data-bind="click:load">Load</a></div>
+        <div class="pretty medium info btn icon-left icon-check" style="margin-left:20px;"><a href="#" title="Check blocks" data-bind="click:check">Check</a></div>
+        <div class="pretty medium info btn icon-left icon-search"><a href="#" title="View your blocks under script format" data-bind="click:viewlua">View</a></div>
+        <div class="pretty medium info btn icon-left icon-trash" style="margin-left:20px;"><a href="#" title="Clear all blocks on workspace" data-bind="click:clear">Clear</a></div>
+    </div>
+    <div data-bind="blockly:blocklyViewModel" id="blocklyDiv" style="height:800px; width:960px;"></div>
+
+    <!-- lua dialog -->
+    <div id="luaDialog">
+        <pre id="luaContent" style="width:100%; height:100%;"></pre>
+    </div>
+
+</div>
+

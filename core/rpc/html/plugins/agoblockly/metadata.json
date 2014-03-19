@@ -3,10 +3,16 @@
         "version": "0.0.1",
         "description": "Create events easily using blockly",
         "resources": {
+            "css": [
+                "prettify/prettify.css"
+            ],
             "js": [
+                "prettify/prettify.js",
                 "blockly/blockly_compressed.js",
                 "blockly/blocks_compressed.js",
-                "blockly/msg/js/en.js"
+                "blockly/lua_compressed.js",
+                "blockly/msg/js/en.js",
+                "prettify/lang-lua.js"
             ]
         }
 }

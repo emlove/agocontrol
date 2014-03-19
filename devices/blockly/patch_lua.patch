@@ -1,0 +1,375 @@
+commit b6b6478708117d4e904b82366593113a8be567f7
+Author: tang <tang@tanguy.no-ip.org>
+Date:   Wed Mar 19 17:23:40 2014 +0100
+
+    fix deprecated function call
+
+diff --git a/generators/lua/lists.js b/generators/lua/lists.js
+index 2391682..ceb8608 100644
+--- a/generators/lua/lists.js
++++ b/generators/lua/lists.js
+@@ -87,7 +87,7 @@ Blockly.Lua['lists_indexOf'] = function(block) {
+   var argument1 = Blockly.Lua.valueToCode(block, 'VALUE',
+       Blockly.Lua.ORDER_HIGH) || '\'\'';
+   var code;
+-  if (block.getTitleValue('END') == 'FIRST') {
++  if (block.getFieldValue('END') == 'FIRST') {
+     var functionName = Blockly.Lua.provideFunction_(
+         'first_index',
+         ['function ' + Blockly.Lua.FUNCTION_NAME_PLACEHOLDER_ + '(t, elem)',
+@@ -140,8 +140,8 @@ var gensym_ = function() {
+ Blockly.Lua['lists_getIndex'] = function(block) {
+   // Get element at index.
+   // Note: Until January 2013 this block did not have MODE or WHERE inputs.
+-  var mode = block.getTitleValue('MODE') || 'GET';
+-  var where = block.getTitleValue('WHERE') || 'FROM_START';
++  var mode = block.getFieldValue('MODE') || 'GET';
++  var where = block.getFieldValue('WHERE') || 'FROM_START';
+   var at = Blockly.Lua.valueToCode(block, 'AT',
+       Blockly.Lua.ORDER_ADDITIVE) || '1';  // for getIndex_
+   var list = Blockly.Lua.valueToCode(block, 'VALUE',
+@@ -208,8 +208,8 @@ Blockly.Lua['lists_setIndex'] = function(block) {
+   // Note: Until February 2013 this block did not have MODE or WHERE inputs.
+   var list = Blockly.Lua.valueToCode(block, 'LIST',
+       Blockly.Lua.ORDER_HIGH) || '[]';
+-  var mode = block.getTitleValue('MODE') || 'GET';
+-  var where = block.getTitleValue('WHERE') || 'FROM_START';
++  var mode = block.getFieldValue('MODE') || 'GET';
++  var where = block.getFieldValue('WHERE') || 'FROM_START';
+   var at = Blockly.Lua.valueToCode(block, 'AT',
+       Blockly.Lua.ORDER_NONE) || '1';
+   var value = Blockly.Lua.valueToCode(block, 'TO',
+@@ -278,11 +278,11 @@ Blockly.Lua['lists_setIndex'] = function(block) {
+ 
+ Blockly.Lua['lists_add'] = function(block) {
+   // Add element to start or end.
+-  var varName = Blockly.Lua.variableDB_.getName(block.getTitleValue('VAR'),
++  var varName = Blockly.Lua.variableDB_.getName(block.getFieldValue('VAR'),
+       Blockly.Variables.NAME_TYPE);
+   var element = Blockly.Lua.valueToCode(block, 'ELEMENT',
+       Blockly.Lua.ORDER_NONE) || 'null';
+-  var location = block.getTitleValue('LOCATION');
++  var location = block.getFieldValue('LOCATION');
+   if (location == 'START') {
+     return 'table.insert(' + varName + ', 1, ' + element + ')\n';
+   } else {
+@@ -294,8 +294,8 @@ Blockly.Lua['lists_getSublist'] = function(block) {
+   // Get sublist.
+   var list = Blockly.Lua.valueToCode(block, 'LIST',
+       Blockly.Lua.ORDER_HIGH) || '[]';
+-  var where1 = block.getTitleValue('WHERE1');
+-  var where2 = block.getTitleValue('WHERE2');
++  var where1 = block.getFieldValue('WHERE1');
++  var where2 = block.getFieldValue('WHERE2');
+   var at1 = Blockly.Lua.valueToCode(block, 'AT1',
+       Blockly.Lua.ORDER_ADDITIVE) || '1';
+   var at2 = Blockly.Lua.valueToCode(block, 'AT2',
+diff --git a/generators/lua/logic.js b/generators/lua/logic.js
+index fdd3c30..7b076c3 100644
+--- a/generators/lua/logic.js
++++ b/generators/lua/logic.js
+@@ -59,7 +59,7 @@ Blockly.Lua['logic_compare'] = function(block) {
+     GT: '>',
+     GTE: '>='
+   };
+-  var operator = OPERATORS[block.getTitleValue('OP')];
++  var operator = OPERATORS[block.getFieldValue('OP')];
+   var order = Blockly.Lua.ORDER_RELATIONAL;
+   var argument0 = Blockly.Lua.valueToCode(block, 'A', order) || '0';
+   var argument1 = Blockly.Lua.valueToCode(block, 'B', order) || '0';
+@@ -69,7 +69,7 @@ Blockly.Lua['logic_compare'] = function(block) {
+ 
+ Blockly.Lua['logic_operation'] = function(block) {
+   // Operations 'and', 'or'.
+-  var operator = (block.getTitleValue('OP') == 'AND') ? 'and' : 'or';
++  var operator = (block.getFieldValue('OP') == 'AND') ? 'and' : 'or';
+   var order = (operator == 'and') ? Blockly.Lua.ORDER_AND :
+       Blockly.Lua.ORDER_OR;
+   var argument0 = Blockly.Lua.valueToCode(block, 'A', order);
+@@ -102,7 +102,7 @@ Blockly.Lua['logic_negate'] = function(block) {
+ 
+ Blockly.Lua['logic_boolean'] = function(block) {
+   // Boolean values true and false.
+-  var code = (block.getTitleValue('BOOL') == 'TRUE') ? 'true' : 'false';
++  var code = (block.getFieldValue('BOOL') == 'TRUE') ? 'true' : 'false';
+   return [code, Blockly.Lua.ORDER_ATOMIC];
+ };
+ 
+diff --git a/generators/lua/loops.js b/generators/lua/loops.js
+index 2de1819..fa66cb3 100644
+--- a/generators/lua/loops.js
++++ b/generators/lua/loops.js
+@@ -30,7 +30,7 @@ goog.require('Blockly.Lua');
+ 
+ Blockly.Lua['controls_repeat'] = function(block) {
+   // Repeat n times (internal number).
+-  var repeats = parseInt(block.getTitleValue('TIMES'), 10);
++  var repeats = parseInt(block.getFieldValue('TIMES'), 10);
+   var branch = Blockly.Lua.statementToCode(block, 'DO') || '';
+   var loopVar = Blockly.Lua.variableDB_.getDistinctName(
+       'count', Blockly.Variables.NAME_TYPE);
+@@ -57,12 +57,12 @@ Blockly.Lua['controls_repeat_ext'] = function(block) {
+ 
+ Blockly.Lua['controls_whileUntil'] = function(block) {
+   // Do while/until loop.
+-  var until = block.getTitleValue('MODE') == 'UNTIL';
++  var until = block.getFieldValue('MODE') == 'UNTIL';
+   var argument0 = Blockly.Lua.valueToCode(block, 'BOOL',
+       until ? Blockly.Lua.ORDER_UNARY :
+       Blockly.Lua.ORDER_NONE) || 'False';
+   var branch = Blockly.Lua.statementToCode(block, 'DO') || '\n';
+-  if (block.getTitleValue('MODE') == 'UNTIL') {
++  if (block.getFieldValue('MODE') == 'UNTIL') {
+     if (!argument0.match(/^\w+$/)) {
+       argument0 = '(' + argument0 + ')';
+     }
+@@ -74,7 +74,7 @@ Blockly.Lua['controls_whileUntil'] = function(block) {
+ Blockly.Lua['controls_for'] = function(block) {
+   // For loop.
+   var variable0 = Blockly.Lua.variableDB_.getName(
+-      block.getTitleValue('VAR'), Blockly.Variables.NAME_TYPE);
++      block.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
+   var argument0 = Blockly.Lua.valueToCode(block, 'FROM',
+       Blockly.Lua.ORDER_NONE) || '0';
+   var argument1 = Blockly.Lua.valueToCode(block, 'TO',
+@@ -95,7 +95,7 @@ Blockly.Lua['controls_for'] = function(block) {
+ Blockly.Lua['controls_forEach'] = function(block) {
+   // For each loop.
+   var variable0 = Blockly.Lua.variableDB_.getName(
+-      block.getTitleValue('VAR'), Blockly.Variables.NAME_TYPE);
++      block.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
+   var argument0 = Blockly.Lua.valueToCode(block, 'LIST',
+       Blockly.Lua.ORDER_RELATIONAL) || '[]';
+   var branch = Blockly.Lua.statementToCode(block, 'DO') || '\n';
+diff --git a/generators/lua/math.js b/generators/lua/math.js
+index 2b35fd7..3dc7eb8 100644
+--- a/generators/lua/math.js
++++ b/generators/lua/math.js
+@@ -29,7 +29,7 @@ goog.require('Blockly.Lua');
+ 
+ Blockly.Lua['math_number'] = function(block) {
+   // Numeric value.
+-  var code = parseFloat(block.getTitleValue('NUM'));
++  var code = parseFloat(block.getFieldValue('NUM'));
+   var order = code < 0 ? Blockly.Lua.ORDER_UNARY :
+               Blockly.Lua.ORDER_ATOMIC;
+   return [code, order];
+@@ -44,7 +44,7 @@ Blockly.Lua['math_arithmetic'] = function(block) {
+     DIVIDE: [' / ', Blockly.Lua.ORDER_MULTIPLICATIVE],
+     POWER: [' ^ ', Blockly.Lua.ORDER_EXPONENTIATION]
+   };
+-  var tuple = OPERATORS[block.getTitleValue('OP')];
++  var tuple = OPERATORS[block.getFieldValue('OP')];
+   var operator = tuple[0];
+   var order = tuple[1];
+   var argument0 = Blockly.Lua.valueToCode(block, 'A', order) || '0';
+@@ -55,7 +55,7 @@ Blockly.Lua['math_arithmetic'] = function(block) {
+ 
+ Blockly.Lua['math_single'] = function(block) {
+   // Math operators with single operand.
+-  var operator = block.getTitleValue('OP');
++  var operator = block.getFieldValue('OP');
+   var code;
+   var arg;
+   if (operator == 'NEG') {
+@@ -138,7 +138,7 @@ Blockly.Lua['math_constant'] = function(block) {
+     SQRT1_2: ['math.sqrt(1 / 2)', Blockly.Lua.ORDER_HIGH],
+     INFINITY: ['math.huge', Blockly.Lua.ORDER_HIGH]
+   };
+-  var constant = block.getTitleValue('CONSTANT');
++  var constant = block.getFieldValue('CONSTANT');
+   return CONSTANTS[constant];
+ };
+ 
+@@ -147,7 +147,7 @@ Blockly.Lua['math_number_property'] = function(block) {
+   // or if it is divisible by certain number. Returns true or false.
+   var number_to_check = Blockly.Lua.valueToCode(block, 'NUMBER_TO_CHECK',
+       Blockly.Lua.ORDER_MULTIPLICATIVE) || '0';
+-  var dropdown_property = block.getTitleValue('PROPERTY');
++  var dropdown_property = block.getFieldValue('PROPERTY');
+   var code;
+   if (dropdown_property == 'PRIME') {
+     var functionName = Blockly.Lua.provideFunction_(
+@@ -213,7 +213,7 @@ Blockly.Lua['math_change'] = function(block) {
+   // Add to a variable in place.
+   var argument0 = Blockly.Lua.valueToCode(block, 'DELTA',
+       Blockly.Lua.ORDER_ADDITIVE) || '0';
+-  var varName = Blockly.Lua.variableDB_.getName(block.getTitleValue('VAR'),
++  var varName = Blockly.Lua.variableDB_.getName(block.getFieldValue('VAR'),
+       Blockly.Variables.NAME_TYPE);
+   return varName + ' = ' + varName + ' + ' + argument0 + '\n';
+ };
+@@ -225,7 +225,7 @@ Blockly.Lua['math_trig'] = Blockly.Lua['math_single'];
+ 
+ Blockly.Lua['math_on_list'] = function(block) {
+   // Math functions for lists.
+-  var func = block.getTitleValue('OP');
++  var func = block.getFieldValue('OP');
+   var list = Blockly.Lua.valueToCode(block, 'LIST',
+       Blockly.Lua.ORDER_NONE) || '{}';
+   var code;
+diff --git a/generators/lua/procedures.js b/generators/lua/procedures.js
+index 9da1f9b..58eac02 100644
+--- a/generators/lua/procedures.js
++++ b/generators/lua/procedures.js
+@@ -30,7 +30,7 @@ goog.require('Blockly.Lua');
+ 
+ Blockly.Lua['procedures_defreturn'] = function(block) {
+   // Define a procedure with a return value.
+-  var funcName = Blockly.Lua.variableDB_.getName(block.getTitleValue('NAME'),
++  var funcName = Blockly.Lua.variableDB_.getName(block.getFieldValue('NAME'),
+       Blockly.Procedures.NAME_TYPE);
+   var branch = Blockly.Lua.statementToCode(block, 'STACK');
+   if (Blockly.Lua.INFINITE_LOOP_TRAP) {
+@@ -63,7 +63,7 @@ Blockly.Lua['procedures_defnoreturn'] =
+ 
+ Blockly.Lua['procedures_callreturn'] = function(block) {
+   // Call a procedure with a return value.
+-  var funcName = Blockly.Lua.variableDB_.getName(block.getTitleValue('NAME'),
++  var funcName = Blockly.Lua.variableDB_.getName(block.getFieldValue('NAME'),
+       Blockly.Procedures.NAME_TYPE);
+   var args = [];
+   for (var x = 0; x < block.arguments_.length; x++) {
+@@ -76,7 +76,7 @@ Blockly.Lua['procedures_callreturn'] = function(block) {
+ 
+ Blockly.Lua['procedures_callnoreturn'] = function(block) {
+   // Call a procedure with no return value.
+-  var funcName = Blockly.Lua.variableDB_.getName(block.getTitleValue('NAME'),
++  var funcName = Blockly.Lua.variableDB_.getName(block.getFieldValue('NAME'),
+       Blockly.Procedures.NAME_TYPE);
+   var args = [];
+   for (var x = 0; x < block.arguments_.length; x++) {
+diff --git a/generators/lua/text.js b/generators/lua/text.js
+index 70d8184..8b157fb 100644
+--- a/generators/lua/text.js
++++ b/generators/lua/text.js
+@@ -30,7 +30,7 @@ goog.require('Blockly.Lua');
+ 
+ Blockly.Lua['text'] = function(block) {
+   // Text value.
+-  var code = Blockly.Lua.quote_(block.getTitleValue('TEXT'));
++  var code = Blockly.Lua.quote_(block.getFieldValue('TEXT'));
+   return [code, Blockly.Lua.ORDER_ATOMIC];
+ };
+ 
+@@ -64,7 +64,7 @@ Blockly.Lua['text_join'] = function(block) {
+ 
+ Blockly.Lua['text_append'] = function(block) {
+   // Append to a variable in place.
+-  var varName = Blockly.Lua.variableDB_.getName(block.getTitleValue('VAR'),
++  var varName = Blockly.Lua.variableDB_.getName(block.getFieldValue('VAR'),
+       Blockly.Variables.NAME_TYPE);
+   var argument0 = Blockly.Lua.valueToCode(block, 'TEXT',
+       Blockly.Lua.ORDER_NONE) || '\'\'';
+@@ -92,7 +92,7 @@ Blockly.Lua['text_indexOf'] = function(block) {
+       Blockly.Lua.ORDER_NONE) || '\'\'';
+   var str = Blockly.Lua.valueToCode(block, 'VALUE',
+       Blockly.Lua.ORDER_HIGH) || '\'\'';
+-  if (block.getTitleValue('END') == 'FIRST') {
++  if (block.getFieldValue('END') == 'FIRST') {
+     var functionName = Blockly.Lua.provideFunction_(
+         'firstIndexOf',
+         ['function ' + Blockly.Lua.FUNCTION_NAME_PLACEHOLDER_ + '(str, substr) ',
+@@ -122,7 +122,7 @@ Blockly.Lua['text_indexOf'] = function(block) {
+ Blockly.Lua['text_charAt'] = function(block) {
+   // Get letter at index.
+   // Note: Until January 2013 this block did not have the WHERE input.
+-  var where = block.getTitleValue('WHERE') || 'FROM_START';
++  var where = block.getFieldValue('WHERE') || 'FROM_START';
+   var text = Blockly.Lua.valueToCode(block, 'VALUE',
+       Blockly.Lua.ORDER_HIGH) || '\'\'';
+   if (where == 'RANDOM') {
+@@ -160,7 +160,7 @@ Blockly.Lua['text_getSubstring'] = function(block) {
+       Blockly.Lua.ORDER_HIGH) || '\'\'';
+ 
+   // Get start index.
+-  var where1 = block.getTitleValue('WHERE1');
++  var where1 = block.getFieldValue('WHERE1');
+   var at1 = Blockly.Lua.valueToCode(block, 'AT1',
+       Blockly.Lua.ORDER_ADDITIVE) || '1';
+   if (where1 == 'FIRST') {
+@@ -174,7 +174,7 @@ Blockly.Lua['text_getSubstring'] = function(block) {
+   }
+ 
+   // Get end index.
+-  var where2 = block.getTitleValue('WHERE2');
++  var where2 = block.getFieldValue('WHERE2');
+   var at2 = Blockly.Lua.valueToCode(block, 'AT2',
+       Blockly.Lua.ORDER_ADDITIVE) || '1';
+   if (where2 == 'LAST') {
+@@ -192,7 +192,7 @@ Blockly.Lua['text_getSubstring'] = function(block) {
+ 
+ Blockly.Lua['text_changeCase'] = function(block) {
+   // Change capitalization.
+-  var operator = block.getTitleValue('CASE');
++  var operator = block.getFieldValue('CASE');
+   var argument0 = Blockly.Lua.valueToCode(block, 'TEXT',
+       Blockly.Lua.ORDER_HIGH) || '\'\'';
+   if (operator == 'UPPERCASE') {
+@@ -234,7 +234,7 @@ Blockly.Lua['text_trim'] = function(block) {
+     RIGHT: '(.-)%s*$',
+     BOTH: '^%s*(.-)%s*$'
+   };
+-  var operator = OPERATORS[block.getTitleValue('MODE')];
++  var operator = OPERATORS[block.getFieldValue('MODE')];
+   var text = Blockly.Lua.valueToCode(block, 'TEXT',
+       Blockly.Lua.ORDER_HIGH) || '\'\'';
+   var code = 'string.gsub(' + text + ', "' + operator + '", "%1")';
+@@ -258,7 +258,7 @@ Blockly.Lua['text_prompt'] = function(block) {
+        '  io.flush()',
+        '  return io.read()',
+        'end']);
+-  var msg = Blockly.Lua.quote_(block.getTitleValue('TEXT'));
++  var msg = Blockly.Lua.quote_(block.getFieldValue('TEXT'));
+   var code = functionName + '(' + msg + ')';
+   return [code, Blockly.Lua.ORDER_HIGH];
+ };
+diff --git a/generators/lua/variables.js b/generators/lua/variables.js
+index e4716d6..7129742 100644
+--- a/generators/lua/variables.js
++++ b/generators/lua/variables.js
+@@ -34,7 +34,7 @@ goog.require('Blockly.Lua');
+ 
+ Blockly.Lua['variables_get'] = function(block) {
+   // Variable getter.
+-  var code = Blockly.Lua.variableDB_.getName(block.getTitleValue('VAR'),
++  var code = Blockly.Lua.variableDB_.getName(block.getFieldValue('VAR'),
+       Blockly.Variables.NAME_TYPE);
+   return [code, Blockly.Lua.ORDER_ATOMIC];
+ };
+@@ -43,7 +43,7 @@ Blockly.Lua['variables_set'] = function(block) {
+   // Variable setter.
+   var argument0 = Blockly.Lua.valueToCode(block, 'VALUE',
+       Blockly.Lua.ORDER_NONE) || '0';
+-  var varName = Blockly.Lua.variableDB_.getName(block.getTitleValue('VAR'),
++  var varName = Blockly.Lua.variableDB_.getName(block.getFieldValue('VAR'),
+       Blockly.Variables.NAME_TYPE);
+   return varName + ' = ' + argument0 + '\n';
+ };
+@@ -55,9 +55,9 @@ Blockly.Lua['variables_set_two'] = function(block) {
+   // changing to the Lua tab.
+   var value = Blockly.Lua.valueToCode(block, 'VALUE',
+       Blockly.Lua.ORDER_NONE) || 'nil, nil';
+-  var varName1 = Blockly.Lua.variableDB_.getName(block.getTitleValue('VAR1'),
++  var varName1 = Blockly.Lua.variableDB_.getName(block.getFieldValue('VAR1'),
+       Blockly.Variables.NAME_TYPE);
+-  var varName2 = Blockly.Lua.variableDB_.getName(block.getTitleValue('VAR2'),
++  var varName2 = Blockly.Lua.variableDB_.getName(block.getFieldValue('VAR2'),
+       Blockly.Variables.NAME_TYPE);
+   return varName1 + ', ' + varName2 + ' = ' + value + '\n';
+ };
+@@ -69,11 +69,11 @@ Blockly.Lua['variables_set_three'] = function(block) {
+   // changing to the Lua tab.
+   var value = Blockly.Lua.valueToCode(block, 'VALUE',
+       Blockly.Lua.ORDER_NONE) || 'nil, nil, nil';
+-  var varName1 = Blockly.Lua.variableDB_.getName(block.getTitleValue('VAR1'),
++  var varName1 = Blockly.Lua.variableDB_.getName(block.getFieldValue('VAR1'),
+       Blockly.Variables.NAME_TYPE);
+-  var varName2 = Blockly.Lua.variableDB_.getName(block.getTitleValue('VAR2'),
++  var varName2 = Blockly.Lua.variableDB_.getName(block.getFieldValue('VAR2'),
+       Blockly.Variables.NAME_TYPE);
+-  var varName3 = Blockly.Lua.variableDB_.getName(block.getTitleValue('VAR3'),
++  var varName3 = Blockly.Lua.variableDB_.getName(block.getFieldValue('VAR3'),
+       Blockly.Variables.NAME_TYPE);
+   return varName1 + ', ' + varName2 + ', ' + varName3 + ' = ' + value + '\n';
+ };
