@@ -601,7 +601,7 @@ events:
     parameters: [minute, hour, month, day, year, weekday, yday]
   event.mediaplayer.statechanged:
     description: mediaplayer changed play state
-    parameters: [new_state]
+    parameters: [mediastate]
   event.security.intruderalert:
     description: intruder alarm
     parameters: [uuid]
