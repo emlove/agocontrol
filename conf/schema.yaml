@@ -525,7 +525,7 @@ values:
     description: internal id used by interface device
   handled-by:
     name: instance name
-    descroption: instance which handles the device
+    description: instance which handles the device
   minute:
     name: minute
     description: minute
