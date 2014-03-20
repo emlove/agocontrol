@@ -36,7 +36,7 @@ msgstr "Pièces et variables"
 #: ../templates/configuration.xml.in.h:5
 #: ../templates/navigation/configuration.xml.in.h:3
 msgid "Scenarios"
-msgstr "Scenarios"
+msgstr "Scénarios"
 
 #: ../templates/configuration.xml.in.h:6
 #: ../templates/navigation/configuration.xml.in.h:4
