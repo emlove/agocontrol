@@ -19,6 +19,17 @@ window.BlocklyAgocontrol = {
         this.devices = devices;
     },
 
+    shortenedEvent: function(event) {
+        var out = event.replace("event.", "");
+        out = out.replace("environment", "env");
+        out = out.replace("device", "dev");
+        out = out.replace("mediaplayer", "mplay");
+        out = out.replace("proximity", "prox");
+        out = out.replace("telecom", "tel");
+        out = out.replace("security", "sec");
+        return out;
+    },
+
     //get devices
     getDevices: function(deviceType) {
         var devices = [];
@@ -63,7 +74,7 @@ window.BlocklyAgocontrol = {
         for( var event in this.schema.events )
         {
             if( event!==undefined )
-                events.push([event, event]);
+                events.push([this.shortenedEvent(event), event]);
         }
         //prevent from js crash
         if( events.length===0 )
@@ -78,13 +89,29 @@ window.BlocklyAgocontrol = {
         {
             for( var i=0; i<this.schema.devicetypes[deviceType].events.length; i++ )
             {
-                events.push([this.schema.devicetypes[deviceType].events[i], this.schema.devicetypes[deviceType].events[i]]);
+                events.push([this.shortenedEvent(this.schema.devicetypes[deviceType].events[i]), this.schema.devicetypes[deviceType].events[i]]);
             }
         }
         //prevent from js crash
         if( events.length===0 )
             events.push(['', '']);
         return events;
+    },
+
+    //get event properties
+    getEventProperties: function(event) {
+        var props = [];
+        if( this.schema.events[event]!==undefined && this.schema.events[event].parameters )
+        {
+            for( var i=0; i<this.schema.events[event].parameters.length; i++ )
+            {
+                props.push([this.schema.events[event].parameters[i], this.schema.events[event].parameters[i]]);
+            }
+        }
+        //prevent from js crash
+        if( props.length===0 )
+            props.push(['', '']);
+        return props;
     },
 
     //get device properties
@@ -130,17 +157,58 @@ window.BlocklyAgocontrol = {
                     {
                         var content = {};
                         content.id = cmd;
-                        for( var item in  this.schema.commands[cmd] )
+                        for( var item in this.schema.commands[cmd] )
                         {
                             if( item!==undefined )
                                 content[item] = this.schema.commands[cmd][item];
                         }
-                        cmds[this.schema.commands[cmd].name] = content;
+                        cmds[cmd] = content;
                     }
                 }
             }
         }
         return cmds;
+    },
+
+    //get value
+    getValue: function(valueName) {
+        var output = {name:null, type:null, options:null};
+        if( this.schema.values[valueName]!==undefined && this.schema.values[valueName].name!==undefined )
+        {
+            output.name = this.schema.values[valueName]['name'];
+            if( this.schema.values[valueName].type!==undefined )
+            {
+                output.type = this.schema.values[valueName].type;
+            }
+            if( this.schema.values[valueName].options!==undefined )
+            {
+                output.options = this.schema.values[valueName].options;
+            }
+        }
+        //console.log(output);
+        return output;
+    },
+    
+    //clear blockly container
+    clearAllBlocks: function(container) {
+        if( container===undefined )
+            return;
+        if( container.fieldRow===undefined )
+            console.log('Warning: specified container is not an Input. Unable to clear blocks within.');
+        //hack to remove all fields from container (code extracted from core/input.js)
+        var field;
+        for( var i=container.fieldRow.length-1; i>=0; i--)
+        {
+            field = container.fieldRow[i];
+            field.dispose();
+            container.fieldRow.splice(i, 1);
+        }
+        if (container.sourceBlock_.rendered)
+        {
+            container.sourceBlock_.render();
+            // Removing a field will cause the block to change shape.
+            container.sourceBlock_.bumpNeighbours_();
+        }
     }
 };
 
@@ -152,19 +220,34 @@ window.BlocklyAgocontrol = {
 goog.provide('Blockly.Blocks.agocontrol');
 goog.require('Blockly.Blocks');
 
+//no device
+Blockly.Blocks['agocontrol_deviceNo'] = {
+  init: function() {
+    //this.setHelpUrl('TODO');
+    this.setColour(20);
+    this.appendDummyInput()
+        .appendField("No device");
+    this.setOutput(true, "Device");
+    this.setTooltip('No device selected');
+  }
+};
+
 //device block
 Blockly.Blocks['agocontrol_device'] = {
   init: function() {
+    //members
     this.lastType = undefined;
-    this.setHelpUrl('TODO');
-    this.setColour(290);
+
+    //block definition
+    //this.setHelpUrl('TODO');
+    this.setColour(20);
     this.container = this.appendDummyInput()
-        .appendField("device")
+        //.appendField("device")
         .appendField(new Blockly.FieldDropdown(window.BlocklyAgocontrol.getDeviceTypes()), "TYPE")
         .appendField(new Blockly.FieldDropdown([['','']]), "DEVICE");
     this.setInputsInline(true);
-    this.setOutput(true);
-    this.setTooltip('TODO tooltip');
+    this.setOutput(true, "Device");
+    this.setTooltip('Select a device');
   },
 
   onchange: function() {
@@ -183,19 +266,37 @@ Blockly.Blocks['agocontrol_device'] = {
   }
 };
 
-//device event block
-Blockly.Blocks['agocontrol_deviceEvents'] = {
+//no event
+Blockly.Blocks['agocontrol_eventNo'] = {
   init: function() {
+    //this.setHelpUrl('TODO');
+    this.setColour(65);
+    this.appendDummyInput()
+        .appendField("No event");
+    this.setOutput(true, "Event");
+    this.setTooltip('No event selected');
+  }
+};
+
+//device event block
+Blockly.Blocks['agocontrol_deviceEvent'] = {
+  init: function() {
+    //members
     this.lastType = undefined;
-    this.setHelpUrl('TODO');
-    this.setColour(290);
+    this.lastDevice = undefined;
+    
+    //block definition
+    //this.setHelpUrl('TODO');
+    this.setColour(65);
     this.container = this.appendDummyInput()
-        .appendField("event")
+        //.appendField("event")
         .appendField(new Blockly.FieldDropdown(window.BlocklyAgocontrol.getDeviceTypes()), "TYPE")
+        .appendField(new Blockly.FieldDropdown([['','']]), "DEVICE")
+        .appendField("", "SEP")
         .appendField(new Blockly.FieldDropdown([['','']]), "EVENT");
     this.setInputsInline(true);
-    this.setOutput(true);
-    this.setTooltip('TODO tooltip');
+    this.setOutput(true, "Event");
+    this.setTooltip('Select a device event');
   },
 
   onchange: function() {
@@ -205,82 +306,69 @@ Blockly.Blocks['agocontrol_deviceEvents'] = {
     if( this.lastType!=currentType )
     {
         this.lastType = currentType;
-        var events = window.BlocklyAgocontrol.getDeviceEvents(currentType);
-        if( events.length==0 )
+        var devices = window.BlocklyAgocontrol.getDevices(currentType);
+        if( devices.length==0 )
+            devices.push(['','']);
+        this.container.removeField("DEVICE");
+        this.container.appendField(new Blockly.FieldDropdown(devices), "DEVICE");
+    }
+    var currentDevice = this.getFieldValue("DEVICE");
+    if( this.lastDevice!=currentDevice )
+    {
+        this.lastDevice = currentDevice;
+        var events = [];
+        if( currentDevice.length>0 )
+        {
+            events = window.BlocklyAgocontrol.getDeviceEvents(currentType);
+            if( events.length==0 )
+                events.push(['','']);
+        }
+        else
+        {
             events.push(['','']);
+        }
+        this.container.removeField("SEP");
         this.container.removeField("EVENT");
+        this.container.appendField(" ", "SEP");
         this.container.appendField(new Blockly.FieldDropdown(events), "EVENT");
     }
   }
 };
 
 //all events block
-Blockly.Blocks['agocontrol_allEvents'] = {
+Blockly.Blocks['agocontrol_eventAll'] = {
   init: function() {
-    this.setHelpUrl('TODO');
-    this.setColour(290);
+    //this.setHelpUrl('TODO');
+    this.setColour(65);
     this.container = this.appendDummyInput()
-        .appendField("event")
+        //.appendField("event")
         .appendField(new Blockly.FieldDropdown(window.BlocklyAgocontrol.getAllEvents()), "EVENT");
     this.setInputsInline(true);
-    this.setOutput(true);
-    this.setTooltip('TODO tooltip');
+    this.setOutput(true, "Event");
+    this.setTooltip('Select an event');
   }
 };
 
 //device property block
-Blockly.Blocks['agocontrol_deviceProperties'] = {
+Blockly.Blocks['agocontrol_deviceProperty'] = {
   init: function() {
     //members
     this.properties = undefined;
     this.lastType = undefined;
-    this.lastProp = undefined;
-    this.customFields = [];
+    this.lastDevice = undefined;
 
     //block definition
-    this.setHelpUrl('TODO');
-    this.setColour(290);
+    //this.setHelpUrl('TODO');
+    this.setColour(140);
     this.container = this.appendDummyInput()
-        .appendField("property")
+        //.appendField("property")
         .appendField(new Blockly.FieldDropdown(window.BlocklyAgocontrol.getDeviceTypes()), "TYPE")
+        .appendField(new Blockly.FieldDropdown([['','']]), "DEVICE")
+        .appendField(" ", "SEP")
         .appendField(new Blockly.FieldDropdown([['','']]), "PROP");
-    this.ccontainer = this.appendDummyInput();
-    this._addCustomField("empty", new Blockly.FieldImage("/blockly/media/1x1.gif",1,1,""));
-        //.appendField(new Blockly.FieldImage("/blockly/media/1x1.gif",1,1,""), "CUSTOM");
     this.setInputsInline(true);
-    this.setOutput(true);
-    this.setTooltip('TODO tooltip');
-  },
-
-  //add custom field (internal use)
-  _addCustomField: function(key, field) {
-    this.customFields.push(key);
-    this.ccontainer.appendField(field, "CUSTOM_"+key);
-  },
-
-  //get block values
-  getValues: function() {
-    var values = {};
-    for( var i=0; i<this.customFields.length; i++)
-    {
-        if( this.customFields[i]!='empty' && this.customFields[i]!='text' )
-        {
-            values[this.customFields[i]] = this.getFieldValue("CUSTOM_"+this.customFields[i]);
-        }
-    }
-    return values;
-  },
-
-  //clear custom fields (internal use);
-  _clearCustomFields: function() {
-    for( var i=0; i<this.customFields.length; i++)
-    {
-        this.ccontainer.removeField("CUSTOM_"+this.customFields[i]);
-    }
-    while( this.customFields.length>0 )
-    {
-        this.customFields.pop();
-    }
+    this.setOutput(true, "DeviceProperty");
+    this.setTooltip('Select a device property');
   },
 
   //onchange event
@@ -293,114 +381,120 @@ Blockly.Blocks['agocontrol_deviceProperties'] = {
     if( this.lastType!=currentType )
     {
         this.lastType = currentType;
-        this.properties = window.BlocklyAgocontrol.getDeviceProperties(currentType);
-        var props = [];
-        for( var prop in this.properties )
-        {
-            props.push([prop, this.properties[prop].name]);
-        }
-        if( props.length==0 )
-            props.push(['','']);
-        this.container.removeField("PROP");
-        this.container.appendField(new Blockly.FieldDropdown(props), "PROP");
+        var devices = window.BlocklyAgocontrol.getDevices(currentType);
+        if( devices.length==0 )
+            devices.push(['','']);
+        this.container.removeField("DEVICE");
+        this.container.appendField(new Blockly.FieldDropdown(devices), "DEVICE");
     }
 
-    //update block content according to selected type
-    var currentProp = this.getFieldValue("PROP");
-    if( this.lastProp!=currentProp )
+    var currentDevice = this.getFieldValue("DEVICE");
+    if( this.lastDevice!=currentDevice )
     {
-        this.lastProp = currentProp;
-        //console.log('property='+currentProp);
-        this._clearCustomFields();
-        if( this.properties[currentProp]!==undefined )
+        this.lastDevice = currentDevice;
+        var props = [];
+        if( currentDevice.length>0 )
         {
-            switch(this.properties[currentProp].type)
+            this.properties = window.BlocklyAgocontrol.getDeviceProperties(currentType);
+            for( var prop in this.properties )
             {
-                //console.log(this.properties[currentProp]);
-                case 'option':
-                    var opts = [];
-                    for( var i=0; i<this.properties[currentProp].options.length; i++ )
-                    {
-                        opts.push([this.properties[currentProp].options[i], this.properties[currentProp].options[i]]);
-                    }
-                    this._addCustomField("text", "=");
-                    this._addCustomField("OPTION", new Blockly.FieldDropdown(opts));
-                    break;
-                case 'range':
-                    this._addCustomField("text", "in range [");
-                    this._addCustomField("MIN", new Blockly.FieldTextInput("0"));
-                    this._addCustomField("text", ",");
-                    this._addCustomField("MAX", new Blockly.FieldTextInput("100"));
-                    this._addCustomField("text", "]");
-                    break;
-                case 'color':
-                    this._addCustomField("text", "has colour");
-                    this._addCustomField("COLOR", new Blockly.FieldColour("#000000"));
-                    break;
-                case 'time':
-                    this._addCustomField("text", "is");
-                    this._addCustomField("HOUR", new Blockly.FieldTextInput("0"));
-                    this._addCustomField("text", ":");
-                    this._addCustomField("MINUTE", new Blockly.FieldTextInput("0"));
-                    break;
-                case 'timeoffset':
-                    this._addCustomField("text", "has offset");
-                    this._addCustomField("SIGN", new Blockly.FieldDropdown([["-","minus"],["+","plus"]]));
-                    this._addCustomField("HOUR", new Blockly.FieldTextInput("0"));
-                    this._addCustomField("text", ":");
-                    this._addCustomField("MINUTE", new Blockly.FieldTextInput("0"));
-                    break;
-                case 'threshold':
-                    this._addCustomField("text", "is");
-                    this._addCustomField("SIGN", new Blockly.FieldDropdown([[">","gt"],["<","lt"],[">=","gte"],["<=","lte"]]));
-                    this._addCustomField("THRESHOLD", new Blockly.FieldTextInput("0"));
-                case 'bool':
-                    this._addCustomField("text", "is");
-                    this._addCustomField("BOOL", new Blockly.FieldDropdown([["true","true"],["false","false"]]));
-                default:
-                    this._addCustomField("empty", new Blockly.FieldImage("/blockly/media/1x1.gif",1,1,""));
-                    break;
+                props.push([prop, this.properties[prop].name]);
             }
+            if( props.length==0 )
+                props.push(['','']);
         }
         else
         {
-            this._addCustomField("empty", new Blockly.FieldImage("/blockly/media/1x1.gif",1,1,""));
+            props.push(['','']);
+        }
+        this.container.removeField("SEP");
+        this.container.removeField("PROP");
+        this.container.appendField(" ", "SEP");
+        this.container.appendField(new Blockly.FieldDropdown(props), "PROP");
+    }
+  }
+};
+
+//event property block
+Blockly.Blocks['agocontrol_eventProperty'] = {
+  init: function() {
+    //members
+    this.properties = undefined;
+    this.lastEvent = undefined;
+
+    //block definition
+    //this.setHelpUrl('TODO');
+    this.setColour(140);
+    this.container = this.appendDummyInput()
+        //.appendField("property")
+        .appendField(new Blockly.FieldDropdown(window.BlocklyAgocontrol.getAllEvents()), "EVENT")
+        .appendField(new Blockly.FieldDropdown([['','']]), "PROP");
+    this.setInputsInline(true);
+    this.setOutput(true, "EventProperty");
+    this.setTooltip('Select an event property');
+  },
+
+  //onchange event
+  onchange: function() {
+    if( !this.workspace )
+        return;
+
+    //update properties list
+    var currentEvent = this.getFieldValue("EVENT");
+    if( this.lastEvent!=currentEvent )
+    {
+        this.lastEvent = currentEvent;
+        var events = window.BlocklyAgocontrol.getEventProperties(currentEvent);
+        if( events.length==0 )
+            events.push(['','']);
+        this.container.removeField("PROP");
+        this.container.appendField(new Blockly.FieldDropdown(events), "PROP");
+        var myparent = this.getParent();
+        if( myparent && myparent.type && myparent.type==="agocontrol_eventPropertyValue")
+        {
+            myparent.onchange();
         }
     }
   }
 };
 
-Blockly.Blocks['agocontrol_deviceCommands'] = {
+//event property values
+Blockly.Blocks['agocontrol_eventPropertyValue'] = {
   init: function() {
     //members
-    this.commands = undefined;
-    this.lastType = undefined;
-    this.lastCommand = undefined;
     this.customFields = [];
+    this.currentType = null;
+    this.lastProp = null;
 
     //block definition
-    this.setHelpUrl('TODO');
-    this.setColour(290);
-    this.container = this.appendDummyInput()
-        .appendField("command")
-        .appendField(new Blockly.FieldDropdown(window.BlocklyAgocontrol.getDeviceTypes()), "TYPE")
-        .appendField(new Blockly.FieldDropdown([["option", "OPTIONNAME"]]), "CMD");
-    //this.ccontainer = this.appendDummyInput()
-    //    .appendField(new Blockly.FieldImage("/blockly/media/1x1.gif",1,1,""), "CUSTOM");
-    //this.ccontainer = this.appendDummyInput();
-    //this._addCustomField("empty", new Blockly.FieldImage("/blockly/media/1x1.gif",1,1,""));
-    this.setPreviousStatement(true);
-    this.setNextStatement(true);
-    this.setTooltip('TODO tooltip');
+    //this.setHelpUrl('TODO');
+    this.setColour(210);
+    this.container = this.appendValueInput("PROP")
+        //.appendField("property")
+        .setCheck(["EventProperty", "DeviceProperty"]);
+    this.ccontainer = this.appendDummyInput();
+    this._addCustomField("empty", new Blockly.FieldImage("/blockly/media/1x1.gif",1,1,""));
+    this.setInputsInline(true);
+    this.setOutput(true, "Boolean");
+    this.setTooltip('Return true if property is equal to value');
+    
+    //add default fields
+    this._defaultFields();
   },
-
-  //add custom field (internal use)
-  _addCustomField: function(key, desc, field) {
-    this.customFields.push(key);
-    var input = this.appendDummyInput("INPUT_"+key);
-    if( desc.length>0 )
-        input.appendField('-'+desc);
-    input.appendField(field, "CUSTOM_"+key);
+  
+  //generate output xml according to block content
+  mutationToDom: function() {
+    var container = document.createElement('mutation');
+    container.setAttribute('currentProp', this.lastProp);
+    container.setAttribute('currentType', this.currentType);
+    return container;
+  },
+  
+  //generate block content according to input xml
+  domToMutation: function(xmlElement) {
+    var currentProp = xmlElement.getAttribute('currentProp');
+    this.currentType = xmlElement.getAttribute('currentType');
+    this._generateContent(currentProp);
   },
 
   //get block values
@@ -408,32 +502,331 @@ Blockly.Blocks['agocontrol_deviceCommands'] = {
     var values = {};
     for( var i=0; i<this.customFields.length; i++)
     {
-        if( this.customFields[i]!='empty' && this.customFields[i]!='text' )
-        {
-            values[this.customFields[i]] = this.getFieldValue("CUSTOM_"+this.customFields[i]);
-        }
+      if( this.customFields[i]!='empty' && this.customFields[i]!='text' )
+      {
+        values[this.customFields[i]] = this.getFieldValue("CUSTOM_"+this.customFields[i]);
+      }
     }
     return values;
+  },
+
+  //add custom field (internal use)
+  _addCustomField: function(key, field) {
+    this.customFields.push(key);
+    this.ccontainer.appendField(field, "CUSTOM_"+key);
   },
 
   //clear custom fields (internal use);
   _clearCustomFields: function() {
     for( var i=0; i<this.customFields.length; i++)
     {
-        var input = this.getInput("INPUT_"+this.customFields[i]);
+      this.ccontainer.removeField("CUSTOM_"+this.customFields[i]);
+    }
+    while( this.customFields.length>0 )
+    {
+      this.customFields.pop();
+    }
+  },
+  
+  //add default fields
+  _defaultFields: function() {
+    this._addCustomField("SIGN", new Blockly.FieldDropdown([["=","eq"],["!=","di"],[">","gt"],["<","lt"],[">=","gte"],["<=","lte"]]));
+    this._addCustomField("VALUE", new Blockly.FieldTextInput("0"));
+  },
+  
+  //generate block content
+  _generateContent: function(currentProp) {
+    if( this.lastProp!=currentProp )
+    {
+        this._clearCustomFields();
+        var value = window.BlocklyAgocontrol.getValue(currentProp);
+        this.currentType = value.type;
+        this.lastProp = currentProp;
+        switch(value.type)
+        {
+            case 'option':
+                var opts = [];
+                for( var i=0; i<value.options.length; i++ )
+                {
+                    opts.push([value.options[i], value.options[i]]);
+                }
+                this._addCustomField("text", "=");
+                this._addCustomField("OPTION", new Blockly.FieldDropdown(opts));
+                break;
+            case 'range':
+                this._addCustomField("text", "in range [");
+                this._addCustomField("MIN", new Blockly.FieldTextInput("0"));
+                this._addCustomField("text", ",");
+                this._addCustomField("MAX", new Blockly.FieldTextInput("100"));
+                this._addCustomField("text", "]");
+                break;
+            case 'color':
+                this._addCustomField("text", "has colour");
+                this._addCustomField("COLOR", new Blockly.FieldColour("#000000"));
+                break;
+            case 'time':
+                this._addCustomField("text", "is");
+                this._addCustomField("HOUR", new Blockly.FieldTextInput("0"));
+                this._addCustomField("text", ":");
+                this._addCustomField("MINUTE", new Blockly.FieldTextInput("0"));
+                break;
+            case 'timeoffset':
+                this._addCustomField("text", "has offset");
+                this._addCustomField("SIGN", new Blockly.FieldDropdown([["-","minus"],["+","plus"]]));
+                this._addCustomField("HOUR", new Blockly.FieldTextInput("0"));
+                this._addCustomField("text", ":");
+                this._addCustomField("MINUTE", new Blockly.FieldTextInput("0"));
+                break;
+            case 'threshold':
+                this._addCustomField("text", "is");
+                this._addCustomField("SIGN", new Blockly.FieldDropdown([[">","gt"],["<","lt"],[">=","gte"],["<=","lte"]]));
+                this._addCustomField("THRESHOLD", new Blockly.FieldTextInput("0"));
+                break;
+            case 'bool':
+                this._addCustomField("text", "is");
+                this._addCustomField("BOOL", new Blockly.FieldDropdown([["true","true"],["false","false"]]));
+                break;
+            default:
+                //not defined value, display standard field
+                this._defaultFields();
+                break;
+        }
+    }
+  },
+
+  //onchange
+  onchange: function() {
+    if( !this.workspace )
+        return;
+    if( this.getChildren().length==0 )
+        return;
+
+    //update block content according to selected type
+    var child = this.getChildren()[0];
+    var currentProp = child.getFieldValue("PROP");
+    this._generateContent(currentProp);
+  }
+};
+
+//device command
+Blockly.Blocks['agocontrol_deviceCommand'] = {
+  init: function() {
+    //members
+    this.commands = undefined;
+    this.lastType = undefined;
+    this.lastDevice = undefined;
+    this.lastCommand = undefined;
+    this.customFields = [];
+    this.customBlocks = [];
+
+    //block definition
+    //this.setHelpUrl('TODO');
+    this.setColour(290);
+    this.container = this.appendDummyInput()
+        //.appendField("command")
+        .appendField(new Blockly.FieldDropdown(window.BlocklyAgocontrol.getDeviceTypes()), "TYPE")
+        .appendField(new Blockly.FieldDropdown([['','']]), "DEVICE")
+    this.containerCommand = this.appendDummyInput()
+        .setAlign(Blockly.ALIGN_RIGHT)
+        .appendField(new Blockly.FieldDropdown([['','']]), "COMMAND");
+    this.setOutput(true, "Command");
+    this.setTooltip('Select a device command');
+  },
+  
+  //generate output xml according to block content
+  mutationToDom: function() {
+    var container = document.createElement('mutation');
+    container.setAttribute('currentType', this.lastType);
+    container.setAttribute('currentDevice', this.lastDevice);
+    container.setAttribute('currentCommand', this.lastCommand);
+    container.setAttribute('duplicated', ((this.customBlocks.length==0) ? false : true));
+    return container;
+  },
+  
+  //generate block content according to input xml
+  domToMutation: function(xmlElement) {
+    var currentType = xmlElement.getAttribute('currentType');
+    var currentDevice = xmlElement.getAttribute('currentDevice');
+    var currentCommand = xmlElement.getAttribute('currentCommand');
+    var duplicated = xmlElement.getAttribute('duplicated');
+    this._generateContent(currentType, currentDevice, currentCommand, duplicated);
+  },
+  
+  //get fields name
+  getFields: function() {
+    var fields = {};
+    for( var i=0; i<this.customFields.length; i++)
+    {
+        if( this.customFields[i]!='empty' && this.customFields[i]!='text' )
+        {
+            fields["CUSTOM_"+this.customFields[i]] = this.customFields[i];
+        }
+    }
+    return fields;
+  },
+
+  //add custom field (internal use)
+  _addCustomField: function(key, desc, checkType, extra, duplicated) {
+    //create new input
+    var workspace = Blockly.getMainWorkspace();
+    var newBlock;
+    //duplicate operation creates dependant blocks by itself, so no need to create them twice
+    if( !duplicated )
+    {
+        switch( checkType )
+        {
+            case "Number":
+                newBlock = Blockly.Block.obtain(workspace, 'math_number');
+                break;
+            case "Boolean":
+                newBlock = Blockly.Block.obtain(workspace, 'logic_boolean'); 
+                break;
+            case "String":
+                newBlock = Blockly.Block.obtain(workspace, 'text');
+                break;
+            case "Option":
+                checkType = "String"; //force check type to Blockly known type
+                newBlock = Blockly.Block.obtain(workspace, 'agocontrol_fixedItemsList');
+                newBlock.setItems(extra);
+                break;
+            default:
+                newBlock = Blockly.Block.obtain(workspace, 'text');
+                break;
+        }
+        newBlock.initSvg();
+    }
+
+    //create custom field
+    var input = this.appendValueInput("CUSTOM_"+key)
+                .setAlign(Blockly.ALIGN_RIGHT)
+                .setCheck(checkType);
+    this.customFields.push(key);
+    if( desc.length>0 )
+        input.appendField('- '+desc);
+    if( !duplicated )
+    {
+        newBlock.outputConnection.connect(input.connection);
+        newBlock.render();
+        this.customBlocks.push(newBlock);
+    }
+  },
+
+  //clear custom fields (internal use);
+  _clearCustomFields: function() {
+    for( var i=0; i<this.customFields.length; i++)
+    {
+        //get input
+        var input = this.getInput("CUSTOM_"+this.customFields[i]);
         if( input!==undefined )
         {
-            //input.removeField("CUSTOM_"+this.customFields[i]);
-            this.removeInput("INPUT_"+this.customFields[i]);
-        }
-        else
-        {
-            console.log("Unable to find INPUT_"+this.customFields[i]);
+            if( input.connection!==null )
+            {
+                input.connection.targetConnection.sourceBlock_.dispose();
+            }
+            this.removeInput("CUSTOM_"+this.customFields[i]);
         }
     }
     while( this.customFields.length>0 )
     {
         this.customFields.pop();
+    }
+    while( this.customBlocks.length>0 )
+    {
+        var block = this.customBlocks.pop();
+        block.dispose();
+    }
+  },
+  
+  //generate content
+  _generateContent: function(currentType, currentDevice, currentCommand, duplicated) {
+    //update devices list
+    if( !currentType )
+        currentType = this.getFieldValue("TYPE");
+    if( this.lastType!=currentType )
+    {
+        this.lastType = currentType;
+        var devices = window.BlocklyAgocontrol.getDevices(currentType);
+        if( devices.length==0 )
+            devices.push(['','']);
+        this.container.removeField("DEVICE");
+        this.container.appendField(new Blockly.FieldDropdown(devices), "DEVICE");
+    }
+    
+    //update commands list
+    if( !currentDevice )
+        currentDevice = this.getFieldValue("DEVICE");
+    if( this.lastDevice!=currentDevice )
+    {
+        this.lastDevice = currentDevice;
+        var cmds = [];
+        if( currentDevice.length>0 )
+        {
+            this.commands = window.BlocklyAgocontrol.getDeviceCommands(currentType);
+            for( var cmd in this.commands )
+            {
+                cmds.push([this.commands[cmd].name, this.commands[cmd].id]);
+            }
+            if( cmds.length==0 )
+                cmds.push(['','']);
+        }
+        else
+        {
+            cmds.push(['','']);
+        }
+        window.BlocklyAgocontrol.clearAllBlocks(this.containerCommand);
+        this.containerCommand.appendField(new Blockly.FieldDropdown(cmds), "COMMAND");
+    }
+
+    //update block content according to selected type
+    if( !currentCommand )
+        currentCommand = this.getFieldValue("COMMAND");
+    if( this.lastCommand!=currentCommand )
+    {
+        this.lastCommand = currentCommand;
+        this._clearCustomFields();
+        if( currentCommand.length>0 && this.commands[currentCommand]!==undefined && this.commands[currentCommand].parameters!==undefined )
+        {
+            for( var param in this.commands[currentCommand].parameters )
+            {
+                var type = "null"; //default is any type (no type check)
+                var extra = null;
+                if( this.commands[currentCommand].parameters[param].type!==undefined )
+                {
+                    switch( this.commands[currentCommand].parameters[param].type )
+                    {
+                        case "integer":
+                            type = "Number";
+                            break;
+                        case "string":
+                            type = "String";
+                            break;
+                        case "number":
+                            type = "Number";
+                            break;
+                        case "boolean":
+                            type = "Boolean";
+                            break;
+                        case "option":
+                            //"Option" type is not a Blockly recognized type
+                            type = "Option";
+                            if( this.commands[currentCommand].parameters[param].options!==undefined )
+                            {
+                                extra = [];
+                                for( var i=0; i<this.commands[currentCommand].parameters[param].options.length; i++)
+                                {
+                                    extra.push([this.commands[currentCommand].parameters[param].options[i], this.commands[currentCommand].parameters[param].options[i]]);
+                                }
+                            }
+                            break;
+                        default:
+                            //allow any type
+                            type = null;
+                            break;
+                    }
+                }
+                this._addCustomField(param, this.commands[currentCommand].parameters[param].name, type, extra, duplicated);
+            }
+        }
     }
   },
 
@@ -443,41 +836,70 @@ Blockly.Blocks['agocontrol_deviceCommands'] = {
         return;
 
     //update commands list
-    var currentType = this.getFieldValue("TYPE");
-    if( this.lastType!=currentType )
-    {
-        this.lastType = currentType;
-        this.commands = window.BlocklyAgocontrol.getDeviceCommands(currentType);
-        var cmds = [];
-        for( var cmd in this.commands )
-        {
-            cmds.push([cmd, this.commands[cmd].name]);
-        }
-        if( cmds.length==0 )
-            cmds.push(['','']);
-        this.container.removeField("CMD");
-        this.container.appendField(new Blockly.FieldDropdown(cmds), "CMD");
-    }
-
-    //update block content according to selected type
-    var currentCmd = this.getFieldValue("CMD");
-    if( this.lastCommand!=currentCmd )
-    {
-        this.lastCommand = currentCmd;
-        this._clearCustomFields();
-        //console.log(this.commands);
-        if( this.commands[currentCmd]!==undefined && this.commands[currentCmd].parameters!==undefined )
-        {
-            for( var param in this.commands[currentCmd].parameters )
-            {
-                this._addCustomField(param.toUpperCase(), this.commands[currentCmd].parameters[param].name, new Blockly.FieldTextInput(""));
-            }
-        }
-        else
-        {
-            this._addCustomField("empty", "", new Blockly.FieldImage("/blockly/media/1x1.gif",1,1,""));
-        }
-    }
+    this._generateContent(null, null, null, false);
   }
 };
 
+//sendMessage block
+Blockly.Blocks['agocontrol_sendMessage'] = {
+  init: function() {
+    //this.setHelpUrl('TODO');
+    this.setColour(290);
+    this.appendDummyInput()
+        .appendField("sendMessage");
+    this.appendValueInput("COMMAND")
+        .setCheck("Command")
+        .setAlign(Blockly.ALIGN_RIGHT)
+        .appendField("command");
+    this.setPreviousStatement(true, "null");
+    this.setNextStatement(true, "null");
+    this.setTooltip('Send a message to execute a command on agocontrol');
+  }
+};
+
+//content condition
+Blockly.Blocks['agocontrol_contentCondition'] = {
+    init: function() {
+        //this.setHelpUrl('TODO');
+        this.setColour(210);
+        this.appendDummyInput()
+            .appendField("triggered event is");
+        this.appendValueInput("EVENT")
+            .setCheck("Event");
+        this.setInputsInline(true);
+        this.setOutput(true, "Boolean");
+        this.setTooltip('Return true if event is triggered one');
+    }
+};
+
+//list of fixed items
+Blockly.Blocks['agocontrol_fixedItemsList'] = {
+  init: function() {
+    //members
+    this.items = [['','']]; //empty list
+    
+    //block definition
+    //this.setHelpUrl("TODO");
+    this.setColour(260);
+    this.setOutput(true, 'String');
+    this.container = this.appendDummyInput()
+        .appendField(new Blockly.FieldDropdown(this.items), 'LIST');
+    this.setTooltip("Select a value in list");
+  },
+  
+  //set list items
+  //items must be list [['key','val'], ...]
+  setItems: function(items) {
+    //regenerate list
+    this.container.removeField("LIST");
+    //prevent from js crash
+    if( items.length==0 )
+        items = [['','']];
+    this.container.appendField(new Blockly.FieldDropdown(items), "LIST");
+  },
+  
+  //return selected item
+  getSelectedItem: function() {
+    return this.getFieldValue("LIST") || '';
+  }
+};

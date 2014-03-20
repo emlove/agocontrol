@@ -100,9 +100,10 @@ Blockly.Lua['agocontrol_eventPropertyValue'] = function(block) {
 Blockly.Lua['agocontrol_deviceCommand'] = function(block) {
     var code = "";
     var value;
-    var cmd = block.getFieldValue("CMD") || 'nil';
+    var command = block.getFieldValue("COMMAND") || 'nil';
+    var device = block.getFieldValue("DEVICE") || 'nil';
     var fields = block.getFields();
-    code += "'command="+cmd+"' ";
+    code += "'command="+command+"', 'uuid="+device+"' ";
     for( var field in fields )
     {
         value = Blockly.Lua.valueToCode(block, field, Blockly.Lua.ORDER_NONE) || '';
@@ -116,13 +117,11 @@ Blockly.Lua['agocontrol_deviceCommand'] = function(block) {
 
 Blockly.Lua['agocontrol_sendMessage'] = function(block) {
     var code = "";
-    code += Blockly.Lua.valueToCode(block, 'COMMAND', Blockly.Lua.ORDER_NONE) || 'nil';
-    var device = Blockly.Lua.valueToCode(block, 'DEVICE', Blockly.Lua.ORDER_NONE) || null;
-    if( device )
-    {
-        code += ", 'uuid="+device+"'";
-    }
-    return "sendMessage("+code+")\n";
+    code += Blockly.Lua.valueToCode(block, 'COMMAND', Blockly.Lua.ORDER_NONE) || '';
+    if( code.length>0 )
+        return "sendMessage("+code+")\n";
+    else
+        return '';
 };
 
 Blockly.Lua['agocontrol_contentCondition'] = function(block) {
