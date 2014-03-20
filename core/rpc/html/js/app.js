@@ -95,6 +95,14 @@ function buildfloorPlanList(model) {
 var deferredInit = null;
 
 function loadPlugin() {
+    //lock ui
+    $.blockUI({
+        message : '<div>Please wait ...</div>',
+        css : {
+            border : '3px solid #a00'
+        }
+    });
+
     /* Get plugin name from query string */
     var name = window.location.search.substring(1);
     var tmp = name.split("&");
@@ -135,6 +143,8 @@ function loadPlugin() {
                     complete: function() {
                         //here, all resources are really loaded
 	                    init_plugin();
+                        //unlock ui
+                        $.unblockUI();
                     }
                 });
             }
