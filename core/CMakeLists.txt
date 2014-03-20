@@ -8,7 +8,7 @@ configure_file (
     @ONLY
 )
 
-install (FILES agodrain.py myavahi.py agoctrl.sh DESTINATION ${BINDIR})
+install (PROGRAMS agodrain.py myavahi.py agoctrl.sh DESTINATION ${BINDIR})
 install (DIRECTORY DESTINATION ${CONFDIR}/schema.d)
 
 OPTION(BUILD_CORE_drain "Build agodrain" ON)

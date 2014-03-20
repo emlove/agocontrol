@@ -1,3 +1,3 @@
 cmake_minimum_required (VERSION 2.6)
 
-install (FILES agotellstick.py DESTINATION ${BINDIR})
+install (PROGRAMS agotellstick.py DESTINATION ${BINDIR})

@@ -30,5 +30,5 @@ target_link_libraries (agoclient ${AGOCLIENT_LIBRARIES})
 
 # Install instructions for this target
 install (TARGETS agoclient LIBRARY DESTINATION ${LIBDIR})
-install (FILES agoclient.h CDataFile.h DESTINATION ${INCDIR})
-install (FILES ${CMAKE_CURRENT_BINARY_DIR}/agoclient.py DESTINATION ${BINDIR})
+install (FILES ${CMAKE_CURRENT_BINARY_DIR}/agoclient.h CDataFile.h DESTINATION ${INCDIR})
+install (PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/agoclient.py DESTINATION ${BINDIR})

@@ -35,6 +35,7 @@ configure_file (
     @ONLY
 )
 
+
 # workaround to making the translations
 add_custom_target(translations) 
 add_dependencies(agorpc translations)
@@ -60,10 +61,13 @@ install (TARGETS get_table_lang.cgi RUNTIME DESTINATION ${HTMLDIR}/cgi-bin)
 install(
    CODE "
    file(GLOB_RECURSE HTML_FILES ${CMAKE_CURRENT_BINARY_DIR}/html/*.in.html)
-   file(REMOVE ${HTML_FILES})
+   file(REMOVE \${HTML_FILES})
+   file(GLOB CGI_SCRIPTS ${CMAKE_CURRENT_BINARY_DIR}/html/cgi-bin/*.cgi)
+   file(INSTALL \${CGI_SCRIPTS} DESTINATION ${HTMLDIR}/cgi-bin/ FILE_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
+   file(REMOVE \${CGI_SCRIPTS})
    file(GLOB HTML_FILES ${CMAKE_CURRENT_BINARY_DIR}/html/*) \n
    file(INSTALL DESTINATION ${HTMLDIR}
-   TYPE FILE FILES \${HTML_FILES}
-   )"
+   TYPE FILE FILES \${HTML_FILES})
+   "
 )
 

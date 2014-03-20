@@ -18,4 +18,4 @@ foreach (infile ${SCRIPT_FILES})
 
 endforeach (infile)
 
-install (FILES ${SCRIPT_FILES_DONE} convert-zwave-uuid.py convert-scenario.py convert-event.py convert-config.py DESTINATION ${BINDIR})
+install (PROGRAMS ${SCRIPT_FILES_DONE} convert-zwave-uuid.py convert-scenario.py convert-event.py convert-config.py DESTINATION ${BINDIR})

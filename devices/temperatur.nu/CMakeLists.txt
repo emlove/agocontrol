@@ -1,3 +1,3 @@
 cmake_minimum_required (VERSION 2.6)
 
-install (FILES agotemperaturnu.py DESTINATION ${BINDIR})
+install (PROGRAMS agotemperaturnu.py DESTINATION ${BINDIR})

@@ -1,3 +1,3 @@
 cmake_minimum_required (VERSION 2.6)
 
-install (FILES agologger.py DESTINATION ${BINDIR})
+install (PROGRAMS agologger.py DESTINATION ${BINDIR})

@@ -1,3 +1,3 @@
 cmake_minimum_required (VERSION 2.6)
 
-install (FILES agoalert.py pushbullet.py DESTINATION ${BINDIR})
+install (PROGRAMS agoalert.py pushbullet.py DESTINATION ${BINDIR})
