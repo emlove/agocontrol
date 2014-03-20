@@ -1,5 +1,6 @@
 <html>
 <head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <script type="text/javascript" src="blockly_uncompressed.js"></script>
 <script type="text/javascript" src="blocks/agocontrol.js"></script>
 <script type="text/javascript" src="blocks/colour.js"></script>
@@ -250,8 +251,8 @@
         }
     };
   
-    var schema = YAML.load('http://192.168.1.1/schema.yaml');
-    var deviceMap = YAML.load('http://192.168.1.1/deviceMap.yaml');
+    var schema = YAML.load('http://www.agocontrol.com/trac/browser/agocontrol.git/conf/schema.yaml?format=txt');
+    var deviceMap = YAML.load('http://www.agocontrol.com/trac/browser/agocontrol.git/devices/blockly/deviceMap.yaml?format.txt');
     console.log(deviceMap);
     console.log(schema);
     Blockly.inject(document.getElementById('blocklyDiv'),
