@@ -136,3 +136,21 @@ Blockly.Lua['agocontrol_fixedItemsList'] = function(block) {
     var code = "'"+block.getSelectedItem()+"'";
     return [code, Blockly.Lua.ORDER_NONE];
 };
+
+Blockly.Lua['agocontrol_getVariable'] = function(block) {
+    var code = "inventory.variables."+block.getVariable();
+    return [code, Blockly.Lua.ORDER_NONE];
+};
+
+Blockly.Lua['agocontrol_setVariable'] = function(block) {
+    var code = "";
+    var name = block.getVariable();
+    if( name.length>0 )
+    {
+        code = "inventory.variables."+name+" = ";
+        code += Blockly.Lua.valueToCode(block, 'VALUE', Blockly.Lua.ORDER_NONE) || 'nil';
+        code += "\n";
+        return code;
+    }
+    return '';
+};

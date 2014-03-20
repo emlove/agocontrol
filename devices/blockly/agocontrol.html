@@ -1,6 +1,5 @@
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <script type="text/javascript" src="blockly_uncompressed.js"></script>
 <script type="text/javascript" src="blocks/agocontrol.js"></script>
 <script type="text/javascript" src="blocks/colour.js"></script>
@@ -205,6 +204,10 @@
             <category name="Actions">
                 <block type="agocontrol_sendMessage"></block>
             </category>
+            <category name="Variables">
+                <block type="agocontrol_getVariable"></block>
+                <block type="agocontrol_setVariable"></block>
+            </category>
         </category>
     </xml>
 
@@ -252,12 +255,17 @@
     };
   
     var schema = YAML.load('http://www.agocontrol.com/trac/browser/agocontrol.git/conf/schema.yaml?format=txt');
-    var deviceMap = YAML.load('http://www.agocontrol.com/trac/browser/agocontrol.git/devices/blockly/deviceMap.yaml?format.txt');
-    console.log(deviceMap);
+    var deviceMap = YAML.load('http://www.agocontrol.com/trac/browser/agocontrol.git/devices/blockly/deviceMap.yaml?format=txt');
+    var variables = YAML.load('http://www.agocontrol.com/trac/browser/agocontrol.git/devices/blockly/variables.yaml?format=txt');
+    console.log("schema:");
     console.log(schema);
+    console.log("deviceMap:");
+    console.log(deviceMap);
+    console.log("variables:");
+    console.log(variables);
     Blockly.inject(document.getElementById('blocklyDiv'),
         {path: './', toolbox: document.getElementById('toolbox')});
-    BlocklyAgocontrol.init(schema, deviceMap);
+    BlocklyAgocontrol.init(schema, deviceMap, variables);
     var generate = document.getElementById("generate");
     var lua = document.getElementById("lua");
     generate.onclick = function() {

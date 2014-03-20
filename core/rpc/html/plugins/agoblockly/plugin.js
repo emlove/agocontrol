@@ -179,7 +179,7 @@ function init_plugin()
             });
             //init agoblockly
             if( BlocklyAgocontrol!=null && BlocklyAgocontrol.init!==undefined )
-                BlocklyAgocontrol.init(schema, deviceMap);
+                BlocklyAgocontrol.init(schema, deviceMap, variables);
             else
                 notif.error('Unable to configure Blockly! Event builder shouldn\'t work.');
         }

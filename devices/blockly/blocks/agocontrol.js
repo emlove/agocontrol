@@ -12,13 +12,20 @@
 window.BlocklyAgocontrol = {
     schema: {},
     devices: [],
+    variables: [],
 
     //init
-    init: function(schema, devices) {
+    init: function(schema, devices, variables) {
         this.schema = schema;
         this.devices = devices;
+        //only variable names are useful
+        for( var variable in variables )
+        {
+            this.variables.push(variable);
+        }
     },
 
+    //shorten event name to not overload block
     shortenedEvent: function(event) {
         var out = event.replace("event.", "");
         out = out.replace("environment", "env");
@@ -187,6 +194,20 @@ window.BlocklyAgocontrol = {
         }
         //console.log(output);
         return output;
+    },
+    
+    //get variables
+    getVariables: function() {
+        var variables = [];
+        for( var i=0; i<this.variables.length; i++ )
+        {
+            variables.push([this.variables[i], this.variables[i]]);
+        }
+        if( variables.length==0 )
+        {
+            variables.push(['', '']);
+        }
+        return variables;
     },
     
     //clear blockly container
@@ -872,6 +893,47 @@ Blockly.Blocks['agocontrol_contentCondition'] = {
     }
 };
 
+//get variable block
+Blockly.Blocks['agocontrol_getVariable'] = {
+    init: function() {
+        //block definition
+        //this.setHelpUrl('TODO');
+        this.setColour(330);
+        this.appendDummyInput()
+            .appendField(new Blockly.FieldDropdown(window.BlocklyAgocontrol.getVariables()), "VARIABLE");
+        this.setOutput(true, "String");
+        this.setTooltip('Return the value of selected agocontrol variable');
+    },
+    
+    //return selected variable name
+    getVariable: function() {
+        return this.getFieldValue("VARIABLE") || '';
+    }
+};
+
+//set variable block
+Blockly.Blocks['agocontrol_setVariable'] = {
+  init: function() {
+    //block definition
+    //this.setHelpUrl('TODO');
+    this.setColour(330);
+    this.appendValueInput("VALUE")
+        .setCheck(null)
+        .appendField("set")
+        .appendField(new Blockly.FieldDropdown(window.BlocklyAgocontrol.getVariables()), "VARIABLE")
+        .appendField("to");
+    this.setInputsInline(true);
+    this.setPreviousStatement(true, "null");
+    this.setNextStatement(true, "null");
+    this.setTooltip('Set this agocontrol variable to be equal to the input');
+  },
+    
+    //return selected variable name
+    getVariable: function() {
+        return this.getFieldValue("VARIABLE") || '';
+    }
+};
+
 //list of fixed items
 Blockly.Blocks['agocontrol_fixedItemsList'] = {
   init: function() {
@@ -884,7 +946,7 @@ Blockly.Blocks['agocontrol_fixedItemsList'] = {
     this.setOutput(true, 'String');
     this.container = this.appendDummyInput()
         .appendField(new Blockly.FieldDropdown(this.items), 'LIST');
-    this.setTooltip("Select a value in list");
+    this.setTooltip("Return the selected list item");
   },
   
   //set list items
