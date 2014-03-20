@@ -42,8 +42,8 @@
 #define BOOST_FILESYSTEM_NO_DEPRECATED 
 #include "boost/filesystem.hpp"
 
-#include "../../shared/agoclient.h"
-#include "../../version.h"
+#include "agoclient.h"
+#include "version.h"
 
 #ifndef VARIABLESMAPFILE
 #define VARIABLESMAPFILE CONFDIR "/maps/variablesmap.json"

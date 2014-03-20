@@ -1,3 +1,5 @@
+INCLUDES += -I../../
+
 LD = $(CXX)
 
 %.o : %.cpp
