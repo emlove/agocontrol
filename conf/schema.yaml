@@ -79,11 +79,11 @@ commands:
         type: integer
         range: [0, 100]
       green:
-        name: level for red color
+        name: level for green color
         type: integer
         range: [0, 100]
       blue:
-        name: level for red color
+        name: level for blue color
         type: integer
         range: [0, 100]
   sethousemode:
