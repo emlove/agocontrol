@@ -189,6 +189,27 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 	if (content["command"] == "inventory") return returnval;
 	std::string internalid = content["internalid"].asString();
 	if (internalid == "luacontroller") {
+		if (content["command"]=="getscriptlist") {
+			qpid::types::Variant::List scriptlist;
+			fs::path scriptdir(LUA_SCRIPT_DIR);
+			if (fs::exists(scriptdir)) {
+				fs::recursive_directory_iterator it(scriptdir);
+				fs::recursive_directory_iterator endit;
+				while (it != endit) {
+					if (fs::is_regular_file(*it) && (it->path().extension().string() == ".lua") && (it->path().filename().string() != "helper.lua")) {
+						scriptlist.push_back(qpid::types::Variant(it->path().stem().string()));
+					}
+					++it;
+				}
+			}
+			returnval["scriptlist"]=scriptlist;
+		} else if (content["command"] == "getscript") {
+
+		} else if (content["command"] == "setscript") {
+
+
+		} else {
+		}
 		return returnval;
 	} else {
 		fs::path scriptdir(LUA_SCRIPT_DIR);
