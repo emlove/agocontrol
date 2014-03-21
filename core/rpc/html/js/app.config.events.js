@@ -794,6 +794,7 @@ function eventConfig() {
 
 	    container.appendChild(deviceSelect);
 	    container.appendChild(params);
+	    deviceSelect.onchange();
 	} else if (selectType == "variable") {
 	    params = document.createElement("select");
 	    params.name = path + ".param";
