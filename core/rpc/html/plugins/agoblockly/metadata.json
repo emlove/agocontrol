@@ -8,6 +8,7 @@
             ],
             "js": [
                 "prettify/prettify.js",
+                "blockly/libphonenumber.js",
                 "blockly/blockly_compressed.js",
                 "blockly/blocks_compressed.js",
                 "blockly/lua_compressed.js",

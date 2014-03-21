@@ -233,6 +233,29 @@ window.BlocklyAgocontrol = {
     }
 };
 
+//====================================
+//ADDITIONAL CORE FUNCTIONS
+//====================================
+
+Blockly.FieldTextInput.emailValidator = function(email) {
+    var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(email) ? email : null;
+};
+
+Blockly.FieldTextInput.phoneNumberValidator = function(phonenumber) {
+    var re = /^[a-z]{2}\*[0-9\s]*$/i;
+    if( re.test(phonenumber) )
+    {
+        var parts = phonenumber.split("*")
+        var res = phoneNumberParser(parts[1], parts[0]);
+        if( res["result"]===false )
+            return null;
+        else
+            return res["phone"];
+    }
+    else
+        return null;
+};
 
 //====================================
 //AGOCONTROL BLOCKS
@@ -607,6 +630,18 @@ Blockly.Blocks['agocontrol_eventPropertyValue'] = {
                 this._addCustomField("text", "is");
                 this._addCustomField("BOOL", new Blockly.FieldDropdown([["true","true"],["false","false"]]));
                 break;
+            case 'email':
+                this._addCustomField("text", "is");
+                this._addCustomField("EMAIL", new Blockly.FieldTextInput('john@smith.com', Blockly.FieldTextInput.emailValidator));
+                break;
+            case 'colour':
+                this._addCustomField("text", "is");
+                this._addCustomField("COLOUR", new Blockly.FieldColour('#ff0000'));
+                break;
+            case 'phone':
+                this._addCustomField("text", "is");
+                this._addCustomField("PHONE", new Blockly.FieldTextInput('us*562 555 5555', Blockly.FieldTextInput.phoneNumberValidator));
+                break;
             default:
                 //not defined value, display standard field
                 this._defaultFields();
@@ -709,6 +744,15 @@ Blockly.Blocks['agocontrol_deviceCommand'] = {
                 checkType = "String"; //force check type to Blockly known type
                 newBlock = Blockly.Block.obtain(workspace, 'agocontrol_fixedItemsList');
                 newBlock.setItems(extra);
+                break;
+            case "Email":
+                newBlock = Blockly.Block.obtain(workspace, 'agocontrol_email');
+                break;
+            case "Colour":
+                newBlock = Blockly.Block.obtain(workspace, 'colour_picker');
+                break;
+            case "Phone":
+                newBlock = Blockly.Block.obtain(workspace, 'agocontrol_phoneNumber');
                 break;
             default:
                 newBlock = Blockly.Block.obtain(workspace, 'text');
@@ -839,6 +883,15 @@ Blockly.Blocks['agocontrol_deviceCommand'] = {
                                 }
                             }
                             break;
+                        case "email":
+                            type = "Email";
+                            break;
+                        case "colour":
+                            type = "Colour";
+                            break;
+                        case "phone":
+                            type = "Phone";
+                            break;
                         default:
                             //allow any type
                             type = null;
@@ -942,7 +995,7 @@ Blockly.Blocks['agocontrol_fixedItemsList'] = {
     
     //block definition
     //this.setHelpUrl("TODO");
-    this.setColour(260);
+    this.setColour(160);
     this.setOutput(true, 'String');
     this.container = this.appendDummyInput()
         .appendField(new Blockly.FieldDropdown(this.items), 'LIST');
@@ -963,5 +1016,29 @@ Blockly.Blocks['agocontrol_fixedItemsList'] = {
   //return selected item
   getSelectedItem: function() {
     return this.getFieldValue("LIST") || '';
+  }
+};
+
+//email block
+Blockly.Blocks['agocontrol_email'] = {
+  init: function() {
+    //this.setHelpUrl('TODO');
+    this.setColour(160);
+    this.appendDummyInput()
+        .appendField(new Blockly.FieldTextInput('john@smith.com', Blockly.FieldTextInput.emailValidator), 'EMAIL');
+    this.setOutput(true, 'Email');
+    this.setTooltip("An email");
+  }
+};
+
+//phone number block
+Blockly.Blocks['agocontrol_phoneNumber'] = {
+  init: function() {
+    this.setHelpUrl('http://en.wikipedia.org/wiki/ISO_3166-1_alpha-2#Officially_assigned_code_elements');
+    this.setColour(160);
+    this.appendDummyInput()
+        .appendField(new Blockly.FieldTextInput('us*562 555 5555', Blockly.FieldTextInput.phoneNumberValidator), 'PHONE');
+    this.setOutput(true, 'Phone');
+    this.setTooltip("A phone number <Alpha-2 code>*<real phone number>");
   }
 };

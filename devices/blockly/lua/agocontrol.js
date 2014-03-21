@@ -5,36 +5,36 @@ goog.provide('Blockly.Lua.agocontrol');
 goog.require('Blockly.Lua');
 
 Blockly.Lua['agocontrol_deviceNo'] = function(block) {
-    return ['', Blockly.Lua.ORDER_NONE];
+    return ['', Blockly.Lua.ORDER_ATOMIC];
 };
 
 Blockly.Lua['agocontrol_device'] = function(block) {
     var code = block.getFieldValue('DEVICE');
-    return [code, Blockly.Lua.ORDER_NONE];
+    return [code, Blockly.Lua.ORDER_ATOMIC];
 };
 
 Blockly.Lua['agocontrol_eventNo'] = function(block) {
-    return ['', Blockly.Lua.ORDER_NONE];
+    return ['', Blockly.Lua.ORDER_ATOMIC];
 };
 
 Blockly.Lua['agocontrol_deviceEvent'] = function(block) {
     var code = block.getFieldValue('EVENT');
-    return [code, Blockly.Lua.ORDER_NONE];
+    return [code, Blockly.Lua.ORDER_ATOMIC];
 };
 
 Blockly.Lua['agocontrol_eventAll'] = function(block) {
     var code = block.getFieldValue('EVENT');
-    return [code, Blockly.Lua.ORDER_NONE];
+    return [code, Blockly.Lua.ORDER_ATOMIC];
 };
 
 Blockly.Lua['agocontrol_deviceProperty'] = function(block) {
     var code = block.getFieldValue("PROP");
-    return [code, Blockly.Lua.ORDER_NONE];
+    return [code, Blockly.Lua.ORDER_ATOMIC];
 };
 
 Blockly.Lua['agocontrol_eventProperty'] = function(block) {
     var code = block.getFieldValue("PROP");
-    return [code, Blockly.Lua.ORDER_NONE];
+    return [code, Blockly.Lua.ORDER_ATOMIC];
 };
 
 Blockly.Lua['agocontrol_eventPropertyValue'] = function(block) {
@@ -79,6 +79,18 @@ Blockly.Lua['agocontrol_eventPropertyValue'] = function(block) {
             case 'bool':
                 //BOOL
                 code += "== "+values["BOOL"];
+                break;
+            case 'email':
+                //EMAIL
+                code += "== '"+values["EMAIL"]+"'";
+                break;
+            case 'colour':
+                //COLOUR
+                code += "== '"+values["COLOUR"]+"'";
+                break;
+            case 'phone':
+                //PHONE
+                code += "== '"+values["PHONE"]+"'";
                 break;
             default:
                 //SIGN VALUE
@@ -134,7 +146,17 @@ Blockly.Lua['agocontrol_contentCondition'] = function(block) {
 
 Blockly.Lua['agocontrol_fixedItemsList'] = function(block) {
     var code = "'"+block.getSelectedItem()+"'";
-    return [code, Blockly.Lua.ORDER_NONE];
+    return [code, Blockly.Lua.ORDER_ATOMIC];
+};
+
+Blockly.Lua['agocontrol_email'] = function(block) {
+  var code = Blockly.Lua.quote_(block.getFieldValue('EMAIL'));
+  return [code, Blockly.Lua.ORDER_ATOMIC];
+};
+
+Blockly.Lua['agocontrol_phoneNumber'] = function(block) {
+  var code = Blockly.Lua.quote_(block.getFieldValue('PHONE'));
+  return [code, Blockly.Lua.ORDER_ATOMIC];
 };
 
 Blockly.Lua['agocontrol_getVariable'] = function(block) {
@@ -154,3 +176,4 @@ Blockly.Lua['agocontrol_setVariable'] = function(block) {
     }
     return '';
 };
+
