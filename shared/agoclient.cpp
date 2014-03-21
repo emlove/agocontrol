@@ -613,6 +613,11 @@ qpid::types::Variant::Map agocontrol::AgoConnection::getInventory() {
 	} catch (qpid::messaging::NoMessageAvailable) {
 		printf("WARNING, no reply message to fetch\n");
 	}
+	try {
+		responseReceiver.close();
+        } catch(const std::exception& error) {
+                std::cerr << error.what() << std::endl;
+        }
 	return responseMap;
 }
 
