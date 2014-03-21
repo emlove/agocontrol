@@ -8,6 +8,7 @@
 import sys
 import syslog
 import ConfigParser, os
+import time
 
 import agoclient
 
@@ -61,7 +62,7 @@ try:
 	while True:
 		try:
 			message = receiver.fetch()
-			print message
+			print time.strftime('%a %b %d %H:%M:%S %Y '), message
 
 			session.acknowledge()
 		except Empty:
