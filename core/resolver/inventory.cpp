@@ -27,6 +27,7 @@ Inventory::Inventory(const char *dbfile) {
 	if( rc != SQLITE_OK ){
 		fprintf(stderr, "Can't open database: %s\n", sqlite3_errmsg(db));
 		sqlite3_close(db);
+		return;
 	}
 	createTableIfNotExist("floorplans", "CREATE TABLE floorplans (uuid text, name text)");
 	createTableIfNotExist("devicesfloorplan", "CREATE TABLE devicesfloorplan (floorplan text, device text, x integer, y integer)");
