@@ -39,9 +39,9 @@
 #include <qpid/messaging/Session.h>
 #include <qpid/messaging/Address.h>
 
-#include <json/value.h>
-#include <json/reader.h>
-#include <json/writer.h>
+#include <jsoncpp/json/value.h>
+#include <jsoncpp/json/reader.h>
+#include <jsoncpp/json/writer.h>
 
 #include "agoclient.h"
 

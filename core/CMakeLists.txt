@@ -16,7 +16,7 @@ if (BUILD_CORE_drain)
   add_subdirectory (drain)
 endif()
 
-OPTION(BUILD_CORE_resolver "Build agolua" ON)
+OPTION(BUILD_CORE_resolver "Build agoresolver" ON)
 if (BUILD_CORE_resolver)
   add_subdirectory (resolver)
 endif()
