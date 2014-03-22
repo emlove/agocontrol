@@ -138,6 +138,7 @@ string valuesToString(Variant::Map *values) {
 	return result;
 }
 
+// handles events that update the state or values of a device
 void handleEvent(Variant::Map *device, string subject, Variant::Map *content) {
 	Variant::Map *values;
 	Variant::Map *localdevice;
@@ -340,6 +341,7 @@ void eventHandler(std::string subject, qpid::types::Variant::Map content) {
 				cout << "adding device: uuid="  << uuid  << " type: " << device["devicetype"].asString() << std::endl;
 			} else {
 				// device exists, get current values
+				// TODO: use a non-const interator and modify the timestamp in place to avoid the following copying of data
 				qpid::types::Variant::Map olddevice;
 				if (!it->second.isVoid())  {
 					olddevice= it->second.asMap();
