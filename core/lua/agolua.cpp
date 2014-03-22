@@ -38,6 +38,22 @@ static const luaL_Reg loadedlibs[] = {
   {NULL, NULL}
 };
 
+// read file into string. credits go to "insane coder" - http://stackoverflow.com/questions/2602013/read-whole-ascii-file-into-c-stdstring
+std::string get_file_contents(const char *filename) {
+	std::ifstream in(filename, std::ios::in | std::ios::binary);
+	if (in)
+	{
+		std::string contents;
+		in.seekg(0, std::ios::end);
+		contents.resize(in.tellg());
+		in.seekg(0, std::ios::beg);
+		in.read(&contents[0], contents.size());
+		in.close();
+		return(contents);
+	}
+	throw(errno);
+}
+
 int luaAddDevice(lua_State *l) { // DRAFT
 	int argc = lua_gettop(l);
 	if (argc != 2) return 0;
@@ -134,11 +150,29 @@ void pushTableFromMap(lua_State *L, qpid::types::Variant::Map content) {
 				lua_pushstring(L,it->second.asString().c_str());
 				lua_settable(L, -3);
 				break;
+			case qpid::types::VAR_UUID:
+				lua_pushstring(L,it->first.c_str());
+				lua_pushstring(L,it->second.asString().c_str());
+				lua_settable(L, -3);
+				break;
 			case qpid::types::VAR_MAP:
 				lua_pushstring(L,it->first.c_str());
 				pushTableFromMap(L,it->second.asMap());
 				lua_settable(L, -3);
 				break;
+			case qpid::types::VAR_LIST:
+				// TODO: push list
+				break;
+			case qpid::types::VAR_BOOL:
+				lua_pushstring(L,it->first.c_str());
+				lua_pushboolean(L,it->second.asBool());
+                                lua_settable(L, -3);
+                                break;
+			case qpid::types::VAR_VOID:
+				lua_pushstring(L,it->first.c_str());
+				lua_pushnil(L);
+                                lua_settable(L, -3);
+                                break;
 			//default:
 				//lua_pushstring(L,it->first.c_str());
 				//lua_pushstring(L,"unhandled");
@@ -204,7 +238,19 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 			}
 			returnval["scriptlist"]=scriptlist;
 		} else if (content["command"] == "getscript") {
-
+			if (content["script"].asString() != "") {
+				try {
+					// if a path is passed, strip it for security reasons
+					fs::path input(content["script"]);
+					string script = LUA_SCRIPT_DIR + input.stem().string();
+					cout << "reading script " << script << endl;
+					returnval["script"]=get_file_contents(script.c_str());
+					returnval["result"]=0;
+				} catch(...) {
+					returnval["error"]="can't read script";
+					returnval["result"]=-1;
+				}
+			}
 		} else if (content["command"] == "setscript") {
 
 
