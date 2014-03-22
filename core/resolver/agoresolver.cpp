@@ -71,7 +71,7 @@ Variant::Map systeminfo; // holds system information
 Variant::Map variables; // holds global variables
 
 Inventory *inv;
-int discoverdelay;
+unsigned int discoverdelay;
 bool persistence = false;
 
 bool saveDevicemap() {
@@ -141,7 +141,6 @@ string valuesToString(Variant::Map *values) {
 // handles events that update the state or values of a device
 void handleEvent(Variant::Map *device, string subject, Variant::Map *content) {
 	Variant::Map *values;
-	Variant::Map *localdevice;
 	if ((*device)["values"].isVoid())  {
 		cout << "error, device[values] is empty in handleEvent()" << endl;
 		return;
@@ -390,6 +389,7 @@ void *discover(void *param) {
 		agoConnection->sendMessage("",discovercmd);
 		sleep(discoverdelay);
 	}
+	return NULL;
 }
 
 int main(int argc, char **argv) {
