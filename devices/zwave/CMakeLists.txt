@@ -3,10 +3,15 @@ cmake_minimum_required (VERSION 2.6)
 file (GLOB_RECURSE DEVICE_SOURCE_FILES *.cpp)
 
 set (DEVICE_EXTRA_LIBRARIES
-     udev
      openzwave
      agoclient
 )
+
+IF (FREEBSD)
+	list(APPEND DEVICE_EXTRA_LIBRARIES usb iconv)
+ELSE (FREEBSD)
+	list(APPEND DEVICE_EXTRA_LIBRARIES udev)
+ENDIF (FREEBSD)
 
 include_directories("/usr/include/openzwave")
 include_directories("/usr/include/openzwave/value_classes")

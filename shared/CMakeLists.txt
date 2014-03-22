@@ -23,7 +23,7 @@ set (AGOCLIENT_LIBRARIES
     qpidmessaging
     qpidtypes
     uuid
-    jsoncpp
+    ${JSONCPP_LIBRARIES}
 )
 
 target_link_libraries (agoclient ${AGOCLIENT_LIBRARIES})
