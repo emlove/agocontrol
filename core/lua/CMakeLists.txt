@@ -6,11 +6,17 @@ configure_file (
     @ONLY
 )
 
+if(FREEBSD)
+	set(LUA lua-5.2)
+else(FREEBSD)
+	set(LUA lua5.2)
+endif(FREEBSD)
 
 file (GLOB_RECURSE AGOLUA_SOURCE_FILES *.cpp)
 set (LUA_LIBRARIES
     agoclient
-    lua5.2
+	 boost_filesystem
+	 ${LUA}
 )
 
 # add the executable

@@ -20,7 +20,11 @@ namespace fs = ::boost::filesystem;
 using namespace std;
 using namespace agocontrol;
 
+#ifdef __FreeBSD__
+#include "lua52/lua.hpp"
+#else
 #include "lua5.2/lua.hpp"
+#endif
 
 #ifndef LUA_SCRIPT_DIR
 #define LUA_SCRIPT_DIR CONFDIR "/lua/"
