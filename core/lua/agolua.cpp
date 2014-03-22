@@ -238,23 +238,38 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 			}
 			returnval["scriptlist"]=scriptlist;
 		} else if (content["command"] == "getscript") {
-			if (content["script"].asString() != "") {
+			if (content["name"].asString() != "") {
 				try {
 					// if a path is passed, strip it for security reasons
-					fs::path input(content["script"]);
+					fs::path input(content["name"]);
 					string script = LUA_SCRIPT_DIR + input.stem().string() + ".lua";
 					cout << "reading script " << script << endl;
 					returnval["script"]=get_file_contents(script.c_str());
 					returnval["result"]=0;
+					returnval["name"]=content["name"].asString();
 				} catch(...) {
 					returnval["error"]="can't read script";
 					returnval["result"]=-1;
 				}
 			}
 		} else if (content["command"] == "setscript") {
-
-
+			if (content["name"].asString() != "") {
+				try {
+					// if a path is passed, strip it for security reasons
+					fs::path input(content["name"]);
+					string script = LUA_SCRIPT_DIR + input.stem().string() + ".lua";
+					std::ofstream file;
+					file.open(script.c_str());
+					file << content["script"].asString();
+					file.close();
+				} catch(...) {
+					returnval["error"]="can't write script";
+					returnval["result"]=-1;
+				}
+			}
 		} else {
+			returnval["error"]="invalid command";
+			returnval["result"]=-1;
 		}
 		return returnval;
 	} else {
