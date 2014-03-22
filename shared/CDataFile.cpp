@@ -188,7 +188,7 @@ bool CDataFile::Load(t_Str szFileName)
 	}
 	else
 	{
-		Report(E_INFO, "[CDataFile::Load] Unable to open file. Does it exist?");
+		Report(E_INFO, "[CDataFile::Load %s] Unable to open file. Does it exist?", m_szFileName.c_str());
 		return false;
 	}
 
@@ -265,7 +265,7 @@ bool CDataFile::Save()
 	}
 	else
 	{
-		Report(E_ERROR, "[CDataFile::Save] Unable to save file.");
+		Report(E_ERROR, "[CDataFile::Save %s] Unable to save file.", m_szFileName.c_str());
 		return false;
 	}
 
@@ -542,7 +542,7 @@ bool CDataFile::CreateSection(t_Str szSection, t_Str szComment)
 
 	if ( pSection )
 	{
-		Report(E_INFO, "[CDataFile::CreateSection] Section <%s> allready exists. Aborting.", szSection.c_str());
+		Report(E_INFO, "[CDataFile::CreateSection %s] Section <%s> allready exists. Aborting.", m_szFileName.c_str(), szSection.c_str());
 		return false;
 	}
 
