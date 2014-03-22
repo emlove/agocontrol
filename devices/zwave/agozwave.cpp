@@ -627,7 +627,8 @@ void OnNotification
 				string eventtype = "event.device.statechanged";
 				ZWaveNode *device;
 				if ((device = devices.findId(nodeinstance)) != NULL) {
-					if (debug) printf("Sending %s for scene event from child %s\n",eventtype.c_str(), device->getId().c_str());
+					if (debug) printf("Sending %s for scene %d event from child %s\n",
+						  eventtype.c_str(), scene, device->getId().c_str());
 					agoConnection->emitEvent(device->getId().c_str(), eventtype.c_str(), scene, "");	
 				} else {
 					cout << "WARNING: no agocontrol device found for scene event" << endl;
