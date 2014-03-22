@@ -242,7 +242,7 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 				try {
 					// if a path is passed, strip it for security reasons
 					fs::path input(content["script"]);
-					string script = LUA_SCRIPT_DIR + input.stem().string();
+					string script = LUA_SCRIPT_DIR + input.stem().string() + ".lua";
 					cout << "reading script " << script << endl;
 					returnval["script"]=get_file_contents(script.c_str());
 					returnval["result"]=0;
