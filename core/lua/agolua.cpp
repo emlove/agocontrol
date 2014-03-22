@@ -241,6 +241,7 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 				}
 			}
 			returnval["scriptlist"]=scriptlist;
+			returnval["result"]=0;
 		} else if (content["command"] == "getscript") {
 			if (content["name"].asString() != "") {
 				try {
