@@ -5,12 +5,6 @@ set (RPC_LIBRARIES
     pthread
 )
 
-# add the executable
-add_executable (agorpc agorpc.cpp mongoose.c)
-target_link_libraries (agorpc ${RPC_LIBRARIES})
-
-add_executable (get_table_lang.cgi get_table_lang.cpp)
-
 set (RPCPASSWD_LIBRARIES
     pthread
 )
@@ -19,6 +13,12 @@ IF (NOT FREEBSD)
 	list(APPEND RPC_LIBRARIES dl )
 	list(APPEND RPCPASSWD_LIBRARIES dl )
 ENDIF (NOT FREEBSD)
+
+# add the executable
+add_executable (agorpc agorpc.cpp mongoose.c)
+target_link_libraries (agorpc ${RPC_LIBRARIES})
+
+add_executable (get_table_lang.cgi get_table_lang.cpp)
 
 add_executable (rpc-htpasswd rpc-htpasswd.cpp mongoose.c)
 target_link_libraries (rpc-htpasswd ${RPCPASSWD_LIBRARIES})
