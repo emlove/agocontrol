@@ -421,6 +421,7 @@ int main(int argc, char **argv) {
 	string certificate;
 	string numthreads;
 	string domainname;
+	bool useSSL;
 
 	Variant::Map connectionOptions;
 	broker=getConfigOption("system", "broker", "localhost:5672");
@@ -432,12 +433,14 @@ int main(int argc, char **argv) {
 	numthreads=getConfigOption("rpc", "numthreads", "30");
 	domainname=getConfigOption("rpc", "domainname", "agocontrol");
 
+	useSSL = port.find('s') != std::string::npos;
+
 	static const char *options[] = {
 		"document_root", htdocs.c_str(),
 		"listening_ports", port.c_str(),
 		"num_threads", numthreads.c_str(),
-		"ssl_certificate", certificate.c_str(),
 		"authentication_domain", domainname.c_str(),
+		useSSL ? "ssl_certificate" : NULL, useSSL ? certificate.c_str() : NULL,
 		NULL
 	};
 
