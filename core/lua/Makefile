@@ -9,11 +9,11 @@ all: agolua command.lua
 command.lua : command.lua.in
 	 sed -e 's|@CONFDIR@|$(CONFDIR)|g' $< > $@
 
-agolua: agolua.o
+agolua: agolua.o base64.o
 	$(LD) -o $@ $(LDFLAGS) $^ -lqpidmessaging -lqpidtypes -luuid -lagoclient -llua5.2
 
 clean:
-	rm -f agolua agolua.o command.lua
+	rm -f agolua agolua.o command.lua base64.o
 
 install:
 	$(INSTALL_DIR) $(DESTDIR)$(BINDIR)

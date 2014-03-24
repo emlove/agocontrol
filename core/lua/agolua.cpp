@@ -13,6 +13,8 @@
 #define BOOST_FILESYSTEM_NO_DEPRECATED 
 #include "boost/filesystem.hpp"
 
+#include "base64.h"
+
 #include "agoclient.h"
 
 namespace fs = ::boost::filesystem;
@@ -248,8 +250,9 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 					// if a path is passed, strip it for security reasons
 					fs::path input(content["name"]);
 					string script = LUA_SCRIPT_DIR + input.stem().string() + ".lua";
+					string scriptcontent = get_file_contents(script.c_str());
 					cout << "reading script " << script << endl;
-					returnval["script"]=get_file_contents(script.c_str());
+					returnval["script"]=base64_encode(reinterpret_cast<const unsigned char*>(scriptcontent.c_str()), scriptcontent.length());
 					returnval["result"]=0;
 					returnval["name"]=content["name"].asString();
 				} catch(...) {
