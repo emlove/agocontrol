@@ -298,7 +298,6 @@ function agoBlocklyPlugin(deviceMap) {
             if( res!==undefined && res.result!==undefined && res.result!=='no-reply')
             {
                 //fill dialog content
-                self.scriptsCount(res.result.scriptlist.length);
                 self.availableScripts([]);
                 for( var i=0; i<res.result.scriptlist.length; i++ )
                 {
@@ -308,6 +307,7 @@ function agoBlocklyPlugin(deviceMap) {
                         self.availableScripts.push(res.result.scriptlist[i].replace('blockly_',''));
                     }
                 }
+                self.scriptsCount(self.availableScripts().length);
 
                 //open script dialog
                 $( "#loadDialog" ).dialog({
