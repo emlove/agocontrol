@@ -82,7 +82,7 @@ static const char *ajax_reply_start =
   "HTTP/1.1 200 OK\r\n"
   "Cache: no-cache\r\n"
   "Access-Control-Allow-Origin: *\r\n"
-  "Content-Type: application/x-javascript\r\n"
+  "Content-Type: application/x-javascript; charset=utf-8\r\n"
   "\r\n";
 
 // json-print qpid Variant Map and List via mongoose
