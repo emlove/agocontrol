@@ -212,12 +212,12 @@
         <div class="pretty medium info btn icon-left icon-search"><_a data-translateable="true" href="#" title="View your blocks under script format" data-bind="click:viewlua">View</_a></div>
         <div class="pretty medium info btn icon-left icon-trash" style="margin-left:20px;"><_a data-translateable="true" href="#" title="Clear all blocks on workspace" data-bind="click:clear">Clear</_a></div>
         <div style="margin-left:20px; display: inline-block;">
-            <!-- ko if:scriptSaved -->
+            <ko opts="if:scriptSaved">
             <_li data-translateable="true" class="default badge">Script saved</_li>
-            <!-- /ko -->
-            <!-- ko ifnot:scriptSaved -->
+            </ko>
+            <ko opts="ifnot:scriptSaved">
             <_li data-translateable="true" class="warning badge">Script modified</_li>
-            <!-- /ko -->
+            </ko>
         </div>
     </div>
     <div data-bind="blockly:blocklyViewModel" id="blocklyDiv" style="height:800px; width:960px;"></div>
