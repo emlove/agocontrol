@@ -36,6 +36,8 @@ qpid::types::Variant::Map inventory;
 
 AgoConnection *agoConnection;
 
+std::string agocontroller;
+
 static const luaL_Reg loadedlibs[] = {
   {"_G", luaopen_base},
   {LUA_TABLIBNAME, luaopen_table},
@@ -95,6 +97,29 @@ int luaSendMessage(lua_State *l) {
 	qpid::types::Variant::Map replyMap = agoConnection->sendMessageReply(subject.c_str(), content);	 
 	lua_pushnumber(l, 0);
 	return 1;
+}
+
+int luaSetVariable(lua_State *l) {
+	qpid::types::Variant::Map content;
+        std::string subject;
+        // number of input arguments
+        int argc = lua_gettop(l);
+
+        // print input arguments
+        for(int i=0; i<argc; i++) {
+                string name, value;
+                if (nameval(string(lua_tostring(l, lua_gettop(l))),name, value)) {
+			content["variable"] = name;
+			content["value"]=value;
+                }
+                lua_pop(l, 1);
+        }
+	content["command"]="setvariable";
+	content["uuid"]=agocontroller;
+        cout << "Sending message: " << content << endl;
+        qpid::types::Variant::Map replyMap = agoConnection->sendMessageReply(subject.c_str(), content);
+        lua_pushnumber(l, 0);
+        return 1;
 }
 
 void pushTableFromMap(lua_State *L, qpid::types::Variant::Map content) {
@@ -201,6 +226,7 @@ bool runScript(qpid::types::Variant::Map content, const char *script) {
 	}
 
 	lua_register(L, "sendMessage", luaSendMessage);
+	lua_register(L, "setVariable", luaSetVariable);
 	// lua_register(L, "addDevice", luaAddDevice);
 
 	pushTableFromMap(L, content);
@@ -305,6 +331,26 @@ void eventHandler(std::string subject, qpid::types::Variant::Map content) {
 int main(int argc, char **argv) {
 
 	agoConnection = new AgoConnection("lua");
+
+	agocontroller="";
+	while(agocontroller=="") {
+		qpid::types::Variant::Map inventory = agoConnection->getInventory();
+		if (!(inventory["devices"].isVoid())) {
+			qpid::types::Variant::Map devices = inventory["devices"].asMap();
+			qpid::types::Variant::Map::const_iterator it;
+			for (it = devices.begin(); it != devices.end(); it++) {
+				if (!(it->second.isVoid())) {
+					qpid::types::Variant::Map device = it->second.asMap();
+					if (device["devicetype"] == "agocontroller") {
+						cout << "Agocontroller: " << it->first << endl;
+						agocontroller = it->first;
+					}
+				}
+			}
+		}
+	}
+
+
 	agoConnection->addDevice("luacontroller", "luacontroller");
 	agoConnection->addHandler(commandHandler);
 	agoConnection->addEventHandler(eventHandler);
