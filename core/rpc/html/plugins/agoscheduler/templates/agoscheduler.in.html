@@ -2,14 +2,14 @@
 
 <!--notif messages-->
 <div style="display:none;">
-    <_span id="ie">Internal error</_span>
-    <_span id="nr">Agoscheduler is not responding. Unable to display schedules.</_span>
-    <_span id="a">Schedule(s) added successfully.</_span>
-    <_span id="na">Unable to add schedule(s).</_span>
-    <_span id="u">Schedule(s) updated successfully.</_span>
-    <_span id="nu">Unable to update schedule(s).</_span>
-    <_span id="d">Schedule(s) deleted successfully.</_span>
-    <_span id="nd">Unable to delete schedule(s).</_span>
+    <_span data-translateable="true" id="ie">Internal error</_span>
+    <_span data-translateable="true" id="nr">Agoscheduler is not responding. Unable to display schedules.</_span>
+    <_span data-translateable="true" id="a">Schedule(s) added successfully.</_span>
+    <_span data-translateable="true" id="na">Unable to add schedule(s).</_span>
+    <_span data-translateable="true" id="u">Schedule(s) updated successfully.</_span>
+    <_span data-translateable="true" id="nu">Unable to update schedule(s).</_span>
+    <_span data-translateable="true" id="d">Schedule(s) deleted successfully.</_span>
+    <_span data-translateable="true" id="nd">Unable to delete schedule(s).</_span>
 </div>
 
 <!-- CALENDAR -->
@@ -17,27 +17,27 @@
 
 <!-- SCHEDULE CREATION POPUP -->
 <div id="schedulerDialog" style="display:none;">
-    <span>At</span> <span style="font-weight:bold;" data-bind="text:scheduleStart"></span>
+    <_span data-translateable="true">At</_span> <span style="font-weight:bold;" data-bind="text:scheduleStart"></span>
     <br/>
-    <span>execute scenario</span> <select data-bind="options:availableStartScenarios, value:selectedStartScenario, optionsText:'text'"></select>
+    <_span data-translateable="true">execute scenario</_span> <select data-bind="options:availableStartScenarios, value:selectedStartScenario, optionsText:'text'"></select>
     <br/>
-    <span>And at</span> <span style="font-weight:bold;" data-bind="text:scheduleEnd"></span>
+    <_span data-translateable="true">And at</_span> <span style="font-weight:bold;" data-bind="text:scheduleEnd"></span>
     <br/>
-    <span>execute scenario</span> <select data-bind="options:availableEndScenarios, value:selectedEndScenario, optionsText:'text'"></select>
+    <_span data-translateable="true">execute scenario</_span> <select data-bind="options:availableEndScenarios, value:selectedEndScenario, optionsText:'text'"></select>
     <br/>
     <br/>
-    <span>Repeat schedule</span>  : 
+    <_span data-translateable="true">Repeat schedule</_span>  : 
     <select data-bind="value:selectedRepeat, enable:enableRepeat">
-        <option value="0">Never</option>
-        <option value="1">Every day</option>
-        <option value="7">Every week</option>
-        <option value="31">Every month</option>
-        <option value="365">Every year</option>
+        <_option data-translateable="true" value="0">Never</_option>
+        <_option data-translateable="true" value="1">Every day</_option>
+        <_option data-translateable="true" value="7">Every week</_option>
+        <_option data-translateable="true" value="31">Every month</_option>
+        <_option data-translateable="true" value="365">Every year</_option>
     </select>
     <br/>
-    <i class="icon-info-circled"></i><small>Recurring schedules are linked each others. If you update one of them, all will be updated too.</small>
+    <i class="icon-info-circled"></i><_small data-translateable="true">Recurring schedules are linked each others. If you update one of them, all will be updated too.</_small>
     <br/>
-    <span>Schedule's color</span> : <input id="schedulerColorPicker" data-bind="value: selectedColor"/>
+    <_span data-translateable="true">Schedule's color</_span> : <input id="schedulerColorPicker" data-bind="value: selectedColor"/>
 </div>
 
 </div>
