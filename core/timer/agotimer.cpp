@@ -79,6 +79,10 @@ void *suntimer(void *param) {
 		std::string subject;
 		seconds = time(NULL);
 		if (GetSunriseSunset(sunrise,sunset,sunrise_tomorrow,sunset_tomorrow,lat,lon)) {
+			cout << "Sunrise: " << sunrise << endl;
+			cout << "Sunset: " << sunset << endl;
+			cout << "SunriseT: " << sunrise_tomorrow << endl;
+			cout << "SunsetT: " << sunrise_tomorrow << endl;
 			if (seconds < (sunrise + sunriseoffset)) {
 				// it is night, we're waiting for the sunrise
 				// set global variable
@@ -108,7 +112,7 @@ void *suntimer(void *param) {
 				syslog(LOG_NOTICE, "sending sunset event");
 				agoConnection->sendMessage("event.environment.sunset", content);
 			}
-			sleep(2);
+			sleep(120);
 		} else {
 			syslog(LOG_CRIT, "ERROR determining sunrise/sunset time");
 			sleep(60);
