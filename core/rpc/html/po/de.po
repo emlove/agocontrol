@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-02-10 18:36+0100\n"
+"POT-Creation-Date: 2014-03-24 19:31+0100\n"
 "PO-Revision-Date: 2013-10-01 18:04+0100\n"
 "Last-Translator: \n"
 "Language-Team: ago control <jaeger@agocontrol.com>\n"
@@ -315,6 +315,7 @@ msgstr "Szenario bearbeiten"
 
 #: ../templates/configuration/scenarios.xml.in.h:17
 #: ../templates/configuration/events.xml.in.h:13
+#: ../plugins/agoblockly/templates/agoblockly.xml.in.h:9
 msgid "Save"
 msgstr "Speichern"
 
@@ -554,3 +555,67 @@ msgstr "Heizen"
 #: ../templates/devices/thermostat.xml.in.h:4
 msgid "Cool"
 msgstr "Kühlen"
+
+#: ../plugins/agoblockly/templates/agoblockly.xml.in.h:1
+msgid "luacontroller is not responding. Unable to execute action."
+msgstr "luacontroller antwortet nicht. Der Befehl kann nicht ausgeführt werden."
+
+#: ../plugins/agoblockly/templates/agoblockly.xml.in.h:2
+msgid "No block defined in workspace."
+msgstr "Kein Block im Arbeitsbereich definiert."
+
+#: ../plugins/agoblockly/templates/agoblockly.xml.in.h:3
+msgid "Script saved successfully."
+msgstr "Script wurde erfolgreich gespeichert."
+
+#: ../plugins/agoblockly/templates/agoblockly.xml.in.h:4
+msgid "Script loaded successfully."
+msgstr "Script wurde erfolgreich geladen."
+
+#: ../plugins/agoblockly/templates/agoblockly.xml.in.h:5
+msgid "Please select a script"
+msgstr "Bitte wähle ein Script"
+
+#: ../plugins/agoblockly/templates/agoblockly.xml.in.h:6
+msgid "Unable to load script, it seems to be corrupted!"
+msgstr "Skript kann nicht geladen werden, es scheint beschädigt zu sein!"
+
+#: ../plugins/agoblockly/templates/agoblockly.xml.in.h:7
+msgid "Script not saved"
+msgstr "Script wurde nicht gespeichert"
+
+#: ../plugins/agoblockly/templates/agoblockly.xml.in.h:8
+msgid "Please specify a valid script name"
+msgstr "Bitte gültigen Skriptnamen eingeben"
+
+#: ../plugins/agoblockly/templates/agoblockly.xml.in.h:10
+msgid "Load"
+msgstr "Laden"
+
+#: ../plugins/agoblockly/templates/agoblockly.xml.in.h:11
+msgid "Check"
+msgstr "Überprüfen"
+
+#: ../plugins/agoblockly/templates/agoblockly.xml.in.h:12
+msgid "View"
+msgstr "Ansehen"
+
+#: ../plugins/agoblockly/templates/agoblockly.xml.in.h:13
+msgid "Clear"
+msgstr "Löschen"
+
+#: ../plugins/agoblockly/templates/agoblockly.xml.in.h:14
+msgid "Script saved"
+msgstr "Script gespeichert"
+
+#: ../plugins/agoblockly/templates/agoblockly.xml.in.h:15
+msgid "Script modified"
+msgstr "Script geändert"
+
+#: ../plugins/agoblockly/templates/agoblockly.xml.in.h:16
+msgid "script(s) available"
+msgstr "Script(s) verfügbar"
+
+#: ../plugins/agoblockly/templates/agoblockly.xml.in.h:17
+msgid "Enter script name"
+msgstr "Namen für Script eingeben"

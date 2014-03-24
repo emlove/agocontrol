@@ -15,3 +15,4 @@ templates/devices/multilevelsensor.xml.in
 templates/details/multilevelsensor.xml.in
 templates/devices/switch.xml.in
 templates/devices/thermostat.xml.in
+plugins/agoblockly/templates/agoblockly.xml.in
