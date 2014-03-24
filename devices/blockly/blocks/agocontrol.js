@@ -529,15 +529,15 @@ Blockly.Blocks['agocontrol_eventPropertyValue'] = {
   //generate output xml according to block content
   mutationToDom: function() {
     var container = document.createElement('mutation');
-    container.setAttribute('currentProp', this.lastProp);
-    container.setAttribute('currentType', this.currentType);
+    container.setAttribute('currentprop', this.lastProp);
+    container.setAttribute('currenttype', this.currentType);
     return container;
   },
   
   //generate block content according to input xml
   domToMutation: function(xmlElement) {
-    var currentProp = xmlElement.getAttribute('currentProp');
-    this.currentType = xmlElement.getAttribute('currentType');
+    var currentProp = xmlElement.getAttribute('currentprop');
+    this.currentType = xmlElement.getAttribute('currenttype');
     this._generateContent(currentProp);
   },
 
@@ -692,18 +692,18 @@ Blockly.Blocks['agocontrol_deviceCommand'] = {
   //generate output xml according to block content
   mutationToDom: function() {
     var container = document.createElement('mutation');
-    container.setAttribute('currentType', this.lastType);
-    container.setAttribute('currentDevice', this.lastDevice);
-    container.setAttribute('currentCommand', this.lastCommand);
+    container.setAttribute('currenttype', this.lastType);
+    container.setAttribute('currentdevice', this.lastDevice);
+    container.setAttribute('currentcommand', this.lastCommand);
     container.setAttribute('duplicated', ((this.customBlocks.length==0) ? false : true));
     return container;
   },
   
   //generate block content according to input xml
   domToMutation: function(xmlElement) {
-    var currentType = xmlElement.getAttribute('currentType');
-    var currentDevice = xmlElement.getAttribute('currentDevice');
-    var currentCommand = xmlElement.getAttribute('currentCommand');
+    var currentType = xmlElement.getAttribute('currenttype');
+    var currentDevice = xmlElement.getAttribute('currentdevice');
+    var currentCommand = xmlElement.getAttribute('currentcommand');
     var duplicated = xmlElement.getAttribute('duplicated');
     this._generateContent(currentType, currentDevice, currentCommand, duplicated);
   },
