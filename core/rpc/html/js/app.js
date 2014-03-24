@@ -151,6 +151,7 @@ function loadPlugin() {
         }
         else
         {
+            $.unblockUI();
 	        init_plugin();
         }
 	});
