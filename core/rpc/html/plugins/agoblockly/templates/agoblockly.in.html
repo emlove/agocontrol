@@ -1,4 +1,15 @@
 <div id="contentarea" style="margin: 0px auto 10px auto; padding:15px;">
+    <!--notif messages-->
+    <div style="display:none;">
+        <_span data-translateable="true" id="nr">luacontroller is not responding. Unable to execute action.</_span>
+        <_span data-translateable="true" id="nb">No block defined in workspace.</_span>
+        <_span data-translateable="true" id="ss">Script saved successfully.</_span>
+        <_span data-translateable="true" id="sl">Script loaded successfully.</_span>
+        <_span data-translateable="true" id="pss">Please select a script</_span>
+        <_span data-translateable="true" id="sc">Unable to load script, it seems to be corrupted!</_span>
+        <_span data-translateable="true" id="ns">Script not saved</_span>
+        <_span data-translateable="true" id="sn">Please specify a valid script name</_span>
+    </div>
 
     <!-- blockly configuration -->
     <xml id="toolbox" style="display: none">
@@ -194,12 +205,20 @@
     </xml>
     
     <!-- blockly -->
-    <div class="row">
-        <div class="pretty medium info btn icon-left icon-install"><a href="#" title="Save your script" data-bind="click:save">Save</a></div>
-        <div class="pretty medium info btn icon-left icon-up"><a href="#" title="Load existing script" data-bind="click:load">Load</a></div>
-        <div class="pretty medium info btn icon-left icon-check" style="margin-left:20px;"><a href="#" title="Check blocks" data-bind="click:check">Check</a></div>
-        <div class="pretty medium info btn icon-left icon-search"><a href="#" title="View your blocks under script format" data-bind="click:viewlua">View</a></div>
-        <div class="pretty medium info btn icon-left icon-trash" style="margin-left:20px;"><a href="#" title="Clear all blocks on workspace" data-bind="click:clear">Clear</a></div>
+    <div class="row" style="margin-bottom:0px">
+        <div class="pretty medium info btn icon-left icon-install"><a href="#" title="Save your script" data-bind="click:save"><_span data-translateable="true">Save</_span> <span data-bind="text:scriptName" style="font-style:bold;"></span></a></div>
+        <div class="pretty medium info btn icon-left icon-up"><_a href="#" data-translateable="true" title="Load existing script" data-bind="click:load">Load</_a></div>
+        <div class="pretty medium info btn icon-left icon-check" style="margin-left:20px;"><_a data-translateable="true" href="#" title="Check blocks" data-bind="click:check">Check</_a></div>
+        <div class="pretty medium info btn icon-left icon-search"><_a data-translateable="true" href="#" title="View your blocks under script format" data-bind="click:viewlua">View</_a></div>
+        <div class="pretty medium info btn icon-left icon-trash" style="margin-left:20px;"><_a data-translateable="true" href="#" title="Clear all blocks on workspace" data-bind="click:clear">Clear</_a></div>
+        <div style="margin-left:20px; display: inline-block;">
+            <ko opts="if: scriptSaved">
+            <_li data-translateable="true" class="default badge">Script saved</_li>
+            </ko>
+            <ko opts="ifnot: scriptSaved">
+            <_li data-translateable="true" class="warning badge">Script modified</_li>
+            </ko>
+        </div>
     </div>
     <div data-bind="blockly:blocklyViewModel" id="blocklyDiv" style="height:800px; width:960px;"></div>
 
@@ -208,5 +227,15 @@
         <pre id="luaContent" style="width:100%; height:100%;"></pre>
     </div>
 
+    <!-- load dialog -->
+    <div id="loadDialog">
+        <span data-bind="text:scriptsCount"></span> <_span data-translateable="true">script(s) available</_span>
+        <select data-bind="options:availableScripts, value:selectedScript" size="10" style="width:100%; height:240px;"></select>
+    </div>
+
+    <!-- save dialog -->
+    <div id="saveDialog">
+        <_span data-translateable="true">Enter script name</_span>:<input data-bind="value:scriptName"></input>
+    </div>
 </div>
 
