@@ -42,9 +42,13 @@ else:
         from ctypes import cdll, CFUNCTYPE
         tdlib = cdll.LoadLibrary('/Library/Frameworks/TelldusCore.framework/TelldusCore')
     else:
-    #Linux
+    #Others; if not found, try adding the directory with the file to env var LD_LIBRARY_PATH
         from ctypes import cdll, CFUNCTYPE
         tdlib = cdll.LoadLibrary('libtelldus-core.so.2')
+
+    # Make tdReleasString work on *BSD
+    tdlib.tdReleaseString.argtypes = [c_void_p]
+    tdlib.tdReleaseString.restype = None
 
     DEVICEFUNC = CFUNCTYPE(None, c_int, c_int, c_char_p, c_int, c_void_p)
     DEVICECHANGEFUNC = CFUNCTYPE(None, c_int, c_int, c_int, c_int, c_void_p)
@@ -155,8 +159,7 @@ def getName(id):
     cp = c_char_p(vp)
     s = cp.value
 
-    if (platform.system() != 'Darwin'): #Workaround, mac crashes on next line
-        tdlib.tdReleaseString(vp)
+    tdlib.tdReleaseString(vp)
 
     return s
 
@@ -224,8 +227,7 @@ def getErrorString(intErrorNo):
     cp = c_char_p(vp)
     s = cp.value
 
-    if (platform.system() != 'Darwin'): #Workaround, mac crashes on nest line
-        tdlib.tdReleaseString(vp)
+    tdlib.tdReleaseString(vp)
 
     return s
 
@@ -254,8 +256,7 @@ def getProtocol(intDeviceId):
     cp = c_char_p(vp)
     s = cp.value
 
-    if (platform.system() != 'Darwin'): #Workaround
-        tdlib.tdReleaseString(vp)
+    tdlib.tdReleaseString(vp)
 
     return s
 
@@ -270,8 +271,7 @@ def getModel(intDeviceId):
     cp = c_char_p(vp)
     s = cp.value
 
-    if (platform.system() != 'Darwin'): #Workaround:
-        tdlib.tdReleaseString(vp)
+    tdlib.tdReleaseString(vp)
 
     return s
 
@@ -291,8 +291,7 @@ def getDeviceParameter(intDeviceId, strName, defaultValue):
     cp = c_char_p(vp)
     s = cp.value
 
-    if (platform.system() != 'Darwin'): #Workaround:
-        tdlib.tdReleaseString(vp)
+    tdlib.tdReleaseString(vp)
 
     return s
 
@@ -304,19 +303,7 @@ def init(defaultMethods = 0):
 
     methodsSupportedDefault = defaultMethods
 
-
-    if (platform.system() == 'Windows'):
-    #Windows
-        tdlib = windll.LoadLibrary('TelldusCore.dll') #import our library
-    elif (platform.system() == 'Darwin'):
-        tdlib = cdll.LoadLibrary('/Library/Frameworks/TelldusCore.framework/TelldusCore')
-    else:
-    #Linux
-        tdlib = cdll.LoadLibrary('libtelldus-core.so.2') #import our library
-
     tdlib.tdInit()
-
-
 
 
 def close():
