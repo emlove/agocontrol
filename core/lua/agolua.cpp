@@ -301,6 +301,24 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 					returnval["result"]=-1;
 				}
 			}
+		} else if (content["command"] == "delscript") {
+			if (content["name"].asString() != "") {
+				try {
+					// if a path is passed, strip it for security reasons
+					fs::path input(content["name"]);
+					string script = LUA_SCRIPT_DIR + input.stem().string() + ".lua";
+					fs::path target(script);
+					if (fs::remove (target)) {
+						returnval["result"]=0;
+					} else {
+						returnval["error"]="no such script";
+						returnval["result"]=-1;
+					}
+				} catch(...) {
+					returnval["error"]="can't delete script";
+					returnval["result"]=-1;
+				}
+			}
 		} else {
 			returnval["error"]="invalid command";
 			returnval["result"]=-1;
