@@ -156,6 +156,7 @@ function loadPlugin() {
         }
 	});
     }).fail(function() {
+        $.unblockUI();
         notif.fatal("Error: Failed to load plugin!");
     });
 }
