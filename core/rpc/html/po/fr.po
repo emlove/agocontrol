@@ -550,3 +550,67 @@ msgstr "Chaud"
 #: ../templates/devices/thermostat.xml.in.h:4
 msgid "Cool"
 msgstr "Froid"
+
+#: ../plugins/agoblockly/templates/agoblockly.xml.in.h:1
+msgid "luacontroller is not responding. Unable to execute action."
+msgstr "luacontroller ne répond pas. Impossible d'exécuter l'action."
+
+#: ../plugins/agoblockly/templates/agoblockly.xml.in.h:2
+msgid "No block defined in workspace."
+msgstr "Aucun bloc n'est défini."
+
+#: ../plugins/agoblockly/templates/agoblockly.xml.in.h:3
+msgid "Script saved successfully."
+msgstr "Le script a été sauvegardé."
+
+#: ../plugins/agoblockly/templates/agoblockly.xml.in.h:4
+msgid "Script loaded successfully."
+msgstr "Le script a bien été chargé."
+
+#: ../plugins/agoblockly/templates/agoblockly.xml.in.h:5
+msgid "Please select a script"
+msgstr "Sélectionner un script s'il vous plait"
+
+#: ../plugins/agoblockly/templates/agoblockly.xml.in.h:6
+msgid "Unable to load script, it seems to be corrupted!"
+msgstr "Le script semble corrompu. Impossible de l'ouvrir!"
+
+#: ../plugins/agoblockly/templates/agoblockly.xml.in.h:7
+msgid "Script not saved"
+msgstr "Le script n'a pas été sauvegardé"
+
+#: ../plugins/agoblockly/templates/agoblockly.xml.in.h:8
+msgid "Please specify a valid script name"
+msgstr "Veuillez entrer un nom de script valide"
+
+#: ../plugins/agoblockly/templates/agoblockly.xml.in.h:10
+msgid "Load"
+msgstr "Ouvrir"
+
+#: ../plugins/agoblockly/templates/agoblockly.xml.in.h:11
+msgid "Check"
+msgstr "Vérifier"
+
+#: ../plugins/agoblockly/templates/agoblockly.xml.in.h:12
+msgid "View"
+msgstr "Voir"
+
+#: ../plugins/agoblockly/templates/agoblockly.xml.in.h:13
+msgid "Clear"
+msgstr "Effacer"
+
+#: ../plugins/agoblockly/templates/agoblockly.xml.in.h:14
+msgid "Script saved"
+msgstr "Script sauvegardé"
+
+#: ../plugins/agoblockly/templates/agoblockly.xml.in.h:15
+msgid "Script modified"
+msgstr "Script modifié"
+
+#: ../plugins/agoblockly/templates/agoblockly.xml.in.h:16
+msgid "script(s) available"
+msgstr "Script(s) disponible(s)"
+
+#: ../plugins/agoblockly/templates/agoblockly.xml.in.h:17
+msgid "Enter script name"
+msgstr "Entrer un nom de script"
