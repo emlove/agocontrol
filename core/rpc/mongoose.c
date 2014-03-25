@@ -1366,37 +1366,48 @@ static pid_t spawn_process(struct mg_connection *conn, const char *prog,
   const char *interp;
 
   envblk = NULL; // Unused
+  
+  // handle non-executable cgi fils
+  int dirfd = open(dir, O_RDONLY);
+  if (dirfd < 0) {
+    send_http_error(conn, 500, http_500_error, "open(): %s", strerror(ERRNO));
+    pid = (pid_t) -1;
+  } else if (faccessat(dirfd, prog, X_OK, 0)!=0) {
+    send_http_error(conn, 500, http_500_error, "file not executable: faccessat(): %s", strerror(ERRNO));
+    pid = (pid_t) -1;
+  } else {
 
-  if ((pid = fork()) == -1) {
-    // Parent
-    send_http_error(conn, 500, http_500_error, "fork(): %s", strerror(ERRNO));
-  } else if (pid == 0) {
-    // Child
-    if (chdir(dir) != 0) {
-      cry(conn, "%s: chdir(%s): %s", __func__, dir, strerror(ERRNO));
-    } else if (dup2(fd_stdin, 0) == -1) {
-      cry(conn, "%s: dup2(%d, 0): %s", __func__, fd_stdin, strerror(ERRNO));
-    } else if (dup2(fd_stdout, 1) == -1) {
-      cry(conn, "%s: dup2(%d, 1): %s", __func__, fd_stdout, strerror(ERRNO));
-    } else {
-      (void) dup2(fd_stdout, 2);
-      (void) close(fd_stdin);
-      (void) close(fd_stdout);
+	  if ((pid = fork()) == -1) {
+	    // Parent
+	    send_http_error(conn, 500, http_500_error, "fork(): %s", strerror(ERRNO));
+	  } else if (pid == 0) {
+	    // Child
+	    if (chdir(dir) != 0) {
+	      cry(conn, "%s: chdir(%s): %s", __func__, dir, strerror(ERRNO));
+	    } else if (dup2(fd_stdin, 0) == -1) {
+	      cry(conn, "%s: dup2(%d, 0): %s", __func__, fd_stdin, strerror(ERRNO));
+	    } else if (dup2(fd_stdout, 1) == -1) {
+	      cry(conn, "%s: dup2(%d, 1): %s", __func__, fd_stdout, strerror(ERRNO));
+	    } else {
+	      (void) dup2(fd_stdout, 2);
+	      (void) close(fd_stdin);
+	      (void) close(fd_stdout);
 
-      interp = conn->ctx->config[CGI_INTERPRETER];
-      if (interp == NULL) {
-        (void) execle(prog, prog, NULL, envp);
-        cry(conn, "%s: execle(%s): %s", __func__, prog, strerror(ERRNO));
-      } else {
-        (void) execle(interp, interp, prog, NULL, envp);
-        cry(conn, "%s: execle(%s %s): %s", __func__, interp, prog,
-            strerror(ERRNO));
-      }
-    }
-    exit(EXIT_FAILURE);
+	      interp = conn->ctx->config[CGI_INTERPRETER];
+	      if (interp == NULL) {
+		(void) execle(prog, prog, NULL, envp);
+		cry(conn, "%s: execle(%s): %s", __func__, prog, strerror(ERRNO));
+	      } else {
+		(void) execle(interp, interp, prog, NULL, envp);
+		cry(conn, "%s: execle(%s %s): %s", __func__, interp, prog,
+		    strerror(ERRNO));
+	      }
+	    }
+	    exit(EXIT_FAILURE);
+	  }
   }
-
   // Parent. Close stdio descriptors
+  (void) close(dirfd);
   (void) close(fd_stdin);
   (void) close(fd_stdout);
 
