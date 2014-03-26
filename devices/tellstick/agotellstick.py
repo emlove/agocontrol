@@ -390,7 +390,7 @@ for devId, dev in remotes.iteritems():
     name = dev["name"]
     info("devId=" + str(devId) + " name=" + name + " model=" + model)
 
-    if "codeswitch" in model:
+    if not "codeswitch" in model:
         client.addDevice(devId, "binarysensor")
         deviceUUID = client.internalIdToUuid (devId)
 

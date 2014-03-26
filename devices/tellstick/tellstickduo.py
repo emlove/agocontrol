@@ -163,7 +163,7 @@ class tellstickduo(tellstickbase):
                 devId = self.getDeviceId(i)
                 model = self.getModel(devId)
 
-                if ('switch'in model or 'dimmer' in model) and 'codeswitch' not in model:
+                if ('switch' in model or 'dimmer' in model):
                     dev = {}
                     dev["id"] = devId
                     dev["name"] = self.getName(devId)
@@ -181,7 +181,7 @@ class tellstickduo(tellstickbase):
             for i in range(self.getNumberOfDevices()):
                 devId = self.getDeviceId(i)
                 model = self.getModel(devId)
-                if 'codeswitch' in model or 'switch'not in model and 'dimmer' not in model:
+                if 'switch' not in model and 'dimmer' not in model:
                     dev = {}
                     dev["id"] = devId
                     dev["name"] = self.getName(devId)
