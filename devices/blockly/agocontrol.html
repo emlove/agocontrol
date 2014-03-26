@@ -192,9 +192,7 @@
         <category name="Agocontrol">
             <category name="Device">
                 <block type="agocontrol_device"></block>
-                <block type="agocontrol_deviceNo"></block>
                 <block type="agocontrol_deviceProperty"></block>
-                <block type="agocontrol_deviceCommand"></block>
             </category>
             <category name="Event">
                 <block type="agocontrol_deviceEvent"></block>
@@ -204,6 +202,7 @@
             </category>
             <category name="Actions">
                 <block type="agocontrol_sendMessage"></block>
+                <block type="agocontrol_sleep"></block>
             </category>
             <category name="Variables">
                 <block type="agocontrol_getVariable"></block>
@@ -214,6 +213,7 @@
 
     <div id="blocklyDiv" style="height: 600px; width: 960px;"></div>
     <button id="generate">generate lua</button>
+    <button id="xml">xml</button>
     <div id="lua" style="height:600px; width:960px;"></div>
 
   <script type="text/javascript">
@@ -268,7 +268,11 @@
         {path: './', toolbox: document.getElementById('toolbox')});
     BlocklyAgocontrol.init(schema, deviceMap, variables);
     var generate = document.getElementById("generate");
+    var xml = document.getElementById("xml");
     var lua = document.getElementById("lua");
+    xml.onclick = function() {
+        console.log(Blockly.Xml.workspaceToDom(Blockly.mainWorkspace));
+    };
     generate.onclick = function() {
     
         // Check for bad block configurations that make it unlikely that

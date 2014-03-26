@@ -109,7 +109,7 @@ Blockly.Lua['agocontrol_eventPropertyValue'] = function(block) {
     return [code, Blockly.Lua.ORDER_NONE];
 };
 
-Blockly.Lua['agocontrol_deviceCommand'] = function(block) {
+Blockly.Lua['agocontrol_sendMessage'] = function(block) {
     var code = "";
     var value;
     var command = block.getFieldValue("COMMAND") || 'nil';
@@ -124,9 +124,10 @@ Blockly.Lua['agocontrol_deviceCommand'] = function(block) {
             value = value.substring(1,value.length-1);
         code += ", '"+fields[field]+"="+value+"'";
     }
-    return [code, Blockly.Lua.ORDER_NONE];
+    return "sendMessage("+code+")\n";
 };
 
+/* DEPRECATED. CODE STAYS HERE FOR FURTHER USE
 Blockly.Lua['agocontrol_sendMessage'] = function(block) {
     var code = "";
     code += Blockly.Lua.valueToCode(block, 'COMMAND', Blockly.Lua.ORDER_NONE) || '';
@@ -134,7 +135,7 @@ Blockly.Lua['agocontrol_sendMessage'] = function(block) {
         return "sendMessage("+code+")\n";
     else
         return '';
-};
+};*/
 
 Blockly.Lua['agocontrol_contentCondition'] = function(block) {
     var code = "";
@@ -169,11 +170,19 @@ Blockly.Lua['agocontrol_setVariable'] = function(block) {
     var name = block.getVariable();
     if( name.length>0 )
     {
-        code = "inventory.variables."+name+" = ";
+        code = "setVariable('"+name+"=";
         code += Blockly.Lua.valueToCode(block, 'VALUE', Blockly.Lua.ORDER_NONE) || 'nil';
-        code += "\n";
+        code += "')\n";
         return code;
     }
     return '';
+};
+
+Blockly.Lua['agocontrol_sleep'] = function(block) {
+    var code = "";
+    var dur = Blockly.Lua.valueToCode(block, 'DURATION', Blockly.Lua.ORDER_NONE) || 1;
+    code = "local time_to = os.time() + "+dur+"\n";
+    code += "while os.time() < time_to do end\n";
+    return code;
 };
 
