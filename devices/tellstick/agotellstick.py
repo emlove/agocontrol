@@ -23,8 +23,6 @@ import time
 from qpid.log import enable, DEBUG, WARN
 from qpid.messaging import Message
 from configobj import ConfigObj
-from  tellstickduo import  tellstickduo
-from tellsticknet import tellsticknet
 
 from threading import Timer
 import time
@@ -316,8 +314,12 @@ except:
     stickVersion = "Tellstick Dou"
 
 if "Net" in stickVersion:
+    # Postpone tellsticknet loading, has extra dependencies which
+    # we can do without if we've only got a Duo
+    from tellsticknet import tellsticknet
     t = tellsticknet()
 else:
+    from  tellstickduo import  tellstickduo
     t = tellstickduo()
 
 t.init(SensorPollDelay, TempUnits)
