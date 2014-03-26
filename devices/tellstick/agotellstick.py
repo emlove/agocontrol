@@ -127,38 +127,41 @@ def messageHandler(internalid, content):
 
 #Event handlers for device and sensor events
 def agoDeviceEvent(deviceId, method, data, callbackId):
-    global event_received, lasttime, dev_delay
-    #print ("agoDeviceEvent devId=" + str(deviceId))
-    try:
-        if event_received[deviceId] == 1:
-            pass
-    except:
-        event_received[deviceId] = 0
+    global event_received, lasttime, dev_delay, general_delay
+    print "agoDeviceEvent devId=" + str(deviceId)
+
+    received = event_received.get(deviceId)
+    if received == None:
+        received = event_received[deviceId] = 0
         lasttime[deviceId] = time.time()
 
-    #if debug:
-        #info ("time-lasttime=" + str(time.time() - lasttime[deviceId]))
-    if event_received[deviceId] == 1:
-        #print "time " + str(time.time())
-        #print "last " + str(lasttime[deviceId])
-        #print "delay " + str(dev_delay[deviceId])
-        if (time.time() - lasttime[deviceId]) > dev_delay[deviceId]:
-            #No echo, stop cancelling events
-            event_received[deviceId] = 0
-#        else:
-#            info ("Echo cancelled")
+    if debug:
+        info ("time-lasttime=" + str(time.time() - lasttime[deviceId]))
 
-    if event_received[deviceId] == 0:
+    if received == 1:
+        delay = dev_delay.get(deviceId)
+        if delay == None:
+            delay = general_delay
+
+        if (time.time() - lasttime[deviceId]) > delay:
+            #No echo, stop cancelling events
+            received = event_received[deviceId] = 0
+        else:
+            info ("Echo cancelled")
+
+    if received == 0:
         #if debug:
             #info('%d: DeviceEvent Device: %d - %s  method: %s, data: %s' %(time.time(), deviceId, t.getName(deviceId), t.methodsReadable.get(method, 'Unknown'), data))
 
-        event_received[deviceId] = 1
+        received = event_received[deviceId] = 1
         lasttime[deviceId] = time.time()
+
         #print "method=" + str(method)
         if (method == t.TELLSTICK_TURNON):
             client.emitEvent(deviceId, "event.device.statechanged", "255", "")
             if debug:
                 info ("emitEvent statechanged " + str(deviceId) + " ON 255")
+
         if (method == t.TELLSTICK_TURNOFF):
             client.emitEvent(deviceId, "event.device.statechanged", "0", "")
             if debug:
