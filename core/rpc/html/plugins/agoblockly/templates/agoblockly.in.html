@@ -23,18 +23,6 @@
             <block type="logic_negate"></block>
             <block type="logic_boolean"></block>
             <block type="logic_ternary"></block>
-            <block type="agocontrol_contentCondition">
-                <value name="EVENT">
-                    <block type="agocontrol_eventAll">
-                    </block>
-                </value>
-            </block>
-            <block type="agocontrol_eventPropertyValue">
-                <value name="PROP">
-                    <block type="agocontrol_eventProperty">
-                    </block>
-                </value>
-            </block>
         </category>
         <category name="Loops">
             <block type="controls_repeat"></block>
@@ -185,6 +173,20 @@
         <category name="Procedures" custom="PROCEDURE">
         </category>
         <category name="Agocontrol">
+            <category name="Logic">
+                <block type="agocontrol_contentCondition">
+                    <value name="EVENT">
+                        <block type="agocontrol_eventAll">
+                        </block>
+                    </value>
+                </block>
+                <block type="agocontrol_eventPropertyValue">
+                    <value name="PROP">
+                        <block type="agocontrol_eventProperty">
+                        </block>
+                    </value>
+                </block>
+            </category>
             <category name="Device">
                 <block type="agocontrol_device"></block>
                 <block type="agocontrol_deviceProperty"></block>
