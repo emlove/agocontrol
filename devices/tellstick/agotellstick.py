@@ -22,7 +22,6 @@ import syslog
 import time
 from qpid.log import enable, DEBUG, WARN
 from qpid.messaging import Message
-import agogeneral
 from configobj import ConfigObj
 from  tellstickduo import  tellstickduo
 from tellsticknet import tellsticknet
@@ -325,6 +324,33 @@ t.init(SensorPollDelay, TempUnits)
 
 client.addHandler(messageHandler)
 
+# Get inventory, required to set names on new devices
+inventory = client.getInventory().content
+agoController = None
+for uuid in inventory['devices'].keys():
+    d = inventory['devices'][uuid]
+    if d['devicetype'] == 'agocontroller':
+        agoController = uuid
+        break
+
+if agoController == None:
+    warning("No agocontroller found, cannot set device names")
+else:
+    info("agoController found: " + agoController)
+
+
+def setNameIfNecessary(deviceUUID, name):
+    dev = inventory['devices'].get(deviceUUID)
+    if (dev == None or dev['name'] == '') and name != '':
+        content = {}
+        content["command"] = "setdevicename"
+        content["uuid"] = agoController
+        content["device"] = deviceUUID
+        content["name"] = name
+        message = Message(content=content)
+        client.sendMessage (None, content)
+        info ("'setdevicename' message sent. name=" + name)
+
 # Get devices from Telldus, announce to Ago Control
 info("---Getting switches and dimmers---")
 switches = t.listSwitches()
@@ -347,23 +373,13 @@ for devId, dev in switches.iteritems():
     else:
         client.addDevice(devId, "switch")
 
-        deviceUUID = client.internalIdToUuid (devId)
-        #info ("deviceUUID=" + deviceUUID + " name=" + t.getName(devId))
-        #info("Switch Name=" + dev.name + " protocol=" + dev.protocol + " model=" + dev.model)
-        #agogeneral.setDeviceName(deviceUUID, t.getName(devId))
-
+    deviceUUID = client.internalIdToUuid (devId)
+    #info ("deviceUUID=" + deviceUUID + " name=" + t.getName(devId))
+    #info("Switch Name=" + dev.name + " protocol=" + dev.protocol + " model=" + dev.model)
     #if ("selflearning-dimmer" in model or model == "dimmer"):
 
-
-    #Check if device already exist, if not - send its name from the tellstick config file
-    if not agogeneral.deviceExist(deviceUUID) and name != '':
-            content = {}
-            content["command"] = "setdevicename"
-            content["uuid"] = deviceUUID
-            content["name"] = name
-            #message = Message(content=content)
-            #client.sendMessage (content)
-            #info ("'setdevicename' message sent. name=" + name)
+    # Check if device already exist, if not - send its name from the tellstick config file
+    setNameIfNecessary(deviceUUID, name)
 
 info("---Getting remotes & motion sensors---")
 remotes = t.listRemotes()
@@ -374,12 +390,17 @@ for devId, dev in remotes.iteritems():
 
     if "codeswitch" in model:
         client.addDevice(devId, "binarysensor")
+        deviceUUID = client.internalIdToUuid (devId)
+
         #found = True
         "devId=" + str(devId) + " model " + model
         try:
             dev_delay[devId] = float(config['EventDevices'][str(devId)]['Delay'])/1000
         except KeyError:
             dev_delay[devId] = general_delay
+
+        # Check if device already exist, if not - send its name from the tellstick config file
+        setNameIfNecessary(deviceUUID, name)
 
 info("---Getting temp and humidity sensors---")
 listNewSensors()
