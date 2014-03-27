@@ -401,7 +401,13 @@ function eventConfig() {
 		}
 		self.idx = self.idx + 1;
 	    } else {
-		nesting += " " + element.type + " (" + self.parseElement(obj) + ")";
+		if (nesting == "") {
+		    nesting += "(";
+		}else{
+		    nesting += " " + element.type;
+		}
+
+		nesting += " (" + self.parseElement(obj) + ")";
 	    }
 	}
 
