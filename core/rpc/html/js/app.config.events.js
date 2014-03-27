@@ -103,30 +103,103 @@ function eventConfig() {
 	return matches[1];
     };
 
+    this.parseSubOp = function(str, criteria) {
+	var data = str.split(/(or|and)/g);
+	var sub = [];
+	var type = "";
+	data = data.filter(function(e) {
+	    return $.trim(e) != "";
+	});
+
+	for ( var i = 0; i < data.length; i++) {
+	    var tmp = data[i];
+	    if (type == "" && (tmp == "and" || tmp == "or")) {
+		type = tmp;
+		continue;
+	    }
+	    var idx = self.getCriteriaIdx(tmp);
+	    if (idx !== false) {
+		sub.push(criteria[idx]);
+	    }
+	}
+
+	return {
+	    "sub" : sub,
+	    "type" : type == "" ? "and" : type
+	};
+    };
+
     /* Used for parsing event into JSON structure */
     this.parseGroup = function(str, criteria) {
-	var sub = [];
-	var type = "and";
-	str = str.replace(/(^\()|(\)$)/g, "");
-	var data = str.split(/(and|or)/g);
+	var operation = "";
+	var subs = [];
+	var parsed = "";
 
+	for ( var i = str.length - 1; i >= 0; i--) {
+	    if (str[i] == "(") {
+		for ( var j = i + 1; j < str.length; j++) {
+		    if (str[j] == ")") {
+			break;
+		    }
+		    operation += str[j];
+		}
+
+		if (operation != "" && !operation.match(/^sub/)) {
+		    if (operation.indexOf("sub") != -1) {
+			operation = operation.substring(0, operation.indexOf("sub"));
+
+		    }
+
+		    subs.push(self.parseSubOp(operation, criteria));
+
+		    /* In case it is "open ended" we want to leave the operator for the top level */
+		    if ($.trim(operation).substr(-3) == "and") {
+			operation = operation.substr(0, operation.length - 5);
+		    }
+		    if ($.trim(operation).substr(-2) == "or") {
+			operation = operation.substr(0, operation.length - 4);
+		    }
+		}
+
+		parsed = str.replace(operation, "sub{" + (subs.length - 1) + "}");
+		str = str.substr(0, i) + "sub{" + (subs.length - 1) + "}" + str.substr(j + 1);
+
+		/* No more unparsed criteria done */
+		if (parsed.indexOf("criteria") == -1) {
+		    break;
+		}
+
+		if (operation != "") {
+		    operation = "";
+		}
+	    }
+	}
+
+	/* Only one level no need for parsing */
+	if (subs.length == 1) {
+	    return subs[0];
+	}
+
+	/* Clean up string */
+	parsed = parsed.replace(/\{/g, "[");
+	parsed = parsed.replace(/\}/g, "]");
+	parsed = parsed.replace(/\)/g, "");
+	parsed = parsed.replace(/\(/g, "");
+
+	/* Parse the top level */
+	var data = parsed.split(/(or|and)/g);
+
+	var sub = [];
+	var type = "";
 	for ( var i = 0; i < data.length; i++) {
 	    var tmp = data[i];
 	    if (tmp == "and" || tmp == "or") {
 		type = tmp;
 		continue;
 	    }
-	    if ($.trim(tmp)[0] == "(") {
-		var next = "";
-		for ( var j = i; j < data.length; j++) {
-		    next += data[j];
-		}
-		sub.push(self.parseGroup($.trim(next).replace(/(^\()|(\)$)/g, ""), criteria));
-		break;
-	    }
 	    var idx = self.getCriteriaIdx(tmp);
 	    if (idx !== false) {
-		sub.push(criteria[idx]);
+		sub.push(subs[idx]);
 	    }
 	}
 
@@ -656,7 +729,7 @@ function eventConfig() {
 	inputList.reverse();
 	for ( var i = 0; i < inputList.length; i++) {
 	    var op = inputList[i];
-	    self.createOperation(op.sub, document.getElementsByClassName("eventBuilder")[0], op.type, i == 0);
+	    self.createOperation(op.sub, document.getElementsByClassName("eventBuilder")[0], op.type);
 	}
 
 	var eventSelector = document.getElementById("eventSelector");
