@@ -152,7 +152,10 @@ function eventConfig() {
 
 		    subs.push(self.parseSubOp(operation, criteria));
 
-		    /* In case it is "open ended" we want to leave the operator for the top level */
+		    /*
+		     * In case it is "open ended" we want to leave the operator
+		     * for the top level
+		     */
 		    if ($.trim(operation).substr(-3) == "and") {
 			operation = operation.substr(0, operation.length - 5);
 		    }
@@ -333,11 +336,12 @@ function eventConfig() {
 	var button_yes = $("#confirmDeleteButtons").data("yes");
 	var button_no = $("#confirmDeleteButtons").data("no");
 	var buttons = {};
+	var deleteEvent = event;
 	buttons[button_no] = function() {
 	    $("#confirmDelete").dialog("close");
 	};
 	buttons[button_yes] = function() {
-	    self.doDeleteEvent(item, event);
+	    self.doDeleteEvent(item, deleteEvent);
 	    $("#confirmDelete").dialog("close");
 	};
 	$("#confirmDelete").dialog({
@@ -367,7 +371,7 @@ function eventConfig() {
 		self.events.remove(function(e) {
 		    return e.uuid == item.uuid;
 		});
-		$("#configTable").dataTable().fnDeleteRow(event.target.parentNode.parentNode);
+		$("#configTable").dataTable().fnDeleteRow(event.target.parentNode.parentNode.parentNode);
 		$("#configTable").dataTable().fnDraw();
 	    } else {
 		alert("Error while deleting event!");
@@ -403,7 +407,7 @@ function eventConfig() {
 	    } else {
 		if (nesting == "") {
 		    nesting += "(";
-		}else{
+		} else {
 		    nesting += " " + element.type;
 		}
 
