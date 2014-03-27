@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-02-11 09:45+0100\n"
+"POT-Creation-Date: 2014-03-27 17:37+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -115,6 +115,11 @@ msgid "Cloud"
 msgstr ""
 
 #: ../templates/navigation/configuration.xml.in.h:8
+#: ../templates/configuration/plugins.xml.in.h:1
+msgid "Plugins"
+msgstr ""
+
+#: ../templates/navigation/configuration.xml.in.h:9
 msgid "System"
 msgstr ""
 
@@ -236,6 +241,7 @@ msgstr ""
 #: ../templates/configuration/scenarios.xml.in.h:5
 #: ../templates/configuration/events.xml.in.h:5
 #: ../templates/configuration/variables.xml.in.h:5
+#: ../templates/configuration/plugins.xml.in.h:2
 msgid "Name"
 msgstr ""
 
@@ -293,6 +299,8 @@ msgstr ""
 
 #: ../templates/configuration/scenarios.xml.in.h:17
 #: ../templates/configuration/events.xml.in.h:13
+#: ../plugins/agoblockly/templates/agoblockly.xml.in.h:12
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:11
 msgid "Save"
 msgstr ""
 
@@ -472,6 +480,14 @@ msgstr ""
 msgid "Details"
 msgstr ""
 
+#: ../templates/configuration/plugins.xml.in.h:3
+msgid "Version"
+msgstr ""
+
+#: ../templates/configuration/plugins.xml.in.h:4
+msgid "Description"
+msgstr ""
+
 #: ../templates/devices/multilevelsensor.xml.in.h:1
 msgid "GRAPH"
 msgstr ""
@@ -518,4 +534,313 @@ msgstr ""
 
 #: ../templates/devices/thermostat.xml.in.h:4
 msgid "Cool"
+msgstr ""
+
+#: ../plugins/agoblockly/templates/agoblockly.xml.in.h:1
+msgid "luacontroller is not responding. Unable to execute action."
+msgstr ""
+
+#: ../plugins/agoblockly/templates/agoblockly.xml.in.h:2
+msgid "No block defined in workspace."
+msgstr ""
+
+#: ../plugins/agoblockly/templates/agoblockly.xml.in.h:3
+msgid "Script saved successfully."
+msgstr ""
+
+#: ../plugins/agoblockly/templates/agoblockly.xml.in.h:4
+msgid "Script loaded successfully."
+msgstr ""
+
+#: ../plugins/agoblockly/templates/agoblockly.xml.in.h:5
+msgid "Please select a script"
+msgstr ""
+
+#: ../plugins/agoblockly/templates/agoblockly.xml.in.h:6
+msgid "Unable to load script, it seems to be corrupted!"
+msgstr ""
+
+#: ../plugins/agoblockly/templates/agoblockly.xml.in.h:7
+msgid "Script not saved"
+msgstr ""
+
+#: ../plugins/agoblockly/templates/agoblockly.xml.in.h:8
+msgid "Please specify a valid script name"
+msgstr ""
+
+#: ../plugins/agoblockly/templates/agoblockly.xml.in.h:9
+msgid "Delete selected script?"
+msgstr ""
+
+#: ../plugins/agoblockly/templates/agoblockly.xml.in.h:10
+msgid "Script deleted successfully"
+msgstr ""
+
+#: ../plugins/agoblockly/templates/agoblockly.xml.in.h:11
+msgid "Unable to delete script"
+msgstr ""
+
+#: ../plugins/agoblockly/templates/agoblockly.xml.in.h:13
+msgid "Load"
+msgstr ""
+
+#: ../plugins/agoblockly/templates/agoblockly.xml.in.h:14
+msgid "Check"
+msgstr ""
+
+#: ../plugins/agoblockly/templates/agoblockly.xml.in.h:15
+msgid "View"
+msgstr ""
+
+#: ../plugins/agoblockly/templates/agoblockly.xml.in.h:16
+msgid "Clear"
+msgstr ""
+
+#: ../plugins/agoblockly/templates/agoblockly.xml.in.h:17
+msgid "Script saved"
+msgstr ""
+
+#: ../plugins/agoblockly/templates/agoblockly.xml.in.h:18
+msgid "Script modified"
+msgstr ""
+
+#: ../plugins/agoblockly/templates/agoblockly.xml.in.h:19
+msgid "script(s) available"
+msgstr ""
+
+#: ../plugins/agoblockly/templates/agoblockly.xml.in.h:20
+msgid "Enter script name"
+msgstr ""
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:1
+msgid "Twitter configuration"
+msgstr ""
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:2
+msgid ""
+"Agocontrol needs to be authorized to post alerts on your Twitter account."
+msgstr ""
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:3
+msgid "Twitter is configured"
+msgstr ""
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:4
+msgid "Twitter is not configured"
+msgstr ""
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:5
+msgid "Follow instructions above to authorize this access:"
+msgstr ""
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:6
+msgid ""
+"Click <a href=\"#\" data-bind=\"click: twitterUrl\">here</a> to generate an "
+"authorization url"
+msgstr ""
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:7
+msgid "Then click on generated link:"
+msgstr ""
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:8
+msgid "Authorize access on Twitter"
+msgstr ""
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:9
+msgid "Type given access code here:"
+msgstr ""
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:10
+msgid "Finally click on button to save access code"
+msgstr ""
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:12
+msgid "To send test tweet on your account, click on button:"
+msgstr ""
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:13
+msgid "Test"
+msgstr ""
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:14
+msgid "Google Talk configuration"
+msgstr ""
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:15
+msgid ""
+"Agocontrol needs your Google credentials to connect GTalk and send alerts."
+msgstr ""
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:16
+msgid "GTalk is configured"
+msgstr ""
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:17
+msgid "GTalk is not configured"
+msgstr ""
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:18
+msgid "If you are using 2-Step verification, generate password"
+msgstr ""
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:19
+msgid "clicking here"
+msgstr ""
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:20
+msgid "Otherwise use your usual Google credentials:"
+msgstr ""
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:21
+msgid "Username"
+msgstr ""
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:22
+msgid "Password"
+msgstr ""
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:23
+msgid "To send you a test message on GTalk, click on button:"
+msgstr ""
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:24
+msgid "SMS configuration"
+msgstr ""
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:25
+msgid "Agocontrol uses"
+msgstr ""
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:26
+msgid "to send SMS alerts."
+msgstr ""
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:27
+msgid "SMS is configured"
+msgstr ""
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:28
+msgid "SMS is not yet configured"
+msgstr ""
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:29
+msgid "You need to create an account and add credits to send SMS"
+msgstr ""
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:30
+msgid "click here to view SMS rates"
+msgstr ""
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:31
+msgid "12voip credentials:"
+msgstr ""
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:32
+msgid "To send you a test SMS, click on button"
+msgstr ""
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:33
+msgid "Email configuration"
+msgstr ""
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:34
+msgid "Agocontrol can send alert through email."
+msgstr ""
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:35
+msgid "Mail is configured"
+msgstr ""
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:36
+msgid "Mail is not yet configured"
+msgstr ""
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:37
+msgid ""
+"Specify your email SMTP server and a sender email address (* is mandatory):"
+msgstr ""
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:38
+msgid "SMTP server"
+msgstr ""
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:39
+msgid "(could be smtp:port)"
+msgstr ""
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:40
+msgid "Sender email"
+msgstr ""
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:41
+msgid "Login"
+msgstr ""
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:42
+msgid "TLS"
+msgstr ""
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:43
+msgid "To send you a test email, type your email address and click on button"
+msgstr ""
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:44
+msgid "Push configuration"
+msgstr ""
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:45
+msgid "Agocontrol can send alert through push notifications."
+msgstr ""
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:46
+msgid "Push is configured"
+msgstr ""
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:47
+msgid "Push is not yet configured"
+msgstr ""
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:48
+msgid "Choose push provider in list:"
+msgstr ""
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:49
+msgid "Enter your apikey"
+msgstr ""
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:50
+msgid "available here"
+msgstr ""
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:51
+msgid "Refresh your devices list clicking on the button"
+msgstr ""
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:52
+msgid "Refresh list"
+msgstr ""
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:53
+msgid "And choose your devices that will be notified"
+msgstr ""
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:54
+msgid "Finally save your settings"
+msgstr ""
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:55
+msgid "Enter your userid"
+msgstr ""
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:56
+msgid "And save your settings"
+msgstr ""
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:57
+msgid "Enter your apikeys"
+msgstr ""
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:58
+msgid "To push you test notification, click on button"
 msgstr ""
