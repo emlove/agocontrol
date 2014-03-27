@@ -86,7 +86,7 @@ function roomConfig() {
 		self.rooms.remove(function(e) {
 		    return e.uuid == item.uuid;
 		});
-		$("#configTable").dataTable().fnDeleteRow(event.target.parentNode.parentNode);
+		$("#configTable").dataTable().fnDeleteRow(event.target.parentNode.parentNode.parentNode);
 		$("#configTable").dataTable().fnDraw();
 	    } else {
 		alert("Error while deleting room!");
