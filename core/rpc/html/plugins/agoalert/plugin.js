@@ -262,6 +262,7 @@ function agoAlertPlugin(deviceMap) {
         sendCommand(content, function(res) {
             if (res.result.error == 0)
             {
+                notif.success('#rdpbs');
                 self.pushbulletAvailableDevices(res.result.devices);
             }
             else
