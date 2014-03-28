@@ -28,7 +28,7 @@ timeSchedules = None #(timestamp, scheduleid)
 scenarioControllerUuid = None
 nowUtc = None
 
-#logging.basicConfig(filename='agoscheduler.log', level=logging.INFO, format="%(asctime)s %(levelname)s : %(message)s")
+#logging.basicConfig(filename='/opt/agocontrol/agoscheduler.log', level=logging.INFO, format="%(asctime)s %(levelname)s : %(message)s")
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(name)s %(levelname)s : %(message)s")
 
 #=================================
@@ -254,6 +254,18 @@ def quit(msg):
         client = None
     logging.fatal(msg)
     sys.exit(0)
+
+def getScenarioControllerUuid():
+    """get scenariocontroller uuid"""
+    global client, scenarioControllerUuid
+    inventory = client.getInventory()
+    for uuid in inventory.content['devices']:
+        if inventory.content['devices'][uuid]['devicetype']=='scenariocontroller':
+            scenarioControllerUuid = uuid
+            break
+    if not scenarioControllerUuid:
+        raise Exception('scenariocontroller uuid not found!')
+
 
 def checkContent(content, params):
     """Check if all params are in content"""
@@ -621,6 +633,10 @@ def eventHandler(event, content):
             #search scenarios to execute
             schedules = timeSchedules.find_all(currentTsUtc, itemgetter(1))
 
+            #get scenario controller uuid
+            if !scenarioControllerUuid:
+                getScenarioControllerUuid()
+
             #execute scenarios
             for schedule in schedules:
                 logging.info('Execute scenario id "%s"' % schedule['scenario'])
@@ -691,15 +707,6 @@ try:
 
     #add controller
     client.addDevice('agoscheduler', 'agoscheduler')
-
-    #get scenariocontroller uuid (don't catch exceptions because no uuid no scenario execution)
-    inventory = client.getInventory()
-    for uuid in inventory.content['devices']:
-        if inventory.content['devices'][uuid]['devicetype']=='scenariocontroller':
-            scenarioControllerUuid = uuid
-            break
-    if not scenarioControllerUuid:
-        raise Exception('scenariocontroller uuid not found!')
 
 except Exception as e:
     #init failed
