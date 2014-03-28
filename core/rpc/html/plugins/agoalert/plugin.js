@@ -98,9 +98,17 @@ function agoAlertPlugin(deviceMap) {
 
     this.twitterUrl = function()
     {
-        el = document.getElementsByClassName("twitterUrl");
-        el[0].innerHTML = 'Generating url...';
+        var el = $('#twitterUrl');
+        if( el===undefined )
+        {
+            notif.error('#ie');
+            return;
+        }
+        var generatingUrl = $('#gu') || 'generating url';
+        var authorizationUrl = $('#au') || 'authorization url';
+
         //get authorization url
+        el.html(generatingUrl.html()+'...');
         var content = {};
         content.uuid = self.agoalertUuid;
         content.command = 'setconfig';
@@ -110,7 +118,7 @@ function agoAlertPlugin(deviceMap) {
             if (res.result.error == 0)
             {
                 //display link
-                el[0].innerHTML = '<a href="' + res.result.url + '" target="_blank">authorization url</a>';
+                el.html('<a href="' + res.result.url + '" target="_blank">'+authorizationUrl.html()+'</a>');
             }
             else
             {
@@ -121,11 +129,17 @@ function agoAlertPlugin(deviceMap) {
 
     this.twitterAccessCode = function()
     {
+        var el = $('#twitterAccessCode');
+        if( el===undefined )
+        {
+            notif.error('#ie');
+            return;
+        }
         var content = {};
         content.uuid = self.agoalertUuid;
         content.command = 'setconfig';
         content.param1 = 'twitter';
-        content.param2 = document.getElementsByClassName("twitterCode")[0].value;
+        content.param2 = el.val();
         sendCommand(content, function(res) {
             if (res.result.error == 1)
             {
@@ -252,7 +266,7 @@ function agoAlertPlugin(deviceMap) {
             }
             else
             {
-                //TODO error
+                notif.error('#rdpb');
             }
         });
     };

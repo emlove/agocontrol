@@ -1,4 +1,11 @@
 <div id="contentarea" style="margin: 0px auto 10px auto; padding:15px;">
+    <div style="display:none;">
+        <_span data-translateable="true" id="ie">Internal error</_span>
+        <_span data-translateable="true" id="rdpb">Unable to refresh PushBullet devices</_span>
+        <_span data-translateable="true" id="gu">generating url</_span>
+        <_span data-translateable="true" id="au">authorization url</_span>
+    </div>
+
     <div data-bind="jqTabs:{}">
         <ul>
             <li><a href="#tabs-twitter">Twitter</a></li>
@@ -23,10 +30,10 @@
             <form>
                <ol>
                     <_li data-translateable="true">Click <a href="#" data-bind="click: twitterUrl">here</a> to generate an authorization url</_li>
-                    <li data-translateable="true"><_span>Then click on generated link:</_span> <span class="twitterUrl" name="twitterUrl" style="color: darkorange"/></li>
+                    <li><_span data-translateable="true">Then click on generated link</_span>: <span class="twitterUrl" id="twitterUrl" style="color: darkorange"/></li>
                     <_li data-translateable="true">Authorize access on Twitter</_li>
-                    <li data-translateable="true"><_span>Type given access code here:</_span> <input class="twitterAccessCode" name="twitterAccessCode" placeholder="Twitter code"/></li>
-                    <li data-translateable="true"><_span>Finally click on button to save access code</_span> <_button data-translateable="true" data-bind="click: twitterAccessCode">Save</_button></li>
+                    <li><_span data-translateable="true">Type given access code here</_span>: <input class="twitterAccessCode" id="twitterAccessCode" placeholder="Twitter code"/></li>
+                    <li><_span data-translateable="true">Finally click on button to save access code</_span> <_button data-translateable="true" data-bind="click: twitterAccessCode">Save</_button></li>
                 </ol>
             </form>
             <hr/>

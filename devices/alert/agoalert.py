@@ -270,6 +270,7 @@ class Twitter(AgoAlert):
             try:
                 if not self.__auth:
                     self.__auth = tweepy.OAuthHandler(self.consumerKey, self.consumerSecret)
+                    self.__auth.secure = True
                 #get token
                 token = self.__auth.get_access_token(code)
                 #save token internally
@@ -291,15 +292,15 @@ class Twitter(AgoAlert):
 
     def getAuthorizationUrl(self):
         """get twitter authorization url"""
-        global client
         try:
             if not self.__auth:
                 self.__auth = tweepy.OAuthHandler(self.consumerKey, self.consumerSecret)
+                self.__auth.secure = True
             url = self.__auth.get_authorization_url()
-            logging.debug('twitter url=%s' % url)
+            #logging.info('twitter url=%s' % url)
             return {'error':0, 'url':url}
         except Exception as e:
-            logging.error('Twitter: Unable to get Twitter authorization url [%s]' % str(e)) 
+            logging.exception('Twitter: Unable to get Twitter authorization url [%s]' % str(e) ) 
             return {'error':1, 'url':''}
 
     def addTweet(self, tweet):
@@ -322,6 +323,7 @@ class Twitter(AgoAlert):
     def _sendMessage(self, message):
         #connect using OAuth auth (basic auth deprecated)
         auth = tweepy.OAuthHandler(self.consumerKey, self.consumerSecret)
+        auth.secure = True
         logging.debug('key=%s secret=%s' % (self.key, self.secret))
         auth.set_access_token(self.key, self.secret)
         api = tweepy.API(auth)
@@ -563,7 +565,7 @@ class Pushbullet(AgoAlert):
         client.emitEvent('alertcontroller', "event.device.statechanged", STATE_PUSH_CONFIGURED, "")
         return True
 
-    def addPush(self, message, file):
+    def addPush(self, message, file=None):
         """Add push
            @param message: push notification
            @file: full file path to send"""
@@ -817,88 +819,83 @@ def commandHandler(internalid, content):
             pass
 
     #=========================================
-    elif command=='sendalert':
-        if not content.has_key('type'):
-            logging.error('sendalert command: missing parameters "type"')
+    elif command=='sendtweet':
+        #send tweet
+        if content.has_key('tweet'):
+            if twitter.addTweet(content['tweet']):
+                return {'error':0, 'msg':''}
+            else:
+                logging.warning('CommandHandler: failed to tweet [%s]' % str(content['tweet']))
+                return {'error':1, 'msg':'Failed to tweet'}
+        else:
+            logging.error('commandHandler: parameters missing for tweet')
             return {'error':1, 'msg':'Internal error'}
-        type = content['type']
-        if type=='twitter':
-            #send tweet
-            if content.has_key('param1'):
-                if twitter.addTweet(content['param1']):
+    elif command=='sendsms':
+        #send sms
+        if content.has_key('text') and content.has_key('to'):
+            if sms.addSMS(content['to'], content['text']):
+                return {'error':0, 'msg':''}
+            else:
+                logging.warning('CommandHandler: failed to send SMS [to:%s, text:%s]' % (str(content['to']), str(content['text'])))
+                return {'error':1, 'msg':'Failed to send SMS'}
+        else:
+            logging.error('commandHandler: parameters missing for SMS')
+            return {'error':1, 'msg':'Internal error'}
+    elif command=='sendmail':
+        #send mail
+        if content.has_key('to') and content.has_key('subject') and content.has_key('body'):
+            tos = content['to'].split(';')
+            if mail.addMail(tos, content['subject'], content['body']):
+                return {'error':0, 'msg':''}
+            else:
+                logging.warning('CommandHandler: failed to send email [tos:%s, subject:%s, content:%s]' % (str(tos), str(content['subject']), str(content['body'])))
+                return {'error':1, 'msg':'Failed to send email'}
+        else:
+            logging.error('commandHandler: parameters missing for email')
+            return {'error':1, 'msg':'Internal error'}
+    elif command=='sendgtalk':
+        #send gtalk message
+        if content.has_key('to') and content.has_key('message'):
+            if gtalk.addMessage(content['to'], content['message']):
+                return {'error':0, 'msg':''}
+            else:
+                logging.warning('CommandHandler: failed to send GTalk message [to:%s, message:%s]' % (str(content['to']), str(content['message'])))
+                return {'error':1, 'msg':'Failed to send GTalk message'}
+        else:
+            logging.error('commandHandler: parameters missing for GTalk')
+            return {'error':1, 'msg':'Internal error'}
+    elif command=='sendpush':
+        #send push
+        if push.name=='pushbullet':
+            if content.has_key('message'):
+                if push.addPush(content['message']):
                     return {'error':0, 'msg':''}
                 else:
-                    logging.warning('CommandHandler: failed to tweet [%s]' % str(content['param1']))
-                    return {'error':1, 'msg':'Failed to tweet'}
+                    logging.error('CommandHandler: failed to send push message with pushbullet [message:%s file:%s]' % (str(content['message'])))
+                    return {'error':1, 'msg':'Failed to send push notification'}
             else:
-                logging.error('commandHandler: parameters missing for Twitter tweet')
+                logging.error('commandHandler: parameters missing for pushbullet')
                 return {'error':1, 'msg':'Internal error'}
-        elif type=='sms':
-            #send sms
-            if content.has_key('param1') and content.has_key('param2'):
-                if sms.addSMS(content['param1'], content['param2']):
+        elif push.name=='pushover':
+            if content.has_key('message'):
+                if push.addPush(content['message']):
                     return {'error':0, 'msg':''}
                 else:
-                    logging.warning('CommandHandler: failed to send SMS [to:%s, text:%s]' % (str(content['param1']), str(content['param2'])))
-                    return {'error':1, 'msg':'Failed to send SMS'}
+                    logging.error('CommandHandler: failed to send push message with pushover [message:%s priority:%s]' % (str(content['message'])))
+                    return {'error':1, 'msg':'Failed to send push notification'}
             else:
-                logging.error('commandHandler: parameters missing for SMS')
+                logging.error('commandHandler: parameters missing for pushover')
                 return {'error':1, 'msg':'Internal error'}
-        elif type=='mail':
-            #send mail
-            if content.has_key('param1') and content.has_key('param2') and content.has_key('param3'):
-                tos = content['param1'].split(';')
-                if mail.addMail(tos, content['param2'], content['param3']):
+        elif push.name=='notifymyandroid':
+            if content.has_key('message'):
+                if push.addPush(content['message']):
                     return {'error':0, 'msg':''}
                 else:
-                    logging.warning('CommandHandler: failed to send email [tos:%s, subject:%s, content:%s]' % (str(tos), str(content['param2']), str(content['param3'])))
-                    return {'error':1, 'msg':'Failed to send SMS'}
+                    logging.error('CommandHandler: failed to send push message with notifymyandroid [message:%s priority:%s]'% (str(content['message'])))
+                    return {'error':1, 'msg':'Failed to send push notification'}
             else:
-                logging.error('commandHandler: parameters missing for SMS')
+                logging.error('commandHandler: parameters missing for notifymyandroid')
                 return {'error':1, 'msg':'Internal error'}
-        elif type=='gtalk':
-            #send gtalk message
-            if content.has_key('param1') and content.has_key('param2'):
-                if gtalk.addMessage(content['param1'], content['param2']):
-                    return {'error':0, 'msg':''}
-                else:
-                    logging.warning('CommandHandler: failed to send GTalk message [to:%s, message:%s]' % (str(content['param1']), str(content['param2'])))
-                    return {'error':1, 'msg':'Failed to send GTalk message'}
-            else:
-                logging.error('commandHandler: parameters missing for GTalk')
-                return {'error':1, 'msg':'Internal error'}
-        elif type=='push':
-            #test push
-            if push.name=='pushbullet':
-                if content.has_key('param1') and content.has_key('param2'):
-                    if push.addPush(content['param1'], content['param2']):
-                        return {'error':0, 'msg':''}
-                    else:
-                        logging.error('CommandHandler: failed to send push message with pushbullet [message:%s file:%s]' % (str(content['param1']), str(content['param2'])))
-                        return {'error':1, 'msg':'Failed to send push notification'}
-                else:
-                    logging.error('commandHandler: parameters missing for pushbullet')
-                    return {'error':1, 'msg':'Internal error'}
-            elif push.name=='pushover':
-                if content.has_key('param1') and content.has_key('param2'):
-                    if push.addPush(content['param1'], content['param2']):
-                        return {'error':0, 'msg':''}
-                    else:
-                        logging.error('CommandHandler: failed to send push message with pushover [message:%s priority:%s]' % (str(content['param1']), str(content['param2'])))
-                        return {'error':1, 'msg':'Failed to send push notification'}
-                else:
-                    logging.error('commandHandler: parameters missing for pushover')
-                    return {'error':1, 'msg':'Internal error'}
-            elif push.name=='notifymyandroid':
-                if content.has_key('param1') and content.has_key('param2'):
-                    if push.addPush(content['param1'], content['param2']):
-                        return {'error':0, 'msg':''}
-                    else:
-                        logging.error('CommandHandler: failed to send push message with notifymyandroid [message:%s priority:%s]'% (str(content['param1']), str(content['param2'])))
-                        return {'error':1, 'msg':'Failed to send push notification'}
-                else:
-                    logging.error('commandHandler: parameters missing for notifymyandroid')
-                    return {'error':1, 'msg':'Internal error'}
         else:
             #TODO add here new alert sending
             pass
