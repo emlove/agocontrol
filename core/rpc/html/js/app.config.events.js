@@ -336,12 +336,11 @@ function eventConfig() {
 	var button_yes = $("#confirmDeleteButtons").data("yes");
 	var button_no = $("#confirmDeleteButtons").data("no");
 	var buttons = {};
-	var deleteEvent = event;
 	buttons[button_no] = function() {
 	    $("#confirmDelete").dialog("close");
 	};
 	buttons[button_yes] = function() {
-	    self.doDeleteEvent(item, deleteEvent);
+	    self.doDeleteEvent(item, event);
 	    $("#confirmDelete").dialog("close");
 	};
 	$("#confirmDelete").dialog({
