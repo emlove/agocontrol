@@ -612,8 +612,8 @@ function doShowDetails(device, template, environment) {
 		$("#detailsPage").dialog({
 		    title : document.getElementById("detailsTitle").innerHTML,
 		    modal : true,
-		    width : dialogWidth,
-		    height : dialogHeight,
+		    width : Math.min(dialogWidth, Math.round(screen.width * 0.8)),
+		    height : Math.min(dialogHeight, Math.round(screen.height * 0.8)),
 		    close : function() {
 			var graphContainer = document.getElementById('graph');
 			if (graphContainer) {
