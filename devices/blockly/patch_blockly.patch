@@ -16,3 +16,15 @@ Index: build.py
  
    def gen_core(self):
      target_filename = 'blockly_compressed.js'
+Index: core/field_dropdown.js
+===================================================================
+--- core/field_dropdown.js	(revision 1670)
++++ core/field_dropdown.js	(working copy)
+@@ -174,6 +174,7 @@
+   if (!goog.isArray(options) || options.length < 2) {
+     return;
+   }
++  return;
+   var strings = options.map(function(t) {return t[0];});
+   var shortest = Blockly.shortestStringLength(strings);
+   var prefixLength = Blockly.commonWordPrefix(strings, shortest);
