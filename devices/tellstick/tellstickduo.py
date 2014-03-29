@@ -64,8 +64,8 @@ class tellstickduo(tellstickbase):
     def getErrorString(self, resCode):
         return td.getErrorString(resCode)
 
-    def dim(self, level):
-        resCode = td.dim(level)
+    def dim(self, devId, level):
+        resCode = td.dim(devId, level)
         return self.getErrorString(resCode).lower()
 
     def getName(self,devId):
