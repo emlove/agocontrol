@@ -772,8 +772,15 @@ Blockly.Blocks['agocontrol_sendMessage'] = {
                 .setAlign(Blockly.ALIGN_RIGHT)
                 .setCheck(checkType);
     this.customFields.push(key);
-    if( desc.length>0 )
+    if( desc!==undefined && desc.length>0 )
+    {
         input.appendField('- '+desc);
+    }
+    else
+    {
+        //no description in schema.yaml, use name instead
+        input.appendField('- '+key);
+    }
     if( !duplicated )
     {
         newBlock.outputConnection.connect(input.connection);
