@@ -1,0 +1,10 @@
+{
+	"name": "agoeink",
+	"version": "0.0.1",
+	"description": "ago control eink",
+        "resources": {
+            "css": [
+                "css/styles.css"
+            ]
+        }
+}

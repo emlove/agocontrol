@@ -1,0 +1,6 @@
+body { background: #4a4d50; background-color: #4a4d50; }
+.container { padding: 0 1.5625% 0 0; }
+#col-left { display:none; }
+#col-right #contentarea { margin: 0 0px 20px 0px; background-color: #4a4d50; }
+
+
