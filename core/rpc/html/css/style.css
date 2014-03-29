@@ -2106,7 +2106,7 @@ table.agoTable td {
 
 /* =resolution for 800 x 600 devices 
 -----------------------------------------------------------------------------*/
-@media only screen and (max-width: 800px) {
+@media only screen and (max-width: 1100px) {
         .container { padding: 0px 5px; }
 
         #col-left .btn-full a { text-overflow: clip; }
