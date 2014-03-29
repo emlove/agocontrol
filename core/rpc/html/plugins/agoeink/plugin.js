@@ -121,7 +121,7 @@ function init_plugin()
 
 
     model.mainTemplate = function() {
-	return templatePath + "example";
+	return templatePath + "agoeink";
     }.bind(model);
     ko.applyBindings(model);
 }
