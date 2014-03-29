@@ -549,7 +549,10 @@ bool agocontrol::AgoConnection::sendMessage(qpid::types::Variant::Map content) {
 
 bool agocontrol::AgoConnection::emitEvent(const char *internalId, const char *eventType, const char *level, const char *unit) {
 	Variant::Map content;
-	content["level"] = level;
+	string _level = level;
+	Variant value;
+	value.parse(level);
+	content["level"] = value;
 	content["unit"] = unit;
 	content["uuid"] = internalIdToUuid(internalId);
 	return sendMessage(eventType, content);
