@@ -97,10 +97,10 @@ var deferredInit = null;
 function loadPlugin() {
     //lock ui
     $.blockUI({
-        message : '<div>Please wait ...</div>',
-        css : {
-            border : '3px solid #a00'
-        }
+	message : '<div>Please wait ...</div>',
+	css : {
+	    border : '3px solid #a00'
+	}
     });
 
     /* Get plugin name from query string */
@@ -118,46 +118,42 @@ function loadPlugin() {
 	    method : "GET",
 	    async : true,
 	}).done(function(result) {
-	    var plugin = result.filter(function (p) { return p.name.toLowerCase() == name.toLowerCase(); })[0];
-        templatePath = "../plugins/" + name + "/templates/";
+	    var plugin = result.filter(function(p) {
+		return p.name.toLowerCase() == name.toLowerCase();
+	    })[0];
+	    templatePath = "../plugins/" + name + "/templates/";
 	    /* Load the plugins resources if any */
-	    if (plugin.resources)
-        {
-            var resources = [];
-    		if (plugin.resources.css && plugin.resources.css.length > 0)
-            {
-                for (var i = 0; i < plugin.resources.css.length; i++) {
-                    resources.push("plugins/" + name + "/" + plugin.resources.css[i]);
-                }
-    		}
-	    	if (plugin.resources.js && plugin.resources.js.length > 0)
-            {
-                for (var i = 0; i < plugin.resources.js.length; i++) {
-                    resources.push("plugins/" + name + "/" + plugin.resources.js[i]);
-                }
-            }
-            if( resources.length>0 )
-            {
-                yepnope({
-                    load: resources,
-                    complete: function() {
-                        //here, all resources are really loaded
-	                    init_plugin();
-                        //unlock ui
-                        $.unblockUI();
-                    }
-                });
-            }
-        }
-        else
-        {
-            $.unblockUI();
-	        init_plugin();
-        }
+	    if (plugin.resources) {
+		var resources = [];
+		if (plugin.resources.css && plugin.resources.css.length > 0) {
+		    for ( var i = 0; i < plugin.resources.css.length; i++) {
+			resources.push("plugins/" + name + "/" + plugin.resources.css[i]);
+		    }
+		}
+		if (plugin.resources.js && plugin.resources.js.length > 0) {
+		    for ( var i = 0; i < plugin.resources.js.length; i++) {
+			resources.push("plugins/" + name + "/" + plugin.resources.js[i]);
+		    }
+		}
+		if (resources.length > 0) {
+		    yepnope({
+			load : resources,
+			complete : function() {
+			    //here, all resources are really loaded
+			    init_plugin();
+			    //unlock ui
+			    $.unblockUI();
+			}
+		    });
+		}
+	    } else {
+		$.unblockUI();
+		init_plugin();
+	    }
 	});
     }).fail(function() {
-        $.unblockUI();
-        notif.fatal("Error: Failed to load plugin!");
+	$.unblockUI();
+	notif.fatal("Error: Failed to load plugin!");
     });
 }
 
@@ -228,7 +224,7 @@ function getStartJSFile() {
     } else if (page == "pluginsConfig") {
 	return "js/app.config.plugins.js";
     }
-    
+
     return null;
 }
 
@@ -237,16 +233,16 @@ $.ajax({
     url : "/cgi-bin/listing.cgi?devices=1",
     type : "GET"
 }).done(function(msg) {
-    subscribe();
     supported_devices = msg;
     var startfile = getStartJSFile();
     if (startfile !== null) {
-        $.getScript(startfile, function() {
-    		initGUI();
-        });
-    }
-    else {
+	$.getScript(startfile, function() {
+	    initGUI();
+	    subscribe();
+	});
+    } else {
 	initGUI();
+	subscribe();
     }
 });
 
@@ -313,7 +309,18 @@ function cleanInventory(data) {
     return data;
 }
 
+var initialized = false;
+
 function handleInventory(response) {
+
+    if (response == null) {
+	response = {
+	    result : JSON.parse(localStorage.inventoryCache)
+	};
+    } else {
+	localStorage.inventoryCache = JSON.stringify(response.result);
+    }
+
     rooms = response.result.rooms;
     systemvar = response.result.system;
     schema = response.result.schema;
@@ -354,8 +361,9 @@ function handleInventory(response) {
 	deviceMap.push(new device(inventory[uuid], uuid));
     }
 
-    if (deferredInit) {
+    if (deferredInit && !initialized) {
 	deferredInit();
+	initialized = true;
     }
 
     if (!model) {
@@ -363,11 +371,15 @@ function handleInventory(response) {
     }
 
     if (model.devices !== undefined) {
-	model.devices(deviceMap);
+	if (JSON.stringify(deviceMap) != JSON.stringify(model.devices())) {
+	    model.devices(deviceMap);
+	}
     }
 
     if (model.inventory !== undefined) {
-	model.inventory(response.result);
+	if (JSON.stringify(response.result) != JSON.stringify(model.inventory())) {
+	    model.inventory(response.result);
+	}
     }
 
     if (model.rooms !== undefined && model.rooms.slice !== undefined) {
@@ -379,23 +391,33 @@ function handleInventory(response) {
 	    model.rooms.push(tmp);
 	}
     }
+
     if (model.floorplans !== undefined) {
 	/* get uuid into floorplans */
-	model.floorplans([]);
+	var fpList = [];
 	for ( var uuid in floorPlans) {
 	    var tmp = floorPlans[uuid];
 	    tmp.uuid = uuid;
-	    model.floorplans.push(tmp);
+	    fpList.push(tmp);
+	}
+
+	if (JSON.stringify(fpList) != JSON.stringify(model.floorplans())) {
+	    model.floorplans(fpList);
 	}
     }
 
     if (model.variables !== undefined) {
-	model.variables([]);
+	/* build variable pairs */
+	var varList = [];
 	for ( var key in variables) {
 	    var tmp = {};
 	    tmp.variable = key;
 	    tmp.value = variables[key];
-	    model.variables.push(tmp);
+	    varList.push(tmp);
+	}
+
+	if (JSON.stringify(varList) != JSON.stringify(model.variables())) {
+	    model.variables(varList);
 	}
     }
 }
@@ -403,6 +425,11 @@ function handleInventory(response) {
 function getInventory() {
     var content = {};
     content.command = "inventory";
+
+    if (localStorage.inventoryCache) {
+	handleInventory(null);
+    }
+
     sendCommand(content, handleInventory);
 }
 
