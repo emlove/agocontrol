@@ -52,6 +52,11 @@ ko.bindingHandlers.slider = {
     }
 };
 
+/* Enable caching for ajax requests */
+$.ajaxSetup({
+    cache: true
+});
+
 function getPage() {
     var query = window.location.search.substring(1);
     query = query.split("&")[0];
