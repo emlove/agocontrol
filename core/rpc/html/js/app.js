@@ -441,18 +441,19 @@ function unsubscribe() {
     request.params = {};
     request.params.uuid = subscription;
 
-    $.post(url, JSON.stringify(request), function() {
-    }, "json");
+    $.post(url, JSON.stringify(request), function() {}, "json");
 }
 
 function handleSubscribe(response) {
+    if (response == null) {
+	response = { result: sessionStorage.subscription };
+    }
+
     if (response.result) {
 	subscription = response.result;
+	sessionStorage.subscription = subscription;
 	getInventory();
 	getEvent();
-	window.onbeforeunload = function(event) {
-	    unsubscribe();
-	};
     }
 }
 
@@ -482,12 +483,17 @@ function sendCommand(content, callback, timeout) {
 }
 
 function subscribe() {
-    var request = {};
-    request.method = "subscribe";
-    request.id = 1;
-    request.jsonrpc = "2.0";
+    if (sessionStorage.subscription) {
+	handleSubscribe(null);
+    }
+    else {
+	var request = {};
+	request.method = "subscribe";
+	request.id = 1;
+	request.jsonrpc = "2.0";
 
-    $.post(url, JSON.stringify(request), handleSubscribe, "json");
+	$.post(url, JSON.stringify(request), handleSubscribe, "json");
+    }
 }
 
 $(function() {
