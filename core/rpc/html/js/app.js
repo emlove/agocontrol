@@ -228,12 +228,14 @@ function getStartJSFile() {
     return null;
 }
 
-/* Load the device template names before loading the gui */
-$.ajax({
-    url : "/cgi-bin/listing.cgi?devices=1",
-    type : "GET"
-}).done(function(msg) {
+/**
+ * Loads the userinterface and initates the subscription
+ * 
+ * @param msg
+ */
+function loadInterface(msg) {
     supported_devices = msg;
+    sessionStorage.supported_devices = JSON.stringify(msg);
     var startfile = getStartJSFile();
     if (startfile !== null) {
 	$.getScript(startfile, function() {
@@ -244,7 +246,19 @@ $.ajax({
 	initGUI();
 	subscribe();
     }
-});
+}
+
+/* Load the device template names before loading the gui */
+if (sessionStorage.supported_devices) {
+    loadInterface(JSON.parse(sessionStorage.supported_devices));
+}
+else {
+    $.ajax({
+        url : "/cgi-bin/listing.cgi?devices=1",
+        type : "GET"
+    }).done(loadInterface);
+}
+
 
 // --- AGO --- //
 
