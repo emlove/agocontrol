@@ -196,6 +196,42 @@ function initGUI() {
     }
 }
 
+function getStartJSFile() {
+    var page = getPage();
+
+    if (page == "dashboard") {
+	return "js/app.dashboard.js";
+    } else if (page == "floorplan") {
+	return "js/app.floorplan.js";
+    } else if (page == "roomConfig") {
+	return "js/app.config.rooms.js";
+    } else if (page == "variablesConfig") {
+	return "js/app.config.variables.js";
+    } else if (page == "floorplanConfig") {
+	return "js/app.config.floorplan.js";
+    } else if (page == "configuration") {
+	return "js/app.configuration.js";
+    } else if (page == "cloudConfig") {
+	return "js/app.config.cloud.js";
+    } else if (page == "deviceConfig") {
+	return "js/app.config.devices.js";
+    } else if (page == "systemConfig") {
+	return "js/app.config.system.js";
+    } else if (page == "eventConfig") {
+	return "js/app.config.events.js";
+    } else if (page == "scenarioConfig") {
+	return "js/app.config.scenarios.js";
+    } else if (page == "inventoryView") {
+	return "js/app.inventory.js";
+    } else if (page == "systemStatus") {
+	return "js/app.systemstatus.js";
+    } else if (page == "pluginsConfig") {
+	return "js/app.config.plugins.js";
+    }
+    
+    return null;
+}
+
 /* Load the device template names before loading the gui */
 $.ajax({
     url : "/cgi-bin/listing.cgi?devices=1",
@@ -203,7 +239,15 @@ $.ajax({
 }).done(function(msg) {
     subscribe();
     supported_devices = msg;
-    initGUI();
+    var startfile = getStartJSFile();
+    if (startfile !== null) {
+        $.getScript(startfile, function() {
+    		initGUI();
+        });
+    }
+    else {
+	initGUI();
+    }
 });
 
 // --- AGO --- //
