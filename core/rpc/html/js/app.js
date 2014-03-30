@@ -240,10 +240,16 @@ function loadInterface(msg) {
     if (startfile !== null) {
 	$.getScript(startfile, function() {
 	    initGUI();
+	    if (localStorage.inventoryCache) {
+		handleInventory(null);
+	    }
 	    subscribe();
 	});
     } else {
 	initGUI();
+	if (localStorage.inventoryCache) {
+	    handleInventory(null);
+	}
 	subscribe();
     }
 }
@@ -251,14 +257,12 @@ function loadInterface(msg) {
 /* Load the device template names before loading the gui */
 if (sessionStorage.supported_devices) {
     loadInterface(JSON.parse(sessionStorage.supported_devices));
-}
-else {
+} else {
     $.ajax({
-        url : "/cgi-bin/listing.cgi?devices=1",
-        type : "GET"
+	url : "/cgi-bin/listing.cgi?devices=1",
+	type : "GET"
     }).done(loadInterface);
 }
-
 
 // --- AGO --- //
 
@@ -439,11 +443,6 @@ function handleInventory(response) {
 function getInventory() {
     var content = {};
     content.command = "inventory";
-
-    if (localStorage.inventoryCache) {
-	handleInventory(null);
-    }
-
     sendCommand(content, handleInventory);
 }
 
@@ -455,19 +454,18 @@ function unsubscribe() {
     request.params = {};
     request.params.uuid = subscription;
 
-    $.post(url, JSON.stringify(request), function() {}, "json");
+    $.post(url, JSON.stringify(request), function() {
+    }, "json");
 }
 
 function handleSubscribe(response) {
-    if (response == null) {
-	response = { result: sessionStorage.subscription };
-    }
-
     if (response.result) {
 	subscription = response.result;
-	sessionStorage.subscription = subscription;
 	getInventory();
 	getEvent();
+	window.onbeforeunload = function(event) {
+	    unsubscribe();
+	};
     }
 }
 
@@ -497,17 +495,12 @@ function sendCommand(content, callback, timeout) {
 }
 
 function subscribe() {
-    if (sessionStorage.subscription) {
-	handleSubscribe(null);
-    }
-    else {
-	var request = {};
-	request.method = "subscribe";
-	request.id = 1;
-	request.jsonrpc = "2.0";
+    var request = {};
+    request.method = "subscribe";
+    request.id = 1;
+    request.jsonrpc = "2.0";
 
-	$.post(url, JSON.stringify(request), handleSubscribe, "json");
-    }
+    $.post(url, JSON.stringify(request), handleSubscribe, "json");
 }
 
 $(function() {
