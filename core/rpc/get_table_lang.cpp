@@ -59,6 +59,7 @@ int main(int argc, char **argv){
 		if (!handleLastModified("../datatables_lang/en.txt")) return 0;
 		ifstream fdef("../datatables_lang/en.txt");
 		while (getline(fdef,line)) cout << line << endl;
+		fdef.close();
 	}
 
 	return 0;
