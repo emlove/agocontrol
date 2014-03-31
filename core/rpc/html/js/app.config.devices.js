@@ -169,7 +169,6 @@ function deviceConfig() {
 	    type : "select",
 	    onblur : "submit"
 	});
-	$.unblockUI();
     };
 
     this.deleteDevice = function(item, event) {
@@ -238,13 +237,6 @@ function deviceConfig() {
  * Initalizes the model
  */
 function init_deviceConfig() {
-
-    $.blockUI({
-	message : '<div>Please wait ...</div>',
-	css : {
-	    border : '3px solid #a00'
-	}
-    });
 
     model = new deviceConfig();
 
