@@ -16,7 +16,7 @@ test -e /etc/opt/agocontrol/config.ini && (
 	do
 		sed -i 's/ = /=/g' $i
 	done
-	mv /etc/opt/agocontrol/config.ini /etc/opt/agocontrol/old/config.ini.obsolete
+	mv /etc/opt/agocontrol/config.ini /etc/opt/agocontrol/config.ini.obsolete
 )
 
 grep "00000000-0000-0000-000000000000" /etc/opt/agocontrol/conf.d/system.conf && (
@@ -36,37 +36,6 @@ sasldblistusers2 -f /etc/qpid/qpidd.sasldb  | grep -q agocontrol || (
 
 grep -q agocontrol /etc/qpid/qpidd.acl || sed -i 's/admin@QPID/admin@QPID agocontrol@QPID/g' /etc/qpid/qpidd.acl
 chown .qpidd /etc/qpid/qpidd.acl
-
-test -e /etc/opt/agocontrol/scenariomap.json || (
-	test -e /etc/opt/agocontrol/scenarios.pck && (
-		echo converting scenariomap
-		/opt/agocontrol/bin/convert-scenario.py
-		mv /etc/opt/agocontrol/scenarios.pck /etc/opt/agocontrol/old/scenarios.pck.obsolete
-	)
-)
-test -e /etc/opt/agocontrol/eventmap.json || (
-	test -e /etc/opt/agocontrol/events.pck && (
-		echo converting eventmap
-		/opt/agocontrol/bin/convert-event.py
-		mv /etc/opt/agocontrol/events.pck /etc/opt/agocontrol/old/events.pck.obsolete
-	)
-)
-
-# cleanups
-for file in /etc/opt/agocontrol/*.json
-do
-	if [ -e "$file" ]; then mv $file /etc/opt/agocontrol/maps ; fi
-done
-for file in /etc/opt/agocontrol/*.pck
-do
-	if [ -e "$file" ]; then mv $file /etc/opt/agocontrol/old ; fi
-done
-for file in /etc/opt/agocontrol/*.sql
-do
-	if [ -e "$file" ]; then rm $file ; fi
-done
-test -e /etc/opt/agocontrol/rpc_cert.pem && rm /etc/opt/agocontrol/rpc_cert.pem
-test -e /etc/opt/agocontrol/config.ini.tpl && rm /etc/opt/agocontrol/config.ini.tpl
 
 chown -R agocontrol:agocontrol /etc/opt/agocontrol
 
