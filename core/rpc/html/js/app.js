@@ -1,5 +1,14 @@
 infuser.defaults.templateUrl = "/templates";
 
+/* Silence pointless error message, introduced in knockout 3.1 */
+window.onerror = function (errorMsg, url, lineNumber) {
+    if (lineNumber == 58 && url.indexOf("knockout")) {
+	return true;
+    }
+ 
+    return false;
+};
+
 Array.prototype.chunk = function(chunkSize) {
     var array = this;
     return [].concat.apply([], array.map(function(elem, i) {
