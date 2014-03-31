@@ -5,6 +5,7 @@
  */
 function deviceConfig() {
     var self = this;
+    this.deviceCount = ko.observable(0);
     this.devices = ko.observableArray([]);
     this.hasNavigation = ko.observable(true);
 
@@ -109,6 +110,7 @@ function deviceConfig() {
 		filters.push(escapeRegExp(tmp.value));
 	    }
 	}
+
 	if (filters.length > 0) {
 	    eTable.fnFilter("^(" + filters.join("|") + ")$", 1, true, false);
 	}
@@ -124,10 +126,13 @@ function deviceConfig() {
 	eTable.fnDraw();
     };
 
+    this._updateCalls = 0;
     this.makeEditable = function() {
+	if (++self._updateCalls < self.deviceCount()) {
+	    return;
+	}
+	self._updateCalls = 0;
 	var eTable = $("#configTable").dataTable();
-	eTable.fnDestroy();
-	eTable = $("#configTable").dataTable();
 	eTable.$('td.edit_device').editable(function(value, settings) {
 	    var content = {};
 	    content.device = $(this).data('uuid');
@@ -164,7 +169,6 @@ function deviceConfig() {
 	    type : "select",
 	    onblur : "submit"
 	});
-
 	$.unblockUI();
     };
 

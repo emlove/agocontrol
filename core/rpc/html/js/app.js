@@ -392,7 +392,15 @@ function handleInventory(response) {
     if (!model) {
 	return;
     }
+    
 
+    if (model.deviceCount !== undefined) {
+	if (deviceMap.length != model.deviceCount()) {
+	    model.deviceCount(deviceMap.length);
+	}
+    }
+    
+    
     if (model.devices !== undefined) {
 	if (JSON.stringify(deviceMap) != JSON.stringify(model.devices())) {
 	    model.devices(deviceMap);
