@@ -10,6 +10,7 @@ configure_file (
 
 install (PROGRAMS agodrain.py myavahi.py agoctrl.sh DESTINATION ${BINDIR})
 install (DIRECTORY DESTINATION ${CONFDIR}/schema.d)
+install (DIRECTORY DESTINATION ${CONFDIR}/maps)
 
 OPTION(BUILD_CORE_drain "Build agodrain" ON)
 if (BUILD_CORE_drain)
