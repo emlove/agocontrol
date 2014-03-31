@@ -634,7 +634,7 @@ def eventHandler(event, content):
             schedules = timeSchedules.find_all(currentTsUtc, itemgetter(1))
 
             #get scenario controller uuid
-            if !scenarioControllerUuid:
+            if not scenarioControllerUuid:
                 getScenarioControllerUuid()
 
             #execute scenarios
