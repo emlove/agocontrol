@@ -50,6 +50,21 @@
         <category name="Math">
             <block type="math_number"></block>
             <block type="math_arithmetic"></block>
+            <block type="agocontrol_range">
+                <value name="MIN">
+                    <block type="math_number">
+                        <title name="NUM">0</title>
+                    </block>
+                </value>
+                <value name="PROP">
+                    <block type="agocontrol_eventProperty"></block>
+                </value>
+                <value name="MAX">
+                    <block type="math_number">
+                        <title name="NUM">100</title>
+                    </block>
+                </value>
+            </block>
             <block type="math_number_property"></block>
             <block type="math_change">
                 <value name="DELTA">
@@ -95,6 +110,7 @@
             <block type="text"></block>
             <block type="agocontrol_email"></block>
             <block type="agocontrol_phoneNumber"></block>
+            <block type="agocontrol_valueOptions"></block>
             <block type="text_join"></block>
             <block type="text_append">
                 <value name="TEXT">
@@ -103,27 +119,6 @@
             </block>
             <block type="text_length"></block>
             <block type="text_isEmpty"></block>
-            <block type="text_indexOf">
-                <value name="VALUE">
-                    <block type="variables_get">
-                        <title name="VAR">mytext</title>
-                    </block>
-                </value>
-            </block>
-            <block type="text_charAt">
-                <value name="VALUE">
-                    <block type="variables_get">
-                        <title name="VAR">mytext</title>
-                    </block>
-                </value>
-            </block>
-            <block type="text_getSubstring">
-                <value name="STRING">
-                    <block type="variables_get">
-                        <title name="VAR">mytext</title>
-                    </block>
-                </value>
-            </block>
             <block type="text_changeCase"></block>
             <block type="text_trim"></block>
         </category>
@@ -174,15 +169,9 @@
         </category>
         <category name="Agocontrol">
             <category name="Logic">
-                <block type="agocontrol_contentCondition">
+                <block type="agocontrol_content">
                     <value name="EVENT">
                         <block type="agocontrol_eventAll">
-                        </block>
-                    </value>
-                </block>
-                <block type="agocontrol_eventPropertyValue">
-                    <value name="PROP">
-                        <block type="agocontrol_eventProperty">
                         </block>
                     </value>
                 </block>

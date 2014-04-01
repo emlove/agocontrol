@@ -5,16 +5,16 @@ goog.provide('Blockly.Lua.agocontrol');
 goog.require('Blockly.Lua');
 
 Blockly.Lua['agocontrol_deviceNo'] = function(block) {
-    return ['', Blockly.Lua.ORDER_ATOMIC];
+    return ["''", Blockly.Lua.ORDER_ATOMIC];
 };
 
 Blockly.Lua['agocontrol_device'] = function(block) {
-    var code = block.getFieldValue('DEVICE');
+    var code = "'" + block.getFieldValue('DEVICE') + "'";
     return [code, Blockly.Lua.ORDER_ATOMIC];
 };
 
 Blockly.Lua['agocontrol_eventNo'] = function(block) {
-    return ['', Blockly.Lua.ORDER_ATOMIC];
+    return ["''", Blockly.Lua.ORDER_ATOMIC];
 };
 
 Blockly.Lua['agocontrol_deviceEvent'] = function(block) {
@@ -28,85 +28,21 @@ Blockly.Lua['agocontrol_eventAll'] = function(block) {
 };
 
 Blockly.Lua['agocontrol_deviceProperty'] = function(block) {
-    var code = block.getFieldValue("PROP");
+    var code = "";
+    if( window.BlocklyAgocontrol.generateContent )
+        code = "content." + block.getFieldValue("PROP");
+    else
+        code = block.getFieldValue("PROP");
     return [code, Blockly.Lua.ORDER_ATOMIC];
 };
 
 Blockly.Lua['agocontrol_eventProperty'] = function(block) {
-    var code = block.getFieldValue("PROP");
-    return [code, Blockly.Lua.ORDER_ATOMIC];
-};
-
-Blockly.Lua['agocontrol_eventPropertyValue'] = function(block) {
     var code = "";
-    var values = block.getValues();
-    var type = block.currentType;
-    var prop = block.lastProp;
-    code += "content."+prop+" ";
-        switch(type)
-        {
-            case 'option':
-                //OPTION
-                code += "== '"+values["OPTION"]+"' ";
-                break;
-            case 'range':
-                //MIN MAX
-                code += ">= "+values["MIN"]+" and content."+prop+" <= "+values["MAX"];
-                break;
-            case 'color':
-                //COLOR
-                code += "== '"+values["COLOR"]+"'";
-                break;
-            case 'time':
-                //HOUR MINUTE
-                //TODO need to specify time format
-                break;
-            case 'timeoffset':
-                //SIGN HOUR MINUTE
-                //TODO need to specify time format
-                break;
-            case 'threshold':
-                //SIGN THRESHOLD
-                switch(values["SIGN"])
-                {
-                    case "gt": code += "> "; break;
-                    case "lt": code += "< "; break;
-                    case "ge": code += ">= "; break;
-                    case "le": code += "<= "; break;
-                }
-                code += values["VALUE"]+" ";
-                break;
-            case 'bool':
-                //BOOL
-                code += "== "+values["BOOL"];
-                break;
-            case 'email':
-                //EMAIL
-                code += "== '"+values["EMAIL"]+"'";
-                break;
-            case 'colour':
-                //COLOUR
-                code += "== '"+values["COLOUR"]+"'";
-                break;
-            case 'phone':
-                //PHONE
-                code += "== '"+values["PHONE"]+"'";
-                break;
-            default:
-                //SIGN VALUE
-                switch(values["SIGN"])
-                {
-                    case "eq": code += "== "; break;
-                    case "di": code += "!= "; break;
-                    case "gt": code += "> "; break;
-                    case "lt": code += "< "; break;
-                    case "ge": code += ">= "; break;
-                    case "le": code += "<= "; break;
-                }
-                code += values["VALUE"]+" ";
-                break;
-        }
-    return [code, Blockly.Lua.ORDER_NONE];
+    if( window.BlocklyAgocontrol.generateContent )
+        code = "content." + block.getFieldValue("PROP");
+    else
+        code = block.getFieldValue("PROP");
+    return [code, Blockly.Lua.ORDER_ATOMIC];
 };
 
 Blockly.Lua['agocontrol_sendMessage'] = function(block) {
@@ -127,21 +63,21 @@ Blockly.Lua['agocontrol_sendMessage'] = function(block) {
     return "sendMessage("+code+")\n";
 };
 
-/* DEPRECATED. CODE STAYS HERE FOR FURTHER USE
-Blockly.Lua['agocontrol_sendMessage'] = function(block) {
-    var code = "";
-    code += Blockly.Lua.valueToCode(block, 'COMMAND', Blockly.Lua.ORDER_NONE) || '';
-    if( code.length>0 )
-        return "sendMessage("+code+")\n";
-    else
-        return '';
-};*/
-
-Blockly.Lua['agocontrol_contentCondition'] = function(block) {
+Blockly.Lua['agocontrol_content'] = function(block) {
+    window.BlocklyAgocontrol.generateContent = true;
     var code = "";
     code += "content.subject == \"";
     code += Blockly.Lua.valueToCode(block, 'EVENT', Blockly.Lua.ORDER_NONE) || 'nil';
     code += "\"";
+    for( var i=1; i<=block._conditionCount; i++ )
+    {
+        if( block.getFieldValue('COND'+i)=="OR" )
+            code += " or ";
+        else
+            code += " and ";
+        code += Blockly.Lua.valueToCode(block, 'PROP'+i, Blockly.Lua.ORDER_NONE) || '';
+    }
+    window.BlocklyAgocontrol.generateContent = false;
     return [code, Blockly.Lua.ORDER_NONE];
 };
 
@@ -186,3 +122,27 @@ Blockly.Lua['agocontrol_sleep'] = function(block) {
     return code;
 };
 
+Blockly.Lua['agocontrol_range'] = function(block) {
+    var code = "(";
+    var prop = Blockly.Lua.valueToCode(block, 'PROP', Blockly.Lua.ORDER_NONE) || '';
+    code += prop;
+    if( block.getFieldValue('SIGN_MIN')=="LT" )
+        code += " > ";
+    else
+        code += " >= ";
+    code += Blockly.Lua.valueToCode(block, 'MIN', Blockly.Lua.ORDER_NONE) || 1;
+    code += " and ";
+    code += prop;
+    if( block.getFieldValue('SIGN_MAX')=="LT" )
+        code += " < ";
+    else
+        code += " <= ";
+    code += Blockly.Lua.valueToCode(block, 'MAX', Blockly.Lua.ORDER_NONE) || 100;
+    code += ")";
+    return [code, Blockly.Lua.ORDER_ATOMIC];
+};
+
+Blockly.Lua['agocontrol_valueOptions'] = function(block) {
+    var code = "'"+block.getSelectedOption()+"'";
+    return [code, Blockly.Lua.ORDER_ATOMIC];
+};

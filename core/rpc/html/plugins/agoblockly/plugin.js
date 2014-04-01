@@ -252,7 +252,7 @@ function agoBlocklyPlugin(deviceMap) {
     };
 
     //load a script
-    self.loadScript = function(scriptContent) {
+    self.loadScript = function(scriptName, scriptContent) {
         //decode (base64) and extract xml from script content
         var script = self.unmergeXmlAndLua(B64.decode(scriptContent));
         if( !script['error'] )
@@ -260,10 +260,9 @@ function agoBlocklyPlugin(deviceMap) {
             if( self.setXml(script['xml']) )
             {
                 //remove blockly_ prefix
-                var scriptName = res.result.name;
-                if( res.result.name.indexOf('blockly_')===0 )
+                if( scriptName.indexOf('blockly_')===0 )
                 {
-                    scriptName = res.result.name.replace('blockly_', '');
+                    scriptName = scriptName.replace('blockly_', '');
                 }
                 self.scriptName(scriptName);
                 self.scriptLoaded = true;
@@ -437,7 +436,7 @@ function agoBlocklyPlugin(deviceMap) {
                             {
                                 if( res.result.result===0 )
                                 {
-                                    self.loadScript(res.result.script);
+                                    self.loadScript(res.result.name ,res.result.script);
                                 }
                                 else
                                 {
