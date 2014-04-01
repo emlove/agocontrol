@@ -588,7 +588,7 @@ msgstr "Veuillez entrer un nom de script valide"
 
 #: ../plugins/agoblockly/templates/agoblockly.xml.in.h:9
 msgid "Delete selected script?"
-msgstr "Sélectionner un script s'il vous plait"
+msgstr "Supprimer le script?"
 
 #: ../plugins/agoblockly/templates/agoblockly.xml.in.h:10
 msgid "Script deleted successfully"
