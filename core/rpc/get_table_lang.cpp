@@ -42,7 +42,7 @@ int main(int argc, char **argv){
 	std::string querystring = getenv("QUERY_STRING");
 	if (querystring.find("/")!=string::npos) return 0;
 	if (querystring.find("&")!=string::npos) return 0;
-	unsigned int pos = querystring.find("lang=");
+	size_t pos = querystring.find("lang=");
 	if (pos==string::npos) return 0;
 	std::string lang= querystring.substr(pos+5,querystring.length());
 	if (lang.size() != 2) return 0;
