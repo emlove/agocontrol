@@ -301,63 +301,35 @@ commands:
         type: string
   getdevices:
     name: get all devices
-  setconfig:
-    name: set config
+  sendsms:
+    name: send SMS
     parameters:
-      param1:
-        name: parameter1
+      text:
+        name: message
         type: string
-      param2:
-        name: parameter2
-        type: string
-      param3:
-        name: parameter3
-        type: string
-      param4:
-        name: parameter4
-        type: string
-      param5:
-        name: parameter5
-        type: string
-  test:
-    name: test
+      to:
+        name: recipient
+        type: phonenumber
+  sendgtalk:
+    name: send GTalk message
     parameters:
-      param1:
-        name: parameter1
+      message:
+        name: message
         type: string
-      param2:
-        name: parameter2
+      to:
+        name: gtalk username
         type: string
-      param3:
-        name: parameter3
-        type: string
-      param4:
-        name: parameter4
-        type: string
-      param5:
-        name: parameter5
-        type: string
-  sendalert:
-    name: send alert
+  sendtweet:
+    name: send tweet
     parameters:
-      type:
-        name: alert type
-        type: option
-        options: ['mail', 'sms', 'push', 'twitter', 'gtalk']
-      param1:
-        name: parameter1
+      tweet:
+        name: tweet
         type: string
-      param2:
-        name: parameter2
-        type: string
-      param3:
-        name: parameter3
-        type: string
-      param4:
-        name: parameter4
-        type: string
-      param5:
-        name: parameter5
+  sendpush:
+    name: push message
+    parameters:
+      message:
+        name: message
         type: string
 devicetypes:
   enoceancontroller:
@@ -496,8 +468,8 @@ devicetypes:
     commands: [adddevice, allon, alloff, status, forcestate, getdevices]
   alertcontroller:
     name: alert controller
-    description: internal device to control the alerts
-    commands: [status, test, sendalert, setconfig]
+    description: internal device to send alerts
+    commands: [sendsms, sendpush, sendmail, sendtweet, sendgtalk]
 values:
   level:
     name: level
