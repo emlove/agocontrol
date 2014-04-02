@@ -11,6 +11,7 @@
 #include "PLCBUS.h"
 
 #include <iostream>
+#include <sstream>
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -28,6 +29,7 @@ using namespace agocontrol;
 AgoConnection *agoConnection;
 
 int reprq = 0;
+bool announce = false;
 
 int serial_write (int dev,uint8_t pnt[],int len)
 {
@@ -158,9 +160,11 @@ void *receiveFunction(void *param) {
 					for (int i=0;i<8;i++) {
 						if (tmpdata2 & 1<<i) {
 							// LoggerWrapper::GetInstance()->Write(LV_CRITICAL,"Found Unit %c%i",65+(tmphomeunit >> 4),i+1);
-							char internalid[20];
-							snprintf(internalid, 19, "%c%i", 65+(tmphomeunit >> 4),i+1);
-							agoConnection->addDevice("dimmer", internalid);
+							if (announce) {
+								char internalid[20];
+								snprintf(internalid, 19, "%c%i", 65+(tmphomeunit >> 4),i+1);
+								agoConnection->addDevice("dimmer", internalid);
+							}
 						}
 					}
 					for (int i=0;i<8;i++) {
@@ -232,6 +236,9 @@ int main(int argc, char **argv) {
 	if (getConfigOption("PLCBUS", "phases", "3") == "3") {
 		reprq = 64;
 	}
+	if (getConfigOption("PLCBUS", "announce", "no") == "yes") {
+		announce = true;
+	}
 
 
 	fd = open(getConfigOption("PLCBUS", "device", "/dev/ttyUSB0").c_str(), O_RDWR);
@@ -241,6 +248,19 @@ int main(int argc, char **argv) {
 
 	agoConnection->addHandler(commandHandler);
 
+	stringstream dimmers(getConfigOption("PLCBUS", "dimmers", "A1"));
+	string dimmer;
+	while (getline(dimmers, dimmer, ',')) {
+		agoConnection->addDevice(dimmer.c_str(), "dimmer");
+		cout << "adding code " << dimmer << " as dimmer" << endl;
+	} 
+	stringstream switches(getConfigOption("PLCBUS", "switches", "A2"));
+	string switchdevice;
+	while (getline(switches, switchdevice, ',')) {
+		agoConnection->addDevice(switchdevice.c_str(), "switch");
+		cout << "adding code " << switchdevice << " as switch" << endl;
+	} 
+	
 	// B9600 8n1
 	struct termios tio;
 	tcgetattr(fd, &tio);
