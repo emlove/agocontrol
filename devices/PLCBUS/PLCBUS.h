@@ -36,6 +36,6 @@ struct PLCBUSJob {
 
 std::deque < PLCBUSJob *>PLCBUSSendQueue;	
 
-virtual void receiveFunction();
+void *receiveFunction(void *param);
 
 #endif
