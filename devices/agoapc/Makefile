@@ -1,9 +1,0 @@
-all:
-
-install:
-	$(INSTALL_DIR) $(DESTDIR)$(BINDIR)
-	$(INSTALL_PROGRAM) agoapc.py $(DESTDIR)$(BINDIR)
-	$(INSTALL_DIR) $(DESTDIR)$(CONFDIR)
-	$(INSTALL_DIR) $(DESTDIR)$(CONFDIR)/apc
-
-clean:
