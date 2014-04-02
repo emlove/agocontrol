@@ -22,7 +22,6 @@
 #include "agoclient.h"
 
 using namespace qpid::types;
-using namespace tinyxml2;
 using namespace std;
 using namespace agocontrol;
 
@@ -98,7 +97,7 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map command) {
 	pthread_mutex_unlock (&mutexSendQueue);
 }
 
-void receiveFunction() {
+void *receiveFunction(void *param) {
 
 	uint8_t buf[1024];
 	uint8_t bufr[1024];
@@ -250,7 +249,7 @@ int main(int argc, char **argv) {
 
 	pthread_mutex_init(&mutexSendQueue, NULL);
 	static pthread_t readThread;
-	pthread_create(&readThread, NULL, receivefunction, NULL);
+	pthread_create(&readThread, NULL, receiveFunction, NULL);
 
 	for (int i=0;i<5;i++) {
 		PLCBUSJob *myjob = new PLCBUSJob;
@@ -260,7 +259,7 @@ int main(int argc, char **argv) {
 		myjob->data1=0;
 		myjob->data2=0;
 		myjob->command=1;
-		LoggerWrapper::GetInstance()->Write(LV_DEBUG,"Adding get all ID command to queue...");
+		// LoggerWrapper::GetInstance()->Write(LV_DEBUG,"Adding get all ID command to queue...");
 		pthread_mutex_lock (&mutexSendQueue);
 		PLCBUSSendQueue.push_back(myjob);
 		pthread_mutex_unlock (&mutexSendQueue);
