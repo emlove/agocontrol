@@ -30,7 +30,7 @@ opt/agocontrol/bin/agosecurity
 opt/agocontrol/bin/agoctrl.sh
 opt/agocontrol/bin/agodatalogger
 opt/agocontrol/bin/agososreport.sh
-core/rpc/html /opt/agocontrol
+opt/agocontrol/html
 opt/agocontrol/bin/convert-event.py
 opt/agocontrol/bin/convert-scenario.py
 opt/agocontrol/bin/convert-config.py
