@@ -83,6 +83,8 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map command) {
 	myjob->data1=0;
 	myjob->data2=0;
 
+	returnval["result"] = 0;
+
 	if (command["command"] == "on") {
 		myjob->command=192;
 	} else if (command["command"] == "off") {
@@ -95,6 +97,8 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map command) {
 	pthread_mutex_lock (&mutexSendQueue);
 	PLCBUSSendQueue.push_back(myjob);
 	pthread_mutex_unlock (&mutexSendQueue);
+	
+	return returnval;
 }
 
 void *receiveFunction(void *param) {
@@ -229,7 +233,7 @@ int main(int argc, char **argv) {
 	fd = open(getConfigOption("PLCBUS", "device", "/dev/ttyUSB0").c_str(), O_RDWR);
 	// TODO: check for error
 
-	agoConnection = new AgoConnection("dmx");
+	agoConnection = new AgoConnection("PLCBUS");
 
 	agoConnection->addHandler(commandHandler);
 
