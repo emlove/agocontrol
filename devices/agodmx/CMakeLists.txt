@@ -5,6 +5,7 @@ file (GLOB_RECURSE DEVICE_SOURCE_FILES *.cpp)
 set (DEVICE_EXTRA_LIBRARIES
      tinyxml2
      olaslpclient
+     olaslpcore
      ola
      olacommon
      agoclient
