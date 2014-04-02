@@ -132,42 +132,47 @@ function deviceConfig() {
 	    return;
 	}
 	self._updateCalls = 0;
-	var eTable = $("#configTable").dataTable();
-	eTable.$('td.edit_device').editable(function(value, settings) {
-	    var content = {};
-	    content.device = $(this).data('uuid');
-	    content.uuid = agoController;
-	    content.command = "setdevicename";
-	    content.name = value;
-	    sendCommand(content);
-	    return value;
-	}, {
-	    data : function(value, settings) {
+	window.requestAnimationFrame(function() {
+	    if ($.fn.DataTable.fnIsDataTable(document.getElementById("configTable"))) {
+		$("#configTable").dataTable().fnDestroy();
+	    }
+	    var eTable = $("#configTable").dataTable();
+	    eTable.$('td.edit_device').editable(function(value, settings) {
+		var content = {};
+		content.device = $(this).data('uuid');
+		content.uuid = agoController;
+		content.command = "setdevicename";
+		content.name = value;
+		sendCommand(content);
 		return value;
-	    },
-	    onblur : "cancel"
-	});
+	    }, {
+		data : function(value, settings) {
+		    return value;
+		},
+		onblur : "cancel"
+	    });
 
-	eTable.$('td.select_device_room').editable(function(value, settings) {
-	    var content = {};
-	    content.device = $(this).parent().data('uuid');
-	    content.uuid = agoController;
-	    content.command = "setdeviceroom";
-	    content.room = value == "unset" ? "" : value;
-	    sendCommand(content);
-	    return value == "unset" ? "unset" : rooms[value].name;
-	}, {
-	    data : function(value, settings) {
-		var list = {};
-		list["unset"] = "--";
-		for ( var uuid in rooms) {
-		    list[uuid] = rooms[uuid].name;
-		}
+	    eTable.$('td.select_device_room').editable(function(value, settings) {
+		var content = {};
+		content.device = $(this).parent().data('uuid');
+		content.uuid = agoController;
+		content.command = "setdeviceroom";
+		content.room = value == "unset" ? "" : value;
+		sendCommand(content);
+		return value == "unset" ? "unset" : rooms[value].name;
+	    }, {
+		data : function(value, settings) {
+		    var list = {};
+		    list["unset"] = "--";
+		    for ( var uuid in rooms) {
+			list[uuid] = rooms[uuid].name;
+		    }
 
-		return JSON.stringify(list);
-	    },
-	    type : "select",
-	    onblur : "submit"
+		    return JSON.stringify(list);
+		},
+		type : "select",
+		onblur : "submit"
+	    });
 	});
     };
 
@@ -225,6 +230,7 @@ function deviceConfig() {
 		    $("#configTable").dataTable().fnDeleteRow(event.target.parentNode.parentNode);
 		    $("#configTable").dataTable().fnDraw();
 		    $('#configTable').unblock();
+		    getInventory();
 		});
 	    },
 	    dataType : "json",

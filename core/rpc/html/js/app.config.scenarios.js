@@ -26,44 +26,47 @@ function scenarioConfig() {
     });
 
     this.makeEditable = function() {
-	var eTable = $("#configTable").dataTable();
-	eTable.fnDestroy();
-	eTable = $("#configTable").dataTable();
-	eTable.$('td.edit_scenario').editable(function(value, settings) {
-	    var content = {};
-	    content.device = $(this).data('uuid');
-	    content.uuid = agoController;
-	    content.command = "setdevicename";
-	    content.name = value;
-	    sendCommand(content);
-	    return value;
-	}, {
-	    data : function(value, settings) {
+	window.requestAnimationFrame(function() {
+	    if ($.fn.DataTable.fnIsDataTable(document.getElementById("configTable"))) {
+		$("#configTable").dataTable().fnDestroy();
+	    }
+	    var eTable = $("#configTable").dataTable();
+	    eTable.$('td.edit_scenario').editable(function(value, settings) {
+		var content = {};
+		content.device = $(this).data('uuid');
+		content.uuid = agoController;
+		content.command = "setdevicename";
+		content.name = value;
+		sendCommand(content);
 		return value;
-	    },
-	    onblur : "cancel"
-	});
+	    }, {
+		data : function(value, settings) {
+		    return value;
+		},
+		onblur : "cancel"
+	    });
 
-	eTable.$('td.select_room').editable(function(value, settings) {
-	    var content = {};
-	    content.device = $(this).data('uuid');
-	    content.uuid = agoController;
-	    content.command = "setdeviceroom";
-	    content.room = value == "unset" ? "" : value;
-	    sendCommand(content);
-	    return value == "unset" ? "unset" : rooms[value].name;
-	}, {
-	    data : function(value, settings) {
-		var list = {};
-		list["unset"] = "--";
-		for ( var uuid in rooms) {
-		    list[uuid] = rooms[uuid].name;
-		}
+	    eTable.$('td.select_room').editable(function(value, settings) {
+		var content = {};
+		content.device = $(this).data('uuid');
+		content.uuid = agoController;
+		content.command = "setdeviceroom";
+		content.room = value == "unset" ? "" : value;
+		sendCommand(content);
+		return value == "unset" ? "unset" : rooms[value].name;
+	    }, {
+		data : function(value, settings) {
+		    var list = {};
+		    list["unset"] = "--";
+		    for ( var uuid in rooms) {
+			list[uuid] = rooms[uuid].name;
+		    }
 
-		return JSON.stringify(list);
-	    },
-	    type : "select",
-	    onblur : "submit"
+		    return JSON.stringify(list);
+		},
+		type : "select",
+		onblur : "submit"
+	    });
 	});
     };
 
@@ -129,6 +132,7 @@ function scenarioConfig() {
 			    room : "",
 			});
 			document.getElementById("scenarioBuilder").innerHTML = "";
+			getInventory();
 		    }
 		});
 	    } else {
@@ -145,7 +149,7 @@ function scenarioConfig() {
 	var row = document.createElement("div");
 
 	console.log(schema);
-	
+
 	if (!containerID) {
 	    containerID = "scenarioBuilder";
 	}
@@ -305,7 +309,7 @@ function scenarioConfig() {
 	document.getElementById(containerID).appendChild(row);
     };
 
-    this.deleteScenario  = function(item, event) {
+    this.deleteScenario = function(item, event) {
 	var button_yes = $("#confirmDeleteButtons").data("yes");
 	var button_no = $("#confirmDeleteButtons").data("no");
 	var buttons = {};
@@ -317,13 +321,13 @@ function scenarioConfig() {
 	    $("#confirmDelete").dialog("close");
 	};
 	$("#confirmDelete").dialog({
-	    modal: true,
-	    height: 180,
-	    width: 500,
-	    buttons: buttons
+	    modal : true,
+	    height : 180,
+	    width : 500,
+	    buttons : buttons
 	});
     };
-    
+
     /**
      * Sends the delete scenario command
      */
@@ -349,6 +353,7 @@ function scenarioConfig() {
 		alert("Error while deleting scenarios!");
 	    }
 	    $('#configTable').unblock();
+	    getInventory();
 	});
     };
 
@@ -369,18 +374,18 @@ function scenarioConfig() {
 
 	    // Open the dialog
 	    if (document.getElementById("editScenarioDialogTitle")) {
-	        $("#editScenarioDialog").dialog({
+		$("#editScenarioDialog").dialog({
 		    title : document.getElementById("editScenarioDialogTitle").innerHTML,
 		    modal : true,
 		    width : 940,
 		    height : 600,
 		    close : function() {
-		        // Done, restore stuff
-		        document.getElementById("scenarioBuilderEdit").innerHTML = "";
-		        self.openScenario = null;
+			// Done, restore stuff
+			document.getElementById("scenarioBuilderEdit").innerHTML = "";
+			self.openScenario = null;
 		    }
-	        });
-            }
+		});
+	    }
 	});
     };
 
@@ -394,6 +399,7 @@ function scenarioConfig() {
 	sendCommand(content, function(res) {
 	    if (res.result && res.result.scenario) {
 		$("#editScenarioDialog").dialog("close");
+		getInventory();
 	    }
 	});
     };

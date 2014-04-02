@@ -10,26 +10,31 @@ function floorPlanConfig() {
     var self = this;
 
     this.makeEditable = function() {
-	var eTable = $("#floorPlanTable").dataTable();
-	eTable.fnDestroy();
-	eTable = $("#floorPlanTable").dataTable();
-	eTable.$('td.edit_fp').editable(function(value, settings) {
-	    var content = {};
-	    content.floorplan = $(this).data('uuid');
-	    content.uuid = agoController;
-	    content.command = "setfloorplanname";
-	    content.name = value;
-	    sendCommand(content);
-	    return value;
-	}, {
-	    data : function(value, settings) {
+	window.requestAnimationFrame(function() {
+	    if ($.fn.DataTable.fnIsDataTable(document.getElementById("floorPlanTable"))) {
+		$("#floorPlanTable").fnDestroy();
+	    }
+	    var eTable = $("#floorPlanTable").dataTable();
+	    eTable.fnDestroy();
+	    eTable = $("#floorPlanTable").dataTable();
+	    eTable.$('td.edit_fp').editable(function(value, settings) {
+		var content = {};
+		content.floorplan = $(this).data('uuid');
+		content.uuid = agoController;
+		content.command = "setfloorplanname";
+		content.name = value;
+		sendCommand(content);
 		return value;
-	    },
-	    onblur : "cancel"
+	    }, {
+		data : function(value, settings) {
+		    return value;
+		},
+		onblur : "cancel"
+	    });
 	});
     };
-    
-    this.deletePlan  = function(item, event) {
+
+    this.deletePlan = function(item, event) {
 	var button_yes = $("#confirmDeleteButtons").data("yes");
 	var button_no = $("#confirmDeleteButtons").data("no");
 	var buttons = {};
@@ -41,10 +46,10 @@ function floorPlanConfig() {
 	    $("#confirmDelete").dialog("close");
 	};
 	$("#confirmDelete").dialog({
-	    modal: true,
-	    height: 180,
-	    width: 500,
-	    buttons: buttons
+	    modal : true,
+	    height : 180,
+	    width : 500,
+	    buttons : buttons
 	});
     };
 
@@ -71,9 +76,10 @@ function floorPlanConfig() {
 		alert("Error while deleting floorplan!");
 	    }
 	    $('#floorPlanTable').unblock();
+	    getInventory();
 	});
     };
-    
+
     this.editPlan = function(item) {
 	document.location.href = "/?floorplan&fp=" + item.uuid;
     };

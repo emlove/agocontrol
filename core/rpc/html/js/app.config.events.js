@@ -5,6 +5,7 @@
  */
 function eventConfig() {
     this.hasNavigation = ko.observable(true);
+    this.deviceCount = ko.observable(0);
     this.devices = ko.observableArray([]);
     this.events = ko.observableArray([]);
 
@@ -63,34 +64,36 @@ function eventConfig() {
      * Callback for editable table
      */
     this.makeEditable = function() {
-	var eTable = $("#configTable").dataTable();
-	eTable.fnDestroy();
-	eTable = $("#configTable").dataTable();
-	eTable.$('td.edit_event').editable(function(value, settings) {
-	    var content = {};
-	    content.device = $(this).data('uuid');
-	    content.uuid = agoController;
-	    content.command = "setdevicename";
-	    content.name = value;
-	    sendCommand(content);
-	    return value;
-	}, {
-	    data : function(value, settings) {
+	window.requestAnimationFrame(function() {
+	    if ($.fn.DataTable.fnIsDataTable(document.getElementById("configTable"))) {
+		$("#configTable").dataTable().fnDestroy();
+	    }
+	    var eTable = $("#configTable").dataTable();
+	    eTable.$('td.edit_event').editable(function(value, settings) {
+		var content = {};
+		content.device = $(this).data('uuid');
+		content.uuid = agoController;
+		content.command = "setdevicename";
+		content.name = value;
+		sendCommand(content);
 		return value;
-	    },
-	    onblur : "cancel"
+	    }, {
+		data : function(value, settings) {
+		    return value;
+		},
+		onblur : "cancel"
+	    });
+
+	    // Initial build
+	    if (!document.getElementsByClassName("eventBuilder")[0]._set) {
+		self.initBuilder();
+		document.getElementsByClassName("eventBuilder")[0]._set = true;
+	    }
+
+	    self.events.remove(function(ev) {
+		return ev.uuid == '0';
+	    });
 	});
-
-	// Initial build
-	if (!document.getElementsByClassName("eventBuilder")[0]._set) {
-	    self.initBuilder();
-	    document.getElementsByClassName("eventBuilder")[0]._set = true;
-	}
-
-	self.events.remove(function(ev) {
-	    return ev.uuid == '0';
-	});
-
     };
 
     /* Used for parsing event into JSON structure */
@@ -290,6 +293,7 @@ function eventConfig() {
 	sendCommand(content, function(res) {
 	    if (res.result && res.result.event) {
 		$("#editEventDialog").dialog("close");
+		getInventory();
 	    }
 	});
     };
@@ -325,6 +329,7 @@ function eventConfig() {
 			});
 			self.initBuilder();
 		    }
+		    getInventory();
 		});
 	    } else {
 		alert("ERROR");
@@ -376,6 +381,7 @@ function eventConfig() {
 		alert("Error while deleting event!");
 	    }
 	    $('#configTable').unblock();
+	    getInventory();
 	});
     };
 

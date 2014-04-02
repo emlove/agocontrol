@@ -10,22 +10,25 @@ function variablesConfig() {
     var self = this;
 
     this.makeEditable = function() {
-	var eTable = $("#configTable").dataTable();
-	eTable.fnDestroy();
-	eTable = $("#configTable").dataTable();
-	eTable.$('td.edit_var').editable(function(value, settings) {
-	    var content = {};
-	    content.variable = $(this).data('variable');
-	    content.uuid = agoController;
-	    content.command = "setvariable";
-	    content.value = value;
-	    sendCommand(content);
-	    return value;
-	}, {
-	    data : function(value, settings) {
+	window.requestAnimationFrame(function() {
+	    if ($.fn.DataTable.fnIsDataTable(document.getElementById("configTable"))) {
+		$("#configTable").dataTable().fnDestroy();
+	    }
+	    var eTable = $("#configTable").dataTable();
+	    eTable.$('td.edit_var').editable(function(value, settings) {
+		var content = {};
+		content.variable = $(this).data('variable');
+		content.uuid = agoController;
+		content.command = "setvariable";
+		content.value = value;
+		sendCommand(content);
 		return value;
-	    },
-	    onblur : "cancel"
+	    }, {
+		data : function(value, settings) {
+		    return value;
+		},
+		onblur : "cancel"
+	    });
 	});
     };
 
@@ -52,10 +55,11 @@ function variablesConfig() {
 		alert("Error while creating variable!");
 	    }
 	    $('#configTable').unblock();
+	    getInventory();
 	});
     };
 
-    this.deleteVariable  = function(item, event) {
+    this.deleteVariable = function(item, event) {
 	var button_yes = $("#confirmDeleteButtons").data("yes");
 	var button_no = $("#confirmDeleteButtons").data("no");
 	var buttons = {};
@@ -67,13 +71,13 @@ function variablesConfig() {
 	    $("#confirmDelete").dialog("close");
 	};
 	$("#confirmDelete").dialog({
-	    modal: true,
-	    height: 180,
-	    width: 500,
-	    buttons: buttons
+	    modal : true,
+	    height : 180,
+	    width : 500,
+	    buttons : buttons
 	});
     };
-    
+
     this.doDeleteVariable = function(item, event) {
 	$('#configTable').block({
 	    message : '<div>Please wait ...</div>',
@@ -96,6 +100,7 @@ function variablesConfig() {
 		alert("Error while deleting variable!");
 	    }
 	    $('#configTable').unblock();
+	    getInventory();
 	});
     };
 
