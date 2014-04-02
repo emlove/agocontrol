@@ -72,6 +72,7 @@ int serial_read (int dev,uint8_t pnt[],int len,long timeout)
 
 // commandhandler
 qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map command) {
+	qpid::types::Variant::Map returnval;
 	string addr = command["internalid"].asString();
 	int house = addr.substr(0,1).c_str()[0]-65;
 	int unit = atoi(addr.substr(1,2).c_str())-1;
