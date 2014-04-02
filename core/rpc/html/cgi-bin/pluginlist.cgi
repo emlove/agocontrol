@@ -6,6 +6,7 @@ import os
 
 print "Content-type: application/json\n"
 
+plugins = {}
 result = []
 
 for path, dirs, files in os.walk('../plugins/'):
@@ -16,8 +17,9 @@ for path, dirs, files in os.walk('../plugins/'):
 					content = data.read()
 					obj = json.loads(content)
 					obj["_name"] = os.path.basename(path)
-					result.append(obj)
+					plugins[obj["_name"]] = obj
 			except Exception as error:
 				pass
-
+for key in sorted(plugins.iterkeys()):
+	result.append(plugins[key])
 print json.dumps(result)
