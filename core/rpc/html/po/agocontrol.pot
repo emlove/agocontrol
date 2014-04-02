@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-03-28 15:01+0100\n"
+"POT-Creation-Date: 2014-04-02 10:00+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -613,6 +613,7 @@ msgid "Enter script name"
 msgstr ""
 
 #: ../plugins/agoalert/templates/agoalert.xml.in.h:1
+#: ../plugins/agoscheduler/templates/agoscheduler.xml.in.h:1
 msgid "Internal error"
 msgstr ""
 
@@ -863,4 +864,78 @@ msgstr ""
 
 #: ../plugins/agoalert/templates/agoalert.xml.in.h:63
 msgid "To push you test notification, click on button"
+msgstr ""
+
+#: ../plugins/agoscheduler/templates/agoscheduler.xml.in.h:2
+msgid "Agoscheduler is not responding. Unable to display schedules."
+msgstr ""
+
+#: ../plugins/agoscheduler/templates/agoscheduler.xml.in.h:3
+msgid "Schedule(s) added successfully."
+msgstr ""
+
+#: ../plugins/agoscheduler/templates/agoscheduler.xml.in.h:4
+msgid "Unable to add schedule(s)."
+msgstr ""
+
+#: ../plugins/agoscheduler/templates/agoscheduler.xml.in.h:5
+msgid "Schedule(s) updated successfully."
+msgstr ""
+
+#: ../plugins/agoscheduler/templates/agoscheduler.xml.in.h:6
+msgid "Unable to update schedule(s)."
+msgstr ""
+
+#: ../plugins/agoscheduler/templates/agoscheduler.xml.in.h:7
+msgid "Schedule(s) deleted successfully."
+msgstr ""
+
+#: ../plugins/agoscheduler/templates/agoscheduler.xml.in.h:8
+msgid "Unable to delete schedule(s)."
+msgstr ""
+
+#: ../plugins/agoscheduler/templates/agoscheduler.xml.in.h:9
+msgid "At"
+msgstr ""
+
+#: ../plugins/agoscheduler/templates/agoscheduler.xml.in.h:10
+msgid "execute scenario"
+msgstr ""
+
+#: ../plugins/agoscheduler/templates/agoscheduler.xml.in.h:11
+msgid "And at"
+msgstr ""
+
+#: ../plugins/agoscheduler/templates/agoscheduler.xml.in.h:12
+msgid "Repeat schedule"
+msgstr ""
+
+#: ../plugins/agoscheduler/templates/agoscheduler.xml.in.h:13
+msgid "Never"
+msgstr ""
+
+#: ../plugins/agoscheduler/templates/agoscheduler.xml.in.h:14
+msgid "Every day"
+msgstr ""
+
+#: ../plugins/agoscheduler/templates/agoscheduler.xml.in.h:15
+msgid "Every week"
+msgstr ""
+
+#: ../plugins/agoscheduler/templates/agoscheduler.xml.in.h:16
+msgid "Every month"
+msgstr ""
+
+#: ../plugins/agoscheduler/templates/agoscheduler.xml.in.h:17
+msgid "Every year"
+msgstr ""
+
+#: ../plugins/agoscheduler/templates/agoscheduler.xml.in.h:18
+msgid ""
+"Recurring schedules are linked each others. If you update one of them, all "
+"will be updated too."
+msgstr ""
+
+#: ../plugins/agoscheduler/templates/agoscheduler.xml.in.h:19
+msgid "Schedule's color"
 msgstr ""

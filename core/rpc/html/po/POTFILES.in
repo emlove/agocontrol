@@ -17,3 +17,4 @@ templates/devices/switch.xml.in
 templates/devices/thermostat.xml.in
 plugins/agoblockly/templates/agoblockly.xml.in
 plugins/agoalert/templates/agoalert.xml.in
+plugins/agoscheduler/templates/agoscheduler.xml.in
