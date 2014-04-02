@@ -33,6 +33,7 @@ set (AGODEVICES
   scheduler
   knx
   agodmx
+  PLCBUS
 )
 
 foreach (device ${AGODEVICES})
