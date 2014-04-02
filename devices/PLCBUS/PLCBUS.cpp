@@ -158,6 +158,9 @@ void *receiveFunction(void *param) {
 					for (int i=0;i<8;i++) {
 						if (tmpdata2 & 1<<i) {
 							// LoggerWrapper::GetInstance()->Write(LV_CRITICAL,"Found Unit %c%i",65+(tmphomeunit >> 4),i+1);
+							char internalid[20];
+							snprintf(internalid, 19, "%c%i", 65+(tmphomeunit >> 4),i+1);
+							agoConnection->addDevice("dimmer", internalid);
 						}
 					}
 					for (int i=0;i<8;i++) {
