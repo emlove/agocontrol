@@ -6,8 +6,21 @@
 function variablesConfig() {
     this.hasNavigation = ko.observable(true);
     this.variables = ko.observableArray([]);
+    this.vars = ko.observableArray([]);
 
     var self = this;
+
+    this.variables.subscribe(function() {
+	if (self.vars().length > 0) {
+	    return;
+	}
+	var tmp = [];
+	for ( var i = 0; i < self.variables().length; i++) {
+	    var variable = self.variables()[i];
+	    tmp.push(variable);
+	}
+	self.vars(tmp);
+    });
 
     this.makeEditable = function() {
 	window.requestAnimationFrame(function() {
