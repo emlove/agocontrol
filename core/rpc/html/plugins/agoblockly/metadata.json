@@ -1,5 +1,5 @@
 {
-        "name": "agoblockly",
+        "name": "blockly",
         "version": "0.0.1",
         "description": "Create events easily using blockly",
         "resources": {
