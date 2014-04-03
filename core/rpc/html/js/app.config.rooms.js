@@ -9,31 +9,32 @@ function roomConfig() {
 
     var self = this;
 
-    this.makeEditable = function() {
-	var eTable = $("#configTable").dataTable();
-	eTable.fnDestroy();
-	eTable = $("#configTable").dataTable();
-	eTable.$('td.edit_room').editable(function(value, settings) {
-	    var content = {};
-	    content.room = $(this).data('uuid');
-	    content.uuid = agoController;
-	    content.command = "setroomname";
-	    content.name = value;
-	    sendCommand(content);
-	    return value;
-	}, {
-	    data : function(value, settings) {
-		return value;
-	    },
-	    onblur : "cancel"
-	});
+    this.makeEditable = function(row, item) {
+	window.setTimeout(function() {
+        	$(row).find('td.edit_room').editable(function(value, settings) {
+        	    var content = {};
+        	    content.room = item.uuid;
+        	    content.uuid = agoController;
+        	    content.command = "setroomname";
+        	    content.name = value;
+        	    sendCommand(content);
+        	    return value;
+        	}, {
+        	    data : function(value, settings) {
+        		return value;
+        	    },
+        	    onblur : "cancel"
+        	});
+	}, 1);
     };
 
     this.createRoom = function(data, event) {
-	$('#configTable').block({ 
-            message: '<div>Please wait ...</div>', 
-            css: { border: '3px solid #a00' } 
-        }); 
+	$('#configTable').block({
+	    message : '<div>Please wait ...</div>',
+	    css : {
+		border : '3px solid #a00'
+	    }
+	});
 	var content = {};
 	content.name = $("#roomName").val();
 	content.command = 'setroomname';
@@ -43,7 +44,8 @@ function roomConfig() {
 		self.rooms.push({
 		    uuid : res.result.uuid,
 		    name : content.name,
-		    location : ""
+		    location : "",
+		    action : ""
 		});
 	    } else {
 		alert("Error while creating room!");
@@ -52,8 +54,7 @@ function roomConfig() {
 	});
     };
 
-    
-    this.deleteRoom  = function(item, event) {
+    this.deleteRoom = function(item, event) {
 	var button_yes = $("#confirmDeleteButtons").data("yes");
 	var button_no = $("#confirmDeleteButtons").data("no");
 	var buttons = {};
@@ -65,18 +66,20 @@ function roomConfig() {
 	    $("#confirmDelete").dialog("close");
 	};
 	$("#confirmDelete").dialog({
-	    modal: true,
-	    height: 180,
-	    width: 500,
-	    buttons: buttons
+	    modal : true,
+	    height : 180,
+	    width : 500,
+	    buttons : buttons
 	});
     };
-    
+
     this.doDeleteRoom = function(item, event) {
-	$('#configTable').block({ 
-            message: '<div>Please wait ...</div>', 
-            css: { border: '3px solid #a00' } 
-        }); 
+	$('#configTable').block({
+	    message : '<div>Please wait ...</div>',
+	    css : {
+		border : '3px solid #a00'
+	    }
+	});
 	var content = {};
 	content.room = item.uuid;
 	content.uuid = agoController;
@@ -86,8 +89,6 @@ function roomConfig() {
 		self.rooms.remove(function(e) {
 		    return e.uuid == item.uuid;
 		});
-		$("#configTable").dataTable().fnDeleteRow(event.target.parentNode.parentNode.parentNode);
-		$("#configTable").dataTable().fnDraw();
 	    } else {
 		alert("Error while deleting room!");
 	    }

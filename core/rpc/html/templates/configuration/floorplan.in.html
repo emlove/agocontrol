@@ -1,45 +1,61 @@
 <div class="container" id="contentarea">
 	<_div data-translateable="true" id="confirmDelete" style="display:none">Are you sure that you want to delete this floorplan?</_div>
-	<_div data-translateable="true" id="confirmDeleteButtons" style="display:none" _data-yes="Yes" _data-no="No" />
+	<_div data-translateable="true" id="confirmDeleteButtons"
+		style="display:none" _data-yes="Yes" _data-no="No" />
 	<_h3 data-translateable="true">Floorplan Configuration</_h3>
-        <table id="floorPlanTable" style="width:100%; margin-top: 15px; margin-bottom: 5px;">
-                <thead>
-                    <tr>
-                        <_th data-translateable="true" style="font-weight: 700">Floorplan Name</_th>
-                        <_th data-translateable="true" style="font-weight: 700; max-width: 120px;">Action</_th>
-                    </tr>
-                </thead>
-                <tbody data-bind="foreach: { data: floorplans, afterRender: makeEditable }">
-                    <ko opts="if: uuid">
-                    <tr data-bind="attr: {'data-uuid': uuid}">
-                        <ko opts="if: name">
-                                <td class="edit_fp" data-bind="attr: {'data-uuid': uuid}, text: name"></td>
-                        </ko>
-                        <ko opts="ifnot: name">
-                                <td class="edit_fp" data-bind="attr: {'data-uuid': uuid}">unset</td>
-                        </ko>
-                        <td style="max-width: 120px; white-space: nowrap; text-align:center">
-				<div class="pretty medium default btn">
-					<i class="icon-pencil"  data-translateable="true" _alt="Edit" _title="Edit" data-bind="click: $parent.editPlan"></i>
-				</div>
-				<div class="pretty medium default btn">
-					<i class="icon-cancel"  data-translateable="true" _alt="Delete" _title="Delete" data-bind="click: $parent.deletePlan"></i>
-				</div>
-                        </td>
-                    </tr>
-                    </ko>
-                </tbody>
-        </table>
-        <br />
-<br />
-<_h3 data-translateable="true">Create a new floorplan</_h3>
-<div class="row">
- <ul class="ten columns">
-  <li class="append field">
-   <input class="wide input" id="floorplanName" type="text" data-translateable="true" _placeholder="New floorplan name" />
-   <div class="medium primary btn"><_a data-translateable="true" href="#" onclick="createFloorPlan(); return false;">Create Floorplan</_a></div>
-  </li>
- </ul>
+	<table id="floorPlanTable"
+		style="width: 100%; margin-top: 15px; margin-bottom: 5px;"
+		data-bind="dataTable: { 
+            dataSource: floorplans, 
+            rowTemplate: 'rowTemplate', 
+            columns: [
+                'name', 
+                'action'
+            ],
+            options: {
+            	fnRowCallback: makeEditable
+            }
+        }">
+		<thead>
+			<tr>
+				<_th data-translateable="true" style="font-weight: 700">Floorplan Name</_th>
+				<_th data-translateable="true" style="font-weight: 700; max-width: 120px;">Action</_th>
+			</tr>
+		</thead>
+		<tbody>
+		</tbody>
+	</table>
+	<br /> <br />
+	
+<script id="rowTemplate" type="text/html">
+<ko opts="if: uuid">
+<ko opts="if: name">
+<td class="edit_fp" data-bind="attr: {'data-uuid': uuid}, text: name"></td>
+</ko>
+<ko opts="ifnot: name">
+ <td class="edit_fp" data-bind="attr: {'data-uuid': uuid}">unset</td>
+</ko>
+<td style="max-width: 120px; white-space: nowrap; text-align:center">
+<div class="pretty medium default btn">
+	<i class="icon-pencil"  data-translateable="true" _alt="Edit" _title="Edit" data-bind="click: $parent.editPlan"></i>
 </div>
+<div class="pretty medium default btn">
+	<i class="icon-cancel"  data-translateable="true" _alt="Delete" _title="Delete" data-bind="click: $parent.deletePlan"></i>
+</div>
+</td>
+</ko>
+</script>
+	<_h3 data-translateable="true">Create a new floorplan</_h3>
+	<div class="row">
+		<ul class="ten columns">
+			<li class="append field"><input class="wide input"
+				id="floorplanName" type="text" data-translateable="true"
+				_placeholder="New floorplan name" />
+				<div class="medium primary btn">
+					<_a data-translateable="true" href="#"
+						onclick="createFloorPlan(); return false;">Create Floorplan</_a>
+				</div></li>
+		</ul>
+	</div>
 </div>
 

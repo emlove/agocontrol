@@ -6,29 +6,12 @@
 function variablesConfig() {
     this.hasNavigation = ko.observable(true);
     this.variables = ko.observableArray([]);
-    this.vars = ko.observableArray([]);
 
     var self = this;
 
-    this.variables.subscribe(function() {
-	if (self.vars().length > 0) {
-	    return;
-	}
-	var tmp = [];
-	for ( var i = 0; i < self.variables().length; i++) {
-	    var variable = self.variables()[i];
-	    tmp.push(variable);
-	}
-	self.vars(tmp);
-    });
-
-    this.makeEditable = function() {
-	window.requestAnimationFrame(function() {
-	    if ($.fn.DataTable.fnIsDataTable(document.getElementById("configTable"))) {
-		$("#configTable").dataTable().fnDestroy();
-	    }
-	    var eTable = $("#configTable").dataTable();
-	    eTable.$('td.edit_var').editable(function(value, settings) {
+    this.makeEditable = function(row) {
+	window.setTimeout(function() {
+	    $(row).find('td.edit_var').editable(function(value, settings) {
 		var content = {};
 		content.variable = $(this).data('variable');
 		content.uuid = agoController;
@@ -42,7 +25,7 @@ function variablesConfig() {
 		},
 		onblur : "cancel"
 	    });
-	});
+	}, 1);
     };
 
     this.createVariable = function(data, event) {
@@ -68,7 +51,6 @@ function variablesConfig() {
 		alert("Error while creating variable!");
 	    }
 	    $('#configTable').unblock();
-	    getInventory();
 	});
     };
 
@@ -107,13 +89,10 @@ function variablesConfig() {
 		self.variables.remove(function(e) {
 		    return e.variable == item.variable;
 		});
-		$("#configTable").dataTable().fnDeleteRow(event.target.parentNode.parentNode.parentNode);
-		$("#configTable").dataTable().fnDraw();
 	    } else {
 		alert("Error while deleting variable!");
 	    }
 	    $('#configTable').unblock();
-	    getInventory();
 	});
     };
 

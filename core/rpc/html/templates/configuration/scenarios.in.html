@@ -1,62 +1,77 @@
 <div>
 	<div class="container" id="contentarea">
-		<_div data-translateable="true" id="confirmDelete" style="display:none">Are you sure that you want to delete this scenario?</_div>
-		<_div data-translateable="true" id="confirmDeleteButtons" style="display:none" _data-yes="Yes" _data-no="No" />
+		<_div data-translateable="true" id="confirmDelete"
+			style="display:none">Are you sure that you want to delete this scenario?</_div>
+		<_div data-translateable="true" id="confirmDeleteButtons"
+			style="display:none" _data-yes="Yes" _data-no="No" />
 		<_h3 data-translateable="true">Scenario Configuration</_h3>
 		<div class="row">
 			<table id="configTable"
-				style="width: 100%; margin-top: 15px; margin-bottom: 5px;">
+				style="width: 100%; margin-top: 15px; margin-bottom: 5px;"
+				data-bind="dataTable: { 
+            dataSource: scenarios, 
+            rowTemplate: 'rowTemplate', 
+            columns: [
+                'name', 
+                'room', 
+                'action'
+            ],
+            options: {
+            	fnRowCallback: makeEditable
+            }
+        }">
 				<thead>
 					<tr>
 						<_th data-translateable="true" style="font-weight: 700">Name</_th>
 						<_th data-translateable="true" style="font-weight: 700">Room</_th>
-						<_th data-translateable="true" style="font-weight: 700; max-width: 180px">Action</_th>
+						<_th data-translateable="true"
+							style="font-weight: 700; max-width: 180px">Action</_th>
 					</tr>
 				</thead>
-				<tbody
-					data-bind="foreach: { data: scenarios, afterRender: makeEditable }">
-					<ko opts="if: uuid != '0'">
-					<tr>
-						<ko opts="if: name">
-						<td class="edit_scenario"
-							data-bind="attr: {'data-uuid': uuid}, text: name"></td>
-						</ko>
-						<ko opts="ifnot: name">
-						<_td data-translateable="true" class="edit_device" data-bind="attr: {'data-uuid': uuid}">unset</_td>
-						</ko>
-						<ko opts="if: room">
-						<td class="select_room" style="white-space: nowrap; overflow:hidden; max-width:300px; text-overflow: ellipsis;"
-							data-bind="attr: {'data-uuid': uuid}, text: room"></td>
-						</ko>
-						<ko opts="ifnot: room">
-						<_td data-translateable="true" class="select_room" style="white-space: nowrap; overflow:hidden; max-width:300px; text-overflow: ellipsis;" data-bind="attr: {'data-uuid': uuid}">unset</_td>
-						</ko>
-						<td style="max-width: 180px; white-space: nowrap; text-align: center;">
-							<div class="pretty medium default btn">
-								<i class="icon-play" data-translateable="true" _alt="Run" _title="Run" data-bind="click: $parent.runScenario"></i>
-							</div>
-							<div class="pretty medium default btn">
-								<i class="icon-pencil" data-translateable="true" _alt="Edit" _title="Edit" data-bind="click: $parent.editScenario"></i>
-							</div>
-							<div class="pretty medium default btn">
-								<i class="icon-cancel" data-translateable="true" _alt="Delete" _title="Delete" data-bind="click: $parent.deleteScenario"></i>
-							</div>
-						</td>
-					</tr>
-					</ko>
+				<tbody>
+
 				</tbody>
 			</table>
 		</div>
-
+		<script type="text/html" id="rowTemplate">
+<ko opts="if: uuid != '0'">
+<ko opts="if: name">
+<td class="edit_scenario" data-bind="attr: {'data-uuid': uuid}, text: name"></td>
+</ko>
+<ko opts="ifnot: name">
+<_td data-translateable="true" class="edit_device" data-bind="attr: {'data-uuid': uuid}">unset</_td>
+</ko>
+<ko opts="if: room">
+<td class="select_room" style="white-space: nowrap; overflow:hidden; max-width:300px; text-overflow: ellipsis;"
+data-bind="attr: {'data-uuid': uuid}, text: room"></td>
+</ko>
+<ko opts="ifnot: room">
+<_td data-translateable="true" class="select_room" style="white-space: nowrap; overflow:hidden; max-width:300px; text-overflow: ellipsis;" data-bind="attr: {'data-uuid': uuid}">unset</_td>
+</ko>
+<td style="max-width: 180px; white-space: nowrap; text-align: center;">
+<div class="pretty medium default btn">
+<i class="icon-play" data-translateable="true" _alt="Run" _title="Run" data-bind="click: $parent.runScenario"></i>
+</div>
+<div class="pretty medium default btn">
+<i class="icon-pencil" data-translateable="true" _alt="Edit" _title="Edit" data-bind="click: $parent.editScenario"></i>
+</div>
+<div class="pretty medium default btn">
+<i class="icon-cancel" data-translateable="true" _alt="Delete" _title="Delete" data-bind="click: $parent.deleteScenario"></i>
+</div>
+</td>
+</ko>
+</script>
 		<div class="row">
 			<_h3 data-translateable="true">Create Scenario</_h3>
-			<_p data-translateable="true">To create a scenario press the "Add Command" button to add commands. After you need to give a name and press "Create Scenario".</_p>
+			<_p data-translateable="true">To create a scenario press the
+			"Add Command" button to add commands. After you need to give a name
+			and press "Create Scenario".</_p>
 			<div id="scenarioBuilder" class="scenarioBuilder"></div>
 			<br />
 			<div class="medium primary btn">
 				<_a data-translateable="true" href="#"
 					data-bind="click: function() { addCommand('scenarioBuilder'); }">Add
-					Command</_a>
+				Command</_a>
 			</div>
 			<br />
 			<form action="" method="post">
@@ -64,10 +79,11 @@
 				<div class="row">
 					<ul class="ten columns">
 						<li class="append field"><input class="wide email input"
-							id="scenarioName" type="text" data-translateable="true" _placeholder="Input scenario name" />
+							id="scenarioName" type="text" data-translateable="true"
+							_placeholder="Input scenario name" />
 							<div class="medium primary btn">
-								<_a data-translateable="true" href="#" data-bind="click: createScenario">Create
-									Scenario</_a>
+								<_a data-translateable="true" href="#"
+									data-bind="click: createScenario">Create Scenario</_a>
 							</div></li>
 					</ul>
 				</div>
@@ -78,7 +94,8 @@
 	<br />
 	<div class="row" id="editScenarioDialog" style="display: none">
 		<div class="row">
-			<_span data-translateable="true" id="editScenarioDialogTitle">Edit Scenario</_span>
+			<_span data-translateable="true" id="editScenarioDialogTitle">Edit
+			Scenario</_span>
 			<div id="scenarioBuilderEdit" class="scenarioBuilder"></div>
 			<br />
 			<div class="medium primary btn">
@@ -89,7 +106,8 @@
 			<br />
 			<form action="" method="post">
 				<div class="medium primary btn">
-					<_a data-translateable="true" href="#" data-bind="click: doEditScenario" style="color: #FFF">Save</_a>
+					<_a data-translateable="true" href="#"
+						data-bind="click: doEditScenario" style="color: #FFF">Save</_a>
 				</div>
 			</form>
 		</div>

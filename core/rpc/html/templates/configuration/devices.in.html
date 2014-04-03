@@ -14,7 +14,21 @@
 		</ko>
 	</div>
 	<br />
-	<table id="configTable" style="width:100%; margin-top: 15px; margin-bottom: 5px;">
+	<table id="configTable" style="width:100%; margin-top: 15px; margin-bottom: 5px;" data-bind="dataTable: { 
+            dataSource: devices,
+            rowTemplate: 'rowTemplate', 
+            columns: [
+                'name', 
+                'room',
+                'devicetype',
+                'handledBy',
+                'internalid',
+                'action'
+            ],
+            options: {
+            	fnRowCallback: makeEditable
+            }
+        }">
 		<thead>
 		    <tr>
 		        <_th data-translateable="true" style="font-weight: 700; min-width: 240px">Device Name</_th>
@@ -25,35 +39,34 @@
 		        <_th data-translateable="true" style="font-weight: 700">Action</_th>
 		    </tr>
 		</thead>
-		<tbody data-bind="foreach: { data: devices, afterRender: makeEditable }">
-		    <tr data-bind="attr: {'data-uuid': uuid}">
-			<ko opts="if: name">
-		        	<td class="edit_device" data-bind="attr: {'data-uuid': uuid}, text: name"></td>
-			</ko>
-			<ko opts="ifnot: name">
-		        	<_td data-translateable="true" class="edit_device" data-bind="attr: {'data-uuid': uuid}">unset</_td>
-			</ko>
-		
-			<ko opts="if: room">
-		        	<td class="select_device_room" data-bind="attr: {'data-uuid': uuid}, text: room"></td>
-			</ko>
-			<ko opts="ifnot: room">
-		        	<_td data-translateable="true" class="select_device_room" data-bind="attr: {'data-uuid': uuid}" >unset</_td>
-			</ko>
-		        <td data-bind="text: devicetype"></td>
-		        <td data-bind="text: handledBy"></td>
-		        <td data-bind="attr: {'title': internalid }, text: internalid" style="white-space: nowrap; overflow:hidden; max-width:160px; text-overflow: ellipsis;"></td>
-				<td style="max-width: 120px; white-space: nowrap; text-align:center">
-					<div class="pretty medium default btn">
-						<i class="icon-popup"  data-translateable="true" _alt="Details" _title="Details" data-bind="click: function(data, event) { showDetails(data) }"></i>
-					</div>
-					<div class="pretty medium default btn">
-						<i class="icon-cancel"  data-translateable="true" _alt="Delete" _title="Delete" data-bind="click: $parent.deleteDevice"></i>
-					</div>
-				</td>
-		    </tr>
+		<tbody>
 		</tbody>
 	</table>
 	<br />
+<script type="text/html" id="rowTemplate">
+<ko opts="if: name">
+<td class="edit_device" data-bind="attr: {'data-uuid': uuid}, text: name"></td>
+</ko>
+<ko opts="ifnot: name">
+<_td data-translateable="true" class="edit_device" data-bind="attr: {'data-uuid': uuid}">unset</_td>
+</ko>
+<ko opts="if: room">
+<td class="select_device_room" data-bind="attr: {'data-uuid': uuid}, text: room"></td>
+</ko>
+<ko opts="ifnot: room">
+<_td data-translateable="true" class="select_device_room" data-bind="attr: {'data-uuid': uuid}" >unset</_td>
+</ko>
+<td data-bind="text: devicetype"></td>
+<td data-bind="text: handledBy"></td>
+<td data-bind="attr: {'title': internalid }, text: internalid" style="white-space: nowrap; overflow:hidden; max-width:160px; text-overflow: ellipsis;"></td>
+<td style="max-width: 120px; white-space: nowrap; text-align:center">
+<div class="pretty medium default btn">
+<i class="icon-popup"  data-translateable="true" _alt="Details" _title="Details" data-bind="click: function(data, event) { showDetails(data) }"></i>
+</div>
+<div class="pretty medium default btn">
+<i class="icon-cancel"  data-translateable="true" _alt="Delete" _title="Delete" data-bind="click: $parent.deleteDevice"></i>
+</div>
+</td>
+</script>
 </div>
 

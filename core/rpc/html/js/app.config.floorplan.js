@@ -9,17 +9,11 @@ function floorPlanConfig() {
 
     var self = this;
 
-    this.makeEditable = function() {
-	window.requestAnimationFrame(function() {
-	    if ($.fn.DataTable.fnIsDataTable(document.getElementById("floorPlanTable"))) {
-		$("#floorPlanTable").fnDestroy();
-	    }
-	    var eTable = $("#floorPlanTable").dataTable();
-	    eTable.fnDestroy();
-	    eTable = $("#floorPlanTable").dataTable();
-	    eTable.$('td.edit_fp').editable(function(value, settings) {
+    this.makeEditable = function(row, item) {
+	window.setTimeout(function() {
+	    $(row).find('td.edit_fp').editable(function(value, settings) {
 		var content = {};
-		content.floorplan = $(this).data('uuid');
+		content.floorplan = item.uuid;
 		content.uuid = agoController;
 		content.command = "setfloorplanname";
 		content.name = value;
@@ -31,7 +25,7 @@ function floorPlanConfig() {
 		},
 		onblur : "cancel"
 	    });
-	});
+	}, 1);
     };
 
     this.deletePlan = function(item, event) {
@@ -76,7 +70,6 @@ function floorPlanConfig() {
 		alert("Error while deleting floorplan!");
 	    }
 	    $('#floorPlanTable').unblock();
-	    getInventory();
 	});
     };
 

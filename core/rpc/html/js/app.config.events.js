@@ -17,9 +17,6 @@ function eventConfig() {
     this.deviceList = {};
 
     this.devices.subscribe(function() {
-	if (self.events().length > 0) {
-	    return;
-	}
 	var tmp = [];
 	for ( var i = 0; i < self.devices().length; i++) {
 	    var dev = self.devices()[i];
@@ -31,7 +28,8 @@ function eventConfig() {
 	if (tmp.length == 0) {
 	    tmp.push({
 		name : "dummy",
-		uuid : "0"
+		uuid : "0",
+		action : "",
 	    });
 	}
 
@@ -63,13 +61,9 @@ function eventConfig() {
     /**
      * Callback for editable table
      */
-    this.makeEditable = function() {
-	window.requestAnimationFrame(function() {
-	    if ($.fn.DataTable.fnIsDataTable(document.getElementById("configTable"))) {
-		$("#configTable").dataTable().fnDestroy();
-	    }
-	    var eTable = $("#configTable").dataTable();
-	    eTable.$('td.edit_event').editable(function(value, settings) {
+    this.makeEditable = function(row) {
+	window.setTimeout(function() {
+	    $(row).find('td.edit_event').editable(function(value, settings) {
 		var content = {};
 		content.device = $(this).data('uuid');
 		content.uuid = agoController;
@@ -93,7 +87,7 @@ function eventConfig() {
 	    self.events.remove(function(ev) {
 		return ev.uuid == '0';
 	    });
-	});
+	}, 1);
     };
 
     /* Used for parsing event into JSON structure */
@@ -293,7 +287,6 @@ function eventConfig() {
 	sendCommand(content, function(res) {
 	    if (res.result && res.result.event) {
 		$("#editEventDialog").dialog("close");
-		getInventory();
 	    }
 	});
     };
@@ -329,7 +322,6 @@ function eventConfig() {
 			});
 			self.initBuilder();
 		    }
-		    getInventory();
 		});
 	    } else {
 		alert("ERROR");
@@ -375,13 +367,10 @@ function eventConfig() {
 		self.events.remove(function(e) {
 		    return e.uuid == item.uuid;
 		});
-		$("#configTable").dataTable().fnDeleteRow(event.target.parentNode.parentNode.parentNode);
-		$("#configTable").dataTable().fnDraw();
 	    } else {
 		alert("Error while deleting event!");
 	    }
 	    $('#configTable').unblock();
-	    getInventory();
 	});
     };
 

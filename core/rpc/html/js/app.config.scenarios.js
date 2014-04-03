@@ -18,22 +18,19 @@ function scenarioConfig() {
 	if (result.length == 0) {
 	    result = [ {
 		name : "dummy",
-		uuid : "0"
+		uuid : "0",
+		action : ""
 	    } ];
 	}
 
 	self.scenarios(result);
     });
 
-    this.makeEditable = function() {
-	window.requestAnimationFrame(function() {
-	    if ($.fn.DataTable.fnIsDataTable(document.getElementById("configTable"))) {
-		$("#configTable").dataTable().fnDestroy();
-	    }
-	    var eTable = $("#configTable").dataTable();
-	    eTable.$('td.edit_scenario').editable(function(value, settings) {
+    this.makeEditable = function(row, item) {
+	window.setTimeout(function() {
+	    $(row).find('td.edit_scenario').editable(function(value, settings) {
 		var content = {};
-		content.device = $(this).data('uuid');
+		content.device = item.uuid;
 		content.uuid = agoController;
 		content.command = "setdevicename";
 		content.name = value;
@@ -46,7 +43,7 @@ function scenarioConfig() {
 		onblur : "cancel"
 	    });
 
-	    eTable.$('td.select_room').editable(function(value, settings) {
+	    $(row).find('td.select_room').editable(function(value, settings) {
 		var content = {};
 		content.device = $(this).data('uuid');
 		content.uuid = agoController;
@@ -67,7 +64,7 @@ function scenarioConfig() {
 		type : "select",
 		onblur : "submit"
 	    });
-	});
+	}, 1);
     };
 
     /**
@@ -132,7 +129,6 @@ function scenarioConfig() {
 			    room : "",
 			});
 			document.getElementById("scenarioBuilder").innerHTML = "";
-			getInventory();
 		    }
 		});
 	    } else {
@@ -347,13 +343,10 @@ function scenarioConfig() {
 		self.scenarios.remove(function(e) {
 		    return e.uuid == item.uuid;
 		});
-		$("#configTable").dataTable().fnDeleteRow(event.target.parentNode.parentNode.parentNode);
-		$("#configTable").dataTable().fnDraw();
 	    } else {
 		alert("Error while deleting scenarios!");
 	    }
 	    $('#configTable').unblock();
-	    getInventory();
 	});
     };
 
@@ -399,7 +392,6 @@ function scenarioConfig() {
 	sendCommand(content, function(res) {
 	    if (res.result && res.result.scenario) {
 		$("#editScenarioDialog").dialog("close");
-		getInventory();
 	    }
 	});
     };

@@ -1,7 +1,5 @@
 infuser.defaults.templateUrl = "/templates";
 
-window.requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
-
 Array.prototype.chunk = function(chunkSize) {
     var array = this;
     return [].concat.apply([], array.map(function(elem, i) {
@@ -56,7 +54,7 @@ ko.bindingHandlers.slider = {
 
 /* Enable caching for ajax requests */
 $.ajaxSetup({
-    cache: true
+    cache : true
 });
 
 function getPage() {
@@ -90,7 +88,8 @@ function buildfloorPlanList(model) {
     for ( var k in floorPlans) {
 	model.floorPlans.push({
 	    uuid : k,
-	    name : floorPlans[k].name
+	    name : floorPlans[k].name,
+	    action : '' // dummy for table
 	});
     }
 }
@@ -400,8 +399,7 @@ function handleInventory(response) {
 	    model.deviceCount(deviceMap.length);
 	}
     }
-    
-    
+
     if (model.devices !== undefined) {
 	if (JSON.stringify(deviceMap) != JSON.stringify(model.devices())) {
 	    model.devices(deviceMap);
@@ -420,6 +418,7 @@ function handleInventory(response) {
 	for ( var uuid in rooms) {
 	    var tmp = rooms[uuid];
 	    tmp.uuid = uuid;
+	    tmp.action = ''; // dummy for table
 	    model.rooms.push(tmp);
 	}
     }
@@ -430,6 +429,7 @@ function handleInventory(response) {
 	for ( var uuid in floorPlans) {
 	    var tmp = floorPlans[uuid];
 	    tmp.uuid = uuid;
+	    tmp.action = ''; // dummy for table
 	    fpList.push(tmp);
 	}
 
@@ -445,6 +445,7 @@ function handleInventory(response) {
 	    var tmp = {};
 	    tmp.variable = key;
 	    tmp.value = variables[key];
+	    tmp.action = ''; // dummy for table
 	    varList.push(tmp);
 	}
 

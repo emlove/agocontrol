@@ -14,6 +14,8 @@ function device(obj, uuid) {
 
     this.uuid = uuid;
 
+    this.action = ''; // dummy for table
+    
     this.handledBy = this['handled-by'];
 
     var currentState = parseInt(this.state);

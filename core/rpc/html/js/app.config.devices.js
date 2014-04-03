@@ -5,7 +5,6 @@
  */
 function deviceConfig() {
     var self = this;
-    this.deviceCount = ko.observable(0);
     this.devices = ko.observableArray([]);
     this.hasNavigation = ko.observable(true);
 
@@ -126,20 +125,11 @@ function deviceConfig() {
 	eTable.fnDraw();
     };
 
-    this._updateCalls = 0;
-    this.makeEditable = function() {
-	if (++self._updateCalls < self.deviceCount()) {
-	    return;
-	}
-	self._updateCalls = 0;
-	window.requestAnimationFrame(function() {
-	    if ($.fn.DataTable.fnIsDataTable(document.getElementById("configTable"))) {
-		$("#configTable").dataTable().fnDestroy();
-	    }
-	    var eTable = $("#configTable").dataTable();
-	    eTable.$('td.edit_device').editable(function(value, settings) {
+    this.makeEditable = function(row, item) {
+	window.setTimeout(function() {
+	    $(row).find('td.edit_device').editable(function(value, settings) {
 		var content = {};
-		content.device = $(this).data('uuid');
+		content.device = item.uuid;
 		content.uuid = agoController;
 		content.command = "setdevicename";
 		content.name = value;
@@ -152,9 +142,9 @@ function deviceConfig() {
 		onblur : "cancel"
 	    });
 
-	    eTable.$('td.select_device_room').editable(function(value, settings) {
+	    $(row).find('td.select_device_room').editable(function(value, settings) {
 		var content = {};
-		content.device = $(this).parent().data('uuid');
+		content.device = item.uuid;
 		content.uuid = agoController;
 		content.command = "setdeviceroom";
 		content.room = value == "unset" ? "" : value;
@@ -173,7 +163,7 @@ function deviceConfig() {
 		type : "select",
 		onblur : "submit"
 	    });
-	});
+	}, 1);
     };
 
     this.deleteDevice = function(item, event) {
@@ -227,10 +217,7 @@ function deviceConfig() {
 		    self.devices.remove(function(e) {
 			return e.uuid == item.uuid;
 		    });
-		    $("#configTable").dataTable().fnDeleteRow(event.target.parentNode.parentNode);
-		    $("#configTable").dataTable().fnDraw();
 		    $('#configTable').unblock();
-		    getInventory();
 		});
 	    },
 	    dataType : "json",
