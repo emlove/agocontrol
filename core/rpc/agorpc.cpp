@@ -193,6 +193,12 @@ static void command (struct mg_connection *conn, const struct mg_request_info *r
 		printf("WARNING, no reply message to fetch\n");
 	}
 
+        try {
+                responseReceiver.close();
+        } catch(const std::exception& error) {
+                std::cerr << error.what() << std::endl;
+        }
+
 }
 
 bool jsonrpcRequestHandler(struct mg_connection *conn, Json::Value request, bool firstElem) {
