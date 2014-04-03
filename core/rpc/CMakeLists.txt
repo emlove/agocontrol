@@ -35,16 +35,21 @@ configure_file (
 install (TARGETS agorpc rpc-htpasswd RUNTIME DESTINATION ${BINDIR})
 install (TARGETS get_table_lang.cgi RUNTIME DESTINATION ${HTMLDIR}/cgi-bin)
 
+
 # workaround to making the translations
-add_custom_target(translations) 
+add_custom_target(
+  translations
+  DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/translate_done")
 add_dependencies(agorpc translations)
 
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/html DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 add_custom_command(
-        TARGET translations
+        OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/translate_done
         COMMAND ${CMAKE_CURRENT_BINARY_DIR}/html/mergetranslations.sh
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/html
         COMMENT "Generate html files")
+
+
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/html DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 install(
    CODE "

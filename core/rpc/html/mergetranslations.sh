@@ -13,3 +13,5 @@ done
 for i in `find . -name \*xml.in`; 
     do rm "$i";
 done
+
+touch ../translate_done
