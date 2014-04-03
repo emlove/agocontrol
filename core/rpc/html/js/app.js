@@ -337,6 +337,11 @@ var initialized = false;
 
 function handleInventory(response) {
 
+    if (response != null && response.result.match(/^exception/)) {
+	notif.error("RPC ERROR: " + response.result);
+	return;
+    }
+    
     if (response == null) {
 	response = {
 	    result : JSON.parse(localStorage.inventoryCache)
