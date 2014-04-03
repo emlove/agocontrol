@@ -1,1 +1,1 @@
-#define AGOCONTROL_VERSION "undefined"
+#define AGOCONTROL_VERSION 0.1
