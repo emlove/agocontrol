@@ -806,7 +806,7 @@ Blockly.Blocks['agocontrol_getVariable'] = {
         this.appendDummyInput()
             .appendField(new Blockly.FieldDropdown(window.BlocklyAgocontrol.getVariables()), "VARIABLE");
         this.setOutput(true, "String");
-        this.setTooltip('Return the value of selected agocontrol variable');
+        this.setTooltip('Return the value of selected agocontrol variable (string format!)');
     },
     
     //return selected variable name

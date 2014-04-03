@@ -55,10 +55,8 @@ Blockly.Lua['agocontrol_sendMessage'] = function(block) {
     for( var field in fields )
     {
         value = Blockly.Lua.valueToCode(block, field, Blockly.Lua.ORDER_NONE) || '';
-        //remove single quotes if string
-        if( value[0]=="'" && value[value.length-1]=="'" )
-            value = value.substring(1,value.length-1);
-        code += ", '"+fields[field]+"="+value+"'";
+        //always concat value to field name because of computed value (like string concat, operation...)
+        code += ", '"+fields[field]+"=' .. "+value;
     }
     return "sendMessage("+code+")\n";
 };
