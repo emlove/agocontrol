@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#! /usr/bin/python
 
 # raspiCamera device
 #
@@ -25,7 +25,7 @@ def messageHandler(internalid, content):
             print "raspiCamera getting video frame"
             stream = io.BytesIO()
             with picamera.PiCamera() as camera:
-                camera.resolution = (256, 188)
+                camera.resolution = (200, 140)
                 camera.quality = (20)
                 camera.start_preview()
                 time.sleep(0.1)
