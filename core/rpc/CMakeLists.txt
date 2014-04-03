@@ -36,20 +36,28 @@ install (TARGETS agorpc rpc-htpasswd RUNTIME DESTINATION ${BINDIR})
 install (TARGETS get_table_lang.cgi RUNTIME DESTINATION ${HTMLDIR}/cgi-bin)
 
 # workaround to making the translations
-add_custom_target(translations) 
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/html DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+file(GLOB_RECURSE HTML_FILES ${CMAKE_CURRENT_BINARY_DIR}/html/*.in.html)
+file(REMOVE ${HTML_FILES})
+file(GLOB_RECURSE HTML_FILES ${CMAKE_CURRENT_SOURCE_DIR}/html/*.in.html)
+
+foreach (infile ${HTML_FILES})
+        string(REGEX REPLACE ".in.html$" ".html" outfile ${infile})
+        string(REPLACE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} outfile ${outfile})
+        add_custom_command(
+                OUTPUT ${outfile}
+                DEPENDS ${infile}
+                COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/mergetranslation.sh ${infile} ${outfile}
+                COMMENT "Generate html files")
+        set (OUT_FILES ${OUT_FILES} ${outfile})
+endforeach (infile)
+
+add_custom_target(translations DEPENDS ${OUT_FILES})
 add_dependencies(agorpc translations)
 
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/html DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-add_custom_command(
-        TARGET translations
-        COMMAND ${CMAKE_CURRENT_BINARY_DIR}/html/mergetranslations.sh
-        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/html
-        COMMENT "Generate html files")
 
 install(
    CODE "
-   file(GLOB_RECURSE HTML_FILES ${CMAKE_CURRENT_BINARY_DIR}/html/*.in.html)
-   file(REMOVE \${HTML_FILES})
    file(GLOB CGI_SCRIPTS ${CMAKE_CURRENT_BINARY_DIR}/html/cgi-bin/*.cgi)
    file(INSTALL \${CGI_SCRIPTS} DESTINATION ${HTMLDIR}/cgi-bin/ FILE_PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE GROUP_READ GROUP_EXECUTE WORLD_READ WORLD_EXECUTE)
    file(REMOVE \${CGI_SCRIPTS})
