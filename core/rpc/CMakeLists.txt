@@ -36,9 +36,16 @@ install (TARGETS agorpc rpc-htpasswd RUNTIME DESTINATION ${BINDIR})
 install (TARGETS get_table_lang.cgi RUNTIME DESTINATION ${HTMLDIR}/cgi-bin)
 
 # workaround to making the translations
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/html DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-file(GLOB_RECURSE HTML_FILES ${CMAKE_CURRENT_BINARY_DIR}/html/*.in.html)
-file(REMOVE ${HTML_FILES})
+if (NOT "${CMAKE_CURRENT_SOURCE_DIR}" STREQUAL "${CMAKE_CURRENT_BINARY_DIR}")
+    file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/html DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+    file(GLOB_RECURSE HTML_FILES ${CMAKE_CURRENT_BINARY_DIR}/html/*.in.html)
+    if (NOT "${HTML_FILES}" STREQUAL "")
+        file(REMOVE ${HTML_FILES})
+    endif ()
+endif()
+
+
+
 file(GLOB_RECURSE HTML_FILES ${CMAKE_CURRENT_SOURCE_DIR}/html/*.in.html)
 
 foreach (infile ${HTML_FILES})
