@@ -125,7 +125,7 @@ function loadPlugin() {
 	    async : true,
 	}).done(function(result) {
 	    var plugin = result.filter(function(p) {
-		return p.name.toLowerCase() == name.toLowerCase();
+		return p._name.toLowerCase() == name.toLowerCase();
 	    })[0];
 	    templatePath = "../plugins/" + name + "/templates/";
 	    /* Load the plugins resources if any */
