@@ -180,7 +180,7 @@ qpid::types::Variant::Map commandHandler(qpid::types::Variant::Map content) {
 			}
 		} else if (content["command"] == "getzones") {
 			if (!(securitymap["zones"].isVoid())) {
-				returnval["zonemap"] == securitymap["zones"].asMap();
+				returnval["zonemap"] = securitymap["zones"].asMap();
 				returnval["result"]=0;
 			} else {
 				returnval["result"] = -1;
