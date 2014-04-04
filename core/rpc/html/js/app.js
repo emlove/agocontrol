@@ -375,6 +375,7 @@ function handleInventory(response) {
     }
 
     var inventory = cleanInventory(response.result.devices);
+    var newDeviceMap = [];
     for ( var uuid in inventory) {
 	if (inventory[uuid].room !== undefined && inventory[uuid].room) {
 	    inventory[uuid].roomUID = inventory[uuid].room;
@@ -387,8 +388,11 @@ function handleInventory(response) {
 	} else {
 	    inventory[uuid].room = "";
 	}
-	deviceMap.push(new device(inventory[uuid], uuid));
+    newDeviceMap.push(new device(inventory[uuid], uuid));
     }
+    //overwrite global deviceMap
+    delete deviceMap;
+    deviceMap = newDeviceMap;
 
     if (deferredInit && !initialized) {
 	deferredInit();
