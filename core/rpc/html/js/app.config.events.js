@@ -1054,7 +1054,7 @@ function eventConfig() {
 			commandParams.appendChild(select);
 		    } else {
 			var input = document.createElement("input");
-			input.name = cmd.parameters[param].name;
+			input.name = param;
 			input.id = cmd.parameters[param].name;
 			input.className = "cmdParam";
 			if (defaults && defaults[cmd.parameters[param].name]) {
