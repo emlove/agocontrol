@@ -13,7 +13,7 @@ window.BlocklyAgocontrol = {
     schema: {},
     devices: [],
     variables: [],
-    generateContent: false,
+    eventBlocks: {},
 
     //init
     init: function(schema, devices, variables) {
@@ -136,13 +136,12 @@ window.BlocklyAgocontrol = {
                     if( this.schema.values[prop].type!==undefined && this.schema.values[prop].name!==undefined )
                     {
                         var content = {};
-                        content.id = prop;
                         for( var item in  this.schema.values[prop] )
                         {
                             if( item!==undefined )
                                 content[item] = this.schema.values[prop][item];
                         }
-                        props[this.schema.values[prop].name] = content;
+                        props[prop] = content;
                     }
                 }
             }
@@ -264,6 +263,109 @@ window.BlocklyAgocontrol = {
             // Removing a field will cause the block to change shape.
             container.sourceBlock_.bumpNeighbours_();
         }
+    },
+    
+    //return all event blocks in group specified block belongs to
+    //@return {master, blocks}: 
+    //  - master: first event block attached to agocontrol_content that's supposed to "control" all other events
+    //  - blocks: array of event blocks in content group (excluding master)
+    getEventBlocksInBlockGroup: function(block) {
+        //init
+        var output = {'master':null, 'blocks':[]};
+        var parent = block.getParent();
+        var blockLevel = 0;
+        
+        //looking for main block parent
+        while( parent )
+        {
+            if( parent.getParent() && parent.getSurroundParent() && parent.getParent().id==parent.getSurroundParent().id )
+            {
+                parent = parent.getParent();
+                blockLevel++;
+            }
+            else
+                break;
+        }
+  
+        if( parent )
+        {
+            var level = -1;
+            //walk though parent searching for agocontrol_content block
+            for( var i=0; i<parent.getChildren().length; i++ )
+            {
+                if( parent.getChildren()[i].getSurroundParent() && parent.getChildren()[i].getSurroundParent().id==parent.id )
+                {
+                    output = this._getEventBlocksInBlockGroupDeep(block, blockLevel, parent.getChildren()[i], 0, output);
+                }
+            }
+        }
+        
+        return output;
+    },
+    _getEventBlocksInBlockGroupDeep: function(block, blockLevel, child, childLevel, output) {
+        childLevel++;
+        if( child.type=="agocontrol_content" && output.master===null )
+        {
+            //update master event block
+            for( var i=0; i<child.getChildren().length; i++ )
+            {
+                if( child.getChildren()[i].type=="agocontrol_eventAll" || child.getChildren()[i].type=="agocontrol_deviceEvent" )
+                {
+                    output.master = child.getChildren()[i];
+                }
+            }
+        }
+        else if( child.type==="agocontrol_deviceEvent" || child.type==="agocontrol_eventAll" || child.type==="agocontrol_eventProperty" )
+        {
+            //update blocks array
+            if( output.master && output.master.id!==child.id )
+            {
+                output.blocks.push(child);
+            }
+        }
+        
+        for( var i=0; i<child.getChildren().length; i++ )
+        {
+            output = this._getEventBlocksInBlockGroupDeep(block, blockLevel, child.getChildren()[i], childLevel, output);
+        }
+        return output;
+    },
+    
+    //update event blocks
+    updateEventBlocks: function(block) {
+        //get all blocks in block group
+        var blocks = this.getEventBlocksInBlockGroup(block);
+        
+        //hack for optimization
+        if( this.eventBlocks[block] &&
+            ( (this.eventBlocks[block].master && blocks.master && this.eventBlocks[block].master.id===blocks.master.id) ||
+            (!this.eventBlocks[block].master && !blocks.master) ) &&
+            (this.eventBlocks[block].blocks.length===blocks.blocks.length) )
+        {
+            return;
+        }
+
+        //reset block inContent flag
+        for( var i=0; i<blocks.blocks.length; i++ )
+        {
+            blocks.blocks[i].inContent = false;
+        }
+       
+        if( blocks.master!==null )
+        {
+            //enable content stuff
+            var event = blocks.master.getEvent();
+            for( var i=0; i<blocks.blocks.length; i++ )
+            {
+                blocks.blocks[i].inContent = true;
+                if( blocks.blocks[i].getEvent()!==event )
+                {
+                    blocks.blocks[i].setEvent(event);
+                }
+            }
+        }
+
+        this.eventBlocks[block] = blocks;
     }
 };
 
@@ -380,6 +482,10 @@ Blockly.Blocks['agocontrol_deviceEvent'] = {
     onchange: function() {
         if( !this.workspace )
             return;
+            
+        //update event blocks
+        window.BlocklyAgocontrol.updateEventBlocks(this);
+        
         var currentType = this.getFieldValue("TYPE");
         if( this.lastType!=currentType )
         {
@@ -389,13 +495,9 @@ Blockly.Blocks['agocontrol_deviceEvent'] = {
                 devices.push(['','']);
             this.container.removeField("DEVICE");
             this.container.appendField(new Blockly.FieldDropdown(devices), "DEVICE");
-        }
-        var currentDevice = this.getFieldValue("DEVICE");
-        if( this.lastDevice!=currentDevice )
-        {
-            this.lastDevice = currentDevice;
+
             var events = [];
-            if( currentDevice.length>0 )
+            if( currentType.length>0 )
             {
                 events = window.BlocklyAgocontrol.getDeviceEvents(currentType);
                 if( events.length===0 )
@@ -409,6 +511,25 @@ Blockly.Blocks['agocontrol_deviceEvent'] = {
             this.container.removeField("EVENT");
             this.container.appendField(" ", "SEP");
             this.container.appendField(new Blockly.FieldDropdown(events), "EVENT");
+        }
+        var currentDevice = this.getFieldValue("DEVICE");
+        if( this.lastDevice!=currentDevice )
+        {
+            this.lastDevice = currentDevice;
+        }
+    },
+    
+    //return current event
+    getEvent: function() {
+        return this.getFieldValue("EVENT");
+    },
+    
+    //set event
+    setEvent: function(newEvent) {
+        var field = this.getField_("EVENT");
+        if( field )
+        {
+            field.setValue(newEvent);
         }
     }
 };
@@ -424,6 +545,28 @@ Blockly.Blocks['agocontrol_eventAll'] = {
         this.setInputsInline(true);
         this.setOutput(true, "Event");
         this.setTooltip('An event');
+    },
+    
+    //return current event
+    getEvent: function() {
+        return this.getFieldValue("EVENT");
+    },
+    
+    //set event
+    setEvent: function(newEvent) {
+        var field = this.getField_("EVENT");
+        if( field )
+        {
+            return field.setValue(newEvent);
+        }
+    },
+    
+    onchange: function() {
+        if( this.workspace==null )
+            return;
+        
+        //update event blocks
+        window.BlocklyAgocontrol.updateEventBlocks(this);
     }
 };
 
@@ -431,7 +574,6 @@ Blockly.Blocks['agocontrol_eventAll'] = {
 Blockly.Blocks['agocontrol_deviceProperty'] = {
     init: function() {
         //members
-        this.properties = undefined;
         this.lastType = undefined;
         this.lastDevice = undefined;
 
@@ -473,10 +615,10 @@ Blockly.Blocks['agocontrol_deviceProperty'] = {
             var props = [];
             if( currentDevice.length>0 )
             {
-                this.properties = window.BlocklyAgocontrol.getDeviceProperties(currentType);
-                for( var prop in this.properties )
+                var properties = window.BlocklyAgocontrol.getDeviceProperties(currentType);
+                for( var prop in properties )
                 {
-                    props.push([prop, this.properties[prop].name]);
+                    props.push([properties[prop].name, prop]);
                 }
                 if( props.length===0 )
                     props.push(['','']);
@@ -530,7 +672,10 @@ Blockly.Blocks['agocontrol_eventProperty'] = {
     onchange: function() {
         if( !this.workspace )
             return;
-
+            
+        //update event blocks
+        window.BlocklyAgocontrol.updateEventBlocks(this);
+        
         //update properties list
         var currentEvent = this.getFieldValue("EVENT");
         if( this.lastEvent!=currentEvent )
@@ -1007,71 +1152,12 @@ Blockly.Blocks['agocontrol_content'] = {
         }
     },
     
-    //onchange event
     onchange: function() {
         if( !this.workspace )
             return;
             
-        //check connected event
-        var currentEvent = null;
-        if( this.currentEvent===null )
-        {
-            if( this.getChildren().length>0 )
-            {
-                for( var i=0; i<this.getChildren().length; i++ )
-                {
-                    if( this.getChildren()[i].type==="agocontrol_eventAll" )
-                    {
-                        currentEvent = this.getChildren()[i].getFieldValue("EVENT");
-                        break;
-                    }
-                }
-            }
-        }
-        if( currentEvent!==null && currentEvent!=this.currentEvent )
-        {
-            //attached event has changed
-            //walk thought attached blocks looking for event properties to update them
-            this.recurseCounter = 0;
-            for( var i=0; i<this.getChildren().length; i++ )
-            {
-                if( this.getChildren()[i].type!=='agocontrol_eventAll' )
-                {
-                    this._walkChild(this.getChildren()[i], currentEvent);
-                }
-            }
-        }
-        else
-        {
-            //no event attached, nothing to do
-            //code checking will prevent from saving it in this state
-        }
-    },
-    
-    //set newEvent to specified child and its children (recursive function!)
-    _walkChild: function(child, newEvent) {
-        //check recurseCount
-        if( this.recurseCounter>50 )
-        {
-            console.log('Max recursive iteration reached!');
-            return;
-        }
-        this.recurseCounter++;
-    
-        //check child itself
-        if( child.type==='agocontrol_eventProperty' && child.getEvent()!==newEvent )
-        {
-            child.setEvent(newEvent);
-        }
-        //check child children
-        for( var i=0; i<child.getChildren().length; i++ )
-        {
-            if( child.getChildren()[i].type==='agocontrol_eventProperty' && child.getChildren()[i].getEvent()!==newEvent )
-            {
-                child.getChildren()[i].setEvent(newEvent);
-            }
-            this._walkChild(child.getChildren()[i], newEvent);
-        }
+        //update event blocks
+        window.BlocklyAgocontrol.updateEventBlocks(this);
     }
 };
 

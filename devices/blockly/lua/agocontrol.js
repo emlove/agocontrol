@@ -29,7 +29,7 @@ Blockly.Lua['agocontrol_eventAll'] = function(block) {
 
 Blockly.Lua['agocontrol_deviceProperty'] = function(block) {
     var code = "";
-    if( window.BlocklyAgocontrol.generateContent )
+    if( block.inContent )
         code = "content." + block.getFieldValue("PROP");
     else
         code = block.getFieldValue("PROP");
@@ -38,7 +38,7 @@ Blockly.Lua['agocontrol_deviceProperty'] = function(block) {
 
 Blockly.Lua['agocontrol_eventProperty'] = function(block) {
     var code = "";
-    if( window.BlocklyAgocontrol.generateContent )
+    if( block.inContent )
         code = "content." + block.getFieldValue("PROP");
     else
         code = block.getFieldValue("PROP");
@@ -62,7 +62,6 @@ Blockly.Lua['agocontrol_sendMessage'] = function(block) {
 };
 
 Blockly.Lua['agocontrol_content'] = function(block) {
-    window.BlocklyAgocontrol.generateContent = true;
     var code = "";
     code += "content.subject == \"";
     code += Blockly.Lua.valueToCode(block, 'EVENT', Blockly.Lua.ORDER_NONE) || 'nil';
@@ -75,7 +74,6 @@ Blockly.Lua['agocontrol_content'] = function(block) {
             code += " and ";
         code += Blockly.Lua.valueToCode(block, 'PROP'+i, Blockly.Lua.ORDER_NONE) || '';
     }
-    window.BlocklyAgocontrol.generateContent = false;
     return [code, Blockly.Lua.ORDER_NONE];
 };
 
