@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-03-24 19:31+0100\n"
+"POT-Creation-Date: 2014-04-07 20:15+0200\n"
 "PO-Revision-Date: 2013-10-01 18:04+0100\n"
 "Last-Translator: \n"
 "Language-Team: ago control <jaeger@agocontrol.com>\n"
@@ -315,7 +315,8 @@ msgstr "Szenario bearbeiten"
 
 #: ../templates/configuration/scenarios.xml.in.h:17
 #: ../templates/configuration/events.xml.in.h:13
-#: ../plugins/agoblockly/templates/agoblockly.xml.in.h:9
+#: ../plugins/agoblockly/templates/agoblockly.xml.in.h:12
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:16
 msgid "Save"
 msgstr "Speichern"
 
@@ -558,7 +559,8 @@ msgstr "Kühlen"
 
 #: ../plugins/agoblockly/templates/agoblockly.xml.in.h:1
 msgid "luacontroller is not responding. Unable to execute action."
-msgstr "luacontroller antwortet nicht. Der Befehl kann nicht ausgeführt werden."
+msgstr ""
+"luacontroller antwortet nicht. Der Befehl kann nicht ausgeführt werden."
 
 #: ../plugins/agoblockly/templates/agoblockly.xml.in.h:2
 msgid "No block defined in workspace."
@@ -588,34 +590,375 @@ msgstr "Script wurde nicht gespeichert"
 msgid "Please specify a valid script name"
 msgstr "Bitte gültigen Skriptnamen eingeben"
 
+#: ../plugins/agoblockly/templates/agoblockly.xml.in.h:9
+msgid "Delete selected script?"
+msgstr "Lösche ausgewähltes Script"
+
 #: ../plugins/agoblockly/templates/agoblockly.xml.in.h:10
+msgid "Script deleted successfully"
+msgstr "Script wurde erfolgreich gelöscht."
+
+#: ../plugins/agoblockly/templates/agoblockly.xml.in.h:11
+msgid "Unable to delete script"
+msgstr "Kann Script nicht löschen"
+
+#: ../plugins/agoblockly/templates/agoblockly.xml.in.h:13
 msgid "Load"
 msgstr "Laden"
 
-#: ../plugins/agoblockly/templates/agoblockly.xml.in.h:11
+#: ../plugins/agoblockly/templates/agoblockly.xml.in.h:14
 msgid "Check"
 msgstr "Überprüfen"
 
-#: ../plugins/agoblockly/templates/agoblockly.xml.in.h:12
+#: ../plugins/agoblockly/templates/agoblockly.xml.in.h:15
 msgid "View"
 msgstr "Ansehen"
 
-#: ../plugins/agoblockly/templates/agoblockly.xml.in.h:13
+#: ../plugins/agoblockly/templates/agoblockly.xml.in.h:16
 msgid "Clear"
 msgstr "Löschen"
 
-#: ../plugins/agoblockly/templates/agoblockly.xml.in.h:14
+#: ../plugins/agoblockly/templates/agoblockly.xml.in.h:17
 msgid "Script saved"
 msgstr "Script gespeichert"
 
-#: ../plugins/agoblockly/templates/agoblockly.xml.in.h:15
+#: ../plugins/agoblockly/templates/agoblockly.xml.in.h:18
 msgid "Script modified"
 msgstr "Script geändert"
 
-#: ../plugins/agoblockly/templates/agoblockly.xml.in.h:16
+#: ../plugins/agoblockly/templates/agoblockly.xml.in.h:19
 msgid "script(s) available"
 msgstr "Script(s) verfügbar"
 
-#: ../plugins/agoblockly/templates/agoblockly.xml.in.h:17
+#: ../plugins/agoblockly/templates/agoblockly.xml.in.h:20
 msgid "Enter script name"
 msgstr "Namen für Script eingeben"
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:1
+#: ../plugins/agoscheduler/templates/agoscheduler.xml.in.h:1
+msgid "Internal error"
+msgstr "Interner Fehler"
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:2
+msgid "Unable to refresh PushBullet devices"
+msgstr "Kann PushBullet Geräte nicht aktualisieren"
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:3
+msgid "PushBullet devices retrieved successfully"
+msgstr "PushBullet Geräte erfolgreich abgerufen"
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:4
+msgid "generating url"
+msgstr "generiere URL"
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:5
+msgid "authorization url"
+msgstr "Genehmigungs URL"
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:6
+msgid "Twitter configuration"
+msgstr "Twitter Konfiguration"
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:7
+msgid ""
+"Agocontrol needs to be authorized to post alerts on your Twitter account."
+msgstr "ago control muss befugt sein, Warnungen auf Ihrem Twitter-Account zu posten."
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:8
+msgid "Twitter is configured"
+msgstr "Twitter ist konfiguriert"
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:9
+msgid "Twitter is not configured"
+msgstr "Twitter ist nicht konfiguriert"
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:10
+msgid "Follow instructions above to authorize this access:"
+msgstr "Folgen Sie den Anweisungen oben, um diesen Zugriff zu genehmigen:"
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:11
+msgid ""
+"Click <a href=\"#\" data-bind=\"click: twitterUrl\">here</a> to generate an "
+"authorization url"
+msgstr "Klicke <a href=\"#\" data-bind=\"click: twitterUrl\">hier</a> um eine Genehmigungs URL zu generieren"
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:12
+msgid "Then click on generated link"
+msgstr "Dann klicke auf den generierten Link"
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:13
+msgid "Authorize access on Twitter"
+msgstr "Genehmige Zugriff auf Twitter"
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:14
+msgid "Type given access code here"
+msgstr "Gib den Zugangscode hier ein"
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:15
+msgid "Finally click on button to save access code"
+msgstr "Klicke auf die Schaltfläche, um den Zugangscode zu speichern"
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:17
+msgid "To send test tweet on your account, click on button:"
+msgstr "Um einen Test Tweet auf den Twitter-Konto senden, klicke auf den Button:"
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:18
+msgid "Test"
+msgstr "Test"
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:19
+msgid "Google Talk configuration"
+msgstr "Google Talk Konfiguration"
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:20
+msgid ""
+"Agocontrol needs your Google credentials to connect GTalk and send alerts."
+msgstr "ago control braucht die Google-Anmeldeinformationen um zu GTalk verbinden und Warnmeldungen zu senden."
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:21
+msgid "GTalk is configured"
+msgstr "GTalk ist konfiguriert"
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:22
+msgid "GTalk is not configured"
+msgstr "GTalk ist nicht konfiguriert"
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:23
+msgid "If you are using 2-Step verification, generate password"
+msgstr "Wenn eine 2-Step Verifikation verwendet wird, generiere ein Passwort"
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:24
+msgid "clicking here"
+msgstr "Hier klicken"
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:25
+msgid "Otherwise use your usual Google credentials:"
+msgstr "Ansonsten verwende die übliche Google-Anmeldeinformationen:"
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:26
+msgid "Username"
+msgstr "Benutzername"
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:27
+msgid "Password"
+msgstr "Passwort"
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:28
+msgid "To send you a test message on GTalk, click on button:"
+msgstr "Um eine Testnachricht auf GTalk zu senden, klicke auf den Button:"
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:29
+msgid "SMS configuration"
+msgstr "SMS Konfiguration"
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:30
+msgid "Agocontrol uses"
+msgstr "ago control Benutzer"
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:31
+msgid "to send SMS alerts."
+msgstr "um SMS-Benachrichtigungen zu senden."
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:32
+msgid "SMS is configured"
+msgstr "SMS ist konfiguriert"
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:33
+msgid "SMS is not yet configured"
+msgstr "SMS ist nicht konfiguriert"
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:34
+msgid "You need to create an account and add credits to send SMS"
+msgstr "Du musst ein Konto erstellen und Guthaben aufladen, um SMS senden zu können"
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:35
+msgid "click here to view SMS rates"
+msgstr "Klicke hier um SMS Preise zu sehen"
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:36
+msgid "12voip credentials:"
+msgstr "12voip Zugangsdaten"
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:37
+msgid "To send you a test SMS, click on button"
+msgstr "Um ein Test-SMS zu senden, klicke den Knopf"
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:38
+msgid "Email configuration"
+msgstr "E-Mail Konfiguration"
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:39
+msgid "Agocontrol can send alert through email."
+msgstr "ago control kann Alarme via E-Mail senden"
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:40
+msgid "Mail is configured"
+msgstr "E-Mail ist konfiguriert"
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:41
+msgid "Mail is not yet configured"
+msgstr "E-Mail ist noch nicht konfiguriert"
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:42
+msgid ""
+"Specify your email SMTP server and a sender email address (* is mandatory):"
+msgstr "Definiere Deinen E-Mail SMTP Server und eine Absenderadresse (* Pflichtfelder)"
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:43
+msgid "SMTP server"
+msgstr "SMTP Server"
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:44
+msgid "(could be smtp:port)"
+msgstr "(kann auch Server:Port sein)"
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:45
+msgid "Sender email"
+msgstr "E-Mail Adresse des Absenders"
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:46
+msgid "Login"
+msgstr "Benutzer"
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:47
+msgid "TLS"
+msgstr "TLS"
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:48
+msgid "To send you a test email, type your email address and click on button"
+msgstr "Um ein Test E-Mail zu senden gib die E-Mail Adresse an und klicke auf den Knopf"
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:49
+msgid "Push configuration"
+msgstr "Push Konfiguration"
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:50
+msgid "Agocontrol can send alert through push notifications."
+msgstr "ago control kann Alarme mit Push Meldungen verschicken"
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:51
+msgid "Push is configured"
+msgstr "Push ist konfiguriert"
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:52
+msgid "Push is not yet configured"
+msgstr "Push ist nicht konfiguriert"
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:53
+msgid "Choose push provider in list:"
+msgstr "Wähle einen Push Anbieter aus der Liste:"
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:54
+msgid "Enter your apikey"
+msgstr "Gib Deinen API Key ein"
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:55
+msgid "available here"
+msgstr "hier verfügbar"
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:56
+msgid "Refresh your devices list clicking on the button"
+msgstr "Um die Geräteliste zu aktualisieren klicke auf den Knopf"
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:57
+msgid "Refresh list"
+msgstr "Liste aktualisieren"
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:58
+msgid "And choose your devices that will be notified"
+msgstr "Füge Geräte hinzu die Meldungen erhalten sollen"
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:59
+msgid "Finally save your settings"
+msgstr "Deine Einstellungen speichern"
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:60
+msgid "Enter your userid"
+msgstr "Benutzername eingeben"
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:61
+msgid "And save your settings"
+msgstr "Und speichere die Einstellungen"
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:62
+msgid "Enter your apikeys"
+msgstr "Gib Deine API-Keys ein"
+
+#: ../plugins/agoalert/templates/agoalert.xml.in.h:63
+msgid "To push you test notification, click on button"
+msgstr "Um eine Push Test-Nachricht zu senden, klicke den Knopf"
+
+#: ../plugins/agoscheduler/templates/agoscheduler.xml.in.h:2
+msgid "Agoscheduler is not responding. Unable to display schedules."
+msgstr ""
+"agoscheduler antwortet nicht. Kann die geplanten Aufgaben nicht anzeigen."
+
+#: ../plugins/agoscheduler/templates/agoscheduler.xml.in.h:3
+msgid "Schedule(s) added successfully."
+msgstr "Aufgabe wurde erfolgreich hinzugefügt."
+
+#: ../plugins/agoscheduler/templates/agoscheduler.xml.in.h:4
+msgid "Unable to add schedule(s)."
+msgstr "Kann die Aufgabe(n) nicht hinzufügen."
+
+#: ../plugins/agoscheduler/templates/agoscheduler.xml.in.h:5
+msgid "Schedule(s) updated successfully."
+msgstr "Aufgabe wurde erfolgreich gespeichert."
+
+#: ../plugins/agoscheduler/templates/agoscheduler.xml.in.h:6
+msgid "Unable to update schedule(s)."
+msgstr "Kann Aufbage nicht aktualisieren"
+
+#: ../plugins/agoscheduler/templates/agoscheduler.xml.in.h:7
+msgid "Schedule(s) deleted successfully."
+msgstr "Aufgabe wurde erfolgreich gelöscht."
+
+#: ../plugins/agoscheduler/templates/agoscheduler.xml.in.h:8
+msgid "Unable to delete schedule(s)."
+msgstr "Kann Aufgabe nicht löschen."
+
+#: ../plugins/agoscheduler/templates/agoscheduler.xml.in.h:9
+msgid "At"
+msgstr "bei"
+
+#: ../plugins/agoscheduler/templates/agoscheduler.xml.in.h:10
+msgid "execute scenario"
+msgstr "Szenario ausführen"
+
+#: ../plugins/agoscheduler/templates/agoscheduler.xml.in.h:11
+msgid "And at"
+msgstr "Und bei"
+
+#: ../plugins/agoscheduler/templates/agoscheduler.xml.in.h:12
+msgid "Repeat schedule"
+msgstr "Aufgabe wiederholen"
+
+#: ../plugins/agoscheduler/templates/agoscheduler.xml.in.h:13
+msgid "Never"
+msgstr "Nie"
+
+#: ../plugins/agoscheduler/templates/agoscheduler.xml.in.h:14
+msgid "Every day"
+msgstr "Jeden Tag"
+
+#: ../plugins/agoscheduler/templates/agoscheduler.xml.in.h:15
+msgid "Every week"
+msgstr "Jede Woche"
+
+#: ../plugins/agoscheduler/templates/agoscheduler.xml.in.h:16
+msgid "Every month"
+msgstr "Jeden Monat"
+
+#: ../plugins/agoscheduler/templates/agoscheduler.xml.in.h:17
+msgid "Every year"
+msgstr "Jedes Jahr"
+
+#: ../plugins/agoscheduler/templates/agoscheduler.xml.in.h:18
+msgid ""
+"Recurring schedules are linked each others. If you update one of them, all "
+"will be updated too."
+msgstr "Wiederkehrende Termine sind mit anderen verbunden. Wenn Du einen von ihnen aktualisierst werden alle anderen aktualisiert."
+
+#: ../plugins/agoscheduler/templates/agoscheduler.xml.in.h:19
+msgid "Schedule's color"
+msgstr "Farbe der Aufgabe"
