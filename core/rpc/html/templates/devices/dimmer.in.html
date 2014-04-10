@@ -17,10 +17,10 @@
 					<p class="room"><i class="icon-location"></i><span data-bind="text: room"></span></p>
 				</ko>
                                 <p class="info">
-                                        <ko opts="if: state() == 0">
+                                        <ko opts="ifnot: state">
                                                 <i class="icon-info"></i><_span data-translateable="true">OFF</_span>
                                         </ko>
-                                        <ko opts="if: state() == 255">
+                                        <ko opts="if: state">
                                                 <i class="icon-info"></i><_span data-translateable="true">ON</_span>
                                         </ko>
                                 </p>
