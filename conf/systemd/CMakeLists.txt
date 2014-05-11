@@ -19,4 +19,4 @@ foreach (infile ${SYSTEMD_FILES})
 endforeach (infile)
 
 file (GLOB SYSTEMD_FILES *.service)
-install (FILES ${SYSTEMD_FILES_DONE} ${SYSTEMD_FILES} DESTINATION /lib/systemd/system)
+install (FILES ${SYSTEMD_FILES_DONE} ${SYSTEMD_FILES} DESTINATION ${SYSTEMDDIR})
